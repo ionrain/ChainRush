@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9d73d99e36e841afa3745887db9ca15, type: 3}
+  m_Name: AllUnitsData
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  itemsData: {fileID: 11400000, guid: 9d4e13ef316f84142a1a9a0d571b3b73, type: 2}
+  partySize: 3
+  energyPrice: 5
+  units:
+  - {fileID: 11400000, guid: 2aad8645ca7ec43ea982b40d926c9ef5, type: 2}
+  - {fileID: 11400000, guid: 67dca653b1e974ceba94b0faf491dc7a, type: 2}
+  - {fileID: 11400000, guid: ca5cbd53039df4c7b9d83afe17d95618, type: 2}
+  - {fileID: 11400000, guid: ff6471d04a5b54ed5a94714a108b6d44, type: 2}

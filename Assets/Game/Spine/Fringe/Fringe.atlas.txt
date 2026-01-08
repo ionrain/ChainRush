@@ -1,0 +1,13 @@
+Fringe.png
+size:1024,1024
+filter:Linear,Linear
+chain_1
+bounds:654,362,603,108
+rotate:90
+chain_2
+bounds:510,154,811,142
+rotate:90
+fridge
+bounds:2,2,506,963
+shadow
+bounds:764,821,171,144

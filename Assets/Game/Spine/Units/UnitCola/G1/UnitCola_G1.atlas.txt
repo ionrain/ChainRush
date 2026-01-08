@@ -1,0 +1,15 @@
+UnitCola_G1.png
+size:512,512
+filter:Linear,Linear
+arm_l
+bounds:369,369,134,118
+rotate:90
+arm_r
+bounds:236,267,131,236
+offsets:1,0,132,236
+body
+bounds:2,2,232,501
+eye
+bounds:369,326,35,41
+mouth
+bounds:406,349,63,18

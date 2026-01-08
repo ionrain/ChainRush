@@ -1,0 +1,349 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: UI Shared Data
+  m_EditorClassIdentifier: 
+  m_TableCollectionName: UI
+  m_TableCollectionNameGuidString: aa2915f58d0934c2e8c9abd2a52b4a20
+  m_Entries:
+  - m_Id: 11797520384
+    m_Key: loading.pattern
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8926673231872
+    m_Key: local.push.resources.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8969757122560
+    m_Key: local.push.resources.text
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15360328720384
+    m_Key: resource.soft.currency
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15411557949440
+    m_Key: resource.hard.currency
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15449935831040
+    m_Key: resource.energy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15509285232640
+    m_Key: resource.unit.card
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15606307872768
+    m_Key: resource.bolt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15689145376768
+    m_Key: resource.battle.pass.ticket
+    m_Metadata:
+      m_Items: []
+  - m_Id: 65500506742784
+    m_Key: bank.gems.free
+    m_Metadata:
+      m_Items: []
+  - m_Id: 65536640671744
+    m_Key: bank.gems.small
+    m_Metadata:
+      m_Items: []
+  - m_Id: 65594450763776
+    m_Key: bank.gems.medium
+    m_Metadata:
+      m_Items: []
+  - m_Id: 65623395655680
+    m_Key: bank.gems.large
+    m_Metadata:
+      m_Items: []
+  - m_Id: 65674142539776
+    m_Key: bank.gems.xl
+    m_Metadata:
+      m_Items: []
+  - m_Id: 65718602162176
+    m_Key: bank.gems.huge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 350251499118592
+    m_Key: rewards.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 353861431713792
+    m_Key: tap.to.close
+    m_Metadata:
+      m_Items: []
+  - m_Id: 377837352640512
+    m_Key: settings.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 377955069976576
+    m_Key: level.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 378017078566912
+    m_Key: win.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 378114877153280
+    m_Key: defeat.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 378177649106944
+    m_Key: pause.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 378201816686592
+    m_Key: select.unit.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 378336046997504
+    m_Key: cheats.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 378379311243264
+    m_Key: bank.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 378598459432960
+    m_Key: button.play
+    m_Metadata:
+      m_Items: []
+  - m_Id: 378656202416128
+    m_Key: button.go
+    m_Metadata:
+      m_Items: []
+  - m_Id: 381648171425792
+    m_Key: daily.rewards.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 501560860729344
+    m_Key: battle.popup.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 811199749939200
+    m_Key: settings.version
+    m_Metadata:
+      m_Items: []
+  - m_Id: 811932712951808
+    m_Key: confirmation.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 811984726515712
+    m_Key: confirmation.yes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 812016812941312
+    m_Key: confirmation.no
+    m_Metadata:
+      m_Items: []
+  - m_Id: 827366195585024
+    m_Key: settings.music
+    m_Metadata:
+      m_Items: []
+  - m_Id: 827410651013120
+    m_Key: settings.sound
+    m_Metadata:
+      m_Items: []
+  - m_Id: 827451197349888
+    m_Key: settings.privacy.button
+    m_Metadata:
+      m_Items: []
+  - m_Id: 827523410681856
+    m_Key: settings.terms.button
+    m_Metadata:
+      m_Items: []
+  - m_Id: 827570315583488
+    m_Key: settings.tutorial.button
+    m_Metadata:
+      m_Items: []
+  - m_Id: 827639664205824
+    m_Key: settings.cheats.button
+    m_Metadata:
+      m_Items: []
+  - m_Id: 827690138460160
+    m_Key: settings.progress.button
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1050976428482560
+    m_Key: battle.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2495452774653952
+    m_Key: settings.vibration
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2495850457587712
+    m_Key: cheats.alarms
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2496051029204992
+    m_Key: stage.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3007807371599872
+    m_Key: notification.enemies
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3349379762085888
+    m_Key: notification.goal.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4393406141816832
+    m_Key: notification.stage.complete
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4410586707255296
+    m_Key: notification.stage.pattern
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5396726859948032
+    m_Key: cheats.complete.stage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5396817314308096
+    m_Key: cheats.win
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5396875334115328
+    m_Key: cheats.lose
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6514611225354240
+    m_Key: notification.boss
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8044373739560960
+    m_Key: notification.stage.clear.bonus
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8778757677506560
+    m_Key: core.level.pattern
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15894485538955264
+    m_Key: citadel.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15894522163617792
+    m_Key: kettle.turret
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16399048733876224
+    m_Key: day
+    m_Metadata:
+      m_Items: []
+  - m_Id: 23881944730165248
+    m_Key: cheats.spawn.unit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25850253247766528
+    m_Key: locked.location.info
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26476601859366912
+    m_Key: rate.button
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26476659807870976
+    m_Key: rate.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26476972216410112
+    m_Key: rate.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26477007163351040
+    m_Key: rate.love.it
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26477051484561408
+    m_Key: rate.not.much
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33321706218053632
+    m_Key: more.energy.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34782671421825024
+    m_Key: merge.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36889395087794176
+    m_Key: tesla.turret
+    m_Metadata:
+      m_Items: []
+  - m_Id: 39182556862603264
+    m_Key: patrol.button
+    m_Metadata:
+      m_Items: []
+  - m_Id: 39489838007705600
+    m_Key: patrol.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 39490110977204224
+    m_Key: claim.button
+    m_Metadata:
+      m_Items: []
+  - m_Id: 39501683863052288
+    m_Key: patrol.info
+    m_Metadata:
+      m_Items: []
+  - m_Id: 39501746072969216
+    m_Key: patrol.time
+    m_Metadata:
+      m_Items: []
+  - m_Id: 39502217374326784
+    m_Key: patrol.time.pattern
+    m_Metadata:
+      m_Items: []
+  - m_Id: 39502867348840448
+    m_Key: patrol.production.pattern
+    m_Metadata:
+      m_Items: []
+  - m_Id: 39828047048728576
+    m_Key: leaderboard.button
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40527121297170432
+    m_Key: coming.soon
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42068542353301504
+    m_Key: unit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52560348710952960
+    m_Key: bonus
+    m_Metadata:
+      m_Items: []
+  - m_Id: 62290424776089600
+    m_Key: button.take
+    m_Metadata:
+      m_Items: []
+  - m_Id: 62291795264921600
+    m_Key: title.select.buff
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 6440645757363028358
+  references:
+    version: 2
+    RefIds:
+    - rid: 6440645757363028358
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables,
+        asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1736505286024

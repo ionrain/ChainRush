@@ -1,0 +1,15 @@
+Kettle.png
+size:512,512
+filter:Linear,Linear
+Body
+bounds:2,103,277,336
+LeftEye
+bounds:281,104,50,38
+Nose
+bounds:2,6,133,95
+RightEye
+bounds:404,408,35,31
+offsets:0,1,35,32
+Shadow
+bounds:281,144,295,121
+rotate:90

@@ -1,0 +1,347 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: UI_en-US
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: en-US
+  m_SharedData: {fileID: 11400000, guid: aa2915f58d0934c2e8c9abd2a52b4a20, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 11797520384
+    m_Localized: Loading...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8926673231872
+    m_Localized: Your rewards are waiting!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8969757122560
+    m_Localized: Come to grab them and have some fun!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15360328720384
+    m_Localized: Money
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15411557949440
+    m_Localized: Crystal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15449935831040
+    m_Localized: Energy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15509285232640
+    m_Localized: Card
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15606307872768
+    m_Localized: Bolt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15689145376768
+    m_Localized: Ticket
+    m_Metadata:
+      m_Items: []
+  - m_Id: 65500506742784
+    m_Localized: Free Gems
+    m_Metadata:
+      m_Items: []
+  - m_Id: 65536640671744
+    m_Localized: Small Pack of Gems
+    m_Metadata:
+      m_Items: []
+  - m_Id: 65594450763776
+    m_Localized: Medium Pack of Gems
+    m_Metadata:
+      m_Items: []
+  - m_Id: 65623395655680
+    m_Localized: Large Pack of Gems
+    m_Metadata:
+      m_Items: []
+  - m_Id: 65674142539776
+    m_Localized: XL Pack of Gems
+    m_Metadata:
+      m_Items: []
+  - m_Id: 65718602162176
+    m_Localized: Huge Pack of Gems
+    m_Metadata:
+      m_Items: []
+  - m_Id: 350251499118592
+    m_Localized: Rewards
+    m_Metadata:
+      m_Items: []
+  - m_Id: 353861431713792
+    m_Localized: Tap anywhere to close
+    m_Metadata:
+      m_Items: []
+  - m_Id: 377837352640512
+    m_Localized: Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 377955069976576
+    m_Localized: Level - {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 378017078566912
+    m_Localized: Victory!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 378114877153280
+    m_Localized: Defeat
+    m_Metadata:
+      m_Items: []
+  - m_Id: 378177649106944
+    m_Localized: Pause
+    m_Metadata:
+      m_Items: []
+  - m_Id: 378201816686592
+    m_Localized: Select unit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 378336046997504
+    m_Localized: Cheats
+    m_Metadata:
+      m_Items: []
+  - m_Id: 378379311243264
+    m_Localized: Bank
+    m_Metadata:
+      m_Items: []
+  - m_Id: 378598459432960
+    m_Localized: Play
+    m_Metadata:
+      m_Items: []
+  - m_Id: 378656202416128
+    m_Localized: Go!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 381648171425792
+    m_Localized: Daily rewards
+    m_Metadata:
+      m_Items: []
+  - m_Id: 501560860729344
+    m_Localized: Select units from the list below
+    m_Metadata:
+      m_Items: []
+  - m_Id: 811199749939200
+    m_Localized: Version {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 811932712951808
+    m_Localized: Are you sure?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 811984726515712
+    m_Localized: Yes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 812016812941312
+    m_Localized: No
+    m_Metadata:
+      m_Items: []
+  - m_Id: 827366195585024
+    m_Localized: Music volume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 827410651013120
+    m_Localized: Sound volume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 827451197349888
+    m_Localized: ' Privacy policy'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 827523410681856
+    m_Localized: Terms of use
+    m_Metadata:
+      m_Items: []
+  - m_Id: 827570315583488
+    m_Localized: Turn off tutorial
+    m_Metadata:
+      m_Items: []
+  - m_Id: 827639664205824
+    m_Localized: Cheats
+    m_Metadata:
+      m_Items: []
+  - m_Id: 827690138460160
+    m_Localized: Clear progress
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1050976428482560
+    m_Localized: Select units
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2495452774653952
+    m_Localized: Use device vibration
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2495850457587712
+    m_Localized: Toggle alarms highlight
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2496051029204992
+    m_Localized: Stage {0}/{1}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3007807371599872
+    m_Localized: 'Enemy hordes
+
+      are coming!'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3349379762085888
+    m_Localized: Goal completed!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4393406141816832
+    m_Localized: Stage clear!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4410586707255296
+    m_Localized: Stage {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5396726859948032
+    m_Localized: Complete stage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5396817314308096
+    m_Localized: Win
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5396875334115328
+    m_Localized: Lose
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6514611225354240
+    m_Localized: Boss!!!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8044373739560960
+    m_Localized: Clear bonus!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8778757677506560
+    m_Localized: Lv.{0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15894485538955264
+    m_Localized: Citadel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15894522163617792
+    m_Localized: Kettle turret
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16399048733876224
+    m_Localized: Day {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 23881944730165248
+    m_Localized: Spawn Unit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25850253247766528
+    m_Localized: Complete previous location to unlock this one
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26476601859366912
+    m_Localized: Rate us
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26476659807870976
+    m_Localized: Do you like the game?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26476972216410112
+    m_Localized: Tell others what you think about it!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26477007163351040
+    m_Localized: Love it!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26477051484561408
+    m_Localized: Not much
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33321706218053632
+    m_Localized: More energy?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34782671421825024
+    m_Localized: Merge {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36889395087794176
+    m_Localized: Tesla turret
+    m_Metadata:
+      m_Items: []
+  - m_Id: 39182556862603264
+    m_Localized: Patrol
+    m_Metadata:
+      m_Items: []
+  - m_Id: 39489838007705600
+    m_Localized: Patrol income
+    m_Metadata:
+      m_Items: []
+  - m_Id: 39490110977204224
+    m_Localized: Claim
+    m_Metadata:
+      m_Items: []
+  - m_Id: 39501683863052288
+    m_Localized: More locations, more rewards
+    m_Metadata:
+      m_Items: []
+  - m_Id: 39501746072969216
+    m_Localized: Current patrol time (24h max)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 39502217374326784
+    m_Localized: '{0}h {1:D2}m'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 39502867348840448
+    m_Localized: '{0} / h'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 39828047048728576
+    m_Localized: Score
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40527121297170432
+    m_Localized: 'Coming
+
+      soon...'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42068542353301504
+    m_Localized: Unit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52560348710952960
+    m_Localized: Bonus
+    m_Metadata:
+      m_Items: []
+  - m_Id: 62290424776089600
+    m_Localized: Take
+    m_Metadata:
+      m_Items: []
+  - m_Id: 62291795264921600
+    m_Localized: Select a Buff
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

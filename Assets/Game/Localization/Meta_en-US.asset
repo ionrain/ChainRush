@@ -1,0 +1,223 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Meta_en-US
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: en-US
+  m_SharedData: {fileID: 11400000, guid: 3780f36a553b640fbbe57d99ea3ba447, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 6407839744
+    m_Localized: Apocalypse kitchen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1362193311326208
+    m_Localized: Cola
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1362226085617664
+    m_Localized: Water
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1362252161605632
+    m_Localized: Tabasco
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1362285019783168
+    m_Localized: Perfume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1362313889177600
+    m_Localized: Buzz
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1362341642887168
+    m_Localized: Pyro
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1410349122183168
+    m_Localized: Physical
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1410620648841216
+    m_Localized: Fire
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1410657030234112
+    m_Localized: Water
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1410685916405760
+    m_Localized: Light
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1410715150704640
+    m_Localized: Dark
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1410741369298944
+    m_Localized: Poison
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1410776953774080
+    m_Localized: Earth
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1410809182806016
+    m_Localized: Air
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1410907262410752
+    m_Localized: Chaos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5029714161819648
+    m_Localized: Common
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5029744776044544
+    m_Localized: Uncommon
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5029777281900544
+    m_Localized: Rare
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5029801747275776
+    m_Localized: Epic
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5029834043416576
+    m_Localized: Legendary
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5029882978361344
+    m_Localized: Mythical
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5030199786725376
+    m_Localized: Divine
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5030933580210176
+    m_Localized: Attack
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5030972998279168
+    m_Localized: Defense
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5031025913618432
+    m_Localized: Health
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5031066879385600
+    m_Localized: Attack speed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5031111339008000
+    m_Localized: Speed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5031145593888768
+    m_Localized: Regeneration
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5033131420672000
+    m_Localized: Luck
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25077090612142080
+    m_Localized: Refrigerator of slow death
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34372757981487104
+    m_Localized: 'HP 200%
+
+      Radius x2'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34372819209936896
+    m_Localized: 'HP 300%
+
+      Damage x2'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34373018720395264
+    m_Localized: 'HP 400%
+
+      Push x2'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34378040501854208
+    m_Localized: 'HP 150%
+
+      Count x2'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34378065873199104
+    m_Localized: 'HP 250%
+
+      Push x5'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34378075448795136
+    m_Localized: 'HP 200%
+
+      Damage x2'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 38336234609696768
+    m_Localized: Toxic laboratory
+    m_Metadata:
+      m_Items: []
+  - m_Id: 38336062731313152
+    m_Localized: Abandoned saloon
+    m_Metadata:
+      m_Items: []
+  - m_Id: 38352849720041472
+    m_Localized: Coming soon...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 38413002469269504
+    m_Localized: Your score
+    m_Metadata:
+      m_Items: []
+  - m_Id: 38413057896996864
+    m_Localized: 'Cells opened:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 38413165971628032
+    m_Localized: 'Enemies killed:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 38413242861608960
+    m_Localized: 'Traps revealed:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 38413344854499328
+    m_Localized: 'Traps triggered:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 38413423497699328
+    m_Localized: 'Boosters found:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 38413476417232896
+    m_Localized: 'Units lost:'
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

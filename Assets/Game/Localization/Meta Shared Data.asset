@@ -1,0 +1,217 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: Meta Shared Data
+  m_EditorClassIdentifier: 
+  m_TableCollectionName: Meta
+  m_TableCollectionNameGuidString: 3780f36a553b640fbbe57d99ea3ba447
+  m_Entries:
+  - m_Id: 6407839744
+    m_Key: location001.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1362193311326208
+    m_Key: cola.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1362226085617664
+    m_Key: water.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1362252161605632
+    m_Key: tabasco.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1362285019783168
+    m_Key: perfume.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1362313889177600
+    m_Key: buzz.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1362341642887168
+    m_Key: pyro.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1410349122183168
+    m_Key: element.physical
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1410620648841216
+    m_Key: element.fire
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1410657030234112
+    m_Key: element.water
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1410685916405760
+    m_Key: element.light
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1410715150704640
+    m_Key: element.dark
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1410741369298944
+    m_Key: element.poison
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1410776953774080
+    m_Key: element.earth
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1410809182806016
+    m_Key: element.air
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1410907262410752
+    m_Key: element.chaos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5029714161819648
+    m_Key: grade.common
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5029744776044544
+    m_Key: grade.uncommon
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5029777281900544
+    m_Key: grade.rare
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5029801747275776
+    m_Key: grade.epic
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5029834043416576
+    m_Key: grade.legenday
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5029882978361344
+    m_Key: grade.mythical
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5030199786725376
+    m_Key: grade.divine
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5030933580210176
+    m_Key: attribute.attack
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5030972998279168
+    m_Key: attribute.defense
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5031025913618432
+    m_Key: attribute.health
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5031066879385600
+    m_Key: attribute.attackspeed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5031111339008000
+    m_Key: attribute.speed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5031145593888768
+    m_Key: attribute.regeneration
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5033131420672000
+    m_Key: attribute.luck
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25077090612142080
+    m_Key: location002.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34372757981487104
+    m_Key: water.merge1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34372819209936896
+    m_Key: water.merge2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34373018720395264
+    m_Key: water.merge3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34378040501854208
+    m_Key: cola.merge1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34378065873199104
+    m_Key: cola.merge2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34378075448795136
+    m_Key: cola.merge3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 38336062731313152
+    m_Key: location003.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 38336234609696768
+    m_Key: location004.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 38352849720041472
+    m_Key: location.blank.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 38413002469269504
+    m_Key: score.total.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 38413057896996864
+    m_Key: score.cells.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 38413165971628032
+    m_Key: score.enemies.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 38413242861608960
+    m_Key: score.traps.relealed.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 38413344854499328
+    m_Key: score.traps.triggered.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 38413423497699328
+    m_Key: score.boosters.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 38413476417232896
+    m_Key: score.units.title
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 6440645807678685280
+  references:
+    version: 2
+    RefIds:
+    - rid: 6440645807678685280
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables,
+        asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1736602915355

@@ -1,0 +1,8 @@
+Heal.png
+size:256,128
+filter:Linear,Linear
+scale:0.5
+Inner
+bounds:102,30,91,70
+Outer
+bounds:2,2,98,98

@@ -1,0 +1,16 @@
+TutorialCharacter.png
+size:512,512
+filter:Linear,Linear
+scale:0.43
+body
+bounds:2,2,382,491
+eye_1
+bounds:432,445,48,44
+rotate:90
+eye_2
+bounds:2,449,48,44
+hand
+bounds:322,379,114,108
+rotate:90
+mouth
+bounds:2,423,50,24

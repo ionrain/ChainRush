@@ -1,0 +1,917 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 517cc027f9c8f4b1f8e305726b98e858, type: 3}
+  m_Name: ElementsData
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects:
+    - {fileID: 21300000, guid: ce990cf38c577483fb6a82aa6808d343, type: 3}
+    - {fileID: 11400000, guid: ac1be84574d6f416e987407ad12e621e, type: 2}
+    - {fileID: 21300000, guid: 45419af3d31bd40959937fafc0a131e8, type: 3}
+    - {fileID: 11400000, guid: 65a765782b5c4423aa883b18ff82c29e, type: 2}
+    - {fileID: 21300000, guid: 8b3b27f872e594e8fbe4511bcf2e110f, type: 3}
+    - {fileID: 11400000, guid: 41f07a4746a78421d8390dd944beb783, type: 2}
+    - {fileID: 21300000, guid: ed2db5c245c9c4e2894746d875047158, type: 3}
+    - {fileID: 11400000, guid: 2d63ecac90bb94849a39ffa75e4b783f, type: 2}
+    - {fileID: 21300000, guid: 6191c5aef246248c09c438a5a4fd3ec6, type: 3}
+    - {fileID: 11400000, guid: ea27d441ea7fc476681783ba6213939e, type: 2}
+    - {fileID: 21300000, guid: df02af538fb124c92a46bd1a34edb2e1, type: 3}
+    - {fileID: 11400000, guid: 9c953cb1309614d0b80c7a1b0bb3845e, type: 2}
+    - {fileID: 21300000, guid: f82104d7a2c2941dca5a585d3c5a4b32, type: 3}
+    - {fileID: 11400000, guid: 5cfb1a4f999ad4781954e8fe74823d34, type: 2}
+    - {fileID: 21300000, guid: 835e7662cfba34d32b0ffbeb671cd214, type: 3}
+    - {fileID: 11400000, guid: c09f6847b5caf469c884b61642972eb1, type: 2}
+    - {fileID: 21300000, guid: 8584692104ced4bc4983496043440ab8, type: 3}
+    - {fileID: 11400000, guid: f2ba19aa67ddc43e5ba6b54eb04f82ef, type: 2}
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: data
+      Entry: 7
+      Data: 0|System.Collections.Generic.Dictionary`2[[Element, Assembly-CSharp],[ElementData,
+        Assembly-CSharp]], mscorlib
+    - Name: comparer
+      Entry: 7
+      Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[Element, Assembly-CSharp]],
+        mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 12
+      Data: 10
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 1
+    - Name: $v
+      Entry: 7
+      Data: 2|ElementData, Assembly-CSharp
+    - Name: title
+      Entry: 7
+      Data: 3|UnityEngine.Localization.LocalizedString, Unity.Localization
+    - Name: m_TableReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
+    - Name: m_TableCollectionName
+      Entry: 1
+      Data: GUID:3780f36a553b640fbbe57d99ea3ba447
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_TableEntryReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
+    - Name: m_KeyId
+      Entry: 3
+      Data: 1410349122183168
+    - Name: m_Key
+      Entry: 1
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_FallbackState
+      Entry: 3
+      Data: 0
+    - Name: m_WaitForCompletion
+      Entry: 5
+      Data: false
+    - Name: m_LocalVariables
+      Entry: 7
+      Data: 4|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+        Unity.Localization]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: icon
+      Entry: 10
+      Data: 0
+    - Name: color
+      Entry: 7
+      Data: UnityEngine.Color, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: damageType
+      Entry: 10
+      Data: 1
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 0
+    - Name: $v
+      Entry: 7
+      Data: 5|ElementData, Assembly-CSharp
+    - Name: title
+      Entry: 7
+      Data: 6|UnityEngine.Localization.LocalizedString, Unity.Localization
+    - Name: m_TableReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
+    - Name: m_TableCollectionName
+      Entry: 1
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_TableEntryReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
+    - Name: m_KeyId
+      Entry: 3
+      Data: 0
+    - Name: m_Key
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_FallbackState
+      Entry: 3
+      Data: 0
+    - Name: m_WaitForCompletion
+      Entry: 5
+      Data: false
+    - Name: m_LocalVariables
+      Entry: 7
+      Data: 7|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+        Unity.Localization]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: icon
+      Entry: 6
+      Data: 
+    - Name: color
+      Entry: 7
+      Data: UnityEngine.Color, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: damageType
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 2
+    - Name: $v
+      Entry: 7
+      Data: 8|ElementData, Assembly-CSharp
+    - Name: title
+      Entry: 7
+      Data: 9|UnityEngine.Localization.LocalizedString, Unity.Localization
+    - Name: m_TableReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
+    - Name: m_TableCollectionName
+      Entry: 1
+      Data: GUID:3780f36a553b640fbbe57d99ea3ba447
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_TableEntryReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
+    - Name: m_KeyId
+      Entry: 3
+      Data: 1410620648841216
+    - Name: m_Key
+      Entry: 1
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_FallbackState
+      Entry: 3
+      Data: 0
+    - Name: m_WaitForCompletion
+      Entry: 5
+      Data: false
+    - Name: m_LocalVariables
+      Entry: 7
+      Data: 10|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+        Unity.Localization]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: icon
+      Entry: 10
+      Data: 2
+    - Name: color
+      Entry: 7
+      Data: UnityEngine.Color, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: damageType
+      Entry: 10
+      Data: 3
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 3
+    - Name: $v
+      Entry: 7
+      Data: 11|ElementData, Assembly-CSharp
+    - Name: title
+      Entry: 7
+      Data: 12|UnityEngine.Localization.LocalizedString, Unity.Localization
+    - Name: m_TableReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
+    - Name: m_TableCollectionName
+      Entry: 1
+      Data: GUID:3780f36a553b640fbbe57d99ea3ba447
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_TableEntryReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
+    - Name: m_KeyId
+      Entry: 3
+      Data: 1410657030234112
+    - Name: m_Key
+      Entry: 1
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_FallbackState
+      Entry: 3
+      Data: 0
+    - Name: m_WaitForCompletion
+      Entry: 5
+      Data: false
+    - Name: m_LocalVariables
+      Entry: 7
+      Data: 13|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+        Unity.Localization]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: icon
+      Entry: 10
+      Data: 4
+    - Name: color
+      Entry: 7
+      Data: UnityEngine.Color, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: damageType
+      Entry: 10
+      Data: 5
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 4
+    - Name: $v
+      Entry: 7
+      Data: 14|ElementData, Assembly-CSharp
+    - Name: title
+      Entry: 7
+      Data: 15|UnityEngine.Localization.LocalizedString, Unity.Localization
+    - Name: m_TableReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
+    - Name: m_TableCollectionName
+      Entry: 1
+      Data: GUID:3780f36a553b640fbbe57d99ea3ba447
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_TableEntryReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
+    - Name: m_KeyId
+      Entry: 3
+      Data: 1410776953774080
+    - Name: m_Key
+      Entry: 1
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_FallbackState
+      Entry: 3
+      Data: 0
+    - Name: m_WaitForCompletion
+      Entry: 5
+      Data: false
+    - Name: m_LocalVariables
+      Entry: 7
+      Data: 16|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+        Unity.Localization]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: icon
+      Entry: 10
+      Data: 6
+    - Name: color
+      Entry: 7
+      Data: UnityEngine.Color, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: damageType
+      Entry: 10
+      Data: 7
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 5
+    - Name: $v
+      Entry: 7
+      Data: 17|ElementData, Assembly-CSharp
+    - Name: title
+      Entry: 7
+      Data: 18|UnityEngine.Localization.LocalizedString, Unity.Localization
+    - Name: m_TableReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
+    - Name: m_TableCollectionName
+      Entry: 1
+      Data: GUID:3780f36a553b640fbbe57d99ea3ba447
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_TableEntryReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
+    - Name: m_KeyId
+      Entry: 3
+      Data: 1410809182806016
+    - Name: m_Key
+      Entry: 1
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_FallbackState
+      Entry: 3
+      Data: 0
+    - Name: m_WaitForCompletion
+      Entry: 5
+      Data: false
+    - Name: m_LocalVariables
+      Entry: 7
+      Data: 19|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+        Unity.Localization]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: icon
+      Entry: 10
+      Data: 8
+    - Name: color
+      Entry: 7
+      Data: UnityEngine.Color, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: damageType
+      Entry: 10
+      Data: 9
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 6
+    - Name: $v
+      Entry: 7
+      Data: 20|ElementData, Assembly-CSharp
+    - Name: title
+      Entry: 7
+      Data: 21|UnityEngine.Localization.LocalizedString, Unity.Localization
+    - Name: m_TableReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
+    - Name: m_TableCollectionName
+      Entry: 1
+      Data: GUID:3780f36a553b640fbbe57d99ea3ba447
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_TableEntryReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
+    - Name: m_KeyId
+      Entry: 3
+      Data: 1410715150704640
+    - Name: m_Key
+      Entry: 1
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_FallbackState
+      Entry: 3
+      Data: 0
+    - Name: m_WaitForCompletion
+      Entry: 5
+      Data: false
+    - Name: m_LocalVariables
+      Entry: 7
+      Data: 22|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+        Unity.Localization]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: icon
+      Entry: 10
+      Data: 10
+    - Name: color
+      Entry: 7
+      Data: UnityEngine.Color, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: damageType
+      Entry: 10
+      Data: 11
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 7
+    - Name: $v
+      Entry: 7
+      Data: 23|ElementData, Assembly-CSharp
+    - Name: title
+      Entry: 7
+      Data: 24|UnityEngine.Localization.LocalizedString, Unity.Localization
+    - Name: m_TableReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
+    - Name: m_TableCollectionName
+      Entry: 1
+      Data: GUID:3780f36a553b640fbbe57d99ea3ba447
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_TableEntryReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
+    - Name: m_KeyId
+      Entry: 3
+      Data: 1410685916405760
+    - Name: m_Key
+      Entry: 1
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_FallbackState
+      Entry: 3
+      Data: 0
+    - Name: m_WaitForCompletion
+      Entry: 5
+      Data: false
+    - Name: m_LocalVariables
+      Entry: 7
+      Data: 25|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+        Unity.Localization]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: icon
+      Entry: 10
+      Data: 12
+    - Name: color
+      Entry: 7
+      Data: UnityEngine.Color, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: damageType
+      Entry: 10
+      Data: 13
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 8
+    - Name: $v
+      Entry: 7
+      Data: 26|ElementData, Assembly-CSharp
+    - Name: title
+      Entry: 7
+      Data: 27|UnityEngine.Localization.LocalizedString, Unity.Localization
+    - Name: m_TableReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
+    - Name: m_TableCollectionName
+      Entry: 1
+      Data: GUID:3780f36a553b640fbbe57d99ea3ba447
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_TableEntryReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
+    - Name: m_KeyId
+      Entry: 3
+      Data: 1410741369298944
+    - Name: m_Key
+      Entry: 1
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_FallbackState
+      Entry: 3
+      Data: 0
+    - Name: m_WaitForCompletion
+      Entry: 5
+      Data: false
+    - Name: m_LocalVariables
+      Entry: 7
+      Data: 28|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+        Unity.Localization]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: icon
+      Entry: 10
+      Data: 14
+    - Name: color
+      Entry: 7
+      Data: UnityEngine.Color, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: damageType
+      Entry: 10
+      Data: 15
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 9
+    - Name: $v
+      Entry: 7
+      Data: 29|ElementData, Assembly-CSharp
+    - Name: title
+      Entry: 7
+      Data: 30|UnityEngine.Localization.LocalizedString, Unity.Localization
+    - Name: m_TableReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
+    - Name: m_TableCollectionName
+      Entry: 1
+      Data: GUID:3780f36a553b640fbbe57d99ea3ba447
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_TableEntryReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
+    - Name: m_KeyId
+      Entry: 3
+      Data: 1410907262410752
+    - Name: m_Key
+      Entry: 1
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_FallbackState
+      Entry: 3
+      Data: 0
+    - Name: m_WaitForCompletion
+      Entry: 5
+      Data: false
+    - Name: m_LocalVariables
+      Entry: 7
+      Data: 31|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+        Unity.Localization]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: icon
+      Entry: 10
+      Data: 16
+    - Name: color
+      Entry: 7
+      Data: UnityEngine.Color, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: damageType
+      Entry: 10
+      Data: 17
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 

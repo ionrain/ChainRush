@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 3
+  tags:
+  - LevelBounds
+  - FX
+  - Enemy
+  - World
+  - NoMask
+  - PlayerWeapon
+  - PlayerProjectile
+  - EnemyWeapon
+  - Bomb
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - EnemyWeapon
+  - PlayerWeapon
+  - Obstacles
+  - Ground
+  - Units
+  - Coins
+  - EnemiesFlying
+  - Enemies
+  - 
+  - 
+  - Magnet
+  - 
+  - 
+  - Citadel
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: Background
+    uniqueID: 1798043625
+    locked: 0
+  - name: Ground
+    uniqueID: 2296623839
+    locked: 0
+  - name: Foreground
+    uniqueID: 1603220759
+    locked: 0
+  - name: Characters
+    uniqueID: 47421343
+    locked: 0
+  - name: AboveCharacters
+    uniqueID: 961700441
+    locked: 0
+  - name: Board
+    uniqueID: 2648769185
+    locked: 0
+  - name: AboveBoard
+    uniqueID: 750364431
+    locked: 0
+  m_RenderingLayers:
+  - Default

@@ -1,0 +1,588 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18f2e2701e265487f9f255bd588249cc, type: 3}
+  m_Name: GameResourcesData
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects:
+    - {fileID: 21300000, guid: 1130e0f14ad1047759c2eb3af83d0a50, type: 3}
+    - {fileID: 21300000, guid: f5ea054fc522b4c70bae0bcbf88f1cf8, type: 3}
+    - {fileID: 21300000, guid: 8e2d7363fd20942b8861af1771e3f0a8, type: 3}
+    - {fileID: 21300000, guid: 05dd0c1765760486dbfc5864f5b506de, type: 3}
+    - {fileID: 21300000, guid: 4b00031715aeb483b83dac253fd4dd15, type: 3}
+    - {fileID: 21300000, guid: 364b65dc1ebd54f6da62636d8c010dff, type: 3}
+    - {fileID: 21300000, guid: 29d6b6ba4883f4a5c9c8219ee0c9bbff, type: 3}
+    - {fileID: 21300000, guid: 0710cce66732946489d95375f3d4c643, type: 3}
+    - {fileID: 21300000, guid: 373bd6a67cc724a5494f44e1f40c3844, type: 3}
+    - {fileID: 21300000, guid: 3af563369cce547d48918a4e97b64b24, type: 3}
+    - {fileID: 21300000, guid: c32df3f0e4e1643a7a153978016fc86d, type: 3}
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: resources
+      Entry: 7
+      Data: 0|System.Collections.Generic.Dictionary`2[[ResourceType, Assembly-CSharp],[ResourceData,
+        Assembly-CSharp]], mscorlib
+    - Name: comparer
+      Entry: 7
+      Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[ResourceType, Assembly-CSharp]],
+        mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 12
+      Data: 6
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 0
+    - Name: $v
+      Entry: 7
+      Data: 2|ResourceData, Assembly-CSharp
+    - Name: title
+      Entry: 7
+      Data: 3|UnityEngine.Localization.LocalizedString, Unity.Localization
+    - Name: m_TableReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
+    - Name: m_TableCollectionName
+      Entry: 1
+      Data: GUID:aa2915f58d0934c2e8c9abd2a52b4a20
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_TableEntryReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
+    - Name: m_KeyId
+      Entry: 3
+      Data: 15360328720384
+    - Name: m_Key
+      Entry: 1
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_FallbackState
+      Entry: 3
+      Data: 0
+    - Name: m_WaitForCompletion
+      Entry: 5
+      Data: false
+    - Name: m_LocalVariables
+      Entry: 7
+      Data: 4|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+        Unity.Localization]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: icon
+      Entry: 10
+      Data: 0
+    - Name: smallIcon
+      Entry: 10
+      Data: 1
+    - Name: capacity
+      Entry: 3
+      Data: 0
+    - Name: productionBase
+      Entry: 3
+      Data: 50
+    - Name: productionRate
+      Entry: 3
+      Data: 50
+    - Name: productionMultiplier
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 1
+    - Name: $v
+      Entry: 7
+      Data: 5|ResourceData, Assembly-CSharp
+    - Name: title
+      Entry: 7
+      Data: 6|UnityEngine.Localization.LocalizedString, Unity.Localization
+    - Name: m_TableReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
+    - Name: m_TableCollectionName
+      Entry: 1
+      Data: GUID:aa2915f58d0934c2e8c9abd2a52b4a20
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_TableEntryReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
+    - Name: m_KeyId
+      Entry: 3
+      Data: 15411557949440
+    - Name: m_Key
+      Entry: 1
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_FallbackState
+      Entry: 3
+      Data: 0
+    - Name: m_WaitForCompletion
+      Entry: 5
+      Data: false
+    - Name: m_LocalVariables
+      Entry: 7
+      Data: 7|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+        Unity.Localization]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: icon
+      Entry: 10
+      Data: 2
+    - Name: smallIcon
+      Entry: 10
+      Data: 3
+    - Name: capacity
+      Entry: 3
+      Data: 0
+    - Name: productionBase
+      Entry: 3
+      Data: 0
+    - Name: productionRate
+      Entry: 3
+      Data: 0
+    - Name: productionMultiplier
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 2
+    - Name: $v
+      Entry: 7
+      Data: 8|ResourceData, Assembly-CSharp
+    - Name: title
+      Entry: 7
+      Data: 9|UnityEngine.Localization.LocalizedString, Unity.Localization
+    - Name: m_TableReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
+    - Name: m_TableCollectionName
+      Entry: 1
+      Data: GUID:aa2915f58d0934c2e8c9abd2a52b4a20
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_TableEntryReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
+    - Name: m_KeyId
+      Entry: 3
+      Data: 15449935831040
+    - Name: m_Key
+      Entry: 1
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_FallbackState
+      Entry: 3
+      Data: 0
+    - Name: m_WaitForCompletion
+      Entry: 5
+      Data: false
+    - Name: m_LocalVariables
+      Entry: 7
+      Data: 10|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+        Unity.Localization]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: icon
+      Entry: 10
+      Data: 4
+    - Name: smallIcon
+      Entry: 10
+      Data: 5
+    - Name: capacity
+      Entry: 3
+      Data: 30
+    - Name: productionBase
+      Entry: 3
+      Data: 2
+    - Name: productionRate
+      Entry: 3
+      Data: 0
+    - Name: productionMultiplier
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 3
+    - Name: $v
+      Entry: 7
+      Data: 11|ResourceData, Assembly-CSharp
+    - Name: title
+      Entry: 7
+      Data: 12|UnityEngine.Localization.LocalizedString, Unity.Localization
+    - Name: m_TableReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
+    - Name: m_TableCollectionName
+      Entry: 1
+      Data: GUID:aa2915f58d0934c2e8c9abd2a52b4a20
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_TableEntryReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
+    - Name: m_KeyId
+      Entry: 3
+      Data: 15509285232640
+    - Name: m_Key
+      Entry: 1
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_FallbackState
+      Entry: 3
+      Data: 0
+    - Name: m_WaitForCompletion
+      Entry: 5
+      Data: false
+    - Name: m_LocalVariables
+      Entry: 7
+      Data: 13|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+        Unity.Localization]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: icon
+      Entry: 10
+      Data: 6
+    - Name: smallIcon
+      Entry: 10
+      Data: 7
+    - Name: capacity
+      Entry: 3
+      Data: 0
+    - Name: productionBase
+      Entry: 3
+      Data: 1
+    - Name: productionRate
+      Entry: 3
+      Data: 1
+    - Name: productionMultiplier
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 4
+    - Name: $v
+      Entry: 7
+      Data: 14|ResourceData, Assembly-CSharp
+    - Name: title
+      Entry: 7
+      Data: 15|UnityEngine.Localization.LocalizedString, Unity.Localization
+    - Name: m_TableReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
+    - Name: m_TableCollectionName
+      Entry: 1
+      Data: GUID:aa2915f58d0934c2e8c9abd2a52b4a20
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_TableEntryReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
+    - Name: m_KeyId
+      Entry: 3
+      Data: 15606307872768
+    - Name: m_Key
+      Entry: 1
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_FallbackState
+      Entry: 3
+      Data: 0
+    - Name: m_WaitForCompletion
+      Entry: 5
+      Data: false
+    - Name: m_LocalVariables
+      Entry: 7
+      Data: 16|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+        Unity.Localization]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: icon
+      Entry: 10
+      Data: 8
+    - Name: smallIcon
+      Entry: 10
+      Data: 9
+    - Name: capacity
+      Entry: 3
+      Data: 0
+    - Name: productionBase
+      Entry: 3
+      Data: 2
+    - Name: productionRate
+      Entry: 3
+      Data: 2
+    - Name: productionMultiplier
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 5
+    - Name: $v
+      Entry: 7
+      Data: 17|ResourceData, Assembly-CSharp
+    - Name: title
+      Entry: 7
+      Data: 18|UnityEngine.Localization.LocalizedString, Unity.Localization
+    - Name: m_TableReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
+    - Name: m_TableCollectionName
+      Entry: 1
+      Data: GUID:aa2915f58d0934c2e8c9abd2a52b4a20
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_TableEntryReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
+    - Name: m_KeyId
+      Entry: 3
+      Data: 15689145376768
+    - Name: m_Key
+      Entry: 1
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_FallbackState
+      Entry: 3
+      Data: 0
+    - Name: m_WaitForCompletion
+      Entry: 5
+      Data: false
+    - Name: m_LocalVariables
+      Entry: 7
+      Data: 19|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+        Unity.Localization]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: icon
+      Entry: 10
+      Data: 10
+    - Name: smallIcon
+      Entry: 6
+      Data: 
+    - Name: capacity
+      Entry: 3
+      Data: 0
+    - Name: productionBase
+      Entry: 3
+      Data: 0
+    - Name: productionRate
+      Entry: 3
+      Data: 0
+    - Name: productionMultiplier
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: defaultResources
+      Entry: 7
+      Data: 20|System.Collections.Generic.Dictionary`2[[ResourceType, Assembly-CSharp],[System.Int32,
+        mscorlib]], mscorlib
+    - Name: comparer
+      Entry: 9
+      Data: 1
+    - Name: 
+      Entry: 12
+      Data: 3
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 0
+    - Name: $v
+      Entry: 3
+      Data: 1000
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 1
+    - Name: $v
+      Entry: 3
+      Data: 20
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 2
+    - Name: $v
+      Entry: 3
+      Data: 30
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+  maxProductionDuration: 86400
+  productionInterval: 3600

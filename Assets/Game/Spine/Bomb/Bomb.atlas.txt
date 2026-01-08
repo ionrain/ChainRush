@@ -1,0 +1,12 @@
+Bomb.png
+size:512,256
+filter:Linear,Linear
+scale:0.3
+Ball
+bounds:2,2,230,228
+Cord
+bounds:358,152,68,78
+Skull
+bounds:234,17,114,107
+Top
+bounds:234,126,122,104

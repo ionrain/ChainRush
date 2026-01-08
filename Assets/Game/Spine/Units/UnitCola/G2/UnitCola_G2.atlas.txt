@@ -1,0 +1,16 @@
+UnitCola_G2.png
+size:512,512
+filter:Linear,Linear
+scale:0.8
+arm_l
+bounds:329,374,107,94
+rotate:90
+arm_r
+bounds:225,255,102,226
+body
+bounds:2,19,222,462
+eye
+bounds:453,448,28,33
+mouth
+bounds:425,423,58,26
+rotate:90

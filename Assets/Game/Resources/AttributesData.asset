@@ -1,0 +1,389 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54cea768e83424e65805257c903e593f, type: 3}
+  m_Name: AttributesData
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects:
+    - {fileID: 21300000, guid: d60de599921f547afb136185b1d4efe6, type: 3}
+    - {fileID: 21300000, guid: 1a3e751c61e084a539ebe4c3ed963cfc, type: 3}
+    - {fileID: 21300000, guid: 9cfdedf2bf2cc43df9cbfc70978564ef, type: 3}
+    - {fileID: 21300000, guid: 70a0461a4a3d04ccd99a1c1390e6a039, type: 3}
+    - {fileID: 21300000, guid: 78f6ffb1cd9984762a48506441d02a46, type: 3}
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: data
+      Entry: 7
+      Data: 0|System.Collections.Generic.Dictionary`2[[Attribute, Assembly-CSharp],[AttributeData,
+        Assembly-CSharp]], mscorlib
+    - Name: comparer
+      Entry: 7
+      Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[Attribute, Assembly-CSharp]],
+        mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 12
+      Data: 5
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 0
+    - Name: $v
+      Entry: 7
+      Data: 2|AttributeData, Assembly-CSharp
+    - Name: icon
+      Entry: 10
+      Data: 0
+    - Name: pictogram
+      Entry: 6
+      Data: 
+    - Name: title
+      Entry: 7
+      Data: 3|UnityEngine.Localization.LocalizedString, Unity.Localization
+    - Name: m_TableReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
+    - Name: m_TableCollectionName
+      Entry: 1
+      Data: GUID:3780f36a553b640fbbe57d99ea3ba447
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_TableEntryReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
+    - Name: m_KeyId
+      Entry: 3
+      Data: 5030933580210176
+    - Name: m_Key
+      Entry: 1
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_FallbackState
+      Entry: 3
+      Data: 0
+    - Name: m_WaitForCompletion
+      Entry: 5
+      Data: false
+    - Name: m_LocalVariables
+      Entry: 7
+      Data: 4|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+        Unity.Localization]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 1
+    - Name: $v
+      Entry: 7
+      Data: 5|AttributeData, Assembly-CSharp
+    - Name: icon
+      Entry: 10
+      Data: 1
+    - Name: pictogram
+      Entry: 6
+      Data: 
+    - Name: title
+      Entry: 7
+      Data: 6|UnityEngine.Localization.LocalizedString, Unity.Localization
+    - Name: m_TableReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
+    - Name: m_TableCollectionName
+      Entry: 1
+      Data: GUID:3780f36a553b640fbbe57d99ea3ba447
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_TableEntryReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
+    - Name: m_KeyId
+      Entry: 3
+      Data: 5030972998279168
+    - Name: m_Key
+      Entry: 1
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_FallbackState
+      Entry: 3
+      Data: 0
+    - Name: m_WaitForCompletion
+      Entry: 5
+      Data: false
+    - Name: m_LocalVariables
+      Entry: 7
+      Data: 7|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+        Unity.Localization]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 2
+    - Name: $v
+      Entry: 7
+      Data: 8|AttributeData, Assembly-CSharp
+    - Name: icon
+      Entry: 10
+      Data: 2
+    - Name: pictogram
+      Entry: 6
+      Data: 
+    - Name: title
+      Entry: 7
+      Data: 9|UnityEngine.Localization.LocalizedString, Unity.Localization
+    - Name: m_TableReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
+    - Name: m_TableCollectionName
+      Entry: 1
+      Data: GUID:3780f36a553b640fbbe57d99ea3ba447
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_TableEntryReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
+    - Name: m_KeyId
+      Entry: 3
+      Data: 5031025913618432
+    - Name: m_Key
+      Entry: 1
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_FallbackState
+      Entry: 3
+      Data: 0
+    - Name: m_WaitForCompletion
+      Entry: 5
+      Data: false
+    - Name: m_LocalVariables
+      Entry: 7
+      Data: 10|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+        Unity.Localization]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 3
+    - Name: $v
+      Entry: 7
+      Data: 11|AttributeData, Assembly-CSharp
+    - Name: icon
+      Entry: 10
+      Data: 3
+    - Name: pictogram
+      Entry: 6
+      Data: 
+    - Name: title
+      Entry: 7
+      Data: 12|UnityEngine.Localization.LocalizedString, Unity.Localization
+    - Name: m_TableReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
+    - Name: m_TableCollectionName
+      Entry: 1
+      Data: GUID:3780f36a553b640fbbe57d99ea3ba447
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_TableEntryReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
+    - Name: m_KeyId
+      Entry: 3
+      Data: 5031111339008000
+    - Name: m_Key
+      Entry: 1
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_FallbackState
+      Entry: 3
+      Data: 0
+    - Name: m_WaitForCompletion
+      Entry: 5
+      Data: false
+    - Name: m_LocalVariables
+      Entry: 7
+      Data: 13|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+        Unity.Localization]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 4
+    - Name: $v
+      Entry: 7
+      Data: 14|AttributeData, Assembly-CSharp
+    - Name: icon
+      Entry: 10
+      Data: 4
+    - Name: pictogram
+      Entry: 6
+      Data: 
+    - Name: title
+      Entry: 7
+      Data: 15|UnityEngine.Localization.LocalizedString, Unity.Localization
+    - Name: m_TableReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
+    - Name: m_TableCollectionName
+      Entry: 1
+      Data: GUID:3780f36a553b640fbbe57d99ea3ba447
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_TableEntryReference
+      Entry: 7
+      Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
+    - Name: m_KeyId
+      Entry: 3
+      Data: 5031066879385600
+    - Name: m_Key
+      Entry: 1
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_FallbackState
+      Entry: 3
+      Data: 0
+    - Name: m_WaitForCompletion
+      Entry: 5
+      Data: false
+    - Name: m_LocalVariables
+      Entry: 7
+      Data: 16|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
+        Unity.Localization]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 

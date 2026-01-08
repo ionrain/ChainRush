@@ -1,0 +1,34 @@
+fileFormatVersion: 2
+guid: 59ddacb6cec284d11a76d2d31f37fa01
+labels:
+- Audio
+- Loop
+- Seasonal
+AssetOrigin:
+  serializedVersion: 1
+  productId: 37351
+  packageName: Ultimate Game Music Collection
+  packageVersion: 
+  assetPath: Assets/Game/Music/Halloween LOOP.wav
+  uploadId: 0
+AudioImporter:
+  externalObjects: {}
+  serializedVersion: 8
+  defaultSettings:
+    serializedVersion: 2
+    loadType: 0
+    sampleRateSetting: 1
+    sampleRateOverride: 44100
+    compressionFormat: 1
+    quality: 0.29999998
+    conversionMode: 0
+    preloadAudioData: 1
+  platformSettingOverrides: {}
+  forceToMono: 0
+  normalize: 1
+  loadInBackground: 1
+  ambisonic: 0
+  3D: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

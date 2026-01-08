@@ -1,0 +1,668 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0e1d2b4e419b4ec098370cbceb32427, type: 3}
+  m_Name: DailyRewardsData
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects:
+    - {fileID: 11400000, guid: 67dca653b1e974ceba94b0faf491dc7a, type: 2}
+    - {fileID: 11400000, guid: 939833c0a3ef34d64a3a10054922a53e, type: 2}
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: rewards
+      Entry: 7
+      Data: 0|System.Collections.Generic.List`1[[DailyReward, Assembly-CSharp]],
+        mscorlib
+    - Name: 
+      Entry: 12
+      Data: 30
+    - Name: 
+      Entry: 7
+      Data: 1|DailyReward, Assembly-CSharp
+    - Name: reward
+      Entry: 7
+      Data: 2|ResourceReward, Assembly-CSharp
+    - Name: rewardType
+      Entry: 3
+      Data: 1
+    - Name: amount
+      Entry: 3
+      Data: 1000
+    - Name: resource
+      Entry: 3
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 3|DailyReward, Assembly-CSharp
+    - Name: reward
+      Entry: 7
+      Data: 4|UnitReward, Assembly-CSharp
+    - Name: rewardType
+      Entry: 3
+      Data: 3
+    - Name: amount
+      Entry: 3
+      Data: 0
+    - Name: unit
+      Entry: 10
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 5|DailyReward, Assembly-CSharp
+    - Name: reward
+      Entry: 7
+      Data: 6|ResourceReward, Assembly-CSharp
+    - Name: rewardType
+      Entry: 3
+      Data: 1
+    - Name: amount
+      Entry: 3
+      Data: 10
+    - Name: resource
+      Entry: 3
+      Data: 3
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 7|DailyReward, Assembly-CSharp
+    - Name: reward
+      Entry: 7
+      Data: 8|ResourceReward, Assembly-CSharp
+    - Name: rewardType
+      Entry: 3
+      Data: 1
+    - Name: amount
+      Entry: 3
+      Data: 10
+    - Name: resource
+      Entry: 3
+      Data: 4
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 9|DailyReward, Assembly-CSharp
+    - Name: reward
+      Entry: 7
+      Data: 10|ResourceReward, Assembly-CSharp
+    - Name: rewardType
+      Entry: 3
+      Data: 1
+    - Name: amount
+      Entry: 3
+      Data: 10
+    - Name: resource
+      Entry: 3
+      Data: 3
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 11|DailyReward, Assembly-CSharp
+    - Name: reward
+      Entry: 7
+      Data: 12|ResourceReward, Assembly-CSharp
+    - Name: rewardType
+      Entry: 3
+      Data: 1
+    - Name: amount
+      Entry: 3
+      Data: 10
+    - Name: resource
+      Entry: 3
+      Data: 4
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 13|DailyReward, Assembly-CSharp
+    - Name: reward
+      Entry: 7
+      Data: 14|UnitReward, Assembly-CSharp
+    - Name: rewardType
+      Entry: 3
+      Data: 3
+    - Name: amount
+      Entry: 3
+      Data: 0
+    - Name: unit
+      Entry: 10
+      Data: 1
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 15|DailyReward, Assembly-CSharp
+    - Name: reward
+      Entry: 7
+      Data: 16|ResourceReward, Assembly-CSharp
+    - Name: rewardType
+      Entry: 3
+      Data: 1
+    - Name: amount
+      Entry: 3
+      Data: 10
+    - Name: resource
+      Entry: 3
+      Data: 3
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 17|DailyReward, Assembly-CSharp
+    - Name: reward
+      Entry: 7
+      Data: 18|ResourceReward, Assembly-CSharp
+    - Name: rewardType
+      Entry: 3
+      Data: 1
+    - Name: amount
+      Entry: 3
+      Data: 10
+    - Name: resource
+      Entry: 3
+      Data: 4
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 19|DailyReward, Assembly-CSharp
+    - Name: reward
+      Entry: 7
+      Data: 20|ResourceReward, Assembly-CSharp
+    - Name: rewardType
+      Entry: 3
+      Data: 1
+    - Name: amount
+      Entry: 3
+      Data: 10
+    - Name: resource
+      Entry: 3
+      Data: 3
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 21|DailyReward, Assembly-CSharp
+    - Name: reward
+      Entry: 7
+      Data: 22|ResourceReward, Assembly-CSharp
+    - Name: rewardType
+      Entry: 3
+      Data: 1
+    - Name: amount
+      Entry: 3
+      Data: 10
+    - Name: resource
+      Entry: 3
+      Data: 4
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 23|DailyReward, Assembly-CSharp
+    - Name: reward
+      Entry: 7
+      Data: 24|ResourceReward, Assembly-CSharp
+    - Name: rewardType
+      Entry: 3
+      Data: 1
+    - Name: amount
+      Entry: 3
+      Data: 10
+    - Name: resource
+      Entry: 3
+      Data: 3
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 25|DailyReward, Assembly-CSharp
+    - Name: reward
+      Entry: 7
+      Data: 26|ResourceReward, Assembly-CSharp
+    - Name: rewardType
+      Entry: 3
+      Data: 1
+    - Name: amount
+      Entry: 3
+      Data: 10
+    - Name: resource
+      Entry: 3
+      Data: 4
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 27|DailyReward, Assembly-CSharp
+    - Name: reward
+      Entry: 7
+      Data: 28|ResourceReward, Assembly-CSharp
+    - Name: rewardType
+      Entry: 3
+      Data: 1
+    - Name: amount
+      Entry: 3
+      Data: 10
+    - Name: resource
+      Entry: 3
+      Data: 3
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 29|DailyReward, Assembly-CSharp
+    - Name: reward
+      Entry: 7
+      Data: 30|ResourceReward, Assembly-CSharp
+    - Name: rewardType
+      Entry: 3
+      Data: 1
+    - Name: amount
+      Entry: 3
+      Data: 10
+    - Name: resource
+      Entry: 3
+      Data: 4
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 31|DailyReward, Assembly-CSharp
+    - Name: reward
+      Entry: 7
+      Data: 32|ResourceReward, Assembly-CSharp
+    - Name: rewardType
+      Entry: 3
+      Data: 1
+    - Name: amount
+      Entry: 3
+      Data: 10
+    - Name: resource
+      Entry: 3
+      Data: 3
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 33|DailyReward, Assembly-CSharp
+    - Name: reward
+      Entry: 7
+      Data: 34|ResourceReward, Assembly-CSharp
+    - Name: rewardType
+      Entry: 3
+      Data: 1
+    - Name: amount
+      Entry: 3
+      Data: 10
+    - Name: resource
+      Entry: 3
+      Data: 4
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 35|DailyReward, Assembly-CSharp
+    - Name: reward
+      Entry: 7
+      Data: 36|ResourceReward, Assembly-CSharp
+    - Name: rewardType
+      Entry: 3
+      Data: 1
+    - Name: amount
+      Entry: 3
+      Data: 10
+    - Name: resource
+      Entry: 3
+      Data: 3
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 37|DailyReward, Assembly-CSharp
+    - Name: reward
+      Entry: 7
+      Data: 38|ResourceReward, Assembly-CSharp
+    - Name: rewardType
+      Entry: 3
+      Data: 1
+    - Name: amount
+      Entry: 3
+      Data: 10
+    - Name: resource
+      Entry: 3
+      Data: 4
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 39|DailyReward, Assembly-CSharp
+    - Name: reward
+      Entry: 7
+      Data: 40|ResourceReward, Assembly-CSharp
+    - Name: rewardType
+      Entry: 3
+      Data: 1
+    - Name: amount
+      Entry: 3
+      Data: 10
+    - Name: resource
+      Entry: 3
+      Data: 3
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 41|DailyReward, Assembly-CSharp
+    - Name: reward
+      Entry: 7
+      Data: 42|ResourceReward, Assembly-CSharp
+    - Name: rewardType
+      Entry: 3
+      Data: 1
+    - Name: amount
+      Entry: 3
+      Data: 10
+    - Name: resource
+      Entry: 3
+      Data: 4
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 43|DailyReward, Assembly-CSharp
+    - Name: reward
+      Entry: 7
+      Data: 44|ResourceReward, Assembly-CSharp
+    - Name: rewardType
+      Entry: 3
+      Data: 1
+    - Name: amount
+      Entry: 3
+      Data: 10
+    - Name: resource
+      Entry: 3
+      Data: 3
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 45|DailyReward, Assembly-CSharp
+    - Name: reward
+      Entry: 7
+      Data: 46|ResourceReward, Assembly-CSharp
+    - Name: rewardType
+      Entry: 3
+      Data: 1
+    - Name: amount
+      Entry: 3
+      Data: 10
+    - Name: resource
+      Entry: 3
+      Data: 4
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 47|DailyReward, Assembly-CSharp
+    - Name: reward
+      Entry: 7
+      Data: 48|ResourceReward, Assembly-CSharp
+    - Name: rewardType
+      Entry: 3
+      Data: 1
+    - Name: amount
+      Entry: 3
+      Data: 10
+    - Name: resource
+      Entry: 3
+      Data: 3
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 49|DailyReward, Assembly-CSharp
+    - Name: reward
+      Entry: 7
+      Data: 50|ResourceReward, Assembly-CSharp
+    - Name: rewardType
+      Entry: 3
+      Data: 1
+    - Name: amount
+      Entry: 3
+      Data: 10
+    - Name: resource
+      Entry: 3
+      Data: 4
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 51|DailyReward, Assembly-CSharp
+    - Name: reward
+      Entry: 7
+      Data: 52|ResourceReward, Assembly-CSharp
+    - Name: rewardType
+      Entry: 3
+      Data: 1
+    - Name: amount
+      Entry: 3
+      Data: 10
+    - Name: resource
+      Entry: 3
+      Data: 3
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 53|DailyReward, Assembly-CSharp
+    - Name: reward
+      Entry: 7
+      Data: 54|ResourceReward, Assembly-CSharp
+    - Name: rewardType
+      Entry: 3
+      Data: 1
+    - Name: amount
+      Entry: 3
+      Data: 10
+    - Name: resource
+      Entry: 3
+      Data: 4
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 55|DailyReward, Assembly-CSharp
+    - Name: reward
+      Entry: 7
+      Data: 56|ResourceReward, Assembly-CSharp
+    - Name: rewardType
+      Entry: 3
+      Data: 1
+    - Name: amount
+      Entry: 3
+      Data: 10
+    - Name: resource
+      Entry: 3
+      Data: 3
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 57|DailyReward, Assembly-CSharp
+    - Name: reward
+      Entry: 7
+      Data: 58|ResourceReward, Assembly-CSharp
+    - Name: rewardType
+      Entry: 3
+      Data: 1
+    - Name: amount
+      Entry: 3
+      Data: 10
+    - Name: resource
+      Entry: 3
+      Data: 4
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 59|DailyReward, Assembly-CSharp
+    - Name: reward
+      Entry: 7
+      Data: 60|ResourceReward, Assembly-CSharp
+    - Name: rewardType
+      Entry: 3
+      Data: 1
+    - Name: amount
+      Entry: 3
+      Data: 10
+    - Name: resource
+      Entry: 3
+      Data: 3
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 

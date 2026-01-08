@@ -1,0 +1,16 @@
+UnitWater_G1.png
+size:512,512
+filter:Linear,Linear
+arm_l
+bounds:219,370,134,118
+rotate:90
+arm_r
+bounds:339,385,118,119
+offsets:1,0,120,119
+body
+bounds:2,20,215,484
+eye
+bounds:459,463,35,41
+mouth
+bounds:459,448,45,13
+offsets:0,0,46,14

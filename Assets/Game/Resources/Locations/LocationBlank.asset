@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 205d0e557817c4856bc9bdcd5d72050a, type: 3}
+  m_Name: LocationBlank
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  title:
+    m_TableReference:
+      m_TableCollectionName: GUID:3780f36a553b640fbbe57d99ea3ba447
+    m_TableEntryReference:
+      m_KeyId: 38352849720041472
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  backPrefab: {fileID: 624851153414004865, guid: 2967fb808d90b479d9628222ea0a5332,
+    type: 3}
+  iconPrefab: {fileID: 5738783815139792888, guid: 16cc948e9facd483ea2020f5ff70fa68,
+    type: 3}
+  levelBack: {fileID: 0}
+  levels: []
+  references:
+    version: 2
+    RefIds: []

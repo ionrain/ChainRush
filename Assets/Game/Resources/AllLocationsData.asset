@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27dd176d6f57241d1af05d7cb314fa98, type: 3}
+  m_Name: AllLocationsData
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  locations:
+  - {fileID: 11400000, guid: 79eba35e1153242cf8ba13f4eb616d1c, type: 2}
+  - {fileID: 11400000, guid: 0217b8a6b4c784b05aa4d2160dc7bb53, type: 2}
+  - {fileID: 11400000, guid: c5e2eb8d3a3524b5eb77f79af0a4ef95, type: 2}
+  - {fileID: 11400000, guid: b8a75c743b2b7404e9024a07d34b4b5f, type: 2}
+  - {fileID: 11400000, guid: 3544233e55e544c74b44d9e48cb65948, type: 2}
+  currentIndex: 0

@@ -1,0 +1,11 @@
+Freezer.png
+size:512,256
+filter:Linear,Linear
+scale:0.4
+Ball
+bounds:2,2,245,246
+Skull
+bounds:249,111,129,137
+Top
+bounds:380,98,150,95
+rotate:90

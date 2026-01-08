@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Tutorial_en-US
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: en-US
+  m_SharedData: {fileID: 11400000, guid: 121d2593dc3814971a291e9113bfca9a, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 7397695488
+    m_Localized: Tap on boxes and <color=#3abb00>avoid traps</color>. If you open
+      all boxes around the trap it becomes deactivated.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21359206850560
+    m_Localized: Boxes that don't have <color=#3abb00>at least one number around</color>
+      are not traps and contain something useful...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 692387511787520
+    m_Localized: When you have <color=#3abb00>3 same units</color> they merge into
+      one with higher grade and upgraded stats.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1417033706102784
+    m_Localized: A number in the cell indicates <color=#3abb00>how many traps are
+      located around it.</color>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1915867725029376
+    m_Localized: "Stage is clear <color=#3abb00>when all traps are triggered or deactivated</color>.
+      \nNow it's time to try yourself. Good luck!"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3331781360082944
+    m_Localized: On the top panel you can check <color=#3abb00>how many traps, boosters
+      and units</color> are left on the field.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18791379550330880
+    m_Localized: Let's talk about <color=#3abb00>boosters</color>. E.g. antifreeze
+      saves units from being frozen.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18792206100848640
+    m_Localized: While there is no target, boosters are <color=#3abb00>stored in
+      your backpack and automatically used</color> when neccessary.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 29646175618457600
+    m_Localized: If you <color=#3abb00>tap on a box which is empty</color> the chain
+      reaction opens all other empty boxes around it.
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

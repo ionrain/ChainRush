@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using MoreMountains.Tools;
 using UnityEngine;
 
-public enum LevelGoalType { Traps, Survive, Stage }
+public enum LevelGoalType { Survive, Distance, CollectResource, Inventory, Defend, Enemy, EnemyType, Destroy }
 
 public struct LevelGoalEvent {
     public LevelGoalType Type { get; private set; }
@@ -21,13 +21,11 @@ public class LevelGoal {
     [SerializeField] protected int amount;
 
     public LevelGoalType Type => goalType;
-    public bool Achieved { get; set; }
+    public bool Achieved { get; protected set; }
     public virtual int Amount => amount;
-    public virtual int ContainersCount => 1;
-    public virtual float MinContainerDistance => 20;
-    public virtual List<int> Containers => null;
     public virtual bool CanBeCompleted => !Achieved && CurrentAmount >= Amount;
-    public int CurrentAmount { get; set; }
+    public int CurrentAmount { get; protected set; }
+    public virtual bool IsValid => amount > 0;
 
 
     public LevelGoal() { }
@@ -42,6 +40,14 @@ public class LevelGoal {
     }
 
     public virtual void Complete() { }
+
+    public virtual void SetAchieved(bool value) {
+        Achieved = value;
+    }
+
+    public virtual void SetCurrentAmount(int value) {
+        CurrentAmount = Mathf.Clamp(value, 0, Amount);
+    }
 
     public virtual bool Suitable(LevelGoalType targetGoalType, string id) {
         return !Achieved && goalType == targetGoalType;

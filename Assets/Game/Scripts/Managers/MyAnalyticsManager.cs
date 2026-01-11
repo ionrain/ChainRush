@@ -10,7 +10,7 @@ using UnityEngine;
 
 public class MyAnalyticsManager : MMSingleton<MyAnalyticsManager>, MMEventListener<EarnResourceEvent>, MMEventListener<SpendResourceEvent>,
     MMEventListener<EarnResourcesEvent>, MMEventListener<SpendResourcesEvent>, MMEventListener<UnitEvent>, MMEventListener<LevelResultEvent>, 
-    MMEventListener<TutorialEvent>, MMEventListener<LevelLoadEvent>, MMEventListener<LevelStageStateEvent> {
+    MMEventListener<TutorialEvent>, MMEventListener<LevelLoadEvent>/*, MMEventListener<LevelStageStateEvent>*/ {
 
     const string Unknown = "Unknown"; 
     bool _firebaseOK;
@@ -133,7 +133,7 @@ public class MyAnalyticsManager : MMSingleton<MyAnalyticsManager>, MMEventListen
         }
     }
 
-    public void OnMMEvent(LevelStageStateEvent e) {
+    /*public void OnMMEvent(LevelStageStateEvent e) {
         if (e.EventStage == EventStage.Start && e.Data != null) {
             string id = e.Data.Stage.Id;
             string level = e.Data.LevelName;
@@ -160,7 +160,7 @@ public class MyAnalyticsManager : MMSingleton<MyAnalyticsManager>, MMEventListen
                 GameAnalytics.NewProgressionEvent(GAProgressionStatus.Complete, id, level, time);
             }
         }
-    }
+    }*/
 
     public void OnMMEvent(LevelResultEvent e) {
         if (e.Result != LevelResult.None && e.Data != null && e.Data.Valid) {
@@ -170,7 +170,7 @@ public class MyAnalyticsManager : MMSingleton<MyAnalyticsManager>, MMEventListen
                 { "levelName", levelName }, 
                 { "levelResult", e.Result.ToString() },
                 { "lastStage", e.Data.LastStage },
-                { "userScore", e.Data.Score.TotalScore },
+                //{ "userScore", e.Data.Score.TotalScore },
                 { "time", e.Data.Time }
             };
             AnalyticsService.Instance.RecordEvent(customEvent);
@@ -181,7 +181,7 @@ public class MyAnalyticsManager : MMSingleton<MyAnalyticsManager>, MMEventListen
             else if (e.Result == LevelResult.Failure)
                 status = GAProgressionStatus.Fail;
 
-            GameAnalytics.NewProgressionEvent(status, levelName, e.Data.Score.TotalScore);
+            //GameAnalytics.NewProgressionEvent(status, levelName, e.Data.Score.TotalScore);
 
             /*if (_firebaseOK) {
                 Parameter[] parameters = {
@@ -305,7 +305,7 @@ public class MyAnalyticsManager : MMSingleton<MyAnalyticsManager>, MMEventListen
         this.MMEventStartListening<LevelResultEvent>();
         this.MMEventStartListening<LevelLoadEvent>();
         this.MMEventStartListening<TutorialEvent>();
-        this.MMEventStartListening<LevelStageStateEvent>();
+        //this.MMEventStartListening<LevelStageStateEvent>();
     }
 
     void OnDisable() {
@@ -317,6 +317,6 @@ public class MyAnalyticsManager : MMSingleton<MyAnalyticsManager>, MMEventListen
         this.MMEventStopListening<LevelResultEvent>();
         this.MMEventStopListening<LevelLoadEvent>();
         this.MMEventStopListening<TutorialEvent>();
-        this.MMEventStopListening<LevelStageStateEvent>();
+        //this.MMEventStopListening<LevelStageStateEvent>();
     }
 }

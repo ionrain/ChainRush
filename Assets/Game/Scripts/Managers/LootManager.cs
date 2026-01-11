@@ -57,8 +57,8 @@ public class LootManager : SerializedMonoBehaviour, MMEventListener<EarnResource
     }
 
     public void OnMMEvent(LevelLoadEvent e) {
-        if (e.Stage == EventStage.Start && e.Data != null && e.Data.collectMultipliers != null)
-            _levelMultipliers = new Dictionary<ResourceType, float>(e.Data.collectMultipliers);
+        /*if (e.Stage == EventStage.Start && e.Data != null && e.Data.collectMultipliers != null)
+            _levelMultipliers = new Dictionary<ResourceType, float>(e.Data.collectMultipliers);*/
     }
 
     void OnEnable() {

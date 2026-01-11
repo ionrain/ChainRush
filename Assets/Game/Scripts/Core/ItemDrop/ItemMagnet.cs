@@ -17,7 +17,7 @@ public struct ItemMagnetEvent {
     }
 }
 
-public class ItemMagnet : MonoBehaviour, MMEventListener<ItemDropEvent>, MMEventListener<LevelStageStateEvent> {
+public class ItemMagnet : MonoBehaviour, MMEventListener<ItemDropEvent> {
     [SerializeField] int id;
     [SerializeField] float delay = 2;
     [SerializeField] float maxTime = 3;
@@ -26,27 +26,27 @@ public class ItemMagnet : MonoBehaviour, MMEventListener<ItemDropEvent>, MMEvent
     [SerializeField] MMF_Player feedback;
 
     List<IDropItem> _items = new List<IDropItem>();
-    LevelStageState _stageState = LevelStageState.Start;
+    //LevelStageState _stageState = LevelStageState.Start;
     
     public void OnMMEvent(ItemDropEvent e) {
         if (e.Item != null) {
             IDropItem dropItem = e.Item.GetComponent<IDropItem>();
-            if (dropItem != null) {
+            /*f (dropItem != null) {
                 if (_stageState == LevelStageState.Start)
                     StartCoroutine(AttractOneItem(dropItem));
                 else if (_stageState == LevelStageState.Battle)
                     _items.Add(dropItem);
-            }
+            }*/
         }
     }
 
-    public void OnMMEvent(LevelStageStateEvent e) {
+    /*public void OnMMEvent(LevelStageStateEvent e) {
         if (e.EventStage == EventStage.Start)
             _stageState = e.State;
 
         if (e.EventStage == EventStage.End && e.State == LevelStageState.Complete)
             AttractAllItems();
-    }
+    }*/
 
     public void AttractAllItems() {
         StartCoroutine(AttractCo());
@@ -85,11 +85,11 @@ public class ItemMagnet : MonoBehaviour, MMEventListener<ItemDropEvent>, MMEvent
 
     void OnEnable() {
         this.MMEventStartListening<ItemDropEvent>();
-        this.MMEventStartListening<LevelStageStateEvent>();
+        //this.MMEventStartListening<LevelStageStateEvent>();
     }
 
     void OnDisable() {
         this.MMEventStopListening<ItemDropEvent>();
-        this.MMEventStopListening<LevelStageStateEvent>();
+        //this.MMEventStopListening<LevelStageStateEvent>();
     }
 }

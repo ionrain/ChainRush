@@ -15,10 +15,10 @@ public class BoosterPanel : SerializedMonoBehaviour, MMEventListener<PartyBoostE
     [SerializeField] Dictionary<PartyBoosterType, BoosterPanelItemData> data = new();
 
     public void OnMMEvent(LevelLoadEvent e) {
-        if (e.Stage == EventStage.Start && e.Data != null)
+        /*if (e.Stage == EventStage.Start && e.Data != null)
             foreach (var itemData in data) 
                 if (itemData.Value != null && itemData.Value.item != null)
-                    itemData.Value.item.gameObject.SetActive(e.Data.ContainsBooster(itemData.Key));
+                    itemData.Value.item.gameObject.SetActive(e.Data.ContainsBooster(itemData.Key));*/
     }
 
     public void OnMMEvent(PartyBoostEvent e) {

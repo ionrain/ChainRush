@@ -33,7 +33,7 @@ public struct GameNotificationEvent {
 }
 
 public class GameNotificationManager : MonoBehaviour, MMEventListener<GameNotificationEvent>, MMEventListener<LevelGoalResultEvent>,
-    MMEventListener<LevelResultEvent>, MMEventListener<LevelStageStateEvent> /*, MMEventListener<PartyUnitEvent>*/ {
+    MMEventListener<LevelResultEvent>/*, MMEventListener<LevelStageStateEvent> , MMEventListener<PartyUnitEvent>*/ {
     [SerializeField] LocalizedString stagePattern;
     [SerializeField] List<GameNotificationTemplate> notificationTemplates;
     List<GameNotificationTemplate> _cache = new List<GameNotificationTemplate>();
@@ -68,7 +68,7 @@ public class GameNotificationManager : MonoBehaviour, MMEventListener<GameNotifi
         this.MMEventStartListening<GameNotificationEvent>();
         this.MMEventStartListening<LevelGoalResultEvent>();
         this.MMEventStartListening<LevelResultEvent>();
-        this.MMEventStartListening<LevelStageStateEvent>();
+        //this.MMEventStartListening<LevelStageStateEvent>();
         //this.MMEventStartListening<PartyUnitEvent>();
     }
 
@@ -142,7 +142,7 @@ public class GameNotificationManager : MonoBehaviour, MMEventListener<GameNotifi
             EnqueueMessage(GameNotificationType.LevelFailure);
     }
 
-    public void OnMMEvent(LevelStageStateEvent e) {
+    /*public void OnMMEvent(LevelStageStateEvent e) {
         if (e.EventStage == EventStage.Process) {
             if (e.State == LevelStageState.Start)
                 EnqueueMessage(GameNotificationType.StageStart, string.Format(_stagePattern, e.Data.StageIndex + 1));
@@ -151,7 +151,7 @@ public class GameNotificationManager : MonoBehaviour, MMEventListener<GameNotifi
             else if (e.State == LevelStageState.Complete && e.Data != null && e.IsValid && e.Data.Stage.enemyData != null)
                 EnqueueMessage(GameNotificationType.StageComplete);
         }
-    }
+    }*/
 
     /*public void OnMMEvent(PartyUnitEvent e) {
         if (e.Type == PartyUnitEventType.ClearBonus && e.EventStage == EventStage.Start && e.Unit != null)
@@ -164,7 +164,7 @@ public class GameNotificationManager : MonoBehaviour, MMEventListener<GameNotifi
         this.MMEventStopListening<GameNotificationEvent>();
         this.MMEventStopListening<LevelGoalResultEvent>();
         this.MMEventStopListening<LevelResultEvent>();
-        this.MMEventStopListening<LevelStageStateEvent>();
+        //this.MMEventStopListening<LevelStageStateEvent>();
         //this.MMEventStopListening<PartyUnitEvent>();
     }
 }

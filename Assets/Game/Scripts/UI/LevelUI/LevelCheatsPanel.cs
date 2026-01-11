@@ -9,7 +9,7 @@ public class LevelCheatsPanel : MonoBehaviour {
 
     public void CompleteCurrentStage() {
         #if UNITY_EDITOR || CHEATS
-        LevelStageCompleteRequestEvent.Trigger();
+        //LevelStageCompleteRequestEvent.Trigger();
         #endif
     }
 

@@ -6,7 +6,7 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Events;
 
-public enum CellType { Empty = 0, Trap = 1, Unit = 2, Booster = 4, Loot = 8, Block = 16, Open = 32 }
+public enum CellType { Empty = 0, Unit = 1, Buff = 4, Booster = 8, Loot = 16, Open = 32 }
 public enum CellEventType { Open, Reveal, Tap }
 public enum CellMarkType { None, Free, Maybe, Trap }
 

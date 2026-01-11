@@ -103,7 +103,7 @@ public class BuffData: IListItemData {
 
 public class PartyManager : SerializedMonoBehaviour, MMEventListener<PartyExpEvent>, MMEventListener<PartyBoostEvent>,
     MMEventListener<PartyUnitEvent>, MMEventListener<SkillLevelUpEvent>, MMEventListener<LevelLoadEvent>,
-    MMEventListener<TrapEvent>, MMEventListener<LevelStageStateEvent>, MMEventListener<BuffSelectEvent> {
+    MMEventListener<TrapEvent>/*, MMEventListener<LevelStageStateEvent>*/, MMEventListener<BuffSelectEvent> {
 
     static  List<float> GradeProbabilities = new List<float>() { 0, 0.6f, 0.9f, 0.95f, 0.97f, 0.99f };
     static List<Grade> predefinedGrades = new List<Grade>() { Grade.Common, Grade.Uncommon, Grade.Rare, Grade.Epic };
@@ -164,9 +164,9 @@ public class PartyManager : SerializedMonoBehaviour, MMEventListener<PartyExpEve
 
     public void OnMMEvent(LevelLoadEvent e) {
         if (e.Stage == EventStage.Start && e.Data != null) {
-            _debuffsValues = e.Data.debuffsValues;
-            _damageAmount = e.Data.damageAmount;
-            _healAmount = e.Data.healAmount;
+            //_debuffsValues = e.Data.debuffsValues;
+            //_damageAmount = e.Data.damageAmount;
+            //_healAmount = e.Data.healAmount;
             Setup();
         }
     }
@@ -450,7 +450,7 @@ public class PartyManager : SerializedMonoBehaviour, MMEventListener<PartyExpEve
         }
     }
 
-    public void OnMMEvent(LevelStageStateEvent e) {
+    /*public void OnMMEvent(LevelStageStateEvent e) {
         if (e.State == LevelStageState.Start && e.EventStage == EventStage.Start) {
             StageClearBonus bonus = e.Data.Stage.ClearBonus;
             if (bonus != null && bonus is UnitStageClearBonus unitBonus && unitBonus.Data == null) {
@@ -468,7 +468,7 @@ public class PartyManager : SerializedMonoBehaviour, MMEventListener<PartyExpEve
                 PartyUnitEvent.Trigger(EventStage.End, PartyUnitEventType.Merge, null);
             }
         }
-    }
+    }*/
     
     public List<BuffData> GetRandomBuffItems() {
         List<BuffData> result = new List<BuffData>();
@@ -567,7 +567,7 @@ public class PartyManager : SerializedMonoBehaviour, MMEventListener<PartyExpEve
         this.MMEventStartListening<PartyUnitEvent>();
         this.MMEventStartListening<SkillLevelUpEvent>();
         this.MMEventStartListening<TrapEvent>();
-        this.MMEventStartListening<LevelStageStateEvent>();
+        //this.MMEventStartListening<LevelStageStateEvent>();
         this.MMEventStartListening<BuffSelectEvent>();
     }
 
@@ -578,7 +578,7 @@ public class PartyManager : SerializedMonoBehaviour, MMEventListener<PartyExpEve
         this.MMEventStopListening<PartyUnitEvent>();
         this.MMEventStopListening<SkillLevelUpEvent>();
         this.MMEventStopListening<TrapEvent>();
-        this.MMEventStopListening<LevelStageStateEvent>();
+        //this.MMEventStopListening<LevelStageStateEvent>();
         this.MMEventStopListening<BuffSelectEvent>();
     }
 }

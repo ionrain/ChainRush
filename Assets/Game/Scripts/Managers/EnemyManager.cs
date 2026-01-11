@@ -42,7 +42,7 @@ public struct EnemySpawnEvent {
 }
 
 public class EnemyManager : SimplePoolUser, MMEventListener<EnemySpawnTriggerEvent>, MMEventListener<SkillLevelUpEvent>, 
-                            MMEventListener<LevelStageStateEvent>, MMEventListener<LevelLoadEvent> {
+                            /*MMEventListener<LevelStageStateEvent>, */MMEventListener<LevelLoadEvent> {
     [Header("Enemy Manager")]
     [SerializeField] GameNotificationTrigger notificationTrigger;
     [SerializeField] Transform defaultTarget;
@@ -105,7 +105,7 @@ public class EnemyManager : SimplePoolUser, MMEventListener<EnemySpawnTriggerEve
         }
     }
 
-    public void OnMMEvent(LevelStageStateEvent e) {
+    /*public void OnMMEvent(LevelStageStateEvent e) {
         if (e.State == LevelStageState.Battle && e.EventStage == EventStage.Process && e.Data != null) {
             LevelStage stage = e.Data.Stage;
             _spawning = true;
@@ -149,7 +149,7 @@ public class EnemyManager : SimplePoolUser, MMEventListener<EnemySpawnTriggerEve
             enemies.ForEach(t => t.Kill());
             _spawning = false;
         }
-    }
+    }*/
 
     void FixedUpdate() {
         if (_dataOK && _spawning) {
@@ -513,8 +513,8 @@ public class EnemyManager : SimplePoolUser, MMEventListener<EnemySpawnTriggerEve
     }
 
     public void OnMMEvent(LevelLoadEvent e) {
-        if (e.Stage == EventStage.Start && e.Data != null && e.Data.attributeMultipliers != null) 
-            Initialize(e.Data.attributeMultipliers, e.Data.GetEnemyPoolData());
+        /*if (e.Stage == EventStage.Start && e.Data != null && e.Data.attributeMultipliers != null) 
+            Initialize(e.Data.attributeMultipliers, e.Data.GetEnemyPoolData());*/
     }
 
     /*public void SetHealthbarVisibiity(bool visible) {
@@ -531,7 +531,7 @@ public class EnemyManager : SimplePoolUser, MMEventListener<EnemySpawnTriggerEve
 
     void OnEnable() {
         this.MMEventStartListening<LevelLoadEvent>();
-        this.MMEventStartListening<LevelStageStateEvent>();
+        //this.MMEventStartListening<LevelStageStateEvent>();
         this.MMEventStartListening<EnemySpawnTriggerEvent>();
         this.MMEventStartListening<SkillLevelUpEvent>();
 
@@ -539,7 +539,7 @@ public class EnemyManager : SimplePoolUser, MMEventListener<EnemySpawnTriggerEve
 
     void OnDisable() {
         this.MMEventStopListening<LevelLoadEvent>();
-        this.MMEventStopListening<LevelStageStateEvent>();
+        //this.MMEventStopListening<LevelStageStateEvent>();
         this.MMEventStopListening<EnemySpawnTriggerEvent>();
         this.MMEventStopListening<SkillLevelUpEvent>();
     }

@@ -70,7 +70,7 @@ public class DropBalanceItem {
     }
 }
 
-public class BalancedItemDropper : ItemDropper, MMEventListener<DropBalanceSetupEvent>, MMEventListener<LevelStageProgressEvent> {
+public class BalancedItemDropper : ItemDropper, MMEventListener<DropBalanceSetupEvent> {
     List<DropBalanceItem> _balanceItems = new List<DropBalanceItem>();
     float _progress = 0;
 
@@ -142,19 +142,13 @@ public class BalancedItemDropper : ItemDropper, MMEventListener<DropBalanceSetup
         return new KeyValuePair<GameObject, int>();
     }
 
-    public void OnMMEvent(LevelStageProgressEvent e) {
-        _progress = e.LevelProgress;
-    }
-
     protected override void OnEnable() {
         this.MMEventStartListening<DropBalanceSetupEvent>();
-        this.MMEventStartListening<LevelStageProgressEvent>();
         base.OnEnable();
     }
 
     protected override void OnDisable() {
         this.MMEventStopListening<DropBalanceSetupEvent>();
-        this.MMEventStopListening<LevelStageProgressEvent>();
         base.OnDisable();
     }
 }

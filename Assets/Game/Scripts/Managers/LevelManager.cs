@@ -10,7 +10,6 @@ public enum LevelExp { None = 0, Smallest = 3, Small = 6, Medium = 20, Large = 1
 
 public class LevelResultData : IRewardList {
     public LevelData LevelData { get; private set; }
-    public ScoreData Score { get; private set; }
     public List<Reward> RewardList { get; private set; }
     public int LastStage { get; private set; }
     public int TotalStages { get; private set; }
@@ -18,11 +17,10 @@ public class LevelResultData : IRewardList {
 
     public bool Valid => LevelData != null && RewardList != null;
 
-    public LevelResultData(LevelData levelData, ScoreData score, List<Reward> rewardsList, int lastStage, int time) {
+    public LevelResultData(LevelData levelData, List<Reward> rewardsList, int lastStage, int time) {
         LevelData = levelData;
         RewardList = rewardsList;
         LastStage = lastStage;
-        Score = score;
         Time = time;
     }
 
@@ -65,11 +63,22 @@ public struct LevelLoadEvent {
     }
 }
 
-public class LevelManager : MonoBehaviour, MMEventListener<LevelActionEvent>, MMEventListener<LevelStageStateEvent> {
+public struct LevelProgressEvent {
+    public EventStage Stage { get; private set; }
+    public int Progress { get; private set; }
+
+    static LevelProgressEvent e;
+    public static void Trigger(EventStage stage, int progress) {
+        e.Stage = stage;
+        e.Progress = progress;
+        MMEventManager.TriggerEvent(e);
+    }
+}
+
+public class LevelManager : MonoBehaviour, MMEventListener<LevelActionEvent> {
     [SerializeField] SpriteRenderer background;
     [SerializeField] AllLocationsData locations;
     [SerializeField] LootManager lootManager;
-    [SerializeField] ScoreManager scoreManager;
     [SerializeField] UnityEvent OnLevelLoaded;
 
     LevelData _data;
@@ -98,15 +107,11 @@ public class LevelManager : MonoBehaviour, MMEventListener<LevelActionEvent>, MM
 
     protected IEnumerator EndLevel(LevelResult result, float delay = 0) {
         _result = result;
-        if (_data != null && lootManager != null && scoreManager != null) {
+        if (_data != null && lootManager != null) {
             if (delay > 0)
                 yield return new WaitForSeconds(delay);
 
-            ScoreData score = scoreManager.Score;
-            _data.UpdateBestScore(score.TotalScore);
-
             if (result == LevelResult.Success) {
-                lootManager.MultiplyResources(score.GetRewardMultiplier());
                 _data.SetPassed();
                 LevelData next = locations.Current.Next;
                 if (next != null)
@@ -143,10 +148,10 @@ public class LevelManager : MonoBehaviour, MMEventListener<LevelActionEvent>, MM
         }
     }
 
-    public void OnMMEvent(LevelStageStateEvent e) {
+    /*public void OnMMEvent(LevelStageStateEvent e) {
         if (e.EventStage == EventStage.Start && e.State == LevelStageState.Start)
             _stageIndex = e.Data.StageIndex;
-    }
+    }*/
 
     public void Pause() {
         LevelActionEvent.Trigger(EventStage.Start, LevelActionType.RequestResult);
@@ -158,19 +163,19 @@ public class LevelManager : MonoBehaviour, MMEventListener<LevelActionEvent>, MM
     }
 
     protected void TriggerLevelResultEvent(LevelResult result) {
-        if (lootManager != null && scoreManager != null)
-            LevelResultEvent.Trigger(result, new LevelResultData(_data, scoreManager.Score, lootManager.GetRewards(), _stageIndex, (int)_time));
+        if (lootManager != null )
+            LevelResultEvent.Trigger(result, new LevelResultData(_data, lootManager.GetRewards(), _stageIndex, (int)_time));
         else
             Debug.LogError("LevelManager TriggerLevelResultEvent: LootManager or ScoreManager is NULL");
     }
 
     void OnEnable() {
         this.MMEventStartListening<LevelActionEvent>();
-        this.MMEventStartListening<LevelStageStateEvent>();
+        //this.MMEventStartListening<LevelStageStateEvent>();
     }
 
     void OnDisable() {
         this.MMEventStopListening<LevelActionEvent>();
-        this.MMEventStopListening<LevelStageStateEvent>();
+        //this.MMEventStopListening<LevelStageStateEvent>();
     }
 }

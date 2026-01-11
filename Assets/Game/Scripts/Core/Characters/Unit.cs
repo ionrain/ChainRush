@@ -12,7 +12,7 @@ using UnityEngine.Localization;
 using static MoreMountains.TopDownEngine.CharacterStates;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(Character), typeof(Collider2D))]
-public class Unit : SerializedMonoBehaviour, MMEventListener<LevelResultEvent>, MMEventListener<LevelStageStateEvent> {
+public class Unit : SerializedMonoBehaviour, MMEventListener<LevelResultEvent> {
     public delegate void UnitEvent(Unit unit);
     public event UnitEvent OnDeath;
 
@@ -518,16 +518,6 @@ public class Unit : SerializedMonoBehaviour, MMEventListener<LevelResultEvent>, 
         }
     }
 
-    public void OnMMEvent(LevelStageStateEvent e) {
-        if (e.EventStage == EventStage.End) {
-            if (e.State == LevelStageState.Battle)
-                _returnPosition = transform.position;
-            else if (e.State == LevelStageState.Complete && !e.Data.IsLastStage) {
-                transform.DOMove(_returnPosition, UnityEngine.Random.Range(1, 1.5f));
-            }
-        }
-    }
-
     public void OnSupportSkillBuff(Attribute attribute, Sprite icon, Dictionary<Element, float> multipliers, bool playFeedback) {
         if (multipliers != null) {
             float multiplier = multipliers.GetValueOrDefault(Element.Any, 1);
@@ -576,11 +566,9 @@ public class Unit : SerializedMonoBehaviour, MMEventListener<LevelResultEvent>, 
 
     void OnEnable() {
         this.MMEventStartListening<LevelResultEvent>();
-        this.MMEventStartListening<LevelStageStateEvent>();
     }
 
     void OnDisable() {
         this.MMEventStopListening<LevelResultEvent>();
-        this.MMEventStopListening<LevelStageStateEvent>();
     }
 }

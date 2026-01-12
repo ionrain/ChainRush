@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using MoreMountains.Tools;
+using Sirenix.OdinInspector;
 using Sirenix.Utilities;
 using UnityEngine;
 using UnityEngine.Events;
@@ -34,11 +35,19 @@ public class CellSelectPattern {
     public int Count => Cells.Count;
 }
 
-public class BoardUi : MonoBehaviour, MMEventListener<LevelLoadEvent>, MMEventListener<LevelProgressEvent> {
+public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>, MMEventListener<LevelProgressEvent> {
     [SerializeField] RectTransform panelRoot;
     [SerializeField] float panelHeightPercent = 50;
     [SerializeField] GridLayoutGroup cellContainer;
     [SerializeField] CellUi cellPrefab;
+    [SerializeField] Dictionary<CellItemType, Color> cellColors = new();
+
+    [Header("Item Data")]
+    [SerializeField] ResourcesData resourcesData;
+    [SerializeField] AllUnitsData unitsData;
+    [SerializeField] BuffsData buffsData;
+    [SerializeField] AttributesData attributesData;
+    [SerializeField] BoostersData boostersData;
 
     [Header("Events")]
     [SerializeField] UnityEvent OnBoardShow;
@@ -49,7 +58,6 @@ public class BoardUi : MonoBehaviour, MMEventListener<LevelLoadEvent>, MMEventLi
     Dictionary<Vector2Int, CellUi> _cellsMap = new();
     List<Vector2Int> _selectedCells = new();
     bool _isSelecting;
-    bool _canSelectCells;
     float _refreshTimer;
     float _refreshInterval;
 
@@ -63,7 +71,7 @@ public class BoardUi : MonoBehaviour, MMEventListener<LevelLoadEvent>, MMEventLi
             LayoutRebuilder.ForceRebuildLayoutImmediate(panelRoot);
 
             CreateCells();
-            CreateItems();
+            UpdateRefreshInterval(0);
             OnBoardShow?.Invoke();
             BoardUiEvent.Trigger(BoardUiEventType.Ready, this);
         }
@@ -88,9 +96,8 @@ public class BoardUi : MonoBehaviour, MMEventListener<LevelLoadEvent>, MMEventLi
         if (_data == null || _data.difficulty == null) return;
 
         ApplyPatternsToBoard(_data.difficulty.fillWeights);
-
-        _canSelectCells = true;
         _refreshTimer = _refreshInterval;
+        BoardUiEvent.Trigger(BoardUiEventType.SetupItems, this);
     }
         
     void ResizePanel() {
@@ -133,22 +140,13 @@ public class BoardUi : MonoBehaviour, MMEventListener<LevelLoadEvent>, MMEventLi
             Vector2Int pos = new Vector2Int(x, y);
 
             CellUi cell = Instantiate(cellPrefab, cellContainer.transform);
-            cell.Setup(pos);
+            cell.Setup(pos, cellSize);
             cell.OnCellPointerDownEvent += OnCellPointerDown;
             cell.OnCellPointerEnterEvent += OnCellPointerEnter;
             cell.OnCellPointerUpEvent += OnCellPointerUp;
             _cellsMap[pos] = cell;
         }
         BoardUiEvent.Trigger(BoardUiEventType.SetupCells, this);
-    }
-
-    void CreateItems() {
-        if (_data?.difficulty == null) return;
-
-        ApplyPatternsToBoard(_data.difficulty.fillWeights);
-
-        _canSelectCells = true;
-        BoardUiEvent.Trigger(BoardUiEventType.SetupItems, this);
     }
 
     CellItemType GetRandomItemType(Dictionary<CellItemType, float> weights) {
@@ -167,6 +165,51 @@ public class BoardUi : MonoBehaviour, MMEventListener<LevelLoadEvent>, MMEventLi
             }
         }
         return CellItemType.None;
+    }
+
+    CellUiItem CreateItemForType(CellItemType type) {
+        Sprite icon = null;
+        string id = type.ToString();
+
+        switch (type) {
+            case CellItemType.SoftCurrency:
+                ResourceData softData = resourcesData != null ? resourcesData.Get(ResourceType.SoftCurrency) : null;
+                if (softData != null) {
+                    icon = softData.icon;
+                    id = ResourceType.SoftCurrency.ToString();
+                }
+                break;
+
+            case CellItemType.Unit:
+                List<UnitData> selectedUnits = unitsData != null ? unitsData.Get(UnitListType.Selected) : null;
+                if (selectedUnits != null && selectedUnits.Count > 0) {
+                    UnitData unit = selectedUnits[Random.Range(0, selectedUnits.Count)];
+                    icon = unit.Icon;
+                    id = unit.name;
+                }
+                break;
+
+            case CellItemType.Buff:
+                BuffGradesData buffData = buffsData != null ? buffsData.GetRandom() : null;
+                if (buffData != null && attributesData != null) {
+                    AttributeData attrData = attributesData.GetData(buffData.attribute);
+                    if (attrData != null) {
+                        icon = attrData.icon;
+                        id = buffData.attribute.ToString();
+                    }
+                }
+                break;
+
+            case CellItemType.Booster:
+                BoosterData boosterData = boostersData != null ? boostersData.GetRandom() : null;
+                if (boosterData != null) {
+                    icon = boosterData.Icon;
+                    id = boosterData.Type.ToString();
+                }
+                break;
+        }
+
+        return new CellUiItem(type, icon, id);
     }
 
     #region Pattern Generation
@@ -334,13 +377,15 @@ public class BoardUi : MonoBehaviour, MMEventListener<LevelLoadEvent>, MMEventLi
         List<CellSelectPattern> patterns = GeneratePatterns();
         foreach (var pattern in patterns) {
             CellItemType itemType = GetRandomItemType(weights);
-            CellUiItem item = new CellUiItem(itemType, null, itemType.ToString());
-            //TODO: Эту функцию часть надо переписать, чтобы данные брались осознанно
+            CellUiItem item = CreateItemForType(itemType);
 
             foreach (var pos in pattern.Cells) {
                 CellUi cell = _cellsMap.GetValueOrDefault(pos);
-                if (cell != null)
+                if (cell != null) {
                     cell.SetItem(item);
+                    if (cellColors.TryGetValue(itemType, out Color color))
+                        cell.SetColor(color);
+                }
             }
         }
     }
@@ -402,11 +447,10 @@ public class BoardUi : MonoBehaviour, MMEventListener<LevelLoadEvent>, MMEventLi
 
     public void ClearSelection() {
         _selectedCells.Clear();
-        _canSelectCells = false;
     }
 
     public void OnCellPointerDown(CellUi cell) {
-        if (_canSelectCells && cell != null && cell.Item != null && cell.Item.Type != CellItemType.None) {
+        if (cell != null && cell.Item != null && cell.Item.Type != CellItemType.None) {
             ClearSelection();
             _isSelecting = true;
             StartSelection(cell);
@@ -425,8 +469,7 @@ public class BoardUi : MonoBehaviour, MMEventListener<LevelLoadEvent>, MMEventLi
     }
 
     public void OnCellPointerUp(CellUi cell) {
-        if (_canSelectCells)
-            _cellsMap.ForEach(t => { if (t.Value != null) t.Value.Highlight(false); });
+        _cellsMap.ForEach(t => { if (t.Value != null) t.Value.Highlight(false); });
         if (_isSelecting) {
             _isSelecting = false;
             EndSelection();

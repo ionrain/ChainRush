@@ -16,9 +16,13 @@ public class BoosterData {
 
 [CreateAssetMenu(fileName = "New BoostersData", menuName = "Game/BoostersData", order = 27)]
 public class BoostersData : SerializedScriptableObject {
-    List<BoosterData> boosters = new();
-    
+    public List<BoosterData> boosters = new();
+
     public BoosterData Get(BoosterType type) {
         return boosters.Find(b => b.boosterType == type);
+    }
+
+    public BoosterData GetRandom() {
+        return boosters.Count > 0 ? boosters[Random.Range(0, boosters.Count)] : null;
     }
 }

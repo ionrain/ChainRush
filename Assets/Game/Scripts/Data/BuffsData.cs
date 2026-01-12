@@ -16,4 +16,8 @@ public class BuffsData : SerializedScriptableObject {
     public BuffGradesData Get(Attribute attribute) {
         return buffs.Find(t => t.attribute == attribute);
     }
+
+    public BuffGradesData GetRandom() {
+        return buffs.Count > 0 ? buffs[Random.Range(0, buffs.Count)] : null;
+    }
 }

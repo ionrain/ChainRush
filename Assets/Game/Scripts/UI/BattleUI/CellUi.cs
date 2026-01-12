@@ -3,6 +3,8 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using MoreMountains.Tools;
 
+public enum CellItemType { None = 0, Unit = 1, Buff = 2, Booster = 4, SoftCurrency = 8 }
+
 public class CellUiItem {
     public CellItemType Type { get; private set; }
     public Sprite Icon { get; private set; }
@@ -35,6 +37,7 @@ public class CellUi : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPo
 
     [SerializeField] Image background;
     [SerializeField] Image icon;
+    [SerializeField] float iconSizePercent = 50;
     [SerializeField] Color normalColor = Color.white;
     [SerializeField] Color highlightColor = Color.yellow;
 
@@ -43,14 +46,34 @@ public class CellUi : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPo
     public bool Highlighted { get; private set; }
 
 
-    public void Setup(Vector2Int position) {
+    public void Setup(Vector2Int position, float cellSize) {
         Position = position;
         name = $"CellUI_{position.x}x{position.y}";
+
+        // Adjust icon size based on iconSizePercent
+        if (icon != null) {
+            RectTransform iconRect = icon.rectTransform;
+            if (iconRect != null) {
+                iconRect.anchorMin = new Vector2(0.5f, 0.5f);
+                iconRect.anchorMax = new Vector2(0.5f, 0.5f);
+                iconRect.anchoredPosition = Vector2.zero;
+
+                float size = cellSize * (iconSizePercent / 100f);
+                iconRect.sizeDelta = new Vector2(size, size);
+            }
+        }
     }
 
     public void SetItem(CellUiItem item) {
         Item = item;
         icon.sprite = item != null ? item.Icon : null;
+    }
+
+    public void SetColor(Color color) {
+        if (background != null) {
+            background.color = color;
+            normalColor = color;
+        }
     }
 
     public void Highlight(bool value) {

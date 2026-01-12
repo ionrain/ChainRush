@@ -64,13 +64,13 @@ public struct LevelLoadEvent {
 }
 
 public struct LevelProgressEvent {
-    public EventStage Stage { get; private set; }
-    public int Progress { get; private set; }
+    public float Progress { get; private set; }
+    public int Time { get; private set; }
 
     static LevelProgressEvent e;
-    public static void Trigger(EventStage stage, int progress) {
-        e.Stage = stage;
+    public static void Trigger(float progress, int time) {
         e.Progress = progress;
+        e.Time = time;
         MMEventManager.TriggerEvent(e);
     }
 }
@@ -84,20 +84,34 @@ public class LevelManager : MonoBehaviour, MMEventListener<LevelActionEvent> {
     LevelData _data;
     int _stageIndex;
     float _time;
+    float _duration;
     LevelResult _result = LevelResult.None;
+    int _timeInSeconds;
 
     void Start() {
         Setup();
     }
 
-    void Update() {
-        _time += Time.deltaTime;
+    void FixedUpdate() {
+        if (_time < _duration) {
+            float deltaTime = Time.fixedDeltaTime;
+            _time += deltaTime;
+            int intTime = (int)Mathf.Floor(_time);
+
+            if (_timeInSeconds < intTime) {
+                _timeInSeconds++;
+                LevelProgressEvent.Trigger(Mathf.Clamp01(_time / _duration), _timeInSeconds);
+            }
+        }
     }
 
     public void Setup() {
         if (locations != null && locations.Current != null && locations.Current.Current != null) {
             _data = locations.Current.Current;
             _data.PlaysCount++;
+            _duration = _data.duration;
+            _timeInSeconds = 0;
+            _time = 0;
             if (background != null)
                 background.sprite = locations.Current.levelBack;
             LevelLoadEvent.Trigger(EventStage.Start, _data);

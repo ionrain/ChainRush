@@ -2,6 +2,8 @@ using MoreMountains.Feedbacks;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
+public enum CellItemType { None = 0, Unit = 1, Buff = 2, Booster = 4, Loot = 8 }
+
 public class CellItem : SerializedMonoBehaviour {
     [SerializeField] protected SpriteRenderer image;
     [SerializeField] protected MMF_Player activateFeedback;

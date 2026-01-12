@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Remoting.Messaging;
 using MoreMountains.Feedbacks;
 using MoreMountains.Tools;
@@ -8,7 +7,7 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Events;
 
-public enum BoardEventType { SetupCells, Ready, SetupItems, UsedHint }
+public enum BoardEventType { SetupCells, Ready, SetupItems, UsedHint, SelectedCells }
 
 public struct BoardEvent {
     public BoardEventType Type { get; private set; }
@@ -24,38 +23,23 @@ public struct BoardEvent {
 
 public class Board : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>, MMEventListener<InputEvent> {
     [Header("Board")]
-    [SerializeField] Transform canvas;
-    [SerializeField] Vector2 canvasOffset;
     [SerializeField] SpriteRenderer background;
     [SerializeField] SpriteRenderer border;
     [SerializeField] SpriteRenderer shadow;
     [SerializeField] float backgroundOffset = 0.2f;
     [SerializeField] Vector2 borderOffset;
     [SerializeField] Vector2 shadowOffset;
-    [SerializeField] Transform gridDimRoot;
-    [SerializeField] SpriteRenderer gridDimPrefab;
     
     [Header("Cells")]
     [SerializeField] Transform cellsRoot;
     [SerializeField] Cell cellPrefab;
-    [SerializeField] Cell blockPrefab;
     [SerializeField] float cellSize = 1.28f;
     [SerializeField] float cellHighlightInitialDelay = 1f;
     [SerializeField] float cellAnimationDelay = 0.02f;
-    [SerializeField] float cellOpenBoostStartDelay = 0.4f;
-    [SerializeField] float cellOpenBoostDelay = 1f;
-    [SerializeField] MMF_Player cellOpenBoostFeedback;
-    [SerializeField] bool autoOpenChestCells;
-
-    [Header("Helper")]
-    [SerializeField] bool checkMarks = true;
-    [SerializeField] bool checkAroundOpened;
-    [SerializeField] bool fullSearch;
-    [SerializeField] bool iterate;
     
     [Header("Cell Items")]
     [SerializeField] Transform itemsRoot;
-    [SerializeField] Dictionary<CellType, CellItem> itemPrefabs = new Dictionary<CellType, CellItem>();
+    [SerializeField] Dictionary<CellItemType, CellItem> itemPrefabs = new();
 
     [Header("Events")]
     [SerializeField] UnityEvent OnBoardShow;
@@ -63,69 +47,39 @@ public class Board : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>, M
 
     public float HalfCellSize { get; private set; } = 0.64f;
     public List<Cell> Cells => _cells;
-    public List<Cell> AllCells => _allCells;
     public int CellsCount => _cells.Count;
 
+    Dictionary<Vector2Int, Cell> _cellsMap = new();
     List<Cell> _cells = new List<Cell>();
-    List<Cell> _allCells = new List<Cell>();
     Vector2 _boardCenter = Vector2.zero;
     Vector2Int _boardSize = Vector2Int.zero;
-    int _unitsCount = 0;
-    Dictionary<PartyBoosterType, int> _boosterCounts = new();
-    Dictionary<TrapType, int> _trapCounts = new();
-    Cell _selectedCell;
     bool _visible;    
-    float _openRate;
-    float _openShare;
+    LevelData _data;
+    List<Vector2Int> _selectedCells = new();
+    bool _isSelecting;
 
     void Reset() {
         _cells.Clear();
-        _unitsCount = 0;
-        _boosterCounts.Clear();
-        _trapCounts.Clear();
-        _openRate = 0;
-        _openShare = 0;
         foreach (Transform t in itemsRoot)
             Destroy(t.gameObject);
         foreach (Transform t in cellsRoot)
             Destroy(t.gameObject);
-        foreach (Transform t in gridDimRoot)
-            Destroy(t.gameObject);
-    }
-
-    public void SetCheckMarks(bool value) {
-        checkMarks = value;
     }
     
     public void OnMMEvent(LevelLoadEvent e) {
-        /*_difficultyCount = System.Enum.GetValues(typeof(LevelStageDifficulty)).Length;
-        cellSize = e.Data.cellSize;
-        if (e.Stage == EventStage.Start && e.Data != null)
-            _useRandomCellOpener = e.Data.startWithRandomOpener;*/
+        if (e.Stage == EventStage.Start && e.Data != null) {
+            _data = e.Data;
+            _boardSize = _data.boardSize;
+            cellSize = _data.cellSize;
+            Setup();
+            _visible = true;
+            OnBoardShow?.Invoke();            
+        }
     }
 
     public Vector2 GetCellWorldPosition(Vector2Int position) {
         return cellsRoot != null ? (Vector2)position * cellSize + (Vector2)cellsRoot.position - _boardCenter : Vector2.zero;
     }
-
-    /*public void OnMMEvent(LevelStageStateEvent e) {
-        if (e.EventStage == EventStage.End && e.State == LevelStageState.Start && e.IsValid) {
-            _firstStage = e.Data.StageIndex == 0;          
-            Setup(e.Data);
-            _visible = true;
-            OnBoardShow?.Invoke();
-        } else if (e.State == LevelStageState.ClearBonus) {
-            if (e.EventStage == EventStage.Start) {
-                DeactivateAllCells();
-            } else if (e.EventStage == EventStage.End) {
-                TryHideBoard();
-                var bonus = e.Data.Stage.ClearBonus;
-                if (bonus != null && bonus is BoosterStageClearBonus boosterBonus && boosterBonus.Booster == PartyBoosterType.RandomCellOpener)
-                    _useRandomCellOpener = true;
-            }
-        } else if (e.State == LevelStageState.Battle && e.EventStage == EventStage.Start)
-            TryHideBoard();
-    }*/
 
     void TryHideBoard() {
         if (_visible) {
@@ -139,65 +93,54 @@ public class Board : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>, M
     }
 
     public void DeactivateAllCellsExcept(Vector2Int position) {
-        _allCells.ForEach(t => t.SetActive(t.Position == position) );
+        _cells.ForEach(t => t.SetActive(t.Position == position) );
     }
 
     public void DeactivateAllCells() {
-        _allCells.ForEach(t => t.SetActive(false));
+        _cells.ForEach(t => t.SetActive(false));
     }
 
     public void ActivateAllCells() {
-        _allCells.ForEach(t => t.SetActive(true));
+        _cells.ForEach(t => t.SetActive(true));
     }
 
     public void HighlightCell(Vector2Int position, bool value, bool force = false) {
-        Cell cell = _allCells.Find(t => t.Position == position);
+        Cell cell = _cells.Find(t => t.Position == position);
         if (cell != null)
             cell.Highlight(value, force);
     }    
     
-   /* public void Setup(LevelStageStateData data) {
-        if (data != null && cellPrefab != null && blockPrefab != null && cellsRoot != null && itemsRoot != null && gridDimRoot != null) {
-            Reset();
-            
-            _data = data.Stage;
-            _openRate = 1f / (_data.CellsCount - _data.BoostersCount - _data.TrapsCount - _data.unitsCount -_data.BlocksCount);
-            _firstCell = _data.openCellShare == 0;
-            HalfCellSize = 0.5f * cellSize;
-            _boardSize = _data.boardSize;
-            _boardCenter = (_boardSize - Vector2.one) * HalfCellSize;
-            _difficulty = data.Stage.difficulty;
-            if (background != null) {
-                background.size = (Vector2)_boardSize * cellSize + new Vector2(backgroundOffset, backgroundOffset);
-                if (shadow != null)
-                    shadow.size = background.size + shadowOffset;
-                if (border != null)
-                    border.size = background.size + borderOffset;
-            }
+   public void Setup() {
+        HalfCellSize = 0.5f * cellSize;
+        _boardCenter = (_boardSize - Vector2.one) * HalfCellSize;
 
-            if (canvas != null)
-                canvas.localPosition = new Vector3(canvasOffset.x, _boardSize.y * cellSize * 0.5f + canvasOffset.y, 0);
+        for (int i = 0; i < _boardSize.x; i++)
+            for (int j = 0; j < _boardSize.y; j++)
+                _cellsMap[new Vector2Int(i, j)] = null;
 
-            CreateGrid(_data.predefinedCells);
-
-            if (!_firstCell) {
-                CreateCellItems(_cells, new());
-                SetupOpenCells();
-            }
-
-            _cells.ForEach(t => t.SetVisible(true, (t.Position.x + t.Position.y) * cellAnimationDelay + cellHighlightInitialDelay));
-
-            BoardEvent.Trigger(BoardEventType.SetupCells, this);
-            StartCoroutine(BoardReadyAction((_boardSize.x + _boardSize.y) * cellAnimationDelay + data.Delay));
+        if (background != null) {
+            background.size = (Vector2)_boardSize * cellSize + new Vector2(backgroundOffset, backgroundOffset);
+            if (shadow != null)
+                shadow.size = background.size + shadowOffset;
+            if (border != null)
+                border.size = background.size + borderOffset;
         }
-    }*/
+
+        CreateGrid();
+        CreateCellItems();
+
+        _cells.ForEach(t => t.SetVisible(true, (t.Position.x + t.Position.y) * cellAnimationDelay + cellHighlightInitialDelay));
+
+        BoardEvent.Trigger(BoardEventType.SetupCells, this);
+        StartCoroutine(BoardReadyAction((_boardSize.x + _boardSize.y) * cellAnimationDelay));
+    }
 
     IEnumerator BoardReadyAction(float delay) {
         yield return new WaitForSeconds(delay);
         BoardReady();
     }
 
-    void CreateCellItems(List<Cell> allCells, List<Cell> trapExceptions) {
+    void CreateCellItems() {
         /*if (_data != null && allCells.Count > 0) {
             List<Cell> freeCells = allCells.FindAll(t => t.Type == CellType.Empty);
             trapExceptions.ForEach(t => freeCells.Remove(t));
@@ -212,22 +155,7 @@ public class Board : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>, M
         }*/
     }
 
-    /*void CreateTraps(List<Cell> freeCells) {
-        List<Cell> trapCells = new List<Cell>(freeCells);
-        foreach (var pair in _data.traps)
-            CreateCellItemsWithType(trapCells, CellType.Trap, pair.Value - _trapCounts.GetValueOrDefault(pair.Key), pair.Key);
-        freeCells.RemoveAll(t => t.Type == CellType.Trap);
-        if (AllTrapsCount < _data.TrapsCount) {
-            if (_difficulty != LevelStageDifficulty.None) {
-                int difficulty = (int)_difficulty;
-                _difficulty = difficulty < _difficultyCount - 1 ? (LevelStageDifficulty)(difficulty + 1) : LevelStageDifficulty.None;
-                CreateTraps(freeCells);
-            } else
-                Debug.LogErrorFormat("Board CreateTraps: Cannot create all the traps ({0} left). Possibly there's not enough free cells.", _data.TrapsCount - AllTrapsCount);
-        }
-    }
-
-    void ApplyDifficulty(List<Cell> freeCells) { 
+    /*void ApplyDifficulty(List<Cell> freeCells) { 
         if (_difficulty > LevelStageDifficulty.None) {
             List<Cell> cellsToRemove = new List<Cell>();
             int intDifficulty = (int)_difficulty;
@@ -256,134 +184,144 @@ public class Board : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>, M
         }
     }*/
 
-    void CreateCellItemsWithType(List<Cell> freeCells, CellType cellType, int count, object param = null) {
-        CellItem prefab = itemPrefabs.GetValueOrDefault(cellType);
+    void CreateCellItemsWithType(List<Cell> freeCells, CellItemType cellItemType, int count, object param = null) {
+        CellItem prefab = itemPrefabs.GetValueOrDefault(cellItemType);
         if (prefab != null && count > 0) {
             for (int i = 0; i < count; i++) {
                 if (freeCells.Count > 0) {
                     Cell cell = freeCells[Random.Range(0, freeCells.Count)];
-                    CreateCellItem(cell, cellType, prefab, param);
+                    CreateCellItem(cell, prefab, param);
                     freeCells.Remove(cell);
-                    /*if (cellType == CellType.Trap)
-                        ApplyDifficulty(freeCells);*/
                 }
             }
         }
     }
 
-    void CreateCellItem(Cell cell, CellType cellType, CellItem prefab, object param) {
+    void CreateCellItem(Cell cell, CellItem prefab, object param) {
         CellItem item = Instantiate(prefab, cell.transform.position, Quaternion.identity, itemsRoot);
         item.Setup(cell.Position,param);
-        cell.SetItem(cellType, item);
-        cell.name = string.Format("{0}-{1}", cell.name, cellType);
+        cell.SetItem(item);
+        cell.name = string.Format("{0}-{1}", cell.name, item.GetType().Name);
         item.transform.localScale *= cellSize;
-        item.SetVisible(false);
-
-        if (cellType == CellType.Unit)
-            _unitsCount++;
-        else if (cellType == CellType.Booster) {
-            PartyBoosterType booster = (PartyBoosterType)param;
-            _boosterCounts[booster] = _boosterCounts.GetValueOrDefault(booster) + 1;            
-        }
     }
 
-    void CreatePredefinedCellItem(Cell cell) {
-        if (cell != null) {
-            CellType cellType = cell.Type;
-            object param = null;
-            CellItem prefab = itemPrefabs.GetValueOrDefault(cell.Type);
-           /* if (prefab != null) {
-                if (cellType == CellType.Trap && _data.TrapsCount > 0) {
-                    foreach (var pair in _data.traps) {
-                        if (_trapCounts.GetValueOrDefault(pair.Key) < pair.Value) {
-                            prefab = itemPrefabs.GetValueOrDefault(CellType.Trap);
-                            param = pair.Key;
-                            break;
-                        }
-                    }
-                } else if (cellType == CellType.Booster && _data.BoostersCount > 0) {
-                    foreach (var pair in _data.boosters) {
-                        if (_boosterCounts.GetValueOrDefault(pair.Key) < pair.Value) {
-                            param = pair.Key;
-                            break;
-                        }
-                    }
-                }
-                CreateCellItem(cell, cell.Type, prefab, param);
-            }*/
-        }
-    }
-
-    void CreateGrid(Dictionary<Vector2Int, CellType> predefinedCells) {
-        Vector2 offset = (Vector2)cellsRoot.position - _boardCenter;
-        if (predefinedCells != null && _boardSize.x > 0 && _boardSize.y > 0) {
+    void CreateGrid() {
+        if (cellPrefab != null && cellsRoot != null && _boardSize.x > 0 && _boardSize.y > 0) {
+            Vector2 offset = (Vector2)cellsRoot.position - _boardCenter;
             for (int i = 0; i < _boardSize.x; i++) {
                 float x = i * cellSize + offset.x;
                 for (int j = 0; j < _boardSize.y; j++) {
-                    CellType cellType = predefinedCells.GetValueOrDefault(new Vector2Int(i, j), CellType.Empty);
                     float y = j * cellSize + offset.y;
-                    Cell cell = CreateCell(i, j, x, y, cellType);
-                    if (cellType == CellType.Open)
-                        _openShare += _openRate;
+                    CreateCell(i, j, x, y);
                 }
             }
-            _allCells = new List<Cell>(_cells);
         } else
-            Debug.LogError("Board CreateGrid: grid size isn't suitable or predefinedCells is NULL");
+            Debug.LogError("Board CreateGrid: grid size isn't suitable or cellPrefab or cellsRoot is NULL");
     }
 
-    Cell CreateCell(int i, int j, float x, float y, CellType cellType) {
+    void CreateCell(int i, int j, float x, float y) {
         Vector2Int position = new Vector2Int(i, j);
-    
+
         Cell cell = Instantiate(cellPrefab, new Vector3(x, y, 0),Quaternion.identity,  cellsRoot);
-        cell.Setup(cellType, position, cellSize);
+        cell.Setup(position, cellSize);
         cell.gameObject.name = string.Format("{0}_{1}x{2}", cellPrefab.name, i, j);
-        
-        if (cellType != CellType.Empty)
-            CreatePredefinedCellItem(cell);
-        cell.OnOpen += OnCellOpened;
-        cell.OnSelect += OnCellSelected;
-        cell.OnDeselect += OnCellDeselected;
 
-        if (gridDimRoot != null && gridDimPrefab != null/* && (i + j) % 2 != 1*/) {
-            SpriteRenderer dimmer = Instantiate(gridDimPrefab, cell.transform.position, Quaternion.identity, gridDimRoot);
-            dimmer.size = new Vector2(cellSize, cellSize);
+        _cellsMap[position] = cell;
+    }
+
+    Cell GetCellAtWorldPosition(Vector2 worldPos) {
+        Vector2 localPos = worldPos - (Vector2)cellsRoot.position + _boardCenter;
+        int i = Mathf.FloorToInt(localPos.x / cellSize);
+        int j = Mathf.FloorToInt(localPos.y / cellSize);
+        Vector2Int gridPos = new Vector2Int(i, j);
+        return _cellsMap.GetValueOrDefault(gridPos);
+    }
+
+    bool IsAdjacent(Vector2Int a, Vector2Int b) {
+        return a != b && Mathf.Abs(a.x - b.x) <= 1 && Mathf.Abs(a.y - b.y) <= 1;
+    }
+
+    bool HasSameContent(Cell a, Cell b) {
+        if (a == null || b == null) return false;
+        if (a.Item == null || b.Item == null) return a.Item == b.Item;
+        return a.Item.GetType() == b.Item.GetType();
+    }
+
+    void StartSelection(Cell cell) {
+        if (cell == null || cell.Item == null || !cell.Visible) return;
+        _selectedCells.Add(cell.Position);
+        cell.Highlight(true);
+    }
+
+    bool TryAddToSelection(Cell cell) {
+        if (cell == null || _selectedCells.Count == 0) return false;
+
+        Vector2Int lastPos = _selectedCells[^1];
+
+        if (_selectedCells.Contains(cell.Position) || !IsAdjacent(lastPos, cell.Position))
+            return false;
+
+        Cell firstCell = _cellsMap.GetValueOrDefault(_selectedCells[0]);
+        if (!HasSameContent(firstCell, cell))
+            return false;
+
+        _selectedCells.Add(cell.Position);
+        cell.Highlight(true);
+        return true;
+    }
+
+    void EndSelection() {
+        if (_selectedCells.Count > 0)
+            BoardEvent.Trigger(BoardEventType.SelectedCells, this);
+    }
+
+    public void ClearSelection() {
+        foreach (var pos in _selectedCells) {
+            Cell cell = _cellsMap.GetValueOrDefault(pos);
+            if (cell != null)
+                cell.Highlight(false);
         }
-
-        return cell;
-    }
-
-    void OnCellDeselected(Cell cell) {
-        if (_selectedCell == cell || cell == null) {
-                
-            if (_selectedCell != null)
-                _selectedCell.SetSelected(false, false);
-            _selectedCell = null;
-
-            _cells.ForEach(t => t.Highlight(false));
-        }
-    }
-
-    void OnCellOpened(Cell cell) {
-        OnCellDeselected(null);
-        List<Cell> freeCells = new List<Cell>(_cells);
-        List<Cell> exceptions = freeCells.FindAll(t => t.IsNear(cell));
-        freeCells.Remove(cell);
-        CreateCellItems(freeCells, exceptions);
-    }
-
-    void OnCellSelected(Cell cell) {
-        OnCellDeselected(null);
-
-        _selectedCell = cell;
-        List<Cell> neighbours = _cells.FindAll(t => t.IsNear(cell));
-        neighbours.ForEach(t => t.Highlight(true));
+        _selectedCells.Clear();
     }
 
     public void OnMMEvent(InputEvent e) {
-        if (e.Type == InputEventType.Tap || e.Type == InputEventType.Move)
-            _allCells.ForEach(t => t.CheckTap(e.Position));
-    }    
+        switch (e.Type) {
+            case InputEventType.Press:
+                Cell pressedCell = GetCellAtWorldPosition(e.Position);
+                if (pressedCell != null && pressedCell.Item != null) {
+                    _isSelecting = true;
+                    StartSelection(pressedCell);
+                }
+                break;
+
+            case InputEventType.Move:
+                if (_isSelecting && _selectedCells.Count > 0) {
+                    Cell moveCell = GetCellAtWorldPosition(e.Position);
+                    if (moveCell != null && !TryAddToSelection(moveCell)) {
+                        if (moveCell.Position != _selectedCells[^1]) {
+                            _isSelecting = false;
+                            EndSelection();
+                        }
+                    }
+                }
+                break;
+
+            case InputEventType.Release:
+                if (_isSelecting) {
+                    _isSelecting = false;
+                    EndSelection();
+                }
+                break;
+
+            case InputEventType.Tap:
+                Cell tappedCell = GetCellAtWorldPosition(e.Position);
+                if (tappedCell != null && tappedCell.Item != null) {
+                    StartSelection(tappedCell);
+                    EndSelection();
+                }
+                break;
+        }
+    }
 
     void OnEnable() {
         this.MMEventStartListening<LevelLoadEvent>();
@@ -394,6 +332,4 @@ public class Board : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>, M
         this.MMEventStopListening<LevelLoadEvent>();
         this.MMEventStopListening<InputEvent>();
     }
-
-
 }

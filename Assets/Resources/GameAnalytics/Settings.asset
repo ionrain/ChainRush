@@ -25,28 +25,16 @@ MonoBehaviour:
   UserMessagesSubmitted: 0
   UserMessagesFailed: 0
   CustomArea: 
-  gameKey:
-  - 685e0af5d1a0ebef8ce94eadaba16e22
-  - 40917a0fb8a701c08a4959f991853108
-  secretKey:
-  - cc65d8898ce980474a472f1d0f46e30c5f4b6fd6
-  - 9075cd652edbd38a51ed5a3b636001469ef2028d
-  Build:
-  - 0.1
-  - 0.1
-  SelectedPlatformOrganization:
-  - Morboo
-  - Morboo
-  SelectedPlatformStudio:
-  - Morboo
-  - Morboo
-  SelectedPlatformGame:
-  - Bottle Battle (Android)
-  - Bottle Battle (iOS)
-  SelectedPlatformGameID: 88d9040087d90400
-  SelectedOrganization: 0100000001000000
-  SelectedStudio: 0100000001000000
-  SelectedGame: 0100000002000000
+  gameKey: []
+  secretKey: []
+  Build: []
+  SelectedPlatformOrganization: []
+  SelectedPlatformStudio: []
+  SelectedPlatformGame: []
+  SelectedPlatformGameID: 
+  SelectedOrganization: 
+  SelectedStudio: 
+  SelectedGame: 
   NewVersion: 
   Changes: 
   SignUpOpen: 0
@@ -68,7 +56,7 @@ MonoBehaviour:
   ResourceItemTypes: []
   ResourceCurrencies: []
   LastCreatedGamePlatform: 0
-  Platforms: 0b00000008000000
+  Platforms: 
   CurrentInspectorState: 1
   ClosedHints: 
   DisplayHints: 0
@@ -96,7 +84,7 @@ MonoBehaviour:
   IncludeGooglePlay: 1
   FpsCriticalThreshold: 20
   FpsCirticalSubmitInterval: 1
-  PlatformFoldOut: 0101
+  PlatformFoldOut: 
   CustomDimensions01FoldOut: 0
   CustomDimensions02FoldOut: 0
   CustomDimensions03FoldOut: 0

@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using MoreMountains.Tools;
-using Sirenix.Utilities;
 
 public enum FullProgressSpawnAction { Continue, Stop }
 public enum EnemySpawnEventType { Started, InProgress, Finished, Canceled, Cleared }

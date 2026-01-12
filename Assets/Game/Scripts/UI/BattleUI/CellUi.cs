@@ -1,0 +1,93 @@
+using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
+using MoreMountains.Tools;
+
+public class CellUiItem {
+    public CellItemType Type { get; private set; }
+    public Sprite Icon { get; private set; }
+    public string Id { get; private set; }
+
+    public CellUiItem(CellItemType type, Sprite icon, string id) {
+        Type = type;
+        Icon = icon;
+        Id = id;
+    }
+}
+
+public struct CellUiItemSelectEvent {
+    public CellUiItem Item { get; private set; }
+    public int Count { get; private set; }
+
+    static CellUiItemSelectEvent e;
+    public static void Trigger(CellUiItem item, int count) {
+        e.Item = item;
+        e.Count = count;
+        MMEventManager.TriggerEvent(e);
+    }
+}
+    
+public class CellUi : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IBeginDragHandler, IDragHandler, IEndDragHandler {
+    public delegate void CellUIEvent(CellUi cell);
+    public event CellUIEvent OnCellPointerDownEvent;
+    public event CellUIEvent OnCellPointerUpEvent;
+    public event CellUIEvent OnCellPointerEnterEvent;
+
+    [SerializeField] Image background;
+    [SerializeField] Image icon;
+    [SerializeField] Color normalColor = Color.white;
+    [SerializeField] Color highlightColor = Color.yellow;
+
+    public Vector2Int Position { get; private set; }
+    public CellUiItem Item { get; private set; }
+    public bool Highlighted { get; private set; }
+
+
+    public void Setup(Vector2Int position) {
+        Position = position;
+        name = $"CellUI_{position.x}x{position.y}";
+    }
+
+    public void SetItem(CellUiItem item) {
+        Item = item;
+        icon.sprite = item != null ? item.Icon : null;
+    }
+
+    public void Highlight(bool value) {
+        if (Highlighted != value) {
+            Highlighted = value;
+            if (background != null)
+                background.color = value ? highlightColor : normalColor;
+        }
+    }
+
+    public void OnPointerDown(PointerEventData eventData) {
+        Highlight(true);
+        OnCellPointerDownEvent?.Invoke(this);
+    }
+
+    public void OnPointerUp(PointerEventData eventData) {
+        Highlight(false);
+        OnCellPointerUpEvent?.Invoke(this);
+    }
+
+    public void OnPointerEnter(PointerEventData eventData) {
+        if (eventData.dragging) {
+            Highlight(true);
+            OnCellPointerEnterEvent?.Invoke(this);
+        }
+    }
+
+    public void OnBeginDrag(PointerEventData eventData) {
+        // Необходимо для активации dragging
+    }
+
+    public void OnDrag(PointerEventData eventData) {
+        // Необходимо для поддержания dragging
+    }
+
+    public void OnEndDrag(PointerEventData eventData) {
+        Highlight(true);
+        OnCellPointerUpEvent?.Invoke(this);
+    }
+}

@@ -55,13 +55,6 @@ public struct PartyUnitEvent {
     }
 }
 
-public class BuffGradesData {
-    public Attribute attribute;
-    public Dictionary<Grade, float> values = new ();
-
-    public float GetValue(Grade grade) => values.GetValueOrDefault(grade);
-}
-
 public class BuffData: IListItemData {
     public Attribute attribute;
     public Grade grade;
@@ -116,7 +109,7 @@ public class PartyManager : SerializedMonoBehaviour, MMEventListener<PartyExpEve
     [SerializeField] BoxCollider2D spawnArea;
 
     [Header("Buffs")]
-    [SerializeField] List<BuffGradesData> buffsData = new ();
+    [SerializeField] BuffsData buffsData;
     [SerializeField] int epicBuffRequestCondition = 5;
     [SerializeField] int maxBuffCount = 3;
 
@@ -501,8 +494,8 @@ public class PartyManager : SerializedMonoBehaviour, MMEventListener<PartyExpEve
     public BuffData GetBuff(Attribute attribute, Grade grade) {
         AttributeData attributeData = attributes.GetData(attribute);
         GradeData gradeData = grades.GetData(grade);
-        BuffGradesData gradeDataItem = buffsData.Find(t => t.attribute == attribute);
-        if (attributeData != null && gradeData != null && gradeDataItem != null) {
+        BuffGradesData gradeDataItem = buffsData.Get(attribute);
+        if (buffsData != null && attributeData != null && gradeData != null && gradeDataItem != null) {
             BuffData result = new BuffData();
             result.attribute = attribute;
             result.grade = grade;

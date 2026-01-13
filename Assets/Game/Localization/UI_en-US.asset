@@ -342,6 +342,10 @@ MonoBehaviour:
     m_Localized: Select a Buff
     m_Metadata:
       m_Items: []
+  - m_Id: 133375549202489344
+    m_Localized: Refresh in {0} sec...
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

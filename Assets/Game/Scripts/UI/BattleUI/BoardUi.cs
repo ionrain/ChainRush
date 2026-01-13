@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using MoreMountains.Tools;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Localization;
 using UnityEngine.UI;
 
 public enum BoardUiEventType { SetupCells, SetupItems, Ready }
@@ -49,6 +51,11 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
     [SerializeField] AttributesData attributesData;
     [SerializeField] BoostersData boostersData;
 
+    [Header("Refresh Settings")]
+    [SerializeField] Progressbar refreshProgressbar;
+    [SerializeField] TextMeshProUGUI refreshLabel;
+    [SerializeField] LocalizedString refreshLabelFormat;
+
     [Header("Events")]
     [SerializeField] UnityEvent OnBoardShow;
     [SerializeField] UnityEvent OnBoardHide;    
@@ -60,11 +67,15 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
     bool _isSelecting;
     float _refreshTimer;
     float _refreshInterval;
+    string _refreshLabelFormat = "{0}";
 
     public void OnMMEvent(LevelLoadEvent e) {
         if (e.Stage == EventStage.Start && e.Data != null) {
             _data = e.Data;
             _boardSize = _data.boardSize;
+
+            refreshProgressbar?.Setup();
+            _refreshLabelFormat = refreshLabelFormat?.GetLocalizedString();
 
             ResizePanel();
             Canvas.ForceUpdateCanvases();
@@ -82,14 +93,20 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
     }
 
     void FixedUpdate() {
+        float oldValue = _refreshTimer;
         _refreshTimer -= Time.fixedDeltaTime;
-        if (_refreshTimer <= 0) 
+        refreshProgressbar.SetValue(_refreshTimer);
+        if ((int)oldValue > (int)_refreshTimer && refreshLabel != null)
+            refreshLabel.SetText(string.Format(_refreshLabelFormat, Mathf.CeilToInt(_refreshTimer)));
+        if (_refreshTimer <= 0)
             RefreshBoard();
     }
 
     void UpdateRefreshInterval(float progress) {
-        if (_data != null)
+        if (_data != null) {
             _refreshInterval = _data.difficulty.generalRefreshInterval.Evaluate(progress);
+            refreshProgressbar?.SetTotal(_refreshInterval);
+        }
     }
 
     void RefreshBoard() {

@@ -112,7 +112,7 @@ public class AttackSkill : Skill, MMEventListener<MMDamageTakenEvent> {
 
     public void OnMMEvent(MMDamageTakenEvent e) {
         if (Unit != null && e.AffectedHealth.tag.Equals(ENEMY_TAG) && e.Instigator.name.Equals(WeaponName))
-            Unit.Heal(e.DamageCaused * _vampirism, Vector2.zero);
+            Unit.Heal(e.DamageCaused * _vampirism);
     }
 
     protected virtual void OnEnable() {

@@ -335,6 +335,10 @@ MonoBehaviour:
     m_Key: title.select.buff
     m_Metadata:
       m_Items: []
+  - m_Id: 133375549202489344
+    m_Key: label.resfresh.board
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

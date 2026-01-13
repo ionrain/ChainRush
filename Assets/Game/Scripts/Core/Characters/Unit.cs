@@ -1,27 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using MoreMountains.Feedbacks;
 using MoreMountains.Tools;
 using MoreMountains.TopDownEngine;
 using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Localization;
 using static MoreMountains.TopDownEngine.CharacterStates;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(Character), typeof(Collider2D))]
 public class Unit : SerializedMonoBehaviour, MMEventListener<LevelResultEvent> {
     public delegate void UnitEvent(Unit unit);
     public event UnitEvent OnDeath;
-
-    [SerializeField] SpriteRenderer image;
+    
     [SerializeField] SpineSkeletonModel spine;
     [SerializeField] Transform skillRoot;
-
-    [Header("UI")]
-    [SerializeField] LocalizedString levelPattern;
-    [SerializeField] TextMeshPro levelLabel;
 
     [Header("Resistance")]
     [SerializeField] GameObject resistanceHost;
@@ -37,30 +30,14 @@ public class Unit : SerializedMonoBehaviour, MMEventListener<LevelResultEvent> {
     [SerializeField] TextMeshPro statLabel;
     [SerializeField] MMF_Player buffResultFeedback;
     [SerializeField] MMF_Player buffFeedback;
-    [SerializeField] float buffDelay = .75f;
-    [SerializeField] MMF_Player debuffFeedback;
-    [SerializeField] float debuffDelay = .75f;
-    [SerializeField] MMF_Player debuffClearFeedback;
-    [SerializeField] float debuffClearDelay = .75f;
     [SerializeField] MMF_Player healFeedback;
-    [SerializeField] float healDelay = .75f;
-    [SerializeField] MMF_Player bombFeedback;
-    [SerializeField] float bombDamageDelay = 1.5f;
-    [SerializeField] MMF_Player freezerFeedback;
-    [SerializeField] float freezeDelay = 1.5f;
-    [SerializeField] MMF_Player antifreezeFeedback;
-    [SerializeField] float antifreezeDelay = 1.5f;
-    [SerializeField] float afterActionDelay = 0.3f;
 
     public UnitData Data { get; private set; }
     public Dictionary<Attribute, float> Buffs { get; private set; } = new ();
-    public Dictionary<Attribute, float> Debuffs { get; private set; } = new ();
     public List<Skill> Skills { get; private set; } = new ();
     public UnitMergeState MergeState { get; private set; }
     public List<Skill> ActiveSkills => Skills.FindAll(t => t.IsAssigned);
     public float HPLoss => _health ? _health.CurrentHealth - _health.MaximumHealth : 0;
-    public float DebuffTotal => Debuffs.Sum(t => t.Value);
-    public bool IsFrozen => _character != null ? _character.ConditionState.CurrentState == CharacterConditions.Frozen : false;
 
     Dictionary<MovementStates, AnimationState> _movementToAnimation = new Dictionary<MovementStates, AnimationState>() {
         { MovementStates.Idle, AnimationState.Idle}, {MovementStates.Walking, AnimationState.Walk },
@@ -77,7 +54,6 @@ public class Unit : SerializedMonoBehaviour, MMEventListener<LevelResultEvent> {
     MMProgressBar _healthBar;
     Vector3 _returnPosition;
     AIDecisionDistanceToTarget _distanceDecision;
-    string _levelPattern;
     int _layer;
     bool _healthbarVisible = true;
 
@@ -86,105 +62,21 @@ public class Unit : SerializedMonoBehaviour, MMEventListener<LevelResultEvent> {
             _collider.enabled = value;
     }
 
-    void PlayCellFeedback(MMF_Player feedback, Vector2 position) {
-        if (cellPosition != null)
-            cellPosition.position = position;
+    void PlayCellFeedback(MMF_Player feedback) {
         feedback?.PlayFeedbacks();       
     }
 
-    public void ToggleFreeze(bool value, Vector2 position) {
-        StartCoroutine(ToggleFreezeCo(value));
-        PlayCellFeedback(value ? freezerFeedback : antifreezeFeedback, position);
-    }
-
-    public IEnumerator ToggleFreezeCo(bool value, bool applyDelay = true) {
-        if (applyDelay)
-            yield return new WaitForSeconds(value? freezeDelay : antifreezeDelay);
-        if (_character != null) {
-            _character.ConditionState.ChangeState(value ? CharacterConditions.Frozen : CharacterConditions.Normal);
-            _controller.enabled = !value;
-            _character.CharacterBrain.enabled = !value;
-        }
-        
-        gameObject.layer = value ? LayerMask.NameToLayer("Default") : _layer;
-
-        if (skillRoot != null)
-            skillRoot.gameObject.SetActive(!value);
-        
-        if (_collider != null && _collider.attachedRigidbody != null)
-            _collider.attachedRigidbody.constraints = value ? RigidbodyConstraints2D.FreezeAll : RigidbodyConstraints2D.FreezeRotation;
-        
-        if (_healthbarVisible)
-            SetHealthbarVisibility(!value, false);
-        
-        if (applyDelay)
-            yield return new WaitForSeconds(afterActionDelay);
-
-        if (value)
-            TrapEvent.Trigger(EventStage.End, TrapType.Freeze, null);
-        else
-            PartyBoostEvent.Trigger(EventStage.End, PartyBoosterType.Antifreeze, PartyBoosterSource.None, transform.position);
-    
-    }    
-
-    public void Heal(float value, Vector2 position) {
-        StartCoroutine(HealCo(value));
-        PlayCellFeedback(healFeedback, position);
-    }
-
-    IEnumerator HealCo(float value) {
-        yield return new WaitForSeconds(healDelay);
+    public void Heal(float value) {
         _health.ReceiveHealth(value, null);
-        yield return new WaitForSeconds(afterActionDelay);
-        PartyBoostEvent.Trigger(EventStage.End, PartyBoosterType.Heal, PartyBoosterSource.None, transform.position);
+        PlayCellFeedback(healFeedback);
     }
 
-    public void HitWithBomb(float damage, Vector2 position) {
-        StartCoroutine(HitWithBombCo(damage, bombDamageDelay));        
-        PlayCellFeedback(bombFeedback, position);
-    }
-
-    public IEnumerator HitWithBombCo(float damage, float delay) {
-        yield return new WaitForSeconds(delay);
-        _health?.Damage(damage, gameObject, 0, 0, Vector3.down);
-        yield return new WaitForSeconds(afterActionDelay);
-        TrapEvent.Trigger(EventStage.End, TrapType.Damage, null);
-    }
-
-    public void ClearDebuffs(Vector2 position) {
-        Debuffs.Clear();
-        StartCoroutine(ClearDebuffsCo());        
-        PlayCellFeedback(debuffClearFeedback, position);
-    }
-
-    public IEnumerator ClearDebuffsCo() {
-        yield return new WaitForSeconds(debuffClearDelay + afterActionDelay);
-        PartyBoostEvent.Trigger(EventStage.End, PartyBoosterType.DebuffClear, PartyBoosterSource.None, transform.position);
-    }    
-
-    public void AddDebuff(Sprite icon, Attribute attribute, float value, Vector2 position) {
-        Debuffs[attribute] = Debuffs.GetValueOrDefault(attribute) + value;
-        StartCoroutine(AddDebuffsCo(icon, attribute, value));        
-        PlayCellFeedback(debuffFeedback, position);
-    }
-
-    public IEnumerator AddDebuffsCo(Sprite icon, Attribute attribute, float value) {
-        yield return new WaitForSeconds(debuffDelay + afterActionDelay);
-        TrapEvent.Trigger(EventStage.End, TrapType.Debuff, null);
-    }    
-
-    public void AddBuff(Sprite icon, Attribute attribute, float value, Vector2 position, bool playFeedback = true) {
+    public void AddBuff(Sprite icon, Attribute attribute, float value, bool playFeedback = true) {
         Buffs[attribute] = Buffs.GetValueOrDefault(attribute) + value;
         if (playFeedback) {
-            StartCoroutine(AddBuffsCo(icon, attribute, value));
-            PlayCellFeedback(buffFeedback, position);
+            SetupStat(icon, value);
+            PlayCellFeedback(buffFeedback);
         }
-    }
-
-    public IEnumerator AddBuffsCo(Sprite icon, Attribute attribute, float value) {
-        SetupStat(icon, value);
-        yield return new WaitForSeconds(buffDelay + afterActionDelay);
-        PartyBoostEvent.Trigger(EventStage.End, PartyBoosterType.Buff, PartyBoosterSource.None, transform.position);
     }
 
     void SetupStat(Sprite icon, float value) {
@@ -194,7 +86,6 @@ public class Unit : SerializedMonoBehaviour, MMEventListener<LevelResultEvent> {
     }
 
     void Initialize() {
-        _levelPattern = levelPattern != null && !levelPattern.IsEmpty ? levelPattern.GetLocalizedString() : "{0}";
         _character = GetComponent<Character>();
         _collider = GetComponent<Collider2D>();
         _layer = gameObject.layer;
@@ -284,7 +175,6 @@ public class Unit : SerializedMonoBehaviour, MMEventListener<LevelResultEvent> {
             if (spine != null)
                 spine.Setup(mergeData.spineData, string.Empty, Data.animations);
         }
-        levelLabel?.SetText(string.Format(_levelPattern, mergeIndex));
     }
 
     public void Upgrade() {
@@ -331,7 +221,6 @@ public class Unit : SerializedMonoBehaviour, MMEventListener<LevelResultEvent> {
         Dictionary<Element, float> result =new();
         if (Data != null) {
             float mergeMultiplier = 1;
-            float buffDebuffMultipleir = GetBuffDebuffMultiplier(attribute);
             MergeStateData mergeData = Data.GetMergeData(MergeState);
             if (mergeData != null)
                 mergeMultiplier = mergeData.GetAttributeMultiplier(attribute);
@@ -345,7 +234,7 @@ public class Unit : SerializedMonoBehaviour, MMEventListener<LevelResultEvent> {
                 }
             });
             foreach (var pair in values)
-                result[pair.Key] = pair.Value * mergeMultiplier * buffDebuffMultipleir * (multipliers.GetValueOrDefault(pair.Key, 0) + 1);
+                result[pair.Key] = pair.Value * mergeMultiplier * (multipliers.GetValueOrDefault(pair.Key, 0) + 1);
         }
         return result;
     }
@@ -356,7 +245,7 @@ public class Unit : SerializedMonoBehaviour, MMEventListener<LevelResultEvent> {
         MergeStateData mergeData = Data.GetMergeData(MergeState);
         if (mergeData != null)
             mergeMultiplier = mergeData.GetAttributeMultiplier(attribute);
-        float value = Data.GetAttributeValue(attribute) * mergeMultiplier * GetBuffDebuffMultiplier(attribute);
+        float value = Data.GetAttributeValue(attribute) * mergeMultiplier;
 
         Skills.ForEach(t => {
             if (t.Target == SkillTarget.Self && t.IsAssigned && t.Attribute == attribute) {
@@ -366,10 +255,6 @@ public class Unit : SerializedMonoBehaviour, MMEventListener<LevelResultEvent> {
             }
         });
         return result + value;
-    }
-
-    float GetBuffDebuffMultiplier(Attribute attribute) {
-        return 1 + Buffs.GetValueOrDefault(attribute) - Debuffs.GetValueOrDefault(attribute);
     }
 
     Skill CreateAttackSkill(bool main, Skill prefab) {

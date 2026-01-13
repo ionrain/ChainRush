@@ -95,26 +95,7 @@ public class Citadel : SerializedMonoBehaviour {
     }
 
     public void Heal(float value, Vector2 position) {
-        StartCoroutine(HealCo(value));
-        PlayCellFeedback(healFeedback, position);
-    }
-
-    IEnumerator HealCo(float value) {
-        yield return new WaitForSeconds(healDelay);
         _health.ReceiveHealth(value, null);
-        yield return new WaitForSeconds(healDelay);
-        PartyBoostEvent.Trigger(EventStage.End, PartyBoosterType.Heal, PartyBoosterSource.None, Vector2.zero);
-    }
-
-    public void HitWithBomb(float damage, Vector2 position) {
-        PlayCellFeedback(bombFeedback, position);
-        StartCoroutine(Hit(damage, bombDamageDelay));
-    }
-
-    public IEnumerator Hit(float damage, float delay) {
-        yield return new WaitForSeconds(delay);
-        _health?.Damage(damage, gameObject, 0, 0, Vector3.down);
-        yield return new WaitForSeconds(delay);
-        TrapEvent.Trigger(EventStage.End, TrapType.Damage, null);
+        PlayCellFeedback(healFeedback, position);
     }
 }

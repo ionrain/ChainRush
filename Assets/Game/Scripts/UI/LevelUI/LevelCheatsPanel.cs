@@ -6,13 +6,6 @@ public class LevelCheatsPanel : MonoBehaviour {
     [SerializeField] UnityEvent OnShowUI;
     [SerializeField] UnityEvent OnHideUI;
 
-
-    public void CompleteCurrentStage() {
-        #if UNITY_EDITOR || CHEATS
-        //LevelStageCompleteRequestEvent.Trigger();
-        #endif
-    }
-
     public void Win() {
         #if UNITY_EDITOR || CHEATS
         LevelActionEvent.Trigger(EventStage.Start, LevelActionType.Succeed);
@@ -25,15 +18,9 @@ public class LevelCheatsPanel : MonoBehaviour {
         #endif        
     }
 
-    public void AddLevel() {
-        #if UNITY_EDITOR || CHEATS
-        PartyExpEvent.Trigger(PartyExpEventType.Consume, 0);
-        #endif
-    }
-
     public void SpawnUnit() {
         #if UNITY_EDITOR || CHEATS
-        PartyUnitEvent.Trigger(EventStage.Process, PartyUnitEventType.Create, null);
+        //PartyUnitEvent.Trigger(EventStage.Process, PartyUnitEventType.Create, null);
         #endif
     }
 

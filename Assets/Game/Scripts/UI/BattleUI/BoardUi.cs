@@ -69,6 +69,10 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
     float _refreshInterval;
     string _refreshLabelFormat = "{0}";
 
+    // Per-type cooldown tracking
+    Dictionary<CellItemType, float> _typeCooldowns = new();
+    Dictionary<CellItemType, float> _typeCooldownIntervals = new();
+
     public void OnMMEvent(LevelLoadEvent e) {
         if (e.Stage == EventStage.Start && e.Data != null) {
             _data = e.Data;
@@ -82,38 +86,88 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
             LayoutRebuilder.ForceRebuildLayoutImmediate(panelRoot);
 
             CreateCells();
-            UpdateRefreshInterval(0);
+            InitializeTypeCooldowns();
+            UpdateRefreshIntervals(0);
+            _refreshTimer = _refreshInterval;
+            RefreshBoard();
             OnBoardShow?.Invoke();
             BoardUiEvent.Trigger(BoardUiEventType.Ready, this);
         }
     }
 
     public void OnMMEvent(LevelProgressEvent e) {
-        UpdateRefreshInterval(e.Progress);
+        UpdateRefreshIntervals(e.Progress);
     }
 
     void FixedUpdate() {
+        if (_data?.difficulty == null) return;
+
+        float dt = Time.fixedDeltaTime;
+
+        // Update cooldowns for all types
+        foreach (var type in new List<CellItemType>(_typeCooldowns.Keys)) {
+            _typeCooldowns[type] += dt;
+        }
+
+        // Update global refresh timer
         float oldValue = _refreshTimer;
-        _refreshTimer -= Time.fixedDeltaTime;
-        refreshProgressbar.SetValue(_refreshTimer);
+        _refreshTimer -= dt;
+
+        refreshProgressbar?.SetValue(_refreshTimer);
         if ((int)oldValue > (int)_refreshTimer && refreshLabel != null)
             refreshLabel.SetText(string.Format(_refreshLabelFormat, Mathf.CeilToInt(_refreshTimer)));
-        if (_refreshTimer <= 0)
-            RefreshBoard();
-    }
 
-    void UpdateRefreshInterval(float progress) {
-        if (_data != null) {
-            _refreshInterval = _data.difficulty.generalRefreshInterval.Evaluate(progress);
-            refreshProgressbar?.SetTotal(_refreshInterval);
+        if (_refreshTimer <= 0) {
+            RefreshBoard();
+            _refreshTimer = _refreshInterval;
         }
     }
 
-    void RefreshBoard() {
-        if (_data == null || _data.difficulty == null) return;
+    void InitializeTypeCooldowns() {
+        _typeCooldowns.Clear();
+        _typeCooldownIntervals.Clear();
 
-        ApplyPatternsToBoard(_data.difficulty.fillWeights);
-        _refreshTimer = _refreshInterval;
+        if (_data?.difficulty?.refreshCooldowns == null) return;
+
+        foreach (var kvp in _data.difficulty.refreshCooldowns) {
+            // Start with cooldown ready (can be used immediately)
+            _typeCooldowns[kvp.Key] = kvp.Value.Evaluate(0f);
+            _typeCooldownIntervals[kvp.Key] = kvp.Value.Evaluate(0f);
+        }
+    }
+
+    void UpdateRefreshIntervals(float progress) {
+        if (_data?.difficulty == null) return;
+
+        _refreshInterval = _data.difficulty.refreshInterval.Evaluate(progress);
+        refreshProgressbar?.SetTotal(_refreshInterval);
+
+        // Update per-type cooldown intervals
+        foreach (var kvp in _data.difficulty.refreshCooldowns) {
+            _typeCooldownIntervals[kvp.Key] = kvp.Value.Evaluate(progress);
+        }
+    }
+
+    List<CellItemType> GetCooldownReadyTypes() {
+        List<CellItemType> ready = new();
+        if (_data?.difficulty == null) return ready;
+
+        foreach (var kvp in _typeCooldowns) {
+            CellItemType type = kvp.Key;
+            float cooldown = kvp.Value;
+            float interval = _typeCooldownIntervals.GetValueOrDefault(type, 0f);
+
+            if (cooldown >= interval) {
+                ready.Add(type);
+            }
+        }
+        return ready;
+    }
+
+    void RefreshBoard() {
+        if (_data?.difficulty == null) return;
+
+        ApplyPatternsToBoard();
         BoardUiEvent.Trigger(BoardUiEventType.SetupItems, this);
     }
         
@@ -166,24 +220,6 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
         BoardUiEvent.Trigger(BoardUiEventType.SetupCells, this);
     }
 
-    CellItemType GetRandomItemType(Dictionary<CellItemType, float> weights) {
-        if (weights != null && weights.Count > 0) {
-            float totalWeight = 0;
-            foreach (var w in weights)
-                totalWeight += w.Value;
-
-            float random = Random.Range(0, totalWeight);
-            float current = 0;
-
-            foreach (var w in weights) {
-                current += w.Value;
-                if (random <= current)
-                    return w.Key;
-            }
-        }
-        return CellItemType.None;
-    }
-
     CellUiItem CreateItemForType(CellItemType type) {
         Sprite icon = null;
         string id = type.ToString();
@@ -233,7 +269,7 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
 
     List<CellSelectPattern> GeneratePatterns() {
         List<CellSelectPattern> result = new List<CellSelectPattern>();
-        if (_data?.difficulty?.patterns == null || _cellsMap.Count == 0)
+        if (_data?.difficulty?.cellPatterns == null || _cellsMap.Count == 0)
             return result;
 
         HashSet<Vector2Int> occupied = new HashSet<Vector2Int>();
@@ -242,7 +278,7 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
         ShuffleList(availableCells);
 
         List<(CellSelectPatternType type, int maxSize)> patternTypes = new();
-        foreach (var kvp in _data.difficulty.patterns) {
+        foreach (var kvp in _data.difficulty.cellPatterns) {
             if (kvp.Key != CellSelectPatternType.None && kvp.Value > 0)
                 patternTypes.Add((kvp.Key, kvp.Value));
         }
@@ -390,19 +426,66 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
         return pattern;
     }
 
-    void ApplyPatternsToBoard(Dictionary<CellItemType, float> weights) {
+    void ApplyPatternsToBoard() {
         List<CellSelectPattern> patterns = GeneratePatterns();
-        foreach (var pattern in patterns) {
-            CellItemType itemType = GetRandomItemType(weights);
-            CellUiItem item = CreateItemForType(itemType);
+        if (patterns.Count == 0) return;
 
-            foreach (var pos in pattern.Cells) {
-                CellUi cell = _cellsMap.GetValueOrDefault(pos);
-                if (cell != null) {
-                    cell.SetItem(item);
-                    if (cellColors.TryGetValue(itemType, out Color color))
-                        cell.SetColor(color);
+        int totalPatterns = patterns.Count;
+        int assignedIndex = 0;
+        HashSet<CellItemType> usedTypes = new();
+
+        // 1. Распределяем гарантированные доли из alwaysAvailableOnRefresh
+        if (_data?.difficulty?.alwaysAvailableOnRefresh != null) {
+            foreach (var kvp in _data.difficulty.alwaysAvailableOnRefresh) {
+                CellItemType type = kvp.Key;
+                float fraction = kvp.Value;
+                int count = Mathf.RoundToInt(totalPatterns * fraction);
+
+                for (int i = 0; i < count && assignedIndex < patterns.Count; i++) {
+                    ApplyItemToPattern(patterns[assignedIndex], type);
+                    usedTypes.Add(type);
+                    assignedIndex++;
                 }
+            }
+        }
+
+        // 2. Оставшиеся паттерны заполняем типами из refreshCooldowns
+        List<CellItemType> cooldownReady = GetCooldownReadyTypes();
+
+        // Если нет типов с готовым кулдауном — используем типы из alwaysAvailableOnRefresh
+        List<CellItemType> fallbackTypes = new();
+        if (_data?.difficulty?.alwaysAvailableOnRefresh != null) {
+            fallbackTypes.AddRange(_data.difficulty.alwaysAvailableOnRefresh.Keys);
+        }
+
+        List<CellItemType> fillTypes = cooldownReady.Count > 0 ? cooldownReady : fallbackTypes;
+
+        if (fillTypes.Count > 0) {
+            while (assignedIndex < patterns.Count) {
+                CellItemType type = fillTypes[Random.Range(0, fillTypes.Count)];
+                ApplyItemToPattern(patterns[assignedIndex], type);
+                usedTypes.Add(type);
+                assignedIndex++;
+            }
+        }
+
+        // 3. Сбрасываем кулдауны использованных типов из refreshCooldowns
+        foreach (var type in usedTypes) {
+            if (_typeCooldowns.ContainsKey(type)) {
+                _typeCooldowns[type] = 0f;
+            }
+        }
+    }
+
+    void ApplyItemToPattern(CellSelectPattern pattern, CellItemType type) {
+        CellUiItem item = CreateItemForType(type);
+
+        foreach (var pos in pattern.Cells) {
+            CellUi cell = _cellsMap.GetValueOrDefault(pos);
+            if (cell != null) {
+                cell.SetItem(item);
+                if (cellColors.TryGetValue(type, out Color color))
+                    cell.SetColor(color);
             }
         }
     }

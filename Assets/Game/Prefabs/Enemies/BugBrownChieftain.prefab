@@ -34,6 +34,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &1631800625781132739
 SpriteRenderer:
+  serializedVersion: 2
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -79,6 +80,7 @@ SpriteRenderer:
   m_SortingLayerID: -1998343457
   m_SortingLayer: 2
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: e7546ef0381a1472caf56e866980ac8b, type: 3}
   m_Color: {r: 0, g: 0, b: 0, a: 0.5019608}
   m_FlipX: 0
@@ -88,7 +90,6 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &995454371256167015
 GameObject:
@@ -494,6 +495,7 @@ SortingGroup:
   m_SortingLayer: 4
   m_SortingOrder: 0
   m_SortAtRoot: 0
+  m_Sort3DAs2D: 0
 --- !u!114 &8997564807077563937
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -507,14 +509,220 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
-    SerializedFormat: 0
-    SerializedBytes: 01010a00000061006e0069006d006100740069006f006e0073002f00000000017a000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e00440069006300740069006f006e00610072007900600032005b005b0041006e0069006d006100740069006f006e00530074006100740065002c00200041007300730065006d0062006c0079002d004300530068006100720070005d002c005b005300700069006e00650041006e0069006d006100740069006f006e0044006100740061002c00200041007300730065006d0062006c0079002d004300530068006100720070005d005d002c0020006d00730063006f0072006c00690062000000000001010800000063006f006d00700061007200650072002f01000000015e000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e0045006e0075006d0045007100750061006c0069007400790043006f006d0070006100720065007200600031005b005b0041006e0069006d006100740069006f006e00530074006100740065002c00200041007300730065006d0062006c0079002d004300530068006100720070005d005d002c0020006d00730063006f0072006c0069006200010000000600000000000000000705060400000000000000042e1d010200000024006b000100000000000000010102000000240076002f0200000001230000005300700069006e00650041006e0069006d006100740069006f006e0044006100740061002c00200041007300730065006d0062006c0079002d00430053006800610072007000020000002701040000006e0061006d0065000104000000490064006c00650017010500000074007200610063006b00000000002b01040000006c006f006f007000011d010800000061006400640041006600740065007200000000000000000001011300000064006f006e00740049006e0074006500720072007500700074005300740061007400650073002f03000000014e000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e004c00690073007400600031005b005b0041006e0069006d006100740069006f006e00530074006100740065002c00200041007300730065006d0062006c0079002d004300530068006100720070005d005d002c0020006d00730063006f0072006c00690062000300000006000000000000000007050505042e1d010200000024006b000200000000000000010102000000240076003002000000040000002701040000006e0061006d0065000104000000570061006c006b0017010500000074007200610063006b00000000002b01040000006c006f006f007000011d010800000061006400640041006600740065007200000000000000000001011300000064006f006e00740049006e00740065007200720075007000740053007400610074006500730030030000000500000006000000000000000007050505042e1d010200000024006b000500000000000000010102000000240076003002000000060000002701040000006e0061006d006500010300000048006900740017010500000074007200610063006b00010000002b01040000006c006f006f007000001d010800000061006400640041006600740065007200000000000000000001011300000064006f006e00740049006e00740065007200720075007000740053007400610074006500730030030000000700000006000000000000000007050505042e1d010200000024006b000300000000000000010102000000240076003002000000080000002701040000006e0061006d00650001050000004400650061007400680017010500000074007200610063006b00000000002b01040000006c006f006f007000001d010800000061006400640041006600740065007200000000000000000001011300000064006f006e00740049006e0074006500720072007500700074005300740061007400650073003003000000090000000600000000000000000705050507050101060000006500760065006e00740073002f040000000184000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e00440069006300740069006f006e00610072007900600032005b005b00530079007300740065006d002e0053007400720069006e0067002c0020006d00730063006f0072006c00690062005d002c005b0055006e0069007400790045006e00670069006e0065002e004500760065006e00740073002e0055006e006900740079004500760065006e0074002c00200055006e0069007400790045006e00670069006e0065002e0043006f00720065004d006f00640075006c0065005d005d002c0020006d00730063006f0072006c00690062000a00000001010800000063006f006d00700061007200650072002f050000000159000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e00470065006e00650072006900630045007100750061006c0069007400790043006f006d0070006100720065007200600031005b005b00530079007300740065006d002e0053007400720069006e0067002c0020006d00730063006f0072006c00690062005d005d002c0020006d00730063006f0072006c00690062000b000000050600000000000000000705
+    SerializedFormat: 2
+    SerializedBytes: 
     ReferencedUnityObjects: []
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes: []
+    SerializationNodes:
+    - Name: animations
+      Entry: 7
+      Data: 0|System.Collections.Generic.Dictionary`2[[AnimationState, Assembly-CSharp],[SpineAnimationData,
+        Assembly-CSharp]], mscorlib
+    - Name: comparer
+      Entry: 7
+      Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[AnimationState,
+        Assembly-CSharp]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 12
+      Data: 4
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 1
+    - Name: $v
+      Entry: 7
+      Data: 2|SpineAnimationData, Assembly-CSharp
+    - Name: name
+      Entry: 1
+      Data: Idle
+    - Name: track
+      Entry: 3
+      Data: 0
+    - Name: loop
+      Entry: 5
+      Data: true
+    - Name: addAfter
+      Entry: 3
+      Data: 0
+    - Name: dontInterruptStates
+      Entry: 7
+      Data: 3|System.Collections.Generic.List`1[[AnimationState, Assembly-CSharp]],
+        mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 2
+    - Name: $v
+      Entry: 7
+      Data: 4|SpineAnimationData, Assembly-CSharp
+    - Name: name
+      Entry: 1
+      Data: Walk
+    - Name: track
+      Entry: 3
+      Data: 0
+    - Name: loop
+      Entry: 5
+      Data: true
+    - Name: addAfter
+      Entry: 3
+      Data: 0
+    - Name: dontInterruptStates
+      Entry: 7
+      Data: 5|System.Collections.Generic.List`1[[AnimationState, Assembly-CSharp]],
+        mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 5
+    - Name: $v
+      Entry: 7
+      Data: 6|SpineAnimationData, Assembly-CSharp
+    - Name: name
+      Entry: 1
+      Data: Hit
+    - Name: track
+      Entry: 3
+      Data: 1
+    - Name: loop
+      Entry: 5
+      Data: false
+    - Name: addAfter
+      Entry: 3
+      Data: 0
+    - Name: dontInterruptStates
+      Entry: 7
+      Data: 7|System.Collections.Generic.List`1[[AnimationState, Assembly-CSharp]],
+        mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 3
+    - Name: $v
+      Entry: 7
+      Data: 8|SpineAnimationData, Assembly-CSharp
+    - Name: name
+      Entry: 1
+      Data: Death
+    - Name: track
+      Entry: 3
+      Data: 0
+    - Name: loop
+      Entry: 5
+      Data: false
+    - Name: addAfter
+      Entry: 3
+      Data: 0
+    - Name: dontInterruptStates
+      Entry: 7
+      Data: 9|System.Collections.Generic.List`1[[AnimationState, Assembly-CSharp]],
+        mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: events
+      Entry: 7
+      Data: 10|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[UnityEngine.Events.UnityEvent,
+        UnityEngine.CoreModule]], mscorlib
+    - Name: comparer
+      Entry: 7
+      Data: 11|System.Collections.Generic.GenericEqualityComparer`1[[System.String,
+        mscorlib]], mscorlib
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
   spine: {fileID: 185172563017208783}
   debug: 0
 --- !u!1 &1853764336120132008
@@ -744,7 +952,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
-    SerializedFormat: 0
+    SerializedFormat: 2
     SerializedBytes: 
     ReferencedUnityObjects: []
     SerializedBytesString: 
@@ -1197,6 +1405,7 @@ MeshRenderer:
   m_SortingLayerID: 47421343
   m_SortingLayer: 4
   m_SortingOrder: 1
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &185172563017208783
 MonoBehaviour:
@@ -6260,7 +6469,7 @@ ParticleSystem:
     vectorLabel1_3: W
 --- !u!199 &2713961213811166733
 ParticleSystemRenderer:
-  serializedVersion: 6
+  serializedVersion: 7
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -6306,6 +6515,7 @@ ParticleSystemRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_RenderMode: 0
   m_MeshDistribution: 0
   m_SortMode: 0
@@ -6337,7 +6547,6 @@ ParticleSystemRenderer:
   m_MeshWeighting1: 1
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
-  m_MaskInteraction: 0
 --- !u!1 &8622970357151819967
 GameObject:
   m_ObjectHideFlags: 0
@@ -11162,7 +11371,7 @@ ParticleSystem:
     vectorLabel1_3: W
 --- !u!199 &7100444834952797450
 ParticleSystemRenderer:
-  serializedVersion: 6
+  serializedVersion: 7
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -11208,6 +11417,7 @@ ParticleSystemRenderer:
   m_SortingLayerID: 961700441
   m_SortingLayer: 5
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_RenderMode: 0
   m_MeshDistribution: 0
   m_SortMode: 0
@@ -11239,7 +11449,6 @@ ParticleSystemRenderer:
   m_MeshWeighting1: 1
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
-  m_MaskInteraction: 0
 --- !u!1 &8893492209954062038
 GameObject:
   m_ObjectHideFlags: 0

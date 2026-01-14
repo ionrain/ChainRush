@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using MoreMountains.Tools;
+using Sirenix.Utilities;
 
 public enum FullProgressSpawnAction { Continue, Stop }
 public enum EnemySpawnEventType { Started, InProgress, Finished, Canceled, Cleared }
@@ -40,8 +41,8 @@ public struct EnemySpawnEvent {
     }   
 }
 
-public class EnemyManager : SimplePoolUser, MMEventListener<EnemySpawnTriggerEvent>, MMEventListener<SkillLevelUpEvent>, 
-                            /*MMEventListener<LevelStageStateEvent>, */MMEventListener<LevelLoadEvent> {
+public class EnemyManager : SimplePoolUser, MMEventListener<EnemySpawnTriggerEvent>, 
+                            MMEventListener<SkillLevelUpEvent>, MMEventListener<LevelLoadEvent> {
     [Header("Enemy Manager")]
     [SerializeField] GameNotificationTrigger notificationTrigger;
     [SerializeField] Transform defaultTarget;
@@ -72,6 +73,7 @@ public class EnemyManager : SimplePoolUser, MMEventListener<EnemySpawnTriggerEve
     int EnemiesCount => _enemies.Count;
     public int MaxFillCount { get; set; }
     public int MaxSimulteneousCount { get; set; }
+    bool CheckPositions => spawnBlock != 0 || targetLayers != 0;
 
     EnemyGenerationData _data;
     bool _dataOK = false;
@@ -104,51 +106,44 @@ public class EnemyManager : SimplePoolUser, MMEventListener<EnemySpawnTriggerEve
         }
     }
 
-    /*public void OnMMEvent(LevelStageStateEvent e) {
-        if (e.State == LevelStageState.Battle && e.EventStage == EventStage.Process && e.Data != null) {
-            LevelStage stage = e.Data.Stage;
+    public void StartSpawn(LevelData levelData) {
+        _data = levelData.enemyData;
+        _dataOK = _data != null && _data.waves != null && _data.triggers != null;
+        _proportionsOK = _dataOK && _data.enemyProportions != null && _data.enemyProportions.Count > 0;
+        _fillTimings.Clear();
+        _fillEnemyShares.Clear();
+        _waveTimings.Clear();
+        _nextFillTime = 0;
+        _duration = levelData.duration;
+        _progress = 0;
+        _timeInSeconds = 0;
+        _time = 0;
+        EnemySpawnEvent.Trigger(EnemySpawnEventType.Started);
+
+        if (_dataOK) {
+            MaxFillCount = _data.maxFillCount;
+            MaxSimulteneousCount = _data.maxSimulteneousCount;
+
+            _waveTimings.AddRange(_data.waves.Keys);
+            _waveTimings.Sort();
+
+            _data.triggers.ForEach(t => t.Value.Reset());
+
+            if (_proportionsOK) {
+                _fillTimeIndex = 0;
+                _fillTimings.AddRange(_data.enemyProportions.Keys);
+                _fillTimings.Sort();
+                _fillTimingsFinal = _fillTimings.Count - 1;
+                if (_fillTimings[0] == 0)
+                    UpdateEnemyShares();                
+                else
+                    _nextFillTime = _fillTimings[0];
+            }
             _spawning = true;
-            _data = stage.enemyData;
-            _dataOK = _data != null && _data.waves != null && _data.triggers != null;
-            _proportionsOK = _dataOK && _data.enemyProportions != null && _data.enemyProportions.Count > 0;
-            _fillTimings.Clear();
-            _fillEnemyShares.Clear();
-            _waveTimings.Clear();
-            _nextFillTime = 0;
-            _duration = stage.battleDuration;
-            _progress = 0;
-            _timeInSeconds = 0;
-            _time = 0;
-            EnemySpawnEvent.Trigger(EnemySpawnEventType.Started);
-
-            if (_dataOK) {
-                MaxFillCount = _data.maxFillCount;
-                MaxSimulteneousCount = _data.maxSimulteneousCount;
-
-                _waveTimings.AddRange(_data.waves.Keys);
-                _waveTimings.Sort();
-
-                _data.triggers.ForEach(t => t.Value.Reset());
-
-                if (_proportionsOK) {
-                    _fillTimeIndex = 0;
-                    _fillTimings.AddRange(_data.enemyProportions.Keys);
-                    _fillTimings.Sort();
-                    _fillTimingsFinal = _fillTimings.Count - 1;
-                    if (_fillTimings[0] == 0)
-                        UpdateEnemyShares();                
-                    else
-                        _nextFillTime = _fillTimings[0];
-                }
-                //UpdateFillBounds();
-            } else
-                Debug.LogErrorFormat("EnemyManager LevelStageStateEvent: data is not OK for {0}", stage.id);
-        } else if (e.State == LevelStageState.Complete && e.EventStage == EventStage.Start) {
-            var enemies = new List<Enemy>(_enemies);
-            enemies.ForEach(t => t.Kill());
-            _spawning = false;
-        }
-    }*/
+            //UpdateFillBounds();
+        } else
+            Debug.LogError("EnemyManager StartSpawn: data is not OK");
+    }
 
     void FixedUpdate() {
         if (_dataOK && _spawning) {
@@ -327,8 +322,8 @@ public class EnemyManager : SimplePoolUser, MMEventListener<EnemySpawnTriggerEve
 
     
     bool CheckSpawnPosition(Vector2 position) {
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(position, 1f, _scanLayers);
         bool result = false;
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(position, 1f, _scanLayers);
         foreach (Collider2D collider in colliders) {
             int layer = 1 << collider.gameObject.layer;
             if ((layer & spawnBlock) != 0)
@@ -346,7 +341,7 @@ public class EnemyManager : SimplePoolUser, MMEventListener<EnemySpawnTriggerEve
             int attempt = 0;
             while (attempt <= maxSpawnAttempts) {
                 Vector2 pos = RandomPositionInsideBox(position, size);
-                if (CheckSpawnPosition(pos)) {
+                if (!CheckPositions || CheckSpawnPosition(pos)) {
                     success = true;
                     return pos;
                 }
@@ -379,7 +374,7 @@ public class EnemyManager : SimplePoolUser, MMEventListener<EnemySpawnTriggerEve
                     break;
             }
 
-            if (CheckSpawnPosition(pos)) {
+            if (!CheckPositions || CheckSpawnPosition(pos)) {
                 success = true;
                 return pos;
             }
@@ -512,8 +507,10 @@ public class EnemyManager : SimplePoolUser, MMEventListener<EnemySpawnTriggerEve
     }
 
     public void OnMMEvent(LevelLoadEvent e) {
-        /*if (e.Stage == EventStage.Start && e.Data != null && e.Data.attributeMultipliers != null) 
-            Initialize(e.Data.attributeMultipliers, e.Data.GetEnemyPoolData());*/
+        if (e.Stage == EventStage.Start && e.Data != null && e.Data.enemyMultipliers != null) {
+            Initialize(e.Data.enemyMultipliers, e.Data.GetEnemyPoolData());
+            StartSpawn(e.Data);
+        }
     }
 
     /*public void SetHealthbarVisibiity(bool visible) {
@@ -530,7 +527,6 @@ public class EnemyManager : SimplePoolUser, MMEventListener<EnemySpawnTriggerEve
 
     void OnEnable() {
         this.MMEventStartListening<LevelLoadEvent>();
-        //this.MMEventStartListening<LevelStageStateEvent>();
         this.MMEventStartListening<EnemySpawnTriggerEvent>();
         this.MMEventStartListening<SkillLevelUpEvent>();
 
@@ -538,7 +534,6 @@ public class EnemyManager : SimplePoolUser, MMEventListener<EnemySpawnTriggerEve
 
     void OnDisable() {
         this.MMEventStopListening<LevelLoadEvent>();
-        //this.MMEventStopListening<LevelStageStateEvent>();
         this.MMEventStopListening<EnemySpawnTriggerEvent>();
         this.MMEventStopListening<SkillLevelUpEvent>();
     }

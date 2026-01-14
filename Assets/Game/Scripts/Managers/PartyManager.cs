@@ -136,14 +136,7 @@ public class PartyManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEv
             multipliers.ForEach(pair => result[pair.Key] = pair.Value + buff);
         }
         return result;
-    }   
-
-    /*public void OnMMEvent(BuffSelectEvent e) {
-        if (e.EventStage == EventStage.End && e.Data != null && e.Data.Count > 0) {
-            e.Data.ForEach(t => _buffs[t.attribute] = _buffs.GetValueOrDefault(t.attribute) + t.value);
-            ApplySupportMultipliers(null, true);
-        }
-    }*/
+    }
 
     public void OnMMEvent(CellUiItemSelectEvent e) {
         if (e.Item == null || e.Count <= 0) return;

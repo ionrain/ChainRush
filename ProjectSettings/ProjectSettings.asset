@@ -174,7 +174,7 @@ PlayerSettings:
     Android: com.morboo.chainrush
     Standalone: com.morboo.chainrush
     Tizen: com.Company.ProductName
-    iPhone: com.morboo.battlesweeper
+    iPhone: com.morboo.chainrush
     tvOS: com.Company.ProductName
   buildNumber:
     Standalone: 0

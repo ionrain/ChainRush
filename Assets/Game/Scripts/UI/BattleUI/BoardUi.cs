@@ -52,6 +52,8 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
     [SerializeField] BoostersData boostersData;
 
     [Header("Refresh Settings")]
+    [SerializeField] float minIntervalBetweenRefreshes = 1f;
+    [SerializeField] float refreshDuration = 1f;
     [SerializeField] Progressbar refreshProgressbar;
     [SerializeField] TextMeshProUGUI refreshLabel;
     [SerializeField] LocalizedString refreshLabelFormat;
@@ -168,6 +170,7 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
         if (_data?.difficulty == null) return;
 
         ApplyPatternsToBoard();
+        _cellsMap.ForEach(t => { if (t.Value != null) t.Value.SetActive(true); });
         BoardUiEvent.Trigger(BoardUiEventType.SetupItems, this);
     }
         
@@ -542,6 +545,12 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
             if (cell != null)
                 CellUiItemSelectEvent.Trigger(cell.Item, _selectedCells.Count);
             ClearSelection();
+
+            // После успешного выбора ячеек устанавливаем минимальный интервал до следующего обновления
+            _refreshTimer = minIntervalBetweenRefreshes;
+            refreshProgressbar?.SetValue(_refreshTimer);
+            refreshLabel?.SetText(string.Format(_refreshLabelFormat, Mathf.CeilToInt(_refreshTimer)));
+            _cellsMap.ForEach(t => { if (t.Value != null) t.Value.SetActive(false); });
         }
     }
 

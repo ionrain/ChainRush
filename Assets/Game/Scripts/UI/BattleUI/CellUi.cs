@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using MoreMountains.Tools;
+using UnityEngine.Events;
 
 public enum CellItemType { None = 0, Unit = 1, Buff = 2, Booster = 4, SoftCurrency = 8 }
 
@@ -38,12 +39,17 @@ public class CellUi : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPo
     [SerializeField] Image background;
     [SerializeField] Image icon;
     [SerializeField] float iconSizePercent = 50;
-    [SerializeField] Color normalColor = Color.white;
-    [SerializeField] Color highlightColor = Color.yellow;
+
+    [Header("Events")]
+    [SerializeField] UnityEvent OnSelect;
+    [SerializeField] UnityEvent OnDeSelect;
+    [SerializeField] UnityEvent OnActivate;
+    [SerializeField] UnityEvent OnDeactivate;    
 
     public Vector2Int Position { get; private set; }
     public CellUiItem Item { get; private set; }
     public bool Highlighted { get; private set; }
+    public bool Active { get; private set; } = true;
 
 
     public void Setup(Vector2Int position, float cellSize) {
@@ -70,32 +76,46 @@ public class CellUi : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPo
     }
 
     public void SetColor(Color color) {
-        if (background != null) {
+        if (background != null)
             background.color = color;
-            normalColor = color;
-        }
     }
 
     public void Highlight(bool value) {
         if (Highlighted != value) {
             Highlighted = value;
-            if (background != null)
-                background.color = value ? highlightColor : normalColor;
+            if (value)
+                OnSelect?.Invoke();
+            else
+                OnDeSelect?.Invoke();
+        }
+    }
+
+    public void SetActive(bool value) {
+        if (Active != value) {
+            Active = value;
+            if (value)
+                OnActivate?.Invoke();
+            else
+                OnDeactivate?.Invoke();
         }
     }
 
     public void OnPointerDown(PointerEventData eventData) {
-        Highlight(true);
-        OnCellPointerDownEvent?.Invoke(this);
+        if (Active) {
+            Highlight(true);
+            OnCellPointerDownEvent?.Invoke(this);
+        }
     }
 
     public void OnPointerUp(PointerEventData eventData) {
-        Highlight(false);
-        OnCellPointerUpEvent?.Invoke(this);
+        if (Active) {
+            Highlight(false);
+            OnCellPointerUpEvent?.Invoke(this);
+        }
     }
 
     public void OnPointerEnter(PointerEventData eventData) {
-        if (eventData.dragging) {
+        if (Active && eventData.dragging) {
             Highlight(true);
             OnCellPointerEnterEvent?.Invoke(this);
         }
@@ -110,7 +130,9 @@ public class CellUi : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPo
     }
 
     public void OnEndDrag(PointerEventData eventData) {
-        Highlight(true);
-        OnCellPointerUpEvent?.Invoke(this);
+        if (Active) {
+            Highlight(false);
+            OnCellPointerUpEvent?.Invoke(this);
+        }
     }
 }

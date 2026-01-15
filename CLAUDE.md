@@ -45,8 +45,11 @@ public class MyClass : MonoBehaviour, MMEventListener<LevelLoadEvent> {
 | `LevelLoadEvent` | Level initialization |
 | `LevelStageStateEvent` | Stage transitions (Start/Battle/ClearBonus/Complete) |
 | `LevelResultEvent` | Level success/failure |
-| `BoardEvent` | Cell grid setup |
+| `LevelProgressEvent` | Level time progress (0-1) for dynamic difficulty |
+| `BoardEvent` | Cell grid setup (Core Board) |
+| `BoardUiEvent` | UI board setup/items (SetupCells, SetupItems, Ready) |
 | `CellEvent` | Cell tap/open/reveal |
+| `CellUiItemSelectEvent` | Player selects cells in UI (Item + Count) |
 | `InputEvent` | Press/Release/Tap/Move |
 | `PartyUnitEvent` | Unit create/merge/death |
 | `EnemySpawnEvent` | Enemy wave spawning |
@@ -67,10 +70,13 @@ public class MyClass : MonoBehaviour, MMEventListener<LevelLoadEvent> {
 
 All game content is ScriptableObject-based in `Assets/Game/Scripts/Data/`:
 
-- **LevelData** - Level config with stages, board size, enemy waves
+- **LevelData** - Level config with stages, board size, enemy waves, difficulty reference
+- **LevelDifficultyData** - Board refresh settings, patterns, item distribution
 - **UnitData** - Character stats, skills, merge states
 - **LocationData** - Groups of levels with progression
 - **ResourcesData** - Economy with production system
+- **BuffsData** - Buff grades per attribute
+- **BoostersData** - Booster types with multipliers
 
 ### Board/Cell System
 
@@ -81,6 +87,36 @@ All game content is ScriptableObject-based in `Assets/Game/Scripts/Data/`:
 - **CellUnit/CellTrap/CellItem** - Specialized cell behaviors
 
 Cell positions use `Vector2Int`. Neighbor detection via `IsNear()` (8-directional).
+
+### BoardUI System
+
+`Assets/Game/Scripts/UI/BattleUI/`
+
+- **BoardUI.cs** - UI grid with pattern generation and item distribution
+- **CellUI.cs** - Individual UI cell with drag/swipe selection
+
+**Pattern System:**
+- Patterns (SelectOne, Line, Corner, Box, Zigzag) defined in `LevelDifficultyData.cellPatterns`
+- All cells in a pattern share the same `CellUiItem`
+- Players swipe to select adjacent cells with matching items
+
+**Item Distribution (`ApplyPatternsToBoard`):**
+1. `alwaysAvailableOnRefresh` - guaranteed fractions (e.g., Unit=0.5 means 50% patterns get Unit)
+2. `refreshCooldowns` - types with cooldowns fill remaining patterns when ready
+3. Fallback to `alwaysAvailableOnRefresh` types if no cooldown-ready types
+
+**Cell Selection Events:**
+```csharp
+// CellUiItemSelectEvent triggered when player completes selection
+public struct CellUiItemSelectEvent {
+    public CellUiItem Item;  // Type, Icon, Id
+    public int Count;        // Number of selected cells
+}
+```
+
+**PartyManager handles selection:**
+- `CellItemType.Unit` → Creates units with `UnitMergeState` based on count (5 cells = Fifth)
+- `CellItemType.Buff` → Applies buff with `Grade` based on count (7+ cells = Divine)
 
 ### Level Flow
 
@@ -123,6 +159,40 @@ Assets/Game/Scripts/
 - **Addressables**: Asset streaming
 - **Unity Localization**: Multi-language support
 
+## Key Enums
+
+```csharp
+// Cell item types for BoardUI
+public enum CellItemType { None, Unit, Buff, Booster, SoftCurrency }
+
+// Pattern shapes for cell generation
+public enum CellSelectPatternType { None, SelectOne, Line, Corner, Box, Zigzag }
+
+// Unit power levels (5 tiers, index 0-4)
+public enum UnitMergeState { First, Second, Third, Forth, Fifth }
+
+// Buff/item quality grades (7 tiers, index 0-6)
+public enum Grade { Common, Uncommon, Rare, Epic, Legendary, Mythical, Divine }
+```
+
+## LevelDifficultyData Structure
+
+```csharp
+public class LevelDifficultyData : SerializedScriptableObject {
+    // Global board refresh interval (AnimationCurve based on level progress 0-1)
+    public AnimationCurve refreshInterval;
+
+    // Pattern types and their max sizes
+    public Dictionary<CellSelectPatternType, int> cellPatterns;
+
+    // Per-type cooldowns (AnimationCurve based on progress)
+    public Dictionary<CellItemType, AnimationCurve> refreshCooldowns;
+
+    // Guaranteed fractions (0.5 = 50% of patterns get this type)
+    public Dictionary<CellItemType, float> alwaysAvailableOnRefresh;
+}
+```
+
 ## Patterns to Follow
 
 1. **New systems**: Create event struct, use MMEventListener pattern
@@ -130,3 +200,4 @@ Assets/Game/Scripts/
 3. **Persistence**: Extend `GameData`, hook into `GameSettingsEvent`
 4. **Game content**: Use ScriptableObjects, not hardcoded values
 5. **Resource tracking**: Use `ResourceSource`/`ResourceTarget` enums for analytics
+6. **BoardUI items**: Add type to `CellItemType`, handle in `CreateItemForType()` and `PartyManager`

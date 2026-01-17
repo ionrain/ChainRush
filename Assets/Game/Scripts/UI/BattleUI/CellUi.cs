@@ -42,7 +42,7 @@ public class CellUi : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPo
 
     [Header("Events")]
     [SerializeField] UnityEvent OnSelect;
-    [SerializeField] UnityEvent OnDeSelect;
+    [SerializeField] UnityEvent OnDeselect;
     [SerializeField] UnityEvent OnActivate;
     [SerializeField] UnityEvent OnDeactivate;    
 
@@ -86,7 +86,7 @@ public class CellUi : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPo
             if (value)
                 OnSelect?.Invoke();
             else
-                OnDeSelect?.Invoke();
+                OnDeselect?.Invoke();
         }
     }
 
@@ -95,8 +95,10 @@ public class CellUi : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPo
             Active = value;
             if (value)
                 OnActivate?.Invoke();
-            else
+            else {
                 OnDeactivate?.Invoke();
+                Highlight(false);
+            }
         }
     }
 

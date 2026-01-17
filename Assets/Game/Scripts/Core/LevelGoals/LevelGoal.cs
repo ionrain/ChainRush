@@ -18,20 +18,18 @@ public struct LevelGoalEvent {
 
 public class LevelGoal {
     [SerializeField] protected LevelGoalType goalType;
-    [SerializeField] protected int amount;
 
     public LevelGoalType Type => goalType;
     public bool Achieved { get; protected set; }
-    public virtual int Amount => amount;
+    public virtual int Amount => 1;
     public virtual bool CanBeCompleted => !Achieved && CurrentAmount >= Amount;
     public int CurrentAmount { get; protected set; }
-    public virtual bool IsValid => amount > 0;
+    public virtual bool IsValid => true;
 
 
     public LevelGoal() { }
 
     public LevelGoal(LevelGoalType goalType, int amount = 1) {
-        this.amount = amount;
         this.goalType = goalType;
     }
 

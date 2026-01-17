@@ -75,10 +75,9 @@ public struct LevelProgressEvent {
     }
 }
 
-public class LevelManager : MonoBehaviour, MMEventListener<LevelActionEvent> {
+public class LevelManager : MonoBehaviour, MMEventListener<LevelActionEvent>, MMEventListener<LevelGoalResultEvent> {
     [SerializeField] SpriteRenderer background;
     [SerializeField] AllLocationsData locations;
-    [SerializeField] LootManager lootManager;
     [SerializeField] UnityEvent OnLevelLoaded;
 
     LevelData _data;
@@ -121,7 +120,7 @@ public class LevelManager : MonoBehaviour, MMEventListener<LevelActionEvent> {
 
     protected IEnumerator EndLevel(LevelResult result, float delay = 0) {
         _result = result;
-        if (_data != null && lootManager != null) {
+        if (_data != null) {
             if (delay > 0)
                 yield return new WaitForSeconds(delay);
 
@@ -135,7 +134,6 @@ public class LevelManager : MonoBehaviour, MMEventListener<LevelActionEvent> {
 
             yield return null;
             TriggerLevelResultEvent(result);
-            lootManager.TransferLoot();
         } else
             Debug.Log("GameLevelManager EndLevel: LevelData or Party or LootManager is NULL");
     }
@@ -177,19 +175,28 @@ public class LevelManager : MonoBehaviour, MMEventListener<LevelActionEvent> {
     }
 
     protected void TriggerLevelResultEvent(LevelResult result) {
-        if (lootManager != null )
-            LevelResultEvent.Trigger(result, new LevelResultData(_data, lootManager.GetRewards(), _stageIndex, (int)_time));
-        else
-            Debug.LogError("LevelManager TriggerLevelResultEvent: LootManager or ScoreManager is NULL");
+        LevelResultEvent.Trigger(result, new LevelResultData(_data, new List<Reward>(), _stageIndex, (int)_time));
+    }
+
+    public void OnMMEvent(LevelGoalResultEvent e) {
+        if (e.Stage == EventStage.Start && e.Goal != null) {
+            bool achieved = e.Goal.Achieved;
+            TriggerLevelResultEvent(e.Goal.Achieved ? LevelResult.Success : LevelResult.Failure);
+            if (achieved && _data.Goal.State < RewardState.Ready)
+                _data.Goal.SetState(RewardState.Ready);
+            e.Goal.SetAchieved(false);
+        } else
+            Debug.LogError("LevelManager LevelGoalResultEvent: Something went wrong");
     }
 
     void OnEnable() {
         this.MMEventStartListening<LevelActionEvent>();
-        //this.MMEventStartListening<LevelStageStateEvent>();
+        this.MMEventStartListening<LevelGoalResultEvent>();
     }
 
     void OnDisable() {
         this.MMEventStopListening<LevelActionEvent>();
-        //this.MMEventStopListening<LevelStageStateEvent>();
+        this.MMEventStopListening<LevelGoalResultEvent>();
     }
+
 }

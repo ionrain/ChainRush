@@ -120,6 +120,12 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
             refreshLabel.SetText(string.Format(_refreshLabelFormat, Mathf.CeilToInt(_refreshTimer)));
 
         if (_refreshTimer <= 0) {
+            // Если игрок начал выбор, но не успел завершить — засчитываем то, что успел
+            if (_isSelecting && _selectedCells.Count > 0) {
+                _isSelecting = false;
+                EndSelection();
+            }
+
             RefreshBoard();
             _refreshTimer = _refreshInterval;
         }

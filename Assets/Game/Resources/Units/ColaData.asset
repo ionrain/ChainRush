@@ -869,7 +869,7 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-  defaultUnit: 0
+  defaultUnit: 1
   title:
     m_TableReference:
       m_TableCollectionName: GUID:3780f36a553b640fbbe57d99ea3ba447

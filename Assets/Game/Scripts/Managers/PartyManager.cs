@@ -11,14 +11,12 @@ public class PartyManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEv
     [SerializeField] AttributesData attributes;
     [SerializeField] Unit unitPrefab;
     [SerializeField] UnitMergeState maxUnitLevel = UnitMergeState.Fifth;
-    [SerializeField] BoxCollider2D spawnArea;
+    [SerializeField] Dictionary<UnitSpeciality, BoxCollider2D> spawnAreas = new();
 
     public bool Valid => _units.Count > 0;
 
     Dictionary<Attribute, float> _buffs = new();
     List<Unit> _units = new List<Unit>();
-    Vector2 _spawnSize;
-    Transform _spawnRoot;
 
     bool _showHealthBars = true;
 
@@ -42,13 +40,7 @@ public class PartyManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEv
 
     public void Setup(List<UnitData> selected = null) {
         _units.Clear();
-
-        if (spawnArea != null) {
-            _spawnSize = spawnArea.size;
-            _spawnRoot = spawnArea.transform;
-        }
-
-        if (selected != null)
+        if (selected != null && spawnAreas != null && spawnAreas.Count > 0)
             selected.ForEach(t => CreateUnit(t, UnitMergeState.First));
     }
 
@@ -58,9 +50,11 @@ public class PartyManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEv
     }
 
     void CreateUnit(UnitData data, UnitMergeState mergeState) {
-        Vector2 half = data.IsMelee ? new Vector2(0, _spawnSize.y * 0.5f) : new Vector2(_spawnSize.y * 0.5f, _spawnSize.y);
-        Vector2 position = new Vector2(Random.Range(0, _spawnSize.x), Random.Range(half.x, half.y)) - _spawnSize * 0.5f + (Vector2)_spawnRoot.position;
-        Unit unit = Instantiate(unitPrefab, position, Quaternion.identity, _spawnRoot);
+        var area = spawnAreas.GetValueOrDefault(data.speciality, null);
+        if (area == null) return;
+
+        Vector2 position = new Vector2(Random.Range(0, area.size.x), Random.Range(0, area.size.y)) - area.size * 0.5f + (Vector2)area.transform.position;
+        Unit unit = Instantiate(unitPrefab, position, Quaternion.identity, area.transform);
         data.ResetSkillLevels();
         unit.Setup(data, mergeState);
         unit.SetHealthbarVisibility(_showHealthBars);
@@ -148,6 +142,11 @@ public class PartyManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEv
             case CellItemType.Buff:
                 HandleBuffSelection(e.Item.Id, e.Count);
                 break;
+            case CellItemType.Booster:
+                HandleBoosterSelection(e.Item.Id, e.Count);
+                break;
+            case CellItemType.SoftCurrency:
+                break;
         }
     }
 
@@ -185,7 +184,16 @@ public class PartyManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEv
             _buffs[attribute] = _buffs.GetValueOrDefault(attribute) + value;
             ApplySupportMultipliers(null, true);
         }
-    }    
+    }
+
+    void HandleBoosterSelection(string boosterId, int count) {
+        if (!System.Enum.TryParse(boosterId, out BoosterType boosterType)) return;
+        if (boosterType == BoosterType.Heal)
+            _units.ForEach(t => t.Heal(count * 0.1f));
+        else if (boosterType == BoosterType.Bomb) {
+            
+        }
+    }
 
     void OnEnable() {
         this.MMEventStartListening<LevelLoadEvent>();

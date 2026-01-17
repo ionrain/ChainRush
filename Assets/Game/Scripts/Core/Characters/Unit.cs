@@ -22,7 +22,6 @@ public class Unit : SerializedMonoBehaviour, MMEventListener<LevelResultEvent> {
     [SerializeField] ElementsData elements;
 
     [Header("Feedbacks")]
-    [SerializeField] Transform cellPosition;
     [SerializeField] Transform deathParticlesRoot;
     [SerializeField] MMF_Player spawnFeedback;
     [SerializeField] MMF_Player mergeFeedback;
@@ -67,7 +66,7 @@ public class Unit : SerializedMonoBehaviour, MMEventListener<LevelResultEvent> {
     }
 
     public void Heal(float value) {
-        _health.ReceiveHealth(value, null);
+        _health.ReceiveHealth(value * _health.MaximumHealth, null);
         PlayCellFeedback(healFeedback);
     }
 

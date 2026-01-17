@@ -153,8 +153,9 @@ public class EnemyManager : SimplePoolUser, MMEventListener<EnemySpawnTriggerEve
 
             if (_timeInSeconds < intTime) {
                 _timeInSeconds++;
+                _progress = Mathf.Clamp01((float)_timeInSeconds / _duration);
+
                 if (_progress < 1) {
-                    _progress = Mathf.Clamp01((float)_timeInSeconds / _duration);
                     if (_proportionsOK) {
                         _fillCount = (int)(_data.enemyCountCurve.Evaluate(_progress) * MaxFillCount);
                         UpdateEnemyShares();
@@ -476,7 +477,7 @@ public class EnemyManager : SimplePoolUser, MMEventListener<EnemySpawnTriggerEve
     public void OnEnemyDead(Enemy enemy) {
         enemy.OnDead -= OnEnemyDead;
         _enemies.Remove(enemy);
-        if (!_spawning && _enemies.Count == 0)
+        if ((_progress >= 1 || !_spawning) && _enemies.Count == 0)
             StartCoroutine(LevelClearedCo());
     }
 

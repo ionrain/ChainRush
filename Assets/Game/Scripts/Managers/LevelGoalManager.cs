@@ -64,7 +64,7 @@ public struct LevelGoalResultEvent {
 }
 
 public class LevelGoalManager : SerializedMonoBehaviour, MMEventListener<EarnResourceEvent>, MMEventListener<LevelGoalProgressEvent>, MMEventListener<LevelLoadEvent>,
-    MMEventListener<ItemEvent>, MMEventListener<EnemyDeathEvent>, MMEventListener<LevelGoalEvent>, MMEventListener<LevelProgressEvent> {
+    MMEventListener<ItemEvent>, MMEventListener<EnemyDeathEvent>, MMEventListener<LevelGoalEvent>, MMEventListener<EnemySpawnEvent> {
     
     Dictionary<string, LevelGoal> _goals = new Dictionary<string, LevelGoal>();
     List<LevelGoalType> _goalTypes = new List<LevelGoalType>();
@@ -125,8 +125,9 @@ public class LevelGoalManager : SerializedMonoBehaviour, MMEventListener<EarnRes
         goal.SetCurrentAmount(goal.CurrentAmount.ApplyMathAction(action, value));
     }
 
-    public void OnMMEvent(LevelProgressEvent e) {
-        ManageGoals(LevelGoalType.Survive, MathAction.Set, e.Time);
+    public void OnMMEvent(EnemySpawnEvent e) {
+        if (e.EventType == EnemySpawnEventType.Cleared)
+            ManageGoals(LevelGoalType.Survive, MathAction.Set, 1);
     }
 
     public void OnMMEvent(EarnResourceEvent e) {
@@ -176,7 +177,7 @@ public class LevelGoalManager : SerializedMonoBehaviour, MMEventListener<EarnRes
     void SubscribeByGoalType(LevelGoalType goalType) {
         if (!_goalTypes.Contains(goalType)) {
             if (goalType == LevelGoalType.Survive) 
-                this.MMEventStartListening<LevelProgressEvent>();
+                this.MMEventStartListening<EnemySpawnEvent>();
             else if (goalType == LevelGoalType.CollectResource)
                 this.MMEventStartListening<EarnResourceEvent>();
             else if (goalType == LevelGoalType.Inventory)
@@ -193,7 +194,7 @@ public class LevelGoalManager : SerializedMonoBehaviour, MMEventListener<EarnRes
         this.MMEventStopListening<ItemEvent>();
         this.MMEventStopListening<LevelGoalEvent>();
         this.MMEventStopListening<EnemyDeathEvent>();
-        this.MMEventStopListening<LevelProgressEvent>();
+        this.MMEventStopListening<EnemySpawnEvent>();
     }
 
     void OnDisable() {

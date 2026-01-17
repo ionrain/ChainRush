@@ -13,7 +13,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: Morboo
-  productName: Chain Rush
+  productName: Slime Lords
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0, g: 0, b: 0, a: 1}
@@ -174,7 +174,7 @@ PlayerSettings:
     Android: com.morboo.chainrush
     Standalone: com.morboo.chainrush
     Tizen: com.Company.ProductName
-    iPhone: com.morboo.chainrush
+    iPhone: com.morboo.slimelords
     tvOS: com.Company.ProductName
   buildNumber:
     Standalone: 0

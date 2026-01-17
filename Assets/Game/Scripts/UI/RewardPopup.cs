@@ -41,21 +41,26 @@ public class RewardPopup : Popup<IRewardList>, MMEventListener<RewardEvent> {
 
     protected virtual IEnumerator SpawnRewards(List<Reward> rewards) {
         yield return new WaitForSecondsRealtime(initialDelay);
-        foreach (var reward in rewards) {
-            IconTextItem prefab = itemPrefabs.ContainsKey(reward.Type) ? itemPrefabs[reward.Type] : null;
-            if (prefab != null) {
-                bool isUnitReward = reward.Type == RewardType.Unit && spawnUnitRewardSeparately && unitRewardRoot != null;                
-                IconTextItem item = Instantiate(prefab, isUnitReward ? unitRewardRoot : itemsRoot);
-                string text = reward.Type == RewardType.InventoryItem ? string.Format(_inventoryPattern,
-                    ((InventoryReward)reward).Item.level + 1) : reward.Amount.ToShortString();
-                item.Setup(rewardsData.GetIcon(reward), text);
-                MMFeedbacks feedback = item.GetComponent<MMFeedbacks>();
-                if (feedback != null)
-                    feedback.PlayFeedbacks();
-                yield return new WaitForSecondsRealtime(spawnCooldown);
-                RewardFlyEvent.Trigger(EventStage.Start, reward, item.transform.position);
+        if (rewards != null) {
+            foreach (var reward in rewards) {
+                IconTextItem prefab = itemPrefabs.ContainsKey(reward.Type) ? itemPrefabs[reward.Type] : null;
+                if (prefab != null) {
+                    bool isUnitReward = reward.Type == RewardType.Unit && spawnUnitRewardSeparately && unitRewardRoot != null;                
+                    IconTextItem item = Instantiate(prefab, isUnitReward ? unitRewardRoot : itemsRoot);
+                    string text = reward.Type == RewardType.InventoryItem ? string.Format(_inventoryPattern,
+                        ((InventoryReward)reward).Item.level + 1) : reward.Amount.ToShortString();
+                    item.Setup(rewardsData.GetIcon(reward), text);
+                    MMFeedbacks feedback = item.GetComponent<MMFeedbacks>();
+                    if (feedback != null)
+                        feedback.PlayFeedbacks();
+                    yield return new WaitForSecondsRealtime(spawnCooldown);
+                    RewardFlyEvent.Trigger(EventStage.Start, reward, item.transform.position);
+                }
             }
-        }
+        } else
+            Debug.LogWarning("RewardPopup SpawnRewards: rewards is NULL. No rewards to show");
+
+
         OnRewardsShown?.Invoke();
     }
 

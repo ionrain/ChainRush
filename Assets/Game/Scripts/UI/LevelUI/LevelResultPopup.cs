@@ -14,8 +14,6 @@ public class LevelResultPopup : RewardPopup, MMEventListener<LevelResultEvent>, 
     [SerializeField] protected ConfirmationPopup confirmationPopup;
     [SerializeField] protected SceneLoader sceneLoader;   
 
-    int _totalScore;
-    int _maxScore;
     bool _useEnergy = true;
 
     public void UseEnergy(bool value) {

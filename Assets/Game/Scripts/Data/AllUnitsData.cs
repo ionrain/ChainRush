@@ -46,7 +46,6 @@ public class AllUnitsData : GameSettings {
     }
 
     public UnitData GetByName(string name) {
-    
         return units.Find(t => t.name.Equals(name));
     }
 
@@ -90,16 +89,15 @@ public class AllUnitsData : GameSettings {
         if (data.State == state)
             return false;
 
-        if (state == UnitState.Selected) {
-            int size = capacity.GetValueOrDefault(data.type);
-            List<UnitData> searchResult = units.FindAll(t => t.State == state);
-            if (searchResult.Count >= size)
-                return false;
-        }
+        if ((state == UnitState.Selected && GetCount(data.type, state) >= capacity.GetValueOrDefault(data.type))
+            || (state == UnitState.Available && GetCount(data.type, state) <= 1))
+            return false;
 
         data.SetState(state);
         return true;
     }
+
+    public int GetCount(UnitType unitType, UnitState state) => units.FindAll(t => t.type == unitType && t.State == state).Count;
 
     public override void Reset() {
         units.ForEach(t => t.Reset());

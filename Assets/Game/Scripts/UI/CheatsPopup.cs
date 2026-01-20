@@ -85,17 +85,17 @@ public class CheatsPopup : Popup<int> {
 
     void FillUnitList(TMP_Dropdown unitList) {
         #if UNITY_EDITOR || CHEATS
-        if (unitList != null && units != null) {
+        /*if (unitList != null && units != null) {
             unitList.options.Clear();
             units.units.ForEach(t => unitList.options.Add(new TMP_Dropdown.OptionData(t.Title)));
-        }
+        }*/
         #endif
     }
 
     public void UnlockUnit() {
         #if UNITY_EDITOR || CHEATS
-        if (unitUnlockList != null && units != null)
-            units.units[unitUnlockList.value].SetState(UnitState.ReadyToBeUnlocked);
+        /*if (unitUnlockList != null && units != null)
+            units.units[unitUnlockList.value].SetState(UnitState.ReadyToBeUnlocked);*/
         #endif
     }
 
@@ -133,11 +133,11 @@ public class CheatsPopup : Popup<int> {
 
     public void AddCards() {
         #if UNITY_EDITOR || CHEATS
-        if (unitList != null && unitCardInput != null && unitCardInput.text.Length > 0) {
+        /*if (unitList != null && unitCardInput != null && unitCardInput.text.Length > 0) {
             var unit = units.units[unitList.value];
             unit.AddCards(int.Parse(unitCardInput.text));
             UnitEvent.Trigger(EventStage.End, UnitEventType.CardBalanceChange, unit);
-        }
+        }*/
         #endif
     }
 }

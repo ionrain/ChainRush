@@ -19,11 +19,13 @@ public class CellUiItem {
 }
 
 public struct CellUiItemSelectEvent {
+    public EventStage Stage { get; private set; }
     public CellUiItem Item { get; private set; }
     public int Count { get; private set; }
 
     static CellUiItemSelectEvent e;
-    public static void Trigger(CellUiItem item, int count) {
+    public static void Trigger(EventStage stage, CellUiItem item, int count) {
+        e.Stage = stage;
         e.Item = item;
         e.Count = count;
         MMEventManager.TriggerEvent(e);

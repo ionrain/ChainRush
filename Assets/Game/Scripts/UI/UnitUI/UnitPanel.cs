@@ -13,6 +13,7 @@ public class UnitPanel : SerializedMonoBehaviour, MMEventListener<UnitEvent>, MM
     [Header("Tab Notification")]
     [SerializeField] GameObject tabNotification;
     [SerializeField] AllUnitsData units;
+    [SerializeField] UnitType unitType = UnitType.Normal;
 
     [Header("Avatar")]
     [SerializeField] SkeletonGraphic avatar;
@@ -39,7 +40,7 @@ public class UnitPanel : SerializedMonoBehaviour, MMEventListener<UnitEvent>, MM
     [SerializeField] Color defaultStatColor = Color.white;
     [SerializeField] Color enhancedStatColor = Color.white;
 
-    [Header("Upgrade Button")]
+    [Header("Buttons")]
     [SerializeField] BuyButton buyButton;
 
     public int SoftBalance => _soft;
@@ -117,7 +118,7 @@ public class UnitPanel : SerializedMonoBehaviour, MMEventListener<UnitEvent>, MM
         SetupLevel();
         SetupStats();
         buyButton?.UpdatePrice(new Dictionary<ResourceType, int>() { { ResourceType.SoftCurrency, _data.GetUpgradeSoftPrice() },
-                                                                         { ResourceType.UnitCard, _data.GetUpgradeCardPrice() } });        
+                                                                         { ResourceType.UnitCard, _data.GetUpgradeCardPrice() } });
     }
 
     public void CheckBalance() {
@@ -163,11 +164,13 @@ public class UnitPanel : SerializedMonoBehaviour, MMEventListener<UnitEvent>, MM
         }
     }
 
-    public void OnMMEvent(UnitEvent e) {
-        if (e.Type == UnitEventType.Select && e.Data != null && e.Stage == EventStage.Start)
-            Setup(e.Data);
-        else if (e.Stage == EventStage.End && (e.Type == UnitEventType.CardBalanceChange || e.Type == UnitEventType.LevelUp))
-            CheckBalance();
+    public void OnMMEvent(UnitEvent e) { 
+        if (e.Data != null && e.Data.type == unitType) {
+            if (e.Stage == EventStage.Start && e.Type == UnitEventType.Select)
+                Setup(e.Data);
+            else if (e.Stage == EventStage.End && (e.Type == UnitEventType.CardBalanceChange || e.Type == UnitEventType.LevelUp))
+                CheckBalance();
+        }
     }
 
     public void OnMMEvent(BalanceResourcesEvent e) {
@@ -183,9 +186,10 @@ public class UnitPanel : SerializedMonoBehaviour, MMEventListener<UnitEvent>, MM
     void UpdateTabNotification() {
         if (units != null && tabNotification != null) {
             bool show = false;
-            foreach (UnitData hero in units.units) {
-                if (hero.State == UnitState.ReadyToBeUnlocked || hero.CanBeUpgraded(_soft) || 
-                    hero.HasSkillsToBuy(_skillPoints)) {
+            var unitList = units.Get(unitType, UnitListType.All);
+            foreach (UnitData unit in unitList) {
+                if (unit.State == UnitState.ReadyToBeUnlocked || unit.CanBeUpgraded(_soft) || 
+                    unit.HasSkillsToBuy(_skillPoints)) {
                     show = true;
                     break;
                 }

@@ -10473,7 +10473,7 @@ MonoBehaviour:
           TimescaleMode: 0
           ExcludeFromHoldingPauses: 0
           ContributeToTotalDuration: 1
-          InitialDelay: 0.75
+          InitialDelay: 0
           CooldownDuration: 0
           InterruptsOnStop: 1
           NumberOfRepeats: 0
@@ -10538,8 +10538,8 @@ MonoBehaviour:
           ButtonText: Debug Play Sound
         TestStopButton:
           ButtonText: Debug Stop Sound
-        PlayMethod: 0
-        PoolSize: 10
+        PlayMethod: 3
+        PoolSize: 1
         UseLegacyEventsMode: 0
         StopSoundOnFeedbackStop: 1
         MinVolume: 1
@@ -135767,8 +135767,8 @@ MonoBehaviour:
           ButtonText: Debug Play Sound
         TestStopButton:
           ButtonText: Debug Stop Sound
-        PlayMethod: 0
-        PoolSize: 10
+        PlayMethod: 3
+        PoolSize: 1
         UseLegacyEventsMode: 0
         StopSoundOnFeedbackStop: 1
         MinVolume: 1

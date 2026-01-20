@@ -42,7 +42,8 @@ public class UnitItem : ListItem<UnitItem, UnitData>, MMEventListener<UnitEvent>
     }
 
     public void SetNotification(bool enabled) {
-        notification?.SetActive(enabled);
+        if (notification != null)
+            notification.SetActive(enabled);
     }
 
     void UpdateLockedUI() {

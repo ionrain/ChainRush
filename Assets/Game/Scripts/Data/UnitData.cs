@@ -5,6 +5,10 @@ using Sirenix.OdinInspector;
 using Spine.Unity;
 using MoreMountains.Tools;
 using System;
+using UnityEngine.Events;
+
+[Serializable]
+public class UnitDataEvent : UnityEvent<UnitData> { }
 
 public enum UnitState { Locked, ReadyToBeUnlocked, Available, Selected }
 public enum UnitSpeciality { Warrior, Assassin, Tank, Range, Mage, Support }
@@ -13,6 +17,7 @@ public enum UnitMergeState { First, Second, Third, Forth, Fifth }
 
 public class MergeStateData {
     public SkeletonDataAsset spineData;
+    public Sprite icon;
     public LocalizedString description;
     public float healthBarOffset = 1f;
     public float mass = 1f;
@@ -129,6 +134,7 @@ public class UnitData : SerializedScriptableObject, IListItemData {
     const int MAX_LEVEL = 100;
 
     public bool defaultUnit;
+    public UnitType type;
     public LocalizedString title;
     public LocalizedString shortName;
     public LocalizedString description;

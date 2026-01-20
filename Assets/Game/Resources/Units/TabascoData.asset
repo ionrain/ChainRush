@@ -200,6 +200,9 @@ MonoBehaviour:
     - Name: spineData
       Entry: 10
       Data: 0
+    - Name: icon
+      Entry: 6
+      Data: 
     - Name: description
       Entry: 7
       Data: 10|UnityEngine.Localization.LocalizedString, Unity.Localization
@@ -320,6 +323,9 @@ MonoBehaviour:
     - Name: spineData
       Entry: 10
       Data: 0
+    - Name: icon
+      Entry: 6
+      Data: 
     - Name: description
       Entry: 7
       Data: 15|UnityEngine.Localization.LocalizedString, Unity.Localization
@@ -442,6 +448,9 @@ MonoBehaviour:
     - Name: spineData
       Entry: 10
       Data: 0
+    - Name: icon
+      Entry: 6
+      Data: 
     - Name: description
       Entry: 7
       Data: 19|UnityEngine.Localization.LocalizedString, Unity.Localization
@@ -564,6 +573,9 @@ MonoBehaviour:
     - Name: spineData
       Entry: 10
       Data: 0
+    - Name: icon
+      Entry: 6
+      Data: 
     - Name: description
       Entry: 7
       Data: 23|UnityEngine.Localization.LocalizedString, Unity.Localization
@@ -867,6 +879,7 @@ MonoBehaviour:
       Entry: 8
       Data: 
   defaultUnit: 0
+  type: 2
   title:
     m_TableReference:
       m_TableCollectionName: GUID:3780f36a553b640fbbe57d99ea3ba447

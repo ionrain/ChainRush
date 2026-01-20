@@ -187,7 +187,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 12
-      Data: 4
+      Data: 1
     - Name: 
       Entry: 7
       Data: 
@@ -200,6 +200,9 @@ MonoBehaviour:
     - Name: spineData
       Entry: 10
       Data: 0
+    - Name: icon
+      Entry: 6
+      Data: 
     - Name: description
       Entry: 7
       Data: 10|UnityEngine.Localization.LocalizedString, Unity.Localization
@@ -309,372 +312,6 @@ MonoBehaviour:
       Entry: 8
       Data: 
     - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 1
-    - Name: $v
-      Entry: 7
-      Data: 14|MergeStateData, Assembly-CSharp
-    - Name: spineData
-      Entry: 10
-      Data: 0
-    - Name: description
-      Entry: 7
-      Data: 15|UnityEngine.Localization.LocalizedString, Unity.Localization
-    - Name: m_TableReference
-      Entry: 7
-      Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
-    - Name: m_TableCollectionName
-      Entry: 1
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_TableEntryReference
-      Entry: 7
-      Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
-    - Name: m_KeyId
-      Entry: 3
-      Data: 0
-    - Name: m_Key
-      Entry: 6
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_FallbackState
-      Entry: 3
-      Data: 0
-    - Name: m_WaitForCompletion
-      Entry: 5
-      Data: false
-    - Name: m_LocalVariables
-      Entry: 7
-      Data: 16|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
-        Unity.Localization]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: healthBarOffset
-      Entry: 4
-      Data: 2.3
-    - Name: mass
-      Entry: 4
-      Data: 6
-    - Name: colliderSize
-      Entry: 7
-      Data: UnityEngine.Vector2, UnityEngine.CoreModule
-    - Name: 
-      Entry: 4
-      Data: 1.4
-    - Name: 
-      Entry: 4
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: colliderOffset
-      Entry: 7
-      Data: UnityEngine.Vector2, UnityEngine.CoreModule
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 4
-      Data: 0.5
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: attributeMultipliers
-      Entry: 7
-      Data: 17|System.Collections.Generic.Dictionary`2[[Attribute, Assembly-CSharp],[System.Single,
-        mscorlib]], mscorlib
-    - Name: comparer
-      Entry: 9
-      Data: 13
-    - Name: 
-      Entry: 12
-      Data: 1
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 2
-    - Name: $v
-      Entry: 4
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 2
-    - Name: $v
-      Entry: 7
-      Data: 18|MergeStateData, Assembly-CSharp
-    - Name: spineData
-      Entry: 10
-      Data: 0
-    - Name: description
-      Entry: 7
-      Data: 19|UnityEngine.Localization.LocalizedString, Unity.Localization
-    - Name: m_TableReference
-      Entry: 7
-      Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
-    - Name: m_TableCollectionName
-      Entry: 1
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_TableEntryReference
-      Entry: 7
-      Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
-    - Name: m_KeyId
-      Entry: 3
-      Data: 0
-    - Name: m_Key
-      Entry: 6
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_FallbackState
-      Entry: 3
-      Data: 0
-    - Name: m_WaitForCompletion
-      Entry: 5
-      Data: false
-    - Name: m_LocalVariables
-      Entry: 7
-      Data: 20|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
-        Unity.Localization]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: healthBarOffset
-      Entry: 4
-      Data: 2.4
-    - Name: mass
-      Entry: 4
-      Data: 9
-    - Name: colliderSize
-      Entry: 7
-      Data: UnityEngine.Vector2, UnityEngine.CoreModule
-    - Name: 
-      Entry: 4
-      Data: 1.8
-    - Name: 
-      Entry: 4
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: colliderOffset
-      Entry: 7
-      Data: UnityEngine.Vector2, UnityEngine.CoreModule
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 4
-      Data: 0.5
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: attributeMultipliers
-      Entry: 7
-      Data: 21|System.Collections.Generic.Dictionary`2[[Attribute, Assembly-CSharp],[System.Single,
-        mscorlib]], mscorlib
-    - Name: comparer
-      Entry: 9
-      Data: 13
-    - Name: 
-      Entry: 12
-      Data: 1
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 2
-    - Name: $v
-      Entry: 4
-      Data: 3
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 3
-    - Name: $v
-      Entry: 7
-      Data: 22|MergeStateData, Assembly-CSharp
-    - Name: spineData
-      Entry: 10
-      Data: 0
-    - Name: description
-      Entry: 7
-      Data: 23|UnityEngine.Localization.LocalizedString, Unity.Localization
-    - Name: m_TableReference
-      Entry: 7
-      Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
-    - Name: m_TableCollectionName
-      Entry: 1
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_TableEntryReference
-      Entry: 7
-      Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
-    - Name: m_KeyId
-      Entry: 3
-      Data: 0
-    - Name: m_Key
-      Entry: 6
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_FallbackState
-      Entry: 3
-      Data: 0
-    - Name: m_WaitForCompletion
-      Entry: 5
-      Data: false
-    - Name: m_LocalVariables
-      Entry: 7
-      Data: 24|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
-        Unity.Localization]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: healthBarOffset
-      Entry: 4
-      Data: 3.3
-    - Name: mass
-      Entry: 4
-      Data: 12
-    - Name: colliderSize
-      Entry: 7
-      Data: UnityEngine.Vector2, UnityEngine.CoreModule
-    - Name: 
-      Entry: 4
-      Data: 2.2
-    - Name: 
-      Entry: 4
-      Data: 2.5
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: colliderOffset
-      Entry: 7
-      Data: UnityEngine.Vector2, UnityEngine.CoreModule
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 4
-      Data: 0.75
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: attributeMultipliers
-      Entry: 7
-      Data: 25|System.Collections.Generic.Dictionary`2[[Attribute, Assembly-CSharp],[System.Single,
-        mscorlib]], mscorlib
-    - Name: comparer
-      Entry: 9
-      Data: 13
-    - Name: 
-      Entry: 12
-      Data: 1
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 2
-    - Name: $v
-      Entry: 4
-      Data: 4
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
       Entry: 13
       Data: 
     - Name: 
@@ -682,11 +319,11 @@ MonoBehaviour:
       Data: 
     - Name: animations
       Entry: 7
-      Data: 26|System.Collections.Generic.Dictionary`2[[AnimationState, Assembly-CSharp],[SpineAnimationData,
+      Data: 14|System.Collections.Generic.Dictionary`2[[AnimationState, Assembly-CSharp],[SpineAnimationData,
         Assembly-CSharp]], mscorlib
     - Name: comparer
       Entry: 7
-      Data: 27|System.Collections.Generic.EnumEqualityComparer`1[[AnimationState,
+      Data: 15|System.Collections.Generic.EnumEqualityComparer`1[[AnimationState,
         Assembly-CSharp]], mscorlib
     - Name: 
       Entry: 12
@@ -708,7 +345,7 @@ MonoBehaviour:
       Data: 1
     - Name: $v
       Entry: 7
-      Data: 28|SpineAnimationData, Assembly-CSharp
+      Data: 16|SpineAnimationData, Assembly-CSharp
     - Name: name
       Entry: 1
       Data: Idle
@@ -723,7 +360,7 @@ MonoBehaviour:
       Data: 0
     - Name: dontInterruptStates
       Entry: 7
-      Data: 29|System.Collections.Generic.List`1[[AnimationState, Assembly-CSharp]],
+      Data: 17|System.Collections.Generic.List`1[[AnimationState, Assembly-CSharp]],
         mscorlib
     - Name: 
       Entry: 12
@@ -748,7 +385,7 @@ MonoBehaviour:
       Data: 2
     - Name: $v
       Entry: 7
-      Data: 30|SpineAnimationData, Assembly-CSharp
+      Data: 18|SpineAnimationData, Assembly-CSharp
     - Name: name
       Entry: 1
       Data: Walk
@@ -763,7 +400,7 @@ MonoBehaviour:
       Data: 0
     - Name: dontInterruptStates
       Entry: 7
-      Data: 31|System.Collections.Generic.List`1[[AnimationState, Assembly-CSharp]],
+      Data: 19|System.Collections.Generic.List`1[[AnimationState, Assembly-CSharp]],
         mscorlib
     - Name: 
       Entry: 12
@@ -788,7 +425,7 @@ MonoBehaviour:
       Data: 4
     - Name: $v
       Entry: 7
-      Data: 32|SpineAnimationData, Assembly-CSharp
+      Data: 20|SpineAnimationData, Assembly-CSharp
     - Name: name
       Entry: 1
       Data: Attack
@@ -803,7 +440,7 @@ MonoBehaviour:
       Data: 0
     - Name: dontInterruptStates
       Entry: 7
-      Data: 33|System.Collections.Generic.List`1[[AnimationState, Assembly-CSharp]],
+      Data: 21|System.Collections.Generic.List`1[[AnimationState, Assembly-CSharp]],
         mscorlib
     - Name: 
       Entry: 12
@@ -828,7 +465,7 @@ MonoBehaviour:
       Data: 3
     - Name: $v
       Entry: 7
-      Data: 34|SpineAnimationData, Assembly-CSharp
+      Data: 22|SpineAnimationData, Assembly-CSharp
     - Name: name
       Entry: 1
       Data: Death
@@ -843,7 +480,7 @@ MonoBehaviour:
       Data: 0
     - Name: dontInterruptStates
       Entry: 7
-      Data: 35|System.Collections.Generic.List`1[[AnimationState, Assembly-CSharp]],
+      Data: 23|System.Collections.Generic.List`1[[AnimationState, Assembly-CSharp]],
         mscorlib
     - Name: 
       Entry: 12
@@ -866,7 +503,8 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-  defaultUnit: 0
+  defaultUnit: 1
+  type: 2
   title:
     m_TableReference:
       m_TableCollectionName: GUID:3780f36a553b640fbbe57d99ea3ba447

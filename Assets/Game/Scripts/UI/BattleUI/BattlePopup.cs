@@ -37,7 +37,7 @@ public class BattlePopup : Popup<AllUnitsData> {
     public override bool Setup(AllUnitsData value) {
         if (value != null && unitPrefab != null && availableList != null && slotRoot != null && slotPrefab != null) {
             if (_slots.Count == 0) {
-                int slotsCount = value.partySize;
+                int slotsCount = value.capacity.GetValueOrDefault(UnitType.Normal);
                 for (int i = 0; i < slotsCount; i++) {
                     GameObject slotObject = Instantiate(slotPrefab, slotRoot);
                     Transform t = slotObject.transform.Find("Slot");
@@ -50,7 +50,7 @@ public class BattlePopup : Popup<AllUnitsData> {
                 _slots.ForEach(t => RemoveChildren(t));
 
 
-            List<UnitData> selected = data.Get(UnitListType.Selected);
+            List<UnitData> selected = data.Get(UnitType.Normal, UnitListType.Selected);
             foreach (UnitData unit in selected) {
                 UnitState state = unit.State;
                 Transform parent = null;

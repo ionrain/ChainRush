@@ -79,7 +79,7 @@ public class BattlePanel : SerializedMonoBehaviour, MMEventListener<RewardEvent>
         if (!_useEnergy || _enoughEnergy) {
             if (popup != null && units != null) {
                 popup.UseEnergy(_useEnergy);
-                List<UnitData> unlocked = units.Get(UnitListType.Unlocked);
+                List<UnitData> unlocked = units.Get(UnitType.Normal, UnitListType.Unlocked);
                 if (unlocked.Count <= 1)
                     popup.LoadLevel();
                 else if (popup.Setup())

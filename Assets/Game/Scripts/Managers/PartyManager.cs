@@ -4,6 +4,7 @@ using MoreMountains.Tools;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class PartyManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>, MMEventListener<CellUiItemSelectEvent> {
     [SerializeField] AllUnitsData unitsData;
@@ -12,6 +13,10 @@ public class PartyManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEv
     [SerializeField] Unit unitPrefab;
     [SerializeField] UnitMergeState maxUnitLevel = UnitMergeState.Fifth;
     [SerializeField] Dictionary<UnitSpeciality, BoxCollider2D> spawnAreas = new();
+
+    [Header("Events")]
+    [SerializeField] UnityEvent OnBuff;
+    [SerializeField] UnityEvent OnHeal;
 
     public bool Valid => _units.Count > 0;
 
@@ -133,7 +138,7 @@ public class PartyManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEv
     }
 
     public void OnMMEvent(CellUiItemSelectEvent e) {
-        if (e.Item == null || e.Count <= 0) return;
+        if (e.Stage != EventStage.End || e.Item == null || e.Count <= 0) return;
 
         switch (e.Item.Type) {
             case CellItemType.Unit:
@@ -183,13 +188,16 @@ public class PartyManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEv
         if (value != 0) {
             _buffs[attribute] = _buffs.GetValueOrDefault(attribute) + value;
             ApplySupportMultipliers(null, true);
+            OnBuff?.Invoke();
         }
     }
 
     void HandleBoosterSelection(string boosterId, int count) {
         if (!System.Enum.TryParse(boosterId, out BoosterType boosterType)) return;
-        if (boosterType == BoosterType.Heal)
+        if (boosterType == BoosterType.Heal) {
             _units.ForEach(t => t.Heal(count * 0.1f));
+            OnHeal?.Invoke();
+        }
         else if (boosterType == BoosterType.Bomb) {
             
         }

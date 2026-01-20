@@ -60,7 +60,7 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
 
     [Header("Events")]
     [SerializeField] UnityEvent OnBoardShow;
-    [SerializeField] UnityEvent OnBoardHide;    
+    [SerializeField] UnityEvent OnBoardHide;
 
     LevelData _data;
     Vector2Int _boardSize = Vector2Int.zero;
@@ -243,7 +243,7 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
                 break;
 
             case CellItemType.Unit:
-                List<UnitData> selectedUnits = unitsData != null ? unitsData.Get(UnitListType.Selected) : null;
+                List<UnitData> selectedUnits = unitsData != null ? unitsData.Get(UnitType.Normal, UnitListType.Selected) : null;
                 if (selectedUnits != null && selectedUnits.Count > 0) {
                     UnitData unit = selectedUnits[Random.Range(0, selectedUnits.Count)];
                     icon = unit.Icon;
@@ -520,13 +520,14 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
 
     bool HasSameContent(CellUi a, CellUi b) {
         if (a == null || b == null) return false;
-        return a.Item.Type == b.Item.Type && a.Item.Type != CellItemType.None && a.Item.Icon == b.Item.Icon && a.Item.Type != null;
+        return a.Item.Type == b.Item.Type && a.Item.Type != CellItemType.None && a.Item.Icon == b.Item.Icon;
     }
 
     void StartSelection(CellUi cell) {
         if (cell == null || cell.Item == null || cell.Item.Type == CellItemType.None) return;
         _selectedCells.Add(cell.Position);
         cell.Highlight(true);
+        CellUiItemSelectEvent.Trigger(EventStage.Process, cell.Item, _selectedCells.Count);
     }
 
     bool TryAddToSelection(CellUi cell) {
@@ -542,6 +543,8 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
 
         _selectedCells.Add(cell.Position);
         cell.Highlight(true);
+        CellUiItemSelectEvent.Trigger(EventStage.Process, cell.Item, _selectedCells.Count);
+
         return true;
     }
 
@@ -549,7 +552,7 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
         if (_selectedCells.Count > 0) {
             CellUi cell = _cellsMap.GetValueOrDefault(_selectedCells[0]);
             if (cell != null)
-                CellUiItemSelectEvent.Trigger(cell.Item, _selectedCells.Count);
+                CellUiItemSelectEvent.Trigger(EventStage.End, cell.Item, _selectedCells.Count);
             ClearSelection();
 
             // После успешного выбора ячеек устанавливаем минимальный интервал до следующего обновления

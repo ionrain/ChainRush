@@ -40,7 +40,7 @@ public class RewardManager : MMSingleton<RewardManager>, MMEventListener<RewardE
 
     List<UnitCardReward> GenerateUnitCardReward(int amount) {   
         List<UnitCardReward> result = new ();
-        List<UnitData> unlocked = units.Get(UnitListType.Unlocked);
+        List<UnitData> unlocked = units.Get(units.upgradable, UnitListType.Unlocked);
         unlocked.Sort((a, b) => a.CardBalance.CompareTo(b.CardBalance));        
         if (unlocked.Count <= 1 || amount < 5) {
             result.Add(new UnitCardReward(unlocked[0], amount));

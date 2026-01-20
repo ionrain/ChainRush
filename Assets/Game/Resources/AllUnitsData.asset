@@ -20,12 +20,62 @@ MonoBehaviour:
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes: []
+    SerializationNodes:
+    - Name: capacity
+      Entry: 7
+      Data: 0|System.Collections.Generic.Dictionary`2[[UnitType, Assembly-CSharp],[System.Int32,
+        mscorlib]], mscorlib
+    - Name: comparer
+      Entry: 7
+      Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[UnitType, Assembly-CSharp]],
+        mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 12
+      Data: 2
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 1
+    - Name: $v
+      Entry: 3
+      Data: 4
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 2
+    - Name: $v
+      Entry: 3
+      Data: 1
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
   itemsData: {fileID: 11400000, guid: 9d4e13ef316f84142a1a9a0d571b3b73, type: 2}
-  partySize: 3
   energyPrice: 5
+  upgradable: 2
   units:
-  - {fileID: 11400000, guid: 2aad8645ca7ec43ea982b40d926c9ef5, type: 2}
   - {fileID: 11400000, guid: 67dca653b1e974ceba94b0faf491dc7a, type: 2}
-  - {fileID: 11400000, guid: ca5cbd53039df4c7b9d83afe17d95618, type: 2}
+  - {fileID: 11400000, guid: 2aad8645ca7ec43ea982b40d926c9ef5, type: 2}
   - {fileID: 11400000, guid: ff6471d04a5b54ed5a94714a108b6d44, type: 2}
+  - {fileID: 11400000, guid: ca5cbd53039df4c7b9d83afe17d95618, type: 2}

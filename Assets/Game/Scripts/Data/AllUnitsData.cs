@@ -4,68 +4,82 @@ using Sirenix.Utilities;
 using UnityEngine;
 
 public enum UnitListType { All, Unlocked, Available, Selected }
+[System.Flags]
+public enum UnitType { None = 0, Normal = 1, Hero = 2 }
 
 [CreateAssetMenu(fileName = "New AllUnitsData", menuName = "Game/AllUnitsData", order = 18)]
 public class AllUnitsData : GameSettings {
     public AllItemsData itemsData;
-    public int partySize = 3;
+    public Dictionary<UnitType, int> capacity = new();
     public int energyPrice = 5;
-    public List<UnitData> units = new List<UnitData>();
+    public UnitType upgradable = UnitType.Hero;
+    public List<UnitData> units = new();
 
-    public bool SomeoneHasUltimate() {
-        foreach (UnitData unit in units) {
-            if (unit.Unlocked) {
-                List<UnitSkill> skills = unit.GetSkills(SkillListType.Aquired);
-                return skills.Find(t => t.data.skillType == SkillType.Ultimate) != null;
+    public bool SomeoneHasUltimate(UnitType unitType) {
+        var filteredUnits = units.FindAll(t => unitType.HasFlag(t.type));
+        if (filteredUnits != null) {
+            foreach (UnitData unit in filteredUnits) {
+                if (unit.Unlocked) {
+                    List<UnitSkill> skills = unit.GetSkills(SkillListType.Aquired);
+                    return skills.Find(t => t.data.skillType == SkillType.Ultimate) != null;
+                }
             }
         }
         return false;
     }
 
-    public List<ElementalAttribute> GetActiveAttributes() {
+    public List<ElementalAttribute> GetActiveAttributes(UnitType unitType) {
+        var filteredUnits = units.FindAll(t => unitType.HasFlag(t.type));
         List<ElementalAttribute> result = new List<ElementalAttribute>();
-        foreach (UnitData unit in units) {
-            if (unit.State == UnitState.Selected) {
-                Dictionary<ElementalAttribute, float> attributeValue = unit.GetAllAttributes(false);
-                attributeValue.ForEach(t => {
-                    if (!result.Contains(t.Key))
-                        result.Add(t.Key);
-                });
+        if (filteredUnits != null) {
+            foreach (UnitData unit in filteredUnits) {
+                if (unit.State == UnitState.Selected) {
+                    Dictionary<ElementalAttribute, float> attributeValue = unit.GetAllAttributes(false);
+                    attributeValue.ForEach(t => {
+                        if (!result.Contains(t.Key))
+                            result.Add(t.Key);
+                    });
+                }
             }
         }
         return result;
     }
 
     public UnitData GetByName(string name) {
+    
         return units.Find(t => t.name.Equals(name));
     }
 
-    public int GetMaxLevel() {
+    public int GetMaxLevel(UnitType unitType) {
         int result = 0;
-        List<UnitData> list = Get(UnitListType.Unlocked);
+        List<UnitData> list = Get(unitType, UnitListType.Unlocked);
         foreach (UnitData data in list) 
             if (data.Level > result)
                 result = data.Level;
         return result;
     }
 
-    public List<UnitData> Get(UnitListType listType) {
+    public List<UnitData> Get(UnitType unitType, UnitListType listType) {
+        var filteredUnits = units.FindAll(t => unitType.HasFlag(t.type));
+        if (filteredUnits == null && filteredUnits.Count == 0)
+            return new List<UnitData>();
+
         if (listType == UnitListType.Unlocked)
-            return units.FindAll(t => t != null && t.Unlocked);
+            return filteredUnits.FindAll(t => t != null && t.Unlocked);
 
         if (listType == UnitListType.Available)
-            return units.FindAll(t => t != null && t.State == UnitState.Available);
+            return filteredUnits.FindAll(t => t != null && t.State == UnitState.Available);
 
         if (listType == UnitListType.Selected)
-            return units.FindAll(t => t != null && t.State == UnitState.Selected);
+            return filteredUnits.FindAll(t => t != null && t.State == UnitState.Selected);
 
-        return units.FindAll(t => t != null);
+        return filteredUnits.FindAll(t => t != null);
     }
 
-    public List<SkillData> GetPartySkills(SkillListType listType) {
+    public List<SkillData> GetPartySkills(UnitType unitType, SkillListType listType) {
         List<UnitSkill> temp = new List<UnitSkill>();
         List<SkillData> result = new List<SkillData>();
-        List<UnitData> selected = Get(UnitListType.Selected);
+        List<UnitData> selected = Get(unitType, UnitListType.Selected);
         foreach (UnitData data in selected)
             temp.AddRange(data.GetSkills(listType));
         temp.ForEach(t => result.Add(t.data));
@@ -77,8 +91,9 @@ public class AllUnitsData : GameSettings {
             return false;
 
         if (state == UnitState.Selected) {
+            int size = capacity.GetValueOrDefault(data.type);
             List<UnitData> searchResult = units.FindAll(t => t.State == state);
-            if (searchResult.Count >= partySize)
+            if (searchResult.Count >= size)
                 return false;
         }
 
@@ -97,7 +112,7 @@ public class AllUnitsData : GameSettings {
     public override void Load(GameData data) {
         if (itemsData != null) {
             foreach (UnitStateData stateData in data.units) {
-                UnitData unit = units.Find(t => t.name.Equals(stateData.unit));
+                UnitData unit = units.Find(p => p.name.Equals(stateData.unit));
                 if (unit != null)
                     unit.SetStateData(stateData, itemsData);
             }

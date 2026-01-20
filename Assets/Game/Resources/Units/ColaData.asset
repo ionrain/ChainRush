@@ -17,6 +17,7 @@ MonoBehaviour:
     SerializedBytes: 
     ReferencedUnityObjects:
     - {fileID: 11400000, guid: 1de2d7f40906049e4a65874529924824, type: 2}
+    - {fileID: 21300000, guid: a0cd09aa3fea04180b93b2c8f5d74b1c, type: 3}
     - {fileID: 11400000, guid: fc1cb444fc3c74ee8887071d4c2fae81, type: 2}
     - {fileID: 11400000, guid: be6f580c3b09c403895eec30be2a4e0c, type: 2}
     - {fileID: 11400000, guid: 49cb01009deed4ef59da242e27eb475a, type: 2}
@@ -203,6 +204,9 @@ MonoBehaviour:
     - Name: spineData
       Entry: 10
       Data: 0
+    - Name: icon
+      Entry: 10
+      Data: 1
     - Name: description
       Entry: 7
       Data: 10|UnityEngine.Localization.LocalizedString, Unity.Localization
@@ -321,6 +325,9 @@ MonoBehaviour:
       Entry: 7
       Data: 14|MergeStateData, Assembly-CSharp
     - Name: spineData
+      Entry: 10
+      Data: 2
+    - Name: icon
       Entry: 10
       Data: 1
     - Name: description
@@ -444,7 +451,10 @@ MonoBehaviour:
       Data: 18|MergeStateData, Assembly-CSharp
     - Name: spineData
       Entry: 10
-      Data: 2
+      Data: 3
+    - Name: icon
+      Entry: 10
+      Data: 1
     - Name: description
       Entry: 7
       Data: 19|UnityEngine.Localization.LocalizedString, Unity.Localization
@@ -566,7 +576,10 @@ MonoBehaviour:
       Data: 22|MergeStateData, Assembly-CSharp
     - Name: spineData
       Entry: 10
-      Data: 3
+      Data: 4
+    - Name: icon
+      Entry: 10
+      Data: 1
     - Name: description
       Entry: 7
       Data: 23|UnityEngine.Localization.LocalizedString, Unity.Localization
@@ -870,6 +883,7 @@ MonoBehaviour:
       Entry: 8
       Data: 
   defaultUnit: 1
+  type: 1
   title:
     m_TableReference:
       m_TableCollectionName: GUID:3780f36a553b640fbbe57d99ea3ba447

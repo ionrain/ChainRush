@@ -4,8 +4,6 @@ using Sirenix.Utilities;
 using UnityEngine;
 
 public enum UnitListType { All, Unlocked, Available, Selected }
-[System.Flags]
-public enum UnitType { None = 0, Normal = 1, Hero = 2 }
 
 [CreateAssetMenu(fileName = "New AllUnitsData", menuName = "Game/AllUnitsData", order = 18)]
 public class AllUnitsData : GameSettings {

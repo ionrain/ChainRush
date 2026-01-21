@@ -17,7 +17,7 @@ MonoBehaviour:
     SerializedBytes: 
     ReferencedUnityObjects:
     - {fileID: 11400000, guid: 67dca653b1e974ceba94b0faf491dc7a, type: 2}
-    - {fileID: 11400000, guid: 939833c0a3ef34d64a3a10054922a53e, type: 2}
+    - {fileID: 11400000, guid: ca5cbd53039df4c7b9d83afe17d95618, type: 2}
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
@@ -107,7 +107,7 @@ MonoBehaviour:
       Data: 10
     - Name: resource
       Entry: 3
-      Data: 4
+      Data: 1
     - Name: 
       Entry: 8
       Data: 
@@ -149,7 +149,7 @@ MonoBehaviour:
       Data: 10
     - Name: resource
       Entry: 3
-      Data: 4
+      Data: 1
     - Name: 
       Entry: 8
       Data: 
@@ -212,7 +212,7 @@ MonoBehaviour:
       Data: 10
     - Name: resource
       Entry: 3
-      Data: 4
+      Data: 1
     - Name: 
       Entry: 8
       Data: 
@@ -254,7 +254,7 @@ MonoBehaviour:
       Data: 10
     - Name: resource
       Entry: 3
-      Data: 4
+      Data: 1
     - Name: 
       Entry: 8
       Data: 
@@ -296,7 +296,7 @@ MonoBehaviour:
       Data: 10
     - Name: resource
       Entry: 3
-      Data: 4
+      Data: 1
     - Name: 
       Entry: 8
       Data: 
@@ -338,7 +338,7 @@ MonoBehaviour:
       Data: 10
     - Name: resource
       Entry: 3
-      Data: 4
+      Data: 1
     - Name: 
       Entry: 8
       Data: 
@@ -380,7 +380,7 @@ MonoBehaviour:
       Data: 10
     - Name: resource
       Entry: 3
-      Data: 4
+      Data: 1
     - Name: 
       Entry: 8
       Data: 
@@ -422,7 +422,7 @@ MonoBehaviour:
       Data: 10
     - Name: resource
       Entry: 3
-      Data: 4
+      Data: 1
     - Name: 
       Entry: 8
       Data: 
@@ -464,7 +464,7 @@ MonoBehaviour:
       Data: 10
     - Name: resource
       Entry: 3
-      Data: 4
+      Data: 1
     - Name: 
       Entry: 8
       Data: 
@@ -506,7 +506,7 @@ MonoBehaviour:
       Data: 10
     - Name: resource
       Entry: 3
-      Data: 4
+      Data: 1
     - Name: 
       Entry: 8
       Data: 
@@ -548,7 +548,7 @@ MonoBehaviour:
       Data: 10
     - Name: resource
       Entry: 3
-      Data: 4
+      Data: 1
     - Name: 
       Entry: 8
       Data: 
@@ -590,7 +590,7 @@ MonoBehaviour:
       Data: 10
     - Name: resource
       Entry: 3
-      Data: 4
+      Data: 1
     - Name: 
       Entry: 8
       Data: 
@@ -632,7 +632,7 @@ MonoBehaviour:
       Data: 10
     - Name: resource
       Entry: 3
-      Data: 4
+      Data: 1
     - Name: 
       Entry: 8
       Data: 

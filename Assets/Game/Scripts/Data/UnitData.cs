@@ -14,7 +14,7 @@ public class UnitDataEvent : UnityEvent<UnitData> { }
 public enum UnitType { None = 0, Normal = 1, Hero = 2 }
 public enum UnitState { Locked, ReadyToBeUnlocked, Available, Selected }
 public enum UnitSpeciality { Warrior, Assassin, Tank, Range, Mage, Support }
-public enum UnitEventType { ChangeState, LevelUp, Select, CardBalanceChange }
+public enum UnitEventType { ChangeState, LevelUp, CardBalanceChange }
 public enum UnitMergeState { First, Second, Third, Forth, Fifth }
 
 public class MergeStateData {

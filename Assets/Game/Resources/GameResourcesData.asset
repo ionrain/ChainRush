@@ -24,8 +24,6 @@ MonoBehaviour:
     - {fileID: 21300000, guid: 364b65dc1ebd54f6da62636d8c010dff, type: 3}
     - {fileID: 21300000, guid: 29d6b6ba4883f4a5c9c8219ee0c9bbff, type: 3}
     - {fileID: 21300000, guid: 0710cce66732946489d95375f3d4c643, type: 3}
-    - {fileID: 21300000, guid: 373bd6a67cc724a5494f44e1f40c3844, type: 3}
-    - {fileID: 21300000, guid: 3af563369cce547d48918a4e97b64b24, type: 3}
     - {fileID: 21300000, guid: c32df3f0e4e1643a7a153978016fc86d, type: 3}
     SerializedBytesString: 
     Prefab: {fileID: 0}
@@ -51,7 +49,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 12
-      Data: 6
+      Data: 5
     - Name: 
       Entry: 7
       Data: 
@@ -373,7 +371,7 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 3
-      Data: 4
+      Data: 5
     - Name: $v
       Entry: 7
       Data: 14|ResourceData, Assembly-CSharp
@@ -394,7 +392,7 @@ MonoBehaviour:
       Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
     - Name: m_KeyId
       Entry: 3
-      Data: 15606307872768
+      Data: 15689145376768
     - Name: m_Key
       Entry: 1
       Data: 
@@ -427,85 +425,6 @@ MonoBehaviour:
       Entry: 10
       Data: 8
     - Name: smallIcon
-      Entry: 10
-      Data: 9
-    - Name: capacity
-      Entry: 3
-      Data: 0
-    - Name: productionBase
-      Entry: 3
-      Data: 2
-    - Name: productionRate
-      Entry: 3
-      Data: 2
-    - Name: productionMultiplier
-      Entry: 4
-      Data: 1
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 5
-    - Name: $v
-      Entry: 7
-      Data: 17|ResourceData, Assembly-CSharp
-    - Name: title
-      Entry: 7
-      Data: 18|UnityEngine.Localization.LocalizedString, Unity.Localization
-    - Name: m_TableReference
-      Entry: 7
-      Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
-    - Name: m_TableCollectionName
-      Entry: 1
-      Data: GUID:aa2915f58d0934c2e8c9abd2a52b4a20
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_TableEntryReference
-      Entry: 7
-      Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
-    - Name: m_KeyId
-      Entry: 3
-      Data: 15689145376768
-    - Name: m_Key
-      Entry: 1
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_FallbackState
-      Entry: 3
-      Data: 0
-    - Name: m_WaitForCompletion
-      Entry: 5
-      Data: false
-    - Name: m_LocalVariables
-      Entry: 7
-      Data: 19|System.Collections.Generic.List`1[[UnityEngine.Localization.SmartFormat.PersistentVariables.VariableNameValuePair,
-        Unity.Localization]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: icon
-      Entry: 10
-      Data: 10
-    - Name: smallIcon
       Entry: 6
       Data: 
     - Name: capacity
@@ -534,7 +453,7 @@ MonoBehaviour:
       Data: 
     - Name: defaultResources
       Entry: 7
-      Data: 20|System.Collections.Generic.Dictionary`2[[ResourceType, Assembly-CSharp],[System.Int32,
+      Data: 17|System.Collections.Generic.Dictionary`2[[ResourceType, Assembly-CSharp],[System.Int32,
         mscorlib]], mscorlib
     - Name: comparer
       Entry: 9

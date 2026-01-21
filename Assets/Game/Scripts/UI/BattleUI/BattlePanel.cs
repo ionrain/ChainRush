@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
 using MoreMountains.Tools;
+using MoreMountains.Feedbacks;
 
 public enum LevelIconDirection { Previous = -1, Current = 0, Next = 1 }
 
@@ -20,8 +21,8 @@ public class BattlePanel : SerializedMonoBehaviour, MMEventListener<RewardEvent>
     [SerializeField] GameObject playButton;
     [SerializeField] Button nextButton;
     [SerializeField] Button previousButton;
-    [SerializeField] BattlePopup popup;
     [SerializeField] float autoChangeDelay = 3f;
+    [SerializeField] MMF_Player loadingScreenFX;
 
     [Header("Location")]
     [SerializeField] RectTransform progressRoot;
@@ -77,17 +78,10 @@ public class BattlePanel : SerializedMonoBehaviour, MMEventListener<RewardEvent>
 
     public void StartLevel() {
         if (!_useEnergy || _enoughEnergy) {
-            if (popup != null && units != null) {
-                popup.UseEnergy(_useEnergy);
-                List<UnitData> unlocked = units.Get(UnitType.Normal, UnitListType.Unlocked);
-                if (unlocked.Count <= 1)
-                    popup.LoadLevel();
-                else if (popup.Setup())
-                    popup.SetVisibility(true);
-            }
-        } else {
+            SpendResourceEvent.Trigger(EventStage.Start, ResourceType.Energy, ResourceTarget.LevelStart, "NormalStart", units.energyPrice);
+            loadingScreenFX?.PlayFeedbacks();
+        } else
             BankEvent.Trigger(EventStage.Start, BankEventType.Request, ResourceType.Energy);
-        }
     }
 
     void OnEnable() {

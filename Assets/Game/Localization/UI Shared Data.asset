@@ -339,6 +339,14 @@ MonoBehaviour:
     m_Key: label.resfresh.board
     m_Metadata:
       m_Items: []
+  - m_Id: 136383033341108224
+    m_Key: button.select
+    m_Metadata:
+      m_Items: []
+  - m_Id: 136383069407928320
+    m_Key: button.deselect
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

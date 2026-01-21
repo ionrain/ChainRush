@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Sirenix.Utilities;
 using UnityEngine;
 
-public enum UnitListType { All, Unlocked, Available, Selected }
+public enum UnitListType { All, Unlocked, Available, Selected, NotSelected }
 
 [CreateAssetMenu(fileName = "New AllUnitsData", menuName = "Game/AllUnitsData", order = 18)]
 public class AllUnitsData : GameSettings {
@@ -70,6 +70,9 @@ public class AllUnitsData : GameSettings {
         if (listType == UnitListType.Selected)
             return filteredUnits.FindAll(t => t != null && t.State == UnitState.Selected);
 
+        if (listType == UnitListType.NotSelected)
+            return filteredUnits.FindAll(t => t != null && t.State != UnitState.Selected);
+    
         return filteredUnits.FindAll(t => t != null);
     }
 
@@ -88,7 +91,7 @@ public class AllUnitsData : GameSettings {
             return false;
 
         if ((state == UnitState.Selected && GetCount(data.type, state) >= capacity.GetValueOrDefault(data.type))
-            || (state == UnitState.Available && GetCount(data.type, state) <= 1))
+            || (state == UnitState.Available && GetCount(data.type, UnitState.Selected) <= 1))
             return false;
 
         data.SetState(state);

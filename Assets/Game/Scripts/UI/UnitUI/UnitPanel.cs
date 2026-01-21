@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Localization;
-using UnityEngine.UI;
 using TMPro;
 using MoreMountains.Tools;
 using Spine.Unity;
@@ -10,23 +9,16 @@ using Sirenix.OdinInspector;
 
 public class UnitPanel : SerializedMonoBehaviour, MMEventListener<UnitEvent>, MMEventListener<BalanceResourcesEvent> {
 
-    [Header("Tab Notification")]
-    [SerializeField] GameObject tabNotification;
-    [SerializeField] AllUnitsData units;
+    //[Header("Tab Notification")]
+    //[SerializeField] GameObject tabNotification;
+    //[SerializeField] AllUnitsData units;
     [SerializeField] UnitType unitType = UnitType.Normal;
 
     [Header("Avatar")]
     [SerializeField] SkeletonGraphic avatar;
-    [SerializeField] Image avatarImage;
     [SerializeField] GameObject lockedIcon;
     [SerializeField] GameObject readyIcon;
     [SerializeField] Color lockedColor = Color.white;
-
-    [Header("Merge Info")]
-    [SerializeField] GameObject mergeInfoRoot;
-    [SerializeField] LocalizedString mergeLoc;
-    [SerializeField] List<TextMeshProUGUI> mergeTitles = new();
-    [SerializeField] List<TextMeshProUGUI> mergeLabels = new();
 
     [Header("Title")]
     [SerializeField] TextMeshProUGUI titleLabel;
@@ -36,7 +28,6 @@ public class UnitPanel : SerializedMonoBehaviour, MMEventListener<UnitEvent>, MM
     [Header("Stats")]
     [SerializeField] ElementsData elements;
     [SerializeField] Dictionary<Attribute, IconTextItem> stats;
-    [SerializeField] UnitAttributesPopup attributesPopup;
     [SerializeField] Color defaultStatColor = Color.white;
     [SerializeField] Color enhancedStatColor = Color.white;
 
@@ -47,18 +38,10 @@ public class UnitPanel : SerializedMonoBehaviour, MMEventListener<UnitEvent>, MM
 
     UnitData _data;
     int _soft;
-    int _skillPoints;
     bool _locked;
 
     void Start() {
-        buyButton?.Setup(new Dictionary<ResourceType, int>() { { ResourceType.SoftCurrency, 0 }, { ResourceType.UnitCard, 0 } });   
-        if (mergeTitles != null && mergeLoc != null && !mergeLoc.IsEmpty) {
-            string mergePattern = mergeLoc.GetLocalizedString();
-            for (int i = 0; i < mergeTitles.Count; i++) {
-                if (mergeTitles[i] != null)
-                    mergeTitles[i].text = string.Format(mergePattern, i + 1);
-            }
-        }
+        buyButton?.Setup(new Dictionary<ResourceType, int>() { { ResourceType.SoftCurrency, 0 }, { ResourceType.UnitCard, 0 } });
     }
 
     public void Upgrade() {
@@ -80,17 +63,6 @@ public class UnitPanel : SerializedMonoBehaviour, MMEventListener<UnitEvent>, MM
             UpdateUI();
             SetupAvatar();
             CheckBalance();
-            
-            mergeInfoRoot?.SetActive(_data.Unlocked);
-            if (mergeLabels != null) {
-                for (int i = 0; i < mergeLabels.Count; i++) {
-                    if (mergeLabels[i] != null) {
-                        MergeStateData mergeData = _data.GetMergeData((UnitMergeState)(i + 1));
-                        if (mergeData != null)
-                            mergeLabels[i].text = mergeData.Description;
-                    }
-                }
-            }
         }
     }
 
@@ -108,7 +80,7 @@ public class UnitPanel : SerializedMonoBehaviour, MMEventListener<UnitEvent>, MM
         if (_data != null) {
             _data.SetState(UnitState.Available);
             UpdateLockedUI();
-            UpdateTabNotification();
+            //UpdateTabNotification();
             UnitEvent.Trigger(EventStage.End, UnitEventType.ChangeState, _data);
         }
     }
@@ -166,9 +138,9 @@ public class UnitPanel : SerializedMonoBehaviour, MMEventListener<UnitEvent>, MM
 
     public void OnMMEvent(UnitEvent e) { 
         if (e.Data != null && e.Data.type == unitType) {
-            if (e.Stage == EventStage.Start && e.Type == UnitEventType.Select)
+            /*if (e.Stage == EventStage.Start && e.Type == UnitEventType.Select)
                 Setup(e.Data);
-            else if (e.Stage == EventStage.End && (e.Type == UnitEventType.CardBalanceChange || e.Type == UnitEventType.LevelUp))
+            else*/ if (e.Stage == EventStage.End && (e.Type == UnitEventType.CardBalanceChange || e.Type == UnitEventType.LevelUp))
                 CheckBalance();
         }
     }
@@ -179,11 +151,11 @@ public class UnitPanel : SerializedMonoBehaviour, MMEventListener<UnitEvent>, MM
             
             if (_data != null)
                 buyButton?.UpdateBalance(new Dictionary<ResourceType, int>() { { ResourceType.SoftCurrency, _soft }, { ResourceType.UnitCard, _data.CardBalance } }); 
-            UpdateTabNotification();
+            //UpdateTabNotification();
         }
     }
 
-    void UpdateTabNotification() {
+    /*void UpdateTabNotification() {
         if (units != null && tabNotification != null) {
             bool show = false;
             var unitList = units.Get(unitType, UnitListType.All);
@@ -196,7 +168,7 @@ public class UnitPanel : SerializedMonoBehaviour, MMEventListener<UnitEvent>, MM
             }
             tabNotification.SetActive(show);
         }
-    }
+    }*/
 
     void OnEnable() {
         this.MMEventStartListening<UnitEvent>();

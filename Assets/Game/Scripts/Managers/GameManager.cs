@@ -34,7 +34,6 @@ public class GameData {
     public List<ResourceAmount> resources = new List<ResourceAmount>();
     public List<ItemStateData> items = new List<ItemStateData>();
     public List<UnitStateData> units = new List<UnitStateData>();
-    public CitadelStateData citadel = new CitadelStateData();
     public DailyRewardsStateData dailyRewards = new DailyRewardsStateData();
 
     public List<ResourceAmount> Resources => resources;

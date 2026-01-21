@@ -252,13 +252,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   removeFirstRun: 0
+  initialDelay: 1
   settingsList:
   - {fileID: 11400000, guid: b35e02bdc968942ec9c0bd2f9b6f8099, type: 2}
-  - {fileID: 11400000, guid: 929eb91f284e54914ab834a2abb36c66, type: 2}
   - {fileID: 11400000, guid: dead2bdcbff2743468f3202d9b67a4a6, type: 2}
   - {fileID: 11400000, guid: 9d4e13ef316f84142a1a9a0d571b3b73, type: 2}
   - {fileID: 11400000, guid: 04d090dca8b184410bc442f018562a86, type: 2}
-  - {fileID: 11400000, guid: e6b0329a57f5d4b88adeef8ce2f02e8e, type: 2}
   - {fileID: 11400000, guid: 3150bfe637d4547c284e4ac460175e51, type: 2}
   soundManager: {fileID: 157833331}
   haptics: {fileID: 157833338}

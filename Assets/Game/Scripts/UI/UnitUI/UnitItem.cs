@@ -63,7 +63,7 @@ public class UnitItem : ListItem<UnitItem, UnitData>, MMEventListener<UnitEvent>
         if (_data != null && e.Data == _data) {
             if (e.Type == UnitEventType.ChangeState) {
                 UpdateLockedUI();
-                if (notification.activeSelf && _data.State == UnitState.Available)
+                if (notification != null && notification.activeSelf && _data.State == UnitState.Available)
                     SetNotification(false);
             } else if (e.Stage == EventStage.End && (e.Type == UnitEventType.CardBalanceChange || e.Type == UnitEventType.LevelUp))
                 UpdateCards();

@@ -17,8 +17,6 @@ public class UnitPanelList : UnitList, MMEventListener<BalanceResourcesEvent> {
 
     protected override void OnItemClick(UnitItem item) {
         selectSFX?.PlayFeedbacks();
-        if (item != null)
-            UnitEvent.Trigger(EventStage.Start, UnitEventType.Select, item.Data);
         base.OnItemClick(item);
     }
 

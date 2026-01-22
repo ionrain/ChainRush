@@ -11,6 +11,7 @@ public abstract class ItemList<T, P> : MonoBehaviour
     [SerializeField] protected Transform root;
     [SerializeField] protected P prefab;
     [SerializeField] protected bool selectable = true;
+    [SerializeField] protected bool selectFirstByDefault = true;
 
     [Header("Blank Items")]
     [SerializeField] protected bool fillBlanks;
@@ -85,5 +86,10 @@ public abstract class ItemList<T, P> : MonoBehaviour
                 item.SetSelected(true);
             }
         }
+    }
+
+    public virtual void ClearSelection() {
+        if (_items != null && selectable)
+            _items.ForEach(t => t.SetSelected(false));
     }
 }

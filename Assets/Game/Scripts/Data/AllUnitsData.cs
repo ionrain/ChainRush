@@ -10,7 +10,6 @@ public class AllUnitsData : GameSettings {
     public AllItemsData itemsData;
     public Dictionary<UnitType, int> capacity = new();
     public int energyPrice = 5;
-    public UnitType upgradable = UnitType.Hero;
     public List<UnitData> units = new();
 
     public bool SomeoneHasUltimate(UnitType unitType) {

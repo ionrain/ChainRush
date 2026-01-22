@@ -28,7 +28,7 @@ public class RewardFlyData {
 
 public class RewardFlyManager : SerializedMonoBehaviour, MMEventListener<RewardFlyEvent> {
     [SerializeField] Dictionary<ResourceType, RewardFlyData> resources = new();
-    [SerializeField] RewardFlyData unitCard;
+    [SerializeField] Dictionary<UnitType, RewardFlyData> unitCards = new();
     [SerializeField] float duration = 1f;
     [SerializeField] float initialDelay = 0.5f;
     [SerializeField] float flyDelay = 0.5f;
@@ -69,8 +69,8 @@ public class RewardFlyManager : SerializedMonoBehaviour, MMEventListener<RewardF
             RewardFlyData data = null;
             if (e.Reward is ResourceReward resourceReward && resources.ContainsKey(resourceReward.Resource))
                 data = resources[resourceReward.Resource];
-            else if (e.Reward is UnitCardReward && unitCard != null)
-                data = unitCard;
+            else if (e.Reward is UnitCardReward unitCard && unitCard.Unit != null && unitCards != null)
+                data = unitCards.GetValueOrDefault(unitCard.Unit.type);
             if (data != null)
                 Fly(data, e.Reward.Amount, e.Position);
         }

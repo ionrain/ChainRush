@@ -12,7 +12,6 @@ public class UnitPanel : SerializedMonoBehaviour, MMEventListener<UnitEvent>, MM
     //[Header("Tab Notification")]
     //[SerializeField] GameObject tabNotification;
     //[SerializeField] AllUnitsData units;
-    [SerializeField] UnitType unitType = UnitType.Normal;
 
     [Header("Avatar")]
     [SerializeField] SkeletonGraphic avatar;
@@ -35,13 +34,15 @@ public class UnitPanel : SerializedMonoBehaviour, MMEventListener<UnitEvent>, MM
     [SerializeField] BuyButton buyButton;
 
     public int SoftBalance => _soft;
+    public ResourceType UnitCardType => _unitType == UnitType.Normal ? ResourceType.UnitCard : ResourceType.HeroCard;
 
     UnitData _data;
     int _soft;
     bool _locked;
+    UnitType _unitType;
 
     void Start() {
-        buyButton?.Setup(new Dictionary<ResourceType, int>() { { ResourceType.SoftCurrency, 0 }, { ResourceType.UnitCard, 0 } });
+        buyButton?.Setup(new Dictionary<ResourceType, int>() { { ResourceType.SoftCurrency, 0 }, { UnitCardType, 0 } });
     }
 
     public void Upgrade() {
@@ -58,6 +59,7 @@ public class UnitPanel : SerializedMonoBehaviour, MMEventListener<UnitEvent>, MM
     public void Setup(UnitData data) {
         _data = data;
         if (_data != null) {
+            _unitType = _data.type;
             if (titleLabel != null)
                 titleLabel.text = _data.Title;
             UpdateUI();
@@ -89,8 +91,7 @@ public class UnitPanel : SerializedMonoBehaviour, MMEventListener<UnitEvent>, MM
         UpdateLockedUI();
         SetupLevel();
         SetupStats();
-        buyButton?.UpdatePrice(new Dictionary<ResourceType, int>() { { ResourceType.SoftCurrency, _data.GetUpgradeSoftPrice() },
-                                                                         { ResourceType.UnitCard, _data.GetUpgradeCardPrice() } });
+        buyButton?.UpdatePrice(new Dictionary<ResourceType, int>() { { ResourceType.SoftCurrency, _data.GetUpgradeSoftPrice() }, { UnitCardType, _data.GetUpgradeCardPrice() } });
     }
 
     public void CheckBalance() {
@@ -137,7 +138,7 @@ public class UnitPanel : SerializedMonoBehaviour, MMEventListener<UnitEvent>, MM
     }
 
     public void OnMMEvent(UnitEvent e) { 
-        if (e.Data != null && e.Data.type == unitType) {
+        if (e.Data != null && e.Data.type == _unitType) {
             /*if (e.Stage == EventStage.Start && e.Type == UnitEventType.Select)
                 Setup(e.Data);
             else*/ if (e.Stage == EventStage.End && (e.Type == UnitEventType.CardBalanceChange || e.Type == UnitEventType.LevelUp))

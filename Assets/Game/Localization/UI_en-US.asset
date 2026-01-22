@@ -43,7 +43,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 15509285232640
-    m_Localized: Card
+    m_Localized: 'Unit Card '
     m_Metadata:
       m_Items: []
   - m_Id: 15606307872768
@@ -352,6 +352,10 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 136383069407928320
     m_Localized: Deselect
+    m_Metadata:
+      m_Items: []
+  - m_Id: 136693115283038208
+    m_Localized: Hero Card
     m_Metadata:
       m_Items: []
   references:

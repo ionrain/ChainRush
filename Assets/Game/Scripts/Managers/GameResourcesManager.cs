@@ -5,7 +5,7 @@ using UnityEngine;
 
 public enum ResourceSource { Idle, Gameplay, Reward, Quest, Chest, Shop, Exchange, Offer, Inventory, Cheats, Ads }
 public enum ResourceTarget { LevelStart, LevelUp, Revive, Inventory, Skill, Citadel, Chest, ShopRefresh, Exchange }
-public enum ResourceType { SoftCurrency, HardCurrency, Energy, UnitCard, Bolt, BattlePassTicket }
+public enum ResourceType { SoftCurrency, HardCurrency, Energy, UnitCard, HeroCard }
 
 public struct EarnResourcesEvent {
     public EventStage Stage { get; private set; }

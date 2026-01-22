@@ -347,6 +347,10 @@ MonoBehaviour:
     m_Key: button.deselect
     m_Metadata:
       m_Items: []
+  - m_Id: 136693115283038208
+    m_Key: resource.hero.card
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

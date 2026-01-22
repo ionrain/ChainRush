@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using MoreMountains.Tools;
+using Sirenix.Utilities;
 using UnityEngine;
 
 public class RewardManager : MMSingleton<RewardManager>, MMEventListener<RewardEvent> {
@@ -10,6 +11,7 @@ public class RewardManager : MMSingleton<RewardManager>, MMEventListener<RewardE
         if (e.Stage == EventStage.Start && e.Type == RewardEventType.Transfer && e.Item != null ) {
             string source = e.Item.Type.ToString();
             List<Reward> rewards = new List<Reward>(e.Item.Rewards);
+            Dictionary<UnitType, int> cards = new();
             foreach (Reward reward in e.Item.Rewards) {
                 if (reward.IsValid) {
                     if (reward.Type == RewardType.Resource && reward is ResourceReward resourceReward && resourceReward.Resource != ResourceType.UnitCard) {
@@ -20,27 +22,29 @@ public class RewardManager : MMSingleton<RewardManager>, MMEventListener<RewardE
                     } else if (reward.Type == RewardType.Unit && reward is UnitReward unitReward) {
                         unitReward.Unit.SetState(UnitState.ReadyToBeUnlocked);
                         UnitEvent.Trigger(EventStage.Start, UnitEventType.ChangeState, unitReward.Unit);
-                    } else if ((reward.Type == RewardType.UnitCard && reward is UnitCardReward) || (reward.Type == RewardType.Resource && 
-                                reward is ResourceReward resourceCardReward && resourceCardReward.Resource == ResourceType.UnitCard)) {
+                    } else if (reward.Type == RewardType.Resource && reward is ResourceReward resourceUnitCardReward && resourceUnitCardReward.Resource == ResourceType.UnitCard) {
                         rewards.Remove(reward);
-                        List<UnitCardReward> cardRewards = GenerateUnitCardReward(reward.Amount);
-                        foreach (var cardReward in cardRewards) {
-                            cardReward.TransferCards();;
-                            UnitEvent.Trigger(EventStage.End, UnitEventType.CardBalanceChange, cardReward.Unit);
-                        }
-                        rewards.AddRange(cardRewards);
-                    }                        
+                        cards[UnitType.Normal] = cards.GetValueOrDefault(UnitType.Normal) + reward.Amount;
+                        rewards.AddRange(GenerateUnitCardReward(UnitType.Normal, reward.Amount));
+                    } else if (reward.Type == RewardType.Resource &&  reward is ResourceReward resourceHeroCardReward && resourceHeroCardReward.Resource == ResourceType.HeroCard) {
+                        rewards.Remove(reward);
+                        cards[UnitType.Hero] = cards.GetValueOrDefault(UnitType.Hero) + reward.Amount;
+                    }
                 }
             }
+
+            foreach (var pair in cards)
+                rewards.AddRange(GenerateUnitCardReward(pair.Key, pair.Value));
+
             e.Item.Rewards.Clear();
             e.Item.Rewards.AddRange(rewards);
             RewardEvent.Trigger(EventStage.End, e.Type, e.Item);
         }
     }
 
-    List<UnitCardReward> GenerateUnitCardReward(int amount) {   
+    List<UnitCardReward> GenerateUnitCardReward(UnitType unitType, int amount) {   
         List<UnitCardReward> result = new ();
-        List<UnitData> unlocked = units.Get(units.upgradable, UnitListType.Unlocked);
+        List<UnitData> unlocked = units.Get(unitType, UnitListType.Unlocked);
         unlocked.Sort((a, b) => a.CardBalance.CompareTo(b.CardBalance));        
         if (unlocked.Count <= 1 || amount < 5) {
             result.Add(new UnitCardReward(unlocked[0], amount));
@@ -59,6 +63,11 @@ public class RewardManager : MMSingleton<RewardManager>, MMEventListener<RewardE
                 result.Add(new UnitCardReward(unlocked[0], unlocked0Cards));
             if (unlocked1Cards > 0)
                 result.Add(new UnitCardReward(unlocked[1], unlocked1Cards));
+        }
+
+        foreach (var reward in result) {
+            reward.TransferCards();;
+            UnitEvent.Trigger(EventStage.End, UnitEventType.CardBalanceChange, reward.Unit);
         }
 
         return result;

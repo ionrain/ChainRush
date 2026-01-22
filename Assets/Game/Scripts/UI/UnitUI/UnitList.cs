@@ -23,7 +23,7 @@ public class UnitList : ItemList<AllUnitsData, UnitItem> {
                     selected = item;
             }
 
-            if (selectable) {
+            if (selectable && selectFirstByDefault) {
                 if (selected == null)
                     selected = GetInitialSelected();
                 selected.OnClicked();

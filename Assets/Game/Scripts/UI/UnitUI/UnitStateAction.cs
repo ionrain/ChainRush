@@ -15,7 +15,7 @@ public class UnitStateAction : MonoBehaviour {
     [SerializeField] UnityEvent OnSuccess;
     [SerializeField] UnityEvent OnFail;
 
-    public void OnUnitDataEvent(UnitData data) {
+    public void Trigger(UnitData data) {
         if (data != null && units != null) {
             bool result = units.TrySetState(data, state);
 

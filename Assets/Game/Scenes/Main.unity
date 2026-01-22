@@ -19944,7 +19944,6 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-  unitType: 1
   avatar: {fileID: 546176764}
   lockedIcon: {fileID: 295277467}
   readyIcon: {fileID: 1183251029}
@@ -25495,7 +25494,7 @@ MonoBehaviour:
     m_Right: 30
     m_Top: 0
     m_Bottom: 50
-  m_ChildAlignment: 0
+  m_ChildAlignment: 1
   m_StartCorner: 0
   m_StartAxis: 0
   m_CellSize: {x: 200, y: 200}
@@ -294801,6 +294800,7 @@ MonoBehaviour:
     - {fileID: 427618534}
     - {fileID: 1572468704333392493, guid: 01a083961d5f74941adc6e86b02768dd, type: 3}
     - {fileID: 1864308611}
+    - {fileID: 1572468704333392493, guid: a14d384144ba741f1adf354c4e9bfa7a, type: 3}
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
@@ -294950,7 +294950,7 @@ MonoBehaviour:
       Data: 8
     - Name: prefab
       Entry: 10
-      Data: 7
+      Data: 9
     - Name: 
       Entry: 8
       Data: 
@@ -398281,7 +398281,6 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-  unitType: 2
   avatar: {fileID: 335036083}
   lockedIcon: {fileID: 315521004}
   readyIcon: {fileID: 598082018}
@@ -407165,7 +407164,7 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 70
   m_ChildAlignment: 4
-  m_Spacing: 0
+  m_Spacing: 30
   m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 0

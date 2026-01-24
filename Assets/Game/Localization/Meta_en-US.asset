@@ -218,6 +218,18 @@ MonoBehaviour:
     m_Localized: 'Units lost:'
     m_Metadata:
       m_Items: []
+  - m_Id: 136980405842599936
+    m_Localized: Heal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 136980455540908032
+    m_Localized: Slow Time
+    m_Metadata:
+      m_Items: []
+  - m_Id: 136980513002872832
+    m_Localized: Bomb
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

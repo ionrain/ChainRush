@@ -42,7 +42,7 @@ public class UnitPanel : SerializedMonoBehaviour, MMEventListener<UnitEvent>, MM
     UnitType _unitType;
 
     void Start() {
-        buyButton?.Setup(new Dictionary<ResourceType, int>() { { ResourceType.SoftCurrency, 0 }, { UnitCardType, 0 } });
+        
     }
 
     public void Upgrade() {
@@ -60,6 +60,7 @@ public class UnitPanel : SerializedMonoBehaviour, MMEventListener<UnitEvent>, MM
         _data = data;
         if (_data != null) {
             _unitType = _data.type;
+            buyButton?.Setup(new Dictionary<ResourceType, int>() { { ResourceType.SoftCurrency, 0 }, { UnitCardType, 0 } });
             if (titleLabel != null)
                 titleLabel.text = _data.Title;
             UpdateUI();

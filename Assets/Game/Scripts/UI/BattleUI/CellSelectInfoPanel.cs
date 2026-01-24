@@ -1,11 +1,16 @@
+using System.Collections;
 using System.Collections.Generic;
 using MoreMountains.Tools;
 using UnityEngine;
+using UnityEngine.Events;
+
+public enum CellSelectInfoMode { OneByOne, Cumulative }
 
 public class CellSelectInfoPanel : MonoBehaviour, MMEventListener<CellUiItemSelectEvent>, MMEventListener<LevelLoadEvent> {
+    [SerializeField] CellSelectInfoMode mode;
 
     [SerializeField] RectTransform panelRoot;
-    [SerializeField] IconTextItem itemPrefab;
+    [SerializeField] IconMultiTextItem itemPrefab;
 
     [Header("Item Data")]
     [SerializeField] ResourcesData resourcesData;
@@ -14,17 +19,31 @@ public class CellSelectInfoPanel : MonoBehaviour, MMEventListener<CellUiItemSele
     [SerializeField] AttributesData attributesData;
     [SerializeField] BoostersData boostersData;
 
-    readonly List<IconTextItem> _items = new();
+    [Header("Events")]
+    [SerializeField] UnityEvent OnShow;
+    [SerializeField] UnityEvent OnHide;
+
+    readonly List<IconMultiTextItem> _items = new();
     readonly Dictionary<Attribute, float> _buffs = new();
 
     public void OnMMEvent(CellUiItemSelectEvent e) {
-        if (e.Stage == EventStage.Process) {
-            panelRoot.gameObject.SetActive(true);
-            UpdateDisplay(e.Item, e.Count);
-        } else if (e.Stage == EventStage.End) {
-            if (e.Item != null && e.Item.Type == CellItemType.Buff)
-                AccumulateBuff(e.Item.Id, e.Count);
-            ClearDisplay();
+        if (mode == CellSelectInfoMode.OneByOne) {
+            if (e.Stage == EventStage.Process) {
+                OnShow?.Invoke();
+                UpdateDisplay(e.Item, e.Count);
+            } else if (e.Stage == EventStage.End) {
+                if (e.Item != null && e.Item.Type == CellItemType.Buff)
+                    AccumulateBuff(e.Item.Id, e.Count);
+                OnHide?.Invoke();
+            }
+        } else {
+            if (e.Stage == EventStage.End && e.Item != null && e.Count > 0) {
+                OnShow?.Invoke();
+                UpdateDisplay(e.Item, e.Count);
+                if (e.Item.Type == CellItemType.Buff)
+                    AccumulateBuff(e.Item.Id, e.Count);
+                OnHide?.Invoke();
+            }
         }
     }
 
@@ -49,25 +68,24 @@ public class CellSelectInfoPanel : MonoBehaviour, MMEventListener<CellUiItemSele
                 DisplayGold(count);
                 break;
             case CellItemType.Booster:
-                DisplayBooster(item.Icon, count);
+                DisplayBooster(item.Id, count);
                 break;
         }
 
         panelRoot.gameObject.SetActive(_items.Count > 0);
     }
 
-    void ClearDisplay() {
+    public void ClearDisplay() {
         foreach (var item in _items) {
             if (item != null)
                 Destroy(item.gameObject);
         }
         _items.Clear();
-        panelRoot.gameObject.SetActive(false);
     }
 
-    IconTextItem CreateItem(Sprite icon, string text) {
-        IconTextItem item = Instantiate(itemPrefab, panelRoot);
-        item.Setup(icon, text);
+    IconMultiTextItem CreateItem(Sprite icon, List<string> texts) {
+        IconMultiTextItem item = Instantiate(itemPrefab, panelRoot);
+        item.Setup(icon, texts);
         _items.Add(item);
         return item;
     }
@@ -87,16 +105,14 @@ public class CellSelectInfoPanel : MonoBehaviour, MMEventListener<CellUiItemSele
         for (int i = 0; i < fullUnits; i++) {
             MergeStateData mergeData = unitData.GetMergeData(UnitMergeState.Fifth);
             Sprite icon = mergeData != null ? mergeData.icon : unitData.Icon;
-            string text = string.Format("{0} Lv.{1}", unitName, maxMergeValue);
-            CreateItem(icon, text);
+            CreateItem(icon, new List<string>() { unitName, string.Format("Lv.{0}", maxMergeValue) });
         }
 
         if (remainder > 0) {
             UnitMergeState mergeState = (UnitMergeState)(remainder - 1);
             MergeStateData mergeData = unitData.GetMergeData(mergeState);
             Sprite icon = mergeData != null ? mergeData.icon : unitData.Icon;
-            string text = string.Format("{0} Lv.{1}", unitName, remainder);
-            CreateItem(icon, text);
+            CreateItem(icon, new List<string>() { unitName, string.Format("Lv.{0}", remainder) });
         }
     }
 
@@ -105,10 +121,13 @@ public class CellSelectInfoPanel : MonoBehaviour, MMEventListener<CellUiItemSele
         if (!System.Enum.TryParse(buffId, out Attribute attribute)) return;
 
         Sprite icon = null;
+        string title = attribute.ToString();
         if (attributesData != null) {
             AttributeData attrData = attributesData.GetData(attribute);
-            if (attrData != null)
+            if (attrData != null) {
                 icon = attrData.icon;
+                title = attrData.Title;
+            }
         }
 
         float currentValue = _buffs.GetValueOrDefault(attribute);
@@ -128,7 +147,7 @@ public class CellSelectInfoPanel : MonoBehaviour, MMEventListener<CellUiItemSele
             ? $"{currentValue * 100:F0}% ({addSign}{addValue * 100:F0}%)"
             : $"{addSign}{addValue * 100:F0}%";
 
-        CreateItem(icon, text);
+        CreateItem(icon, new List<string> { title, text });
     }
 
     void AccumulateBuff(string buffId, int count) {
@@ -148,17 +167,33 @@ public class CellSelectInfoPanel : MonoBehaviour, MMEventListener<CellUiItemSele
     // ==================== GOLD ====================
     void DisplayGold(int count) {
         Sprite icon = null;
+        string title = "Gold";
         if (resourcesData != null) {
             ResourceData goldData = resourcesData.Get(ResourceType.SoftCurrency);
-            if (goldData != null)
+            if (goldData != null) {
                 icon = goldData.icon;
+                title = goldData.Title;
+            }
         }
-        CreateItem(icon, (count * 10).ToString());
+        CreateItem(icon, new List<string>() { title, (count * 10).ToString() });
     }
 
     // ==================== BOOSTER ====================
-    void DisplayBooster(Sprite icon, int count) {
-        CreateItem(icon, string.Format("Lv.{0}", count));
+    void DisplayBooster(string itemId, int count) {
+        if (!System.Enum.TryParse(itemId, out BoosterType booster)) return;
+
+        Sprite icon = null;
+        string title = itemId;
+        float stat = count;
+        if (boostersData != null) {
+            BoosterData boosterData = boostersData.Get(booster);
+            if (boosterData != null) {
+                icon = boosterData.icon;
+                title = boosterData.Title;
+                stat = boosterData.GetMultiplier(count - 1);
+            }
+        }
+        CreateItem(icon, new List<string>() { title, $"{stat * 100:F0}%" });
     }
 
     void OnEnable() {

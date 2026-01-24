@@ -203,6 +203,18 @@ MonoBehaviour:
     m_Key: score.units.title
     m_Metadata:
       m_Items: []
+  - m_Id: 136980405842599936
+    m_Key: booster.heal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 136980455540908032
+    m_Key: booster.slow.time
+    m_Metadata:
+      m_Items: []
+  - m_Id: 136980513002872832
+    m_Key: booster.bomb
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

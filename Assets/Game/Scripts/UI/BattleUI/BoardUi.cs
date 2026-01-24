@@ -10,6 +10,7 @@ using UnityEngine.Localization;
 using UnityEngine.UI;
 
 public enum BoardUiEventType { SetupCells, SetupItems, Ready }
+public enum BoardRefreshMode { Auto, Manual }
 public enum CellSelectPatternType { None = 0, SelectOne = 1, Line = 2, Corner = 4, Box = 8, Zigzag = 16 }
 
 public struct BoardUiEvent {
@@ -52,6 +53,7 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
     [SerializeField] BoostersData boostersData;
 
     [Header("Refresh Settings")]
+    [SerializeField] BoardRefreshMode refreshMode = BoardRefreshMode.Auto;
     [SerializeField] float minIntervalBetweenRefreshes = 1f;
     [SerializeField] float refreshDuration = 1f;
     [SerializeField] Progressbar refreshProgressbar;
@@ -59,8 +61,8 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
     [SerializeField] LocalizedString refreshLabelFormat;
 
     [Header("Events")]
-    [SerializeField] UnityEvent OnBoardShow;
-    [SerializeField] UnityEvent OnBoardHide;
+    [SerializeField] UnityEvent OnBoardRefresh;
+    [SerializeField] UnityEvent OnBoardSelectEnd;
 
     LevelData _data;
     Vector2Int _boardSize = Vector2Int.zero;
@@ -74,11 +76,13 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
     // Per-type cooldown tracking
     Dictionary<CellItemType, float> _typeCooldowns = new();
     Dictionary<CellItemType, float> _typeCooldownIntervals = new();
+    bool _isRefreshPaused;
 
     public void OnMMEvent(LevelLoadEvent e) {
         if (e.Stage == EventStage.Start && e.Data != null) {
             _data = e.Data;
             _boardSize = _data.boardSize;
+            _isRefreshPaused = false;
 
             refreshProgressbar?.Setup();
             _refreshLabelFormat = refreshLabelFormat?.GetLocalizedString();
@@ -92,7 +96,6 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
             UpdateRefreshIntervals(0);
             _refreshTimer = _refreshInterval;
             RefreshBoard();
-            OnBoardShow?.Invoke();
             BoardUiEvent.Trigger(BoardUiEventType.Ready, this);
         }
     }
@@ -105,13 +108,18 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
         if (_data?.difficulty == null) return;
 
         float dt = Time.fixedDeltaTime;
+        UpdateCooldowns(dt);
 
-        // Update cooldowns for all types
-        foreach (var type in new List<CellItemType>(_typeCooldowns.Keys)) {
+        if (!_isRefreshPaused)
+            UpdateRefreshTimer(dt);
+    }
+
+    void UpdateCooldowns(float dt) {
+        foreach (var type in new List<CellItemType>(_typeCooldowns.Keys))
             _typeCooldowns[type] += dt;
-        }
+    }
 
-        // Update global refresh timer
+    void UpdateRefreshTimer(float dt) {
         float oldValue = _refreshTimer;
         _refreshTimer -= dt;
 
@@ -120,15 +128,21 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
             refreshLabel.SetText(string.Format(_refreshLabelFormat, Mathf.CeilToInt(_refreshTimer)));
 
         if (_refreshTimer <= 0) {
-            // Если игрок начал выбор, но не успел завершить — засчитываем то, что успел
             if (_isSelecting && _selectedCells.Count > 0) {
                 _isSelecting = false;
                 EndSelection();
             }
 
-            RefreshBoard();
-            _refreshTimer = _refreshInterval;
+            if (!_isRefreshPaused)
+                TriggerRefresh();
         }
+    }
+
+    public void TriggerRefresh() {
+        RefreshBoard();
+        OnBoardRefresh?.Invoke();
+        _refreshTimer = _refreshInterval;
+        _isRefreshPaused = false;
     }
 
     void InitializeTypeCooldowns() {
@@ -555,11 +569,16 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
                 CellUiItemSelectEvent.Trigger(EventStage.End, cell.Item, _selectedCells.Count);
             ClearSelection();
 
-            // После успешного выбора ячеек устанавливаем минимальный интервал до следующего обновления
-            _refreshTimer = minIntervalBetweenRefreshes;
-            refreshProgressbar?.SetValue(_refreshTimer);
-            refreshLabel?.SetText(string.Format(_refreshLabelFormat, Mathf.CeilToInt(_refreshTimer)));
             _cellsMap.ForEach(t => { if (t.Value != null) t.Value.SetActive(false); });
+
+            if (refreshMode == BoardRefreshMode.Manual) {
+                _isRefreshPaused = true;
+            } else {
+                _refreshTimer = minIntervalBetweenRefreshes;
+                refreshProgressbar?.SetValue(_refreshTimer);
+                refreshLabel?.SetText(string.Format(_refreshLabelFormat, Mathf.CeilToInt(_refreshTimer)));
+            }
+            OnBoardSelectEnd?.Invoke();
         }
     }
 

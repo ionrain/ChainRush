@@ -20066,7 +20066,7 @@ MonoBehaviour:
   blankPrefab: {fileID: 7752188492539033539, guid: 1677fe88caafb478b912113989081081,
     type: 3}
   unitType: 1
-  listType: 2
+  listType: 4
   reactToUnitStateChange: 1
   autoSelectNewElement: 1
   priorityStates: 

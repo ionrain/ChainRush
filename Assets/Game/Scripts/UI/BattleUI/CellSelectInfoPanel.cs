@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using MoreMountains.Tools;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Localization;
 
 public enum CellSelectInfoMode { OneByOne, Cumulative }
 
@@ -11,6 +12,7 @@ public class CellSelectInfoPanel : MonoBehaviour, MMEventListener<CellUiItemSele
 
     [SerializeField] RectTransform panelRoot;
     [SerializeField] IconMultiTextItem itemPrefab;
+    [SerializeField] LocalizedString unitLevelFormat;
 
     [Header("Item Data")]
     [SerializeField] ResourcesData resourcesData;
@@ -25,6 +27,12 @@ public class CellSelectInfoPanel : MonoBehaviour, MMEventListener<CellUiItemSele
 
     readonly List<IconMultiTextItem> _items = new();
     readonly Dictionary<Attribute, float> _buffs = new();
+    string _unitLevelFormat = "Lv.{0}";
+
+    void Awake() {
+        if (unitLevelFormat != null && !unitLevelFormat.IsEmpty)
+            _unitLevelFormat = unitLevelFormat.GetLocalizedString();
+    }
 
     public void OnMMEvent(CellUiItemSelectEvent e) {
         if (mode == CellSelectInfoMode.OneByOne) {
@@ -103,15 +111,15 @@ public class CellSelectInfoPanel : MonoBehaviour, MMEventListener<CellUiItemSele
         int remainder = count % maxMergeLevel;
 
         for (int i = 0; i < fullUnits; i++) {
-            MergeStateData mergeData = unitData.GetMergeData(maxMergeLevel);
+            MergeStateData mergeData = unitData.GetMergeData(maxMergeLevel - 1);
             Sprite icon = mergeData != null ? mergeData.icon : unitData.Icon;
-            CreateItem(icon, new List<string>() { unitName, string.Format("Lv.{0}", maxMergeLevel) });
+            CreateItem(icon, new List<string>() { unitName, string.Format(_unitLevelFormat, maxMergeLevel) });
         }
 
         if (remainder > 0) {
             MergeStateData mergeData = unitData.GetMergeData(remainder - 1);
             Sprite icon = mergeData != null ? mergeData.icon : unitData.Icon;
-            CreateItem(icon, new List<string>() { unitName, string.Format("Lv.{0}", remainder) });
+            CreateItem(icon, new List<string>() { unitName, string.Format(_unitLevelFormat, remainder) });
         }
     }
 

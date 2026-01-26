@@ -217,7 +217,7 @@ public class PartyManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEv
         int remainder = count % maxMergeLevel;
 
         for (int i = 0; i < fullUnits; i++)
-            CreateUnit(unitData, maxMergeLevel);
+            CreateUnit(unitData, maxMergeLevel - 1);
 
         if (remainder > 0)
             CreateUnit(unitData, remainder - 1);

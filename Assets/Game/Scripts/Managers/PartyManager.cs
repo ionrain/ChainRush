@@ -10,13 +10,17 @@ public class PartyManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEv
     [SerializeField] AllUnitsData unitsData;
     [SerializeField] BuffsData buffsData;    
     [SerializeField] AttributesData attributes;
+    [SerializeField] Dictionary<LevelGoalType, Unit> heroPrefabs = new();
+    [SerializeField] Transform heroSpawnPoint;
     [SerializeField] Unit unitPrefab;
-    [SerializeField] UnitMergeState maxUnitLevel = UnitMergeState.Fifth;
     [SerializeField] Dictionary<UnitSpeciality, BoxCollider2D> spawnAreas = new();
 
     [Header("Events")]
     [SerializeField] UnityEvent OnBuff;
     [SerializeField] UnityEvent OnHeal;
+
+    [Header("UI")]
+    [SerializeField] Progressbar heroHealthBar;
 
     public bool Valid => _units.Count > 0;
 
@@ -40,32 +44,71 @@ public class PartyManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEv
     public void OnMMEvent(LevelLoadEvent e) {
         if (e.Stage == EventStage.Start && e.Data != null) {
             Setup();
+            SpawnHero(e.Data);
         }
     }
 
     public void Setup(List<UnitData> selected = null) {
         _units.Clear();
         if (selected != null && spawnAreas != null && spawnAreas.Count > 0)
-            selected.ForEach(t => CreateUnit(t, UnitMergeState.First));
+            selected.ForEach(t => CreateUnit(t, 0));
     }
 
-    IEnumerator CreateUnitWithDelay(UnitData data, UnitMergeState mergeState, float delay) {
+    void SpawnHero(LevelData levelData) {
+        if (heroSpawnPoint == null || unitsData == null) return;
+
+        List<UnitData> selectedHeroes = unitsData.Get(UnitType.Hero, UnitListType.Selected);
+        if (selectedHeroes == null || selectedHeroes.Count == 0) return;
+
+        UnitData heroData = selectedHeroes[0];
+        if (heroData == null) return;
+
+        LevelGoalType goalType = (levelData != null && levelData.goal != null && levelData.goal.goal != null)
+            ? levelData.goal.goal.Type
+            : LevelGoalType.Survive;
+
+        if (heroPrefabs == null || !heroPrefabs.TryGetValue(goalType, out Unit heroPrefab) || heroPrefab == null) return;
+
+        CreateUnit(heroData, 0, heroSpawnPoint.position, heroPrefab, heroSpawnPoint);
+    }
+
+    IEnumerator CreateUnitWithDelay(UnitData data, int mergeState, float delay) {
         yield return new WaitForSeconds(delay);
         CreateUnit(data, mergeState);
     }
 
-    void CreateUnit(UnitData data, UnitMergeState mergeState) {
-        var area = spawnAreas.GetValueOrDefault(data.speciality, null);
-        if (area == null) return;
+    void CreateUnit(UnitData data, int mergeState, Vector3? position = null, Unit prefab = null, Transform parent = null) {
+        Vector3 spawnPosition;
+        Transform spawnParent;
 
-        Vector2 position = new Vector2(Random.Range(0, area.size.x), Random.Range(0, area.size.y)) - area.size * 0.5f + (Vector2)area.transform.position;
-        Unit unit = Instantiate(unitPrefab, position, Quaternion.identity, area.transform);
+        if (position.HasValue) {
+            spawnPosition = position.Value;
+            spawnParent = parent;
+        } else {
+            var area = spawnAreas.GetValueOrDefault(data.speciality, null);
+            if (area == null) return;
+            spawnPosition = new Vector2(Random.Range(0, area.size.x), Random.Range(0, area.size.y)) - area.size * 0.5f + (Vector2)area.transform.position;
+            spawnParent = area.transform;
+        }
+
+        Unit unitToSpawn = prefab != null ? prefab : unitPrefab;
+        Unit unit = Instantiate(unitToSpawn, spawnPosition, Quaternion.identity, spawnParent);
         data.ResetSkillLevels();
         unit.Setup(data, mergeState);
         unit.SetHealthbarVisibility(_showHealthBars);
         unit.OnDeath += OnUnitDeath;
         _units.Add(unit);
         ApplySupportMultipliers(unit);
+
+        if (data.type == UnitType.Hero) {
+            unit.OnHit += OnHeroHit;
+            unit.OnDeath += OnHeroDeath;
+            if (heroHealthBar != null) {
+                heroHealthBar.Setup();
+                heroHealthBar.SetTotal(unit.MaxHealth);
+                heroHealthBar.SetValue(unit.MaxHealth);
+            }
+        }
     }
 
     void ApplySupportMultipliers(Unit unit = null, bool playFeedback = false) {
@@ -78,8 +121,17 @@ public class PartyManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEv
         }
     }
 
+    void OnHeroHit(Unit unit) {
+        if (heroHealthBar != null)
+            heroHealthBar.SetValue(unit.CurrentHealth);
+    }
+
     void OnUnitDeath(Unit unit) {
         _units.Remove(unit);
+    }
+
+    void OnHeroDeath(Unit unit) {
+        LevelActionEvent.Trigger(EventStage.Start, LevelActionType.Fail);
     }
 
     public List<UnitSkill> GetSkills(SkillListType listType) {
@@ -159,19 +211,16 @@ public class PartyManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEv
         if (unitsData == null) return;
         UnitData unitData = unitsData.GetByName(unitId);
         if (unitData == null) return;
+        int maxMergeLevel = unitData.MergeStatesCount;
 
-        int maxMergeValue = (int)maxUnitLevel + 1;
-
-        int fullUnits = count / maxMergeValue;
-        int remainder = count % maxMergeValue;
+        int fullUnits = count / maxMergeLevel;
+        int remainder = count % maxMergeLevel;
 
         for (int i = 0; i < fullUnits; i++)
-            CreateUnit(unitData, maxUnitLevel);
+            CreateUnit(unitData, maxMergeLevel);
 
-        if (remainder > 0) {
-            UnitMergeState mergeState = (UnitMergeState)(remainder - 1);
-            CreateUnit(unitData, mergeState);
-        }
+        if (remainder > 0)
+            CreateUnit(unitData, remainder - 1);
     }
 
     void HandleBuffSelection(string buffId, int count) {

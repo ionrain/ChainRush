@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using MoreMountains.Tools;
 using Sirenix.Utilities;
 using UnityEngine;
 
@@ -94,6 +95,7 @@ public class AllUnitsData : GameSettings {
             return false;
 
         data.SetState(state);
+        UnitEvent.Trigger(EventStage.End, UnitEventType.ChangeState, data);
         return true;
     }
 

@@ -13,7 +13,7 @@ public class UnitDataEvent : UnityEvent<UnitData> { }
 [Flags]
 public enum UnitType { None = 0, Normal = 1, Hero = 2 }
 public enum UnitState { Locked, ReadyToBeUnlocked, Available, Selected }
-public enum UnitSpeciality { Warrior, Assassin, Tank, Range, Mage, Support }
+public enum UnitSpeciality { Warrior, Assassin, Tank, Range, Mage, Support, Any }
 public enum UnitEventType { ChangeState, LevelUp, CardBalanceChange }
 public enum UnitMergeState { First, Second, Third, Forth, Fifth }
 
@@ -146,7 +146,7 @@ public class UnitData : SerializedScriptableObject, IListItemData {
     public UnitSpeciality speciality;
     public Dictionary<Attribute, AttributeUpgradeData> attributes = new Dictionary<Attribute, AttributeUpgradeData>();
     public List<UnitSkill> skills = new List<UnitSkill>();
-    public Dictionary<UnitMergeState, MergeStateData> mergeStates = new Dictionary<UnitMergeState, MergeStateData>();
+    public List<MergeStateData> mergeStates = new();
 
     [Header("Spine Animation")]
     public Dictionary<AnimationState, SpineAnimationData> animations = new Dictionary<AnimationState, SpineAnimationData>();
@@ -165,6 +165,7 @@ public class UnitData : SerializedScriptableObject, IListItemData {
     public int CardBalance { get; private set; }
     public bool Unlocked => State != UnitState.Locked && State != UnitState.ReadyToBeUnlocked;
     public UnitState State { get; private set; }
+    public int MergeStatesCount => mergeStates != null ? mergeStates.Count : 0;
 
     Dictionary<ItemType, ItemData> _inventory = new Dictionary<ItemType, ItemData>();
 
@@ -176,8 +177,8 @@ public class UnitData : SerializedScriptableObject, IListItemData {
         return (Level + 1) * 5 * (1 + Mathf.FloorToInt((float)Level / 5));
     }
 
-    public MergeStateData GetMergeData(UnitMergeState mergeState) {
-        return mergeStates != null ? mergeStates.GetValueOrDefault(mergeState) : null;
+    public MergeStateData GetMergeData(int index) {
+        return mergeStates != null && index >= 0 && index < mergeStates.Count ? mergeStates[index] : null;
     }
 
     public ItemData AddInventoryItem(ItemData data) {

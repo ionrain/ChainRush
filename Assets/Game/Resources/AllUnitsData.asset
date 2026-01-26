@@ -73,7 +73,7 @@ MonoBehaviour:
       Data: 
   itemsData: {fileID: 11400000, guid: 9d4e13ef316f84142a1a9a0d571b3b73, type: 2}
   energyPrice: 5
-  upgradable: 2
+  maxMergeLevel: 3
   units:
   - {fileID: 11400000, guid: 67dca653b1e974ceba94b0faf491dc7a, type: 2}
   - {fileID: 11400000, guid: 2aad8645ca7ec43ea982b40d926c9ef5, type: 2}

@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class UnitCard : MonoBehaviour {
     [SerializeField] UnitData data;
-    [SerializeField] UnitMergeState state;
+    [SerializeField] int mergeIndex;
     [SerializeField] SkeletonGraphic skeletonGraphic;
     [SerializeField] IconTextItem skillPrefab;
     [SerializeField] Transform skillsRoot;
@@ -23,7 +23,7 @@ public class UnitCard : MonoBehaviour {
 
     public void Setup() {
         if (data != null && skeletonGraphic != null) {
-            var mergeData = data.GetMergeData(state);
+            var mergeData = data.GetMergeData(mergeIndex);
             if (mergeData != null) {
                 skeletonGraphic.skeletonDataAsset = mergeData.spineData;
                 skeletonGraphic.Clear();

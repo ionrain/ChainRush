@@ -98,19 +98,18 @@ public class CellSelectInfoPanel : MonoBehaviour, MMEventListener<CellUiItemSele
 
         string unitName = unitData.ShortName;
 
-        const int maxMergeValue = 4;
-        int fullUnits = count / maxMergeValue;
-        int remainder = count % maxMergeValue;
+        int maxMergeLevel = unitData.MergeStatesCount;
+        int fullUnits = count / maxMergeLevel;
+        int remainder = count % maxMergeLevel;
 
         for (int i = 0; i < fullUnits; i++) {
-            MergeStateData mergeData = unitData.GetMergeData(UnitMergeState.Fifth);
+            MergeStateData mergeData = unitData.GetMergeData(maxMergeLevel);
             Sprite icon = mergeData != null ? mergeData.icon : unitData.Icon;
-            CreateItem(icon, new List<string>() { unitName, string.Format("Lv.{0}", maxMergeValue) });
+            CreateItem(icon, new List<string>() { unitName, string.Format("Lv.{0}", maxMergeLevel) });
         }
 
         if (remainder > 0) {
-            UnitMergeState mergeState = (UnitMergeState)(remainder - 1);
-            MergeStateData mergeData = unitData.GetMergeData(mergeState);
+            MergeStateData mergeData = unitData.GetMergeData(remainder - 1);
             Sprite icon = mergeData != null ? mergeData.icon : unitData.Icon;
             CreateItem(icon, new List<string>() { unitName, string.Format("Lv.{0}", remainder) });
         }

@@ -27,7 +27,7 @@ public class UnitMergePanel : MonoBehaviour {
         if (mergeLabels != null) {
             for (int i = 0; i < mergeLabels.Count; i++) {
                 if (mergeLabels[i] != null) {
-                    MergeStateData mergeData = data.GetMergeData((UnitMergeState)(i + 1));
+                    MergeStateData mergeData = data.GetMergeData(i + 1);
                     if (mergeData != null)
                         mergeLabels[i].text = mergeData.Description;
                 }

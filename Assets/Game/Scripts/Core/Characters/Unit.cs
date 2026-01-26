@@ -11,6 +11,7 @@ using static MoreMountains.TopDownEngine.CharacterStates;
 [RequireComponent(typeof(Rigidbody2D), typeof(Character), typeof(Collider2D))]
 public class Unit : SerializedMonoBehaviour, MMEventListener<LevelResultEvent> {
     public delegate void UnitEvent(Unit unit);
+    public event UnitEvent OnHit;
     public event UnitEvent OnDeath;
     
     [SerializeField] SpineSkeletonModel spine;
@@ -20,6 +21,10 @@ public class Unit : SerializedMonoBehaviour, MMEventListener<LevelResultEvent> {
     [SerializeField] GameObject resistanceHost;
     [SerializeField] DamageResistanceProcessor resistanceProcessor;
     [SerializeField] ElementsData elements;
+
+    [Header("Settings")]
+    [SerializeField] bool canBeHealed = true;
+    [SerializeField] bool changeColliderSettings = true;
 
     [Header("Feedbacks")]
     [SerializeField] Transform deathParticlesRoot;
@@ -34,9 +39,11 @@ public class Unit : SerializedMonoBehaviour, MMEventListener<LevelResultEvent> {
     public UnitData Data { get; private set; }
     public Dictionary<Attribute, float> Buffs { get; private set; } = new ();
     public List<Skill> Skills { get; private set; } = new ();
-    public UnitMergeState MergeState { get; private set; }
+    public int MergeState { get; private set; }
     public List<Skill> ActiveSkills => Skills.FindAll(t => t.IsAssigned);
     public float HPLoss => _health ? _health.CurrentHealth - _health.MaximumHealth : 0;
+    public float MaxHealth => _health ? _health.MaximumHealth : 0;
+    public float CurrentHealth => _health ? _health.CurrentHealth : 0;
 
     Dictionary<MovementStates, AnimationState> _movementToAnimation = new Dictionary<MovementStates, AnimationState>() {
         { MovementStates.Idle, AnimationState.Idle}, {MovementStates.Walking, AnimationState.Walk },
@@ -51,7 +58,6 @@ public class Unit : SerializedMonoBehaviour, MMEventListener<LevelResultEvent> {
     CharacterMovement _movement;
     Health _health;
     MMProgressBar _healthBar;
-    Vector3 _returnPosition;
     AIDecisionDistanceToTarget _distanceDecision;
     int _layer;
     bool _healthbarVisible = true;
@@ -66,8 +72,10 @@ public class Unit : SerializedMonoBehaviour, MMEventListener<LevelResultEvent> {
     }
 
     public void Heal(float value) {
-        _health.ReceiveHealth(value * _health.MaximumHealth, null);
-        PlayCellFeedback(healFeedback);
+        if (canBeHealed)  {
+            _health.ReceiveHealth(value * _health.MaximumHealth, null);
+            PlayCellFeedback(healFeedback);
+        }
     }
 
     public void AddBuff(Sprite icon, Attribute attribute, float value, bool playFeedback = true) {
@@ -102,7 +110,7 @@ public class Unit : SerializedMonoBehaviour, MMEventListener<LevelResultEvent> {
                 _distanceDecision = _character.CharacterBrain.gameObject.GetComponent<AIDecisionDistanceToTarget>();
 
             if (_health != null) {
-                _health.OnHit += OnHit;
+                _health.OnHit += OnHealthHit;
                 _health.OnDeath += OnHealthDead;
             }
         }
@@ -128,10 +136,9 @@ public class Unit : SerializedMonoBehaviour, MMEventListener<LevelResultEvent> {
         }
     }
 
-    public void Setup(UnitData data, UnitMergeState mergeState) {
+    public void Setup(UnitData data, int mergeState) {
         Data = data;
         MergeState = mergeState;
-        _returnPosition = transform.position;
         TogglePhysics(true);
         if (Data != null) {
             Initialize();
@@ -160,7 +167,7 @@ public class Unit : SerializedMonoBehaviour, MMEventListener<LevelResultEvent> {
         name = string.Format("{0}-Grade-{1}", Data.name, mergeIndex);
         MergeStateData mergeData = Data.GetMergeData(MergeState);
         if (mergeData != null) {
-            if (_collider != null && _collider.attachedRigidbody != null) {
+            if (changeColliderSettings && _collider != null && _collider.attachedRigidbody != null) {
                 _collider.attachedRigidbody.mass = mergeData.mass;
                 _collider.offset = mergeData.colliderOffset;
                 if (_collider is BoxCollider2D boxCollider)
@@ -177,9 +184,8 @@ public class Unit : SerializedMonoBehaviour, MMEventListener<LevelResultEvent> {
     }
 
     public void Upgrade() {
-        if (MergeState < UnitMergeState.Fifth) {
-            int intState = (int)MergeState + 1;
-            MergeState = (UnitMergeState)intState;
+        if (MergeState < Data.MergeStatesCount - 1) {
+            MergeState++;
             UpdateMergeState();            
             Skills.ForEach(t => t.LevelUp());
             UpdateStats();
@@ -359,10 +365,6 @@ public class Unit : SerializedMonoBehaviour, MMEventListener<LevelResultEvent> {
         }
     }
 
-    void OnHit() {
-        //Freeze(false);
-    }
-
     void OnMainWeaponStateChange() {
         if (_handleWeapon.CurrentWeapon.WeaponState.CurrentState == _attackState)
             spine?.PlayAnimation(AnimationState.Attack);
@@ -382,6 +384,10 @@ public class Unit : SerializedMonoBehaviour, MMEventListener<LevelResultEvent> {
 
     public void OnHealthDead() {
         OnDeath?.Invoke(this);
+    }
+
+    public void OnHealthHit() {
+        OnHit?.Invoke(this);
     }
 
     public void OnMMEvent(LevelResultEvent e) {

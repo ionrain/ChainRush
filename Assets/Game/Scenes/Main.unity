@@ -19573,7 +19573,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
-    SerializedFormat: 2
+    SerializedFormat: 0
     SerializedBytes: 
     ReferencedUnityObjects: []
     SerializedBytesString: 
@@ -19739,8 +19739,8 @@ GameObject:
   - component: {fileID: 126455004}
   - component: {fileID: 126455006}
   - component: {fileID: 126455009}
-  - component: {fileID: 126455005}
   - component: {fileID: 126455007}
+  - component: {fileID: 126455012}
   - component: {fileID: 126455008}
   - component: {fileID: 126455010}
   - component: {fileID: 126455011}
@@ -19771,106 +19771,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &126455005
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 126455003}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cd7510b1eefff497fb61755e7f0fbe3b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  data: {fileID: 11400000, guid: 04d090dca8b184410bc442f018562a86, type: 2}
-  root: {fileID: 141525635}
-  prefab: {fileID: 8289019217356075196, guid: f0dc8c7e519d84747bb57a3405795b4a, type: 3}
-  selectable: 1
-  selectFirstByDefault: 0
-  fillBlanks: 1
-  defaultCount: 12
-  countPerSection: 0
-  blankPrefab: {fileID: 7752188492539033539, guid: 1677fe88caafb478b912113989081081,
-    type: 3}
-  unitType: 1
-  listType: 4
-  OnAction:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 126455006}
-        m_TargetAssemblyTypeName: UnitPanel, Assembly-CSharp
-        m_MethodName: Setup
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 126455009}
-        m_TargetAssemblyTypeName: UnitMergePanel, Assembly-CSharp
-        m_MethodName: ShowMergeInfo
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 8736554474922178957}
-        m_TargetAssemblyTypeName: UnitActionButton, Assembly-CSharp
-        m_MethodName: Setup
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 2012016976}
-        m_TargetAssemblyTypeName: UnitActionButton, Assembly-CSharp
-        m_MethodName: Setup
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 126455011}
-        m_TargetAssemblyTypeName: UnitStateResult, Assembly-CSharp
-        m_MethodName: Setup
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 126455011}
-        m_TargetAssemblyTypeName: UnitStateResult, Assembly-CSharp
-        m_MethodName: CheckState
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  selectSFX: {fileID: 642752864}
 --- !u!114 &126455006
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19884,8 +19784,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
+    SerializedFormat: 0
+    SerializedBytes: 010105000000730074006100740073002f00000000016f000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e00440069006300740069006f006e00610072007900600032005b005b004100740074007200690062007500740065002c00200041007300730065006d0062006c0079002d004300530068006100720070005d002c005b00490063006f006e0054006500780074004900740065006d002c00200041007300730065006d0062006c0079002d004300530068006100720070005d005d002c0020006d00730063006f0072006c00690062000000000001010800000063006f006d00700061007200650072002f010000000159000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e0045006e0075006d0045007100750061006c0069007400790043006f006d0070006100720065007200600031005b005b004100740074007200690062007500740065002c00200041007300730065006d0062006c0079002d004300530068006100720070005d005d002c0020006d00730063006f0072006c0069006200010000000600000000000000000705060500000000000000042e1d010200000024006b0000000000000000000b0102000000240076000000000005042e1d010200000024006b0001000000000000000b0102000000240076000100000005042e1d010200000024006b0002000000000000000b0102000000240076000200000005042e1d010200000024006b0004000000000000000b0102000000240076000300000005042e1d010200000024006b0003000000000000000b01020000002400760004000000050705
     ReferencedUnityObjects:
     - {fileID: 5245070031075606129}
     - {fileID: 5245070029931710146}
@@ -19896,93 +19796,7 @@ MonoBehaviour:
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes:
-    - Name: stats
-      Entry: 7
-      Data: 0|System.Collections.Generic.Dictionary`2[[Attribute, Assembly-CSharp],[IconTextItem,
-        Assembly-CSharp]], mscorlib
-    - Name: comparer
-      Entry: 7
-      Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[Attribute, Assembly-CSharp]],
-        mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 12
-      Data: 5
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 0
-    - Name: $v
-      Entry: 10
-      Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 1
-    - Name: $v
-      Entry: 10
-      Data: 1
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 2
-    - Name: $v
-      Entry: 10
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 4
-    - Name: $v
-      Entry: 10
-      Data: 3
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 3
-    - Name: $v
-      Entry: 10
-      Data: 4
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
+    SerializationNodes: []
   avatar: {fileID: 546176764}
   lockedIcon: {fileID: 295277467}
   readyIcon: {fileID: 1183251029}
@@ -20021,7 +19835,7 @@ MonoBehaviour:
   root: {fileID: 1733527306}
   prefab: {fileID: 8289019217356075196, guid: d5ada4517bd1a49bbb6e93298c94477e, type: 3}
   selectable: 1
-  selectFirstByDefault: 1
+  selectDefault: 1
   fillBlanks: 1
   defaultCount: 4
   countPerSection: 0
@@ -20029,6 +19843,9 @@ MonoBehaviour:
     type: 3}
   unitType: 1
   listType: 3
+  reactToUnitStateChange: 1
+  autoSelectNewElement: 1
+  priorityStates: 
   OnAction:
     m_PersistentCalls:
       m_Calls:
@@ -20104,6 +19921,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 642752864}
+        m_TargetAssemblyTypeName: MoreMountains.Feedbacks.MMF_Player, MoreMountains.Tools
+        m_MethodName: PlayFeedbacks
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &126455008
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -20123,31 +19952,7 @@ MonoBehaviour:
   excludeStates: 
   OnSuccess:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 126455005}
-        m_TargetAssemblyTypeName: UnitPanelList, Assembly-CSharp
-        m_MethodName: Setup
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 126455007}
-        m_TargetAssemblyTypeName: UnitList, Assembly-CSharp
-        m_MethodName: Setup
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   OnFail:
     m_PersistentCalls:
       m_Calls: []
@@ -20203,31 +20008,7 @@ MonoBehaviour:
   excludeStates: 
   OnSuccess:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 126455005}
-        m_TargetAssemblyTypeName: UnitPanelList, Assembly-CSharp
-        m_MethodName: Setup
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 126455007}
-        m_TargetAssemblyTypeName: UnitList, Assembly-CSharp
-        m_MethodName: Setup
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   OnFail:
     m_PersistentCalls:
       m_Calls: []
@@ -20244,8 +20025,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitStateResult
   serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
+    SerializedFormat: 0
+    SerializedBytes: 0101060000006500760065006e00740073002f000000000187000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e00440069006300740069006f006e00610072007900600032005b005b0055006e0069007400530074006100740065002c00200041007300730065006d0062006c0079002d004300530068006100720070005d002c005b0055006e0069007400790045006e00670069006e0065002e004500760065006e00740073002e0055006e006900740079004500760065006e0074002c00200055006e0069007400790045006e00670069006e0065002e0043006f00720065004d006f00640075006c0065005d005d002c0020006d00730063006f0072006c00690062000000000001010800000063006f006d00700061007200650072002f010000000159000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e0045006e0075006d0045007100750061006c0069007400790043006f006d0070006100720065007200600031005b005b0055006e0069007400530074006100740065002c00200041007300730065006d0062006c0079002d004300530068006100720070005d005d002c0020006d00730063006f0072006c0069006200010000000600000000000000000705060400000000000000042e1d010200000024006b000000000000000000010102000000240076002f02000000013500000055006e0069007400790045006e00670069006e0065002e004500760065006e00740073002e0055006e006900740079004500760065006e0074002c00200055006e0069007400790045006e00670069006e0065002e0043006f00720065004d006f00640075006c006500020000000101110000006d005f00500065007200730069007300740065006e007400430061006c006c0073002f03000000013e00000055006e0069007400790045006e00670069006e0065002e004500760065006e00740073002e00500065007200730069007300740065006e007400430061006c006c00470072006f00750070002c00200055006e0069007400790045006e00670069006e0065002e0043006f00720065004d006f00640075006c006500030000000101070000006d005f00430061006c006c0073002f040000000168000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e004c00690073007400600031005b005b0055006e0069007400790045006e00670069006e0065002e004500760065006e00740073002e00500065007200730069007300740065006e007400430061006c006c002c00200055006e0069007400790045006e00670069006e0065002e0043006f00720065004d006f00640075006c0065005d005d002c0020006d00730063006f0072006c006900620004000000060100000000000000022f05000000013900000055006e0069007400790045006e00670069006e0065002e004500760065006e00740073002e00500065007200730069007300740065006e007400430061006c006c002c00200055006e0069007400790045006e00670069006e0065002e0043006f00720065004d006f00640075006c006500050000000b01080000006d005f00540061007200670065007400000000002701180000006d005f0054006100720067006500740041007300730065006d0062006c00790054007900700065004e0061006d006500012300000055006e0069007400790045006e00670069006e0065002e00470061006d0065004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650027010c0000006d005f004d006500740068006f0064004e0061006d00650001090000005300650074004100630074006900760065001d01060000006d005f004d006f0064006500060000000000000001010b0000006d005f0041007200670075006d0065006e00740073002f06000000013800000055006e0069007400790045006e00670069006e0065002e004500760065006e00740073002e0041007200670075006d0065006e007400430061006300680065002c00200055006e0069007400790045006e00670069006e0065002e0043006f00720065004d006f00640075006c006500060000000b01100000006d005f004f0062006a0065006300740041007200670075006d0065006e007400010000002701200000006d005f004f0062006a0065006300740041007200670075006d0065006e00740041007300730065006d0062006c00790054007900700065004e0061006d006500011f00000055006e0069007400790045006e00670069006e0065002e004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650017010d0000006d005f0049006e00740041007200670075006d0065006e007400000000001f010f0000006d005f0046006c006f006100740041007200670075006d0065006e007400000000002701100000006d005f0053007400720069006e00670041007200670075006d0065006e00740001000000002b010e0000006d005f0042006f006f006c0041007200670075006d0065006e00740000051d010b0000006d005f00430061006c006c00530074006100740065000200000000000000050705050505042e1d010200000024006b000100000000000000010102000000240076003002000000070000000101110000006d005f00500065007200730069007300740065006e007400430061006c006c0073003003000000080000000101070000006d005f00430061006c006c0073003004000000090000000601000000000000000230050000000a0000000b01080000006d005f00540061007200670065007400000000002701180000006d005f0054006100720067006500740041007300730065006d0062006c00790054007900700065004e0061006d006500012300000055006e0069007400790045006e00670069006e0065002e00470061006d0065004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650027010c0000006d005f004d006500740068006f0064004e0061006d00650001090000005300650074004100630074006900760065001d01060000006d005f004d006f0064006500060000000000000001010b0000006d005f0041007200670075006d0065006e007400730030060000000b0000000b01100000006d005f004f0062006a0065006300740041007200670075006d0065006e007400010000002701200000006d005f004f0062006a0065006300740041007200670075006d0065006e00740041007300730065006d0062006c00790054007900700065004e0061006d006500011f00000055006e0069007400790045006e00670069006e0065002e004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650017010d0000006d005f0049006e00740041007200670075006d0065006e007400000000001f010f0000006d005f0046006c006f006100740041007200670075006d0065006e007400000000002701100000006d005f0053007400720069006e00670041007200670075006d0065006e00740001000000002b010e0000006d005f0042006f006f006c0041007200670075006d0065006e00740000051d010b0000006d005f00430061006c006c00530074006100740065000200000000000000050705050505042e1d010200000024006b0002000000000000000101020000002400760030020000000c0000000101110000006d005f00500065007200730069007300740065006e007400430061006c006c00730030030000000d0000000101070000006d005f00430061006c006c00730030040000000e0000000603000000000000000230050000000f0000000b01080000006d005f00540061007200670065007400000000002701180000006d005f0054006100720067006500740041007300730065006d0062006c00790054007900700065004e0061006d006500012300000055006e0069007400790045006e00670069006e0065002e00470061006d0065004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650027010c0000006d005f004d006500740068006f0064004e0061006d00650001090000005300650074004100630074006900760065001d01060000006d005f004d006f0064006500060000000000000001010b0000006d005f0041007200670075006d0065006e00740073003006000000100000000b01100000006d005f004f0062006a0065006300740041007200670075006d0065006e007400020000002701200000006d005f004f0062006a0065006300740041007200670075006d0065006e00740041007300730065006d0062006c00790054007900700065004e0061006d006500011f00000055006e0069007400790045006e00670069006e0065002e004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650017010d0000006d005f0049006e00740041007200670075006d0065006e007400000000001f010f0000006d005f0046006c006f006100740041007200670075006d0065006e007400000000002701100000006d005f0053007400720069006e00670041007200670075006d0065006e00740001000000002b010e0000006d005f0042006f006f006c0041007200670075006d0065006e00740001051d010b0000006d005f00430061006c006c0053007400610074006500020000000000000005023005000000110000000b01080000006d005f00540061007200670065007400030000002701180000006d005f0054006100720067006500740041007300730065006d0062006c00790054007900700065004e0061006d006500012300000055006e0069007400790045006e00670069006e0065002e00470061006d0065004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650027010c0000006d005f004d006500740068006f0064004e0061006d00650001090000005300650074004100630074006900760065001d01060000006d005f004d006f0064006500060000000000000001010b0000006d005f0041007200670075006d0065006e00740073003006000000120000000b01100000006d005f004f0062006a0065006300740041007200670075006d0065006e007400040000002701200000006d005f004f0062006a0065006300740041007200670075006d0065006e00740041007300730065006d0062006c00790054007900700065004e0061006d006500011f00000055006e0069007400790045006e00670069006e0065002e004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650017010d0000006d005f0049006e00740041007200670075006d0065006e007400000000001f010f0000006d005f0046006c006f006100740041007200670075006d0065006e007400000000002701100000006d005f0053007400720069006e00670041007200670075006d0065006e00740001000000002b010e0000006d005f0042006f006f006c0041007200670075006d0065006e00740001051d010b0000006d005f00430061006c006c0053007400610074006500020000000000000005023005000000130000000b01080000006d005f00540061007200670065007400050000002701180000006d005f0054006100720067006500740041007300730065006d0062006c00790054007900700065004e0061006d006500012300000055006e0069007400790045006e00670069006e0065002e00470061006d0065004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650027010c0000006d005f004d006500740068006f0064004e0061006d00650001090000005300650074004100630074006900760065001d01060000006d005f004d006f0064006500060000000000000001010b0000006d005f0041007200670075006d0065006e00740073003006000000140000000b01100000006d005f004f0062006a0065006300740041007200670075006d0065006e007400060000002701200000006d005f004f0062006a0065006300740041007200670075006d0065006e00740041007300730065006d0062006c00790054007900700065004e0061006d006500011f00000055006e0069007400790045006e00670069006e0065002e004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650017010d0000006d005f0049006e00740041007200670075006d0065006e007400000000001f010f0000006d005f0046006c006f006100740041007200670075006d0065006e007400000000002701100000006d005f0053007400720069006e00670041007200670075006d0065006e00740001000000002b010e0000006d005f0042006f006f006c0041007200670075006d0065006e00740000051d010b0000006d005f00430061006c006c00530074006100740065000200000000000000050705050505042e1d010200000024006b000300000000000000010102000000240076003002000000150000000101110000006d005f00500065007200730069007300740065006e007400430061006c006c0073003003000000160000000101070000006d005f00430061006c006c007300300400000017000000060300000000000000023005000000180000000b01080000006d005f00540061007200670065007400000000002701180000006d005f0054006100720067006500740041007300730065006d0062006c00790054007900700065004e0061006d006500012300000055006e0069007400790045006e00670069006e0065002e00470061006d0065004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650027010c0000006d005f004d006500740068006f0064004e0061006d00650001090000005300650074004100630074006900760065001d01060000006d005f004d006f0064006500060000000000000001010b0000006d005f0041007200670075006d0065006e00740073003006000000190000000b01100000006d005f004f0062006a0065006300740041007200670075006d0065006e007400070000002701200000006d005f004f0062006a0065006300740041007200670075006d0065006e00740041007300730065006d0062006c00790054007900700065004e0061006d006500011f00000055006e0069007400790045006e00670069006e0065002e004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650017010d0000006d005f0049006e00740041007200670075006d0065006e007400000000001f010f0000006d005f0046006c006f006100740041007200670075006d0065006e007400000000002701100000006d005f0053007400720069006e00670041007200670075006d0065006e00740001000000002b010e0000006d005f0042006f006f006c0041007200670075006d0065006e00740001051d010b0000006d005f00430061006c006c00530074006100740065000200000000000000050230050000001a0000000b01080000006d005f00540061007200670065007400030000002701180000006d005f0054006100720067006500740041007300730065006d0062006c00790054007900700065004e0061006d006500012300000055006e0069007400790045006e00670069006e0065002e00470061006d0065004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650027010c0000006d005f004d006500740068006f0064004e0061006d00650001090000005300650074004100630074006900760065001d01060000006d005f004d006f0064006500060000000000000001010b0000006d005f0041007200670075006d0065006e007400730030060000001b0000000b01100000006d005f004f0062006a0065006300740041007200670075006d0065006e007400080000002701200000006d005f004f0062006a0065006300740041007200670075006d0065006e00740041007300730065006d0062006c00790054007900700065004e0061006d006500011f00000055006e0069007400790045006e00670069006e0065002e004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650017010d0000006d005f0049006e00740041007200670075006d0065006e007400000000001f010f0000006d005f0046006c006f006100740041007200670075006d0065006e007400000000002701100000006d005f0053007400720069006e00670041007200670075006d0065006e00740001000000002b010e0000006d005f0042006f006f006c0041007200670075006d0065006e00740000051d010b0000006d005f00430061006c006c00530074006100740065000200000000000000050230050000001c0000000b01080000006d005f00540061007200670065007400050000002701180000006d005f0054006100720067006500740041007300730065006d0062006c00790054007900700065004e0061006d006500012300000055006e0069007400790045006e00670069006e0065002e00470061006d0065004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650027010c0000006d005f004d006500740068006f0064004e0061006d00650001090000005300650074004100630074006900760065001d01060000006d005f004d006f0064006500060000000000000001010b0000006d005f0041007200670075006d0065006e007400730030060000001d0000000b01100000006d005f004f0062006a0065006300740041007200670075006d0065006e007400090000002701200000006d005f004f0062006a0065006300740041007200670075006d0065006e00740041007300730065006d0062006c00790054007900700065004e0061006d006500011f00000055006e0069007400790045006e00670069006e0065002e004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650017010d0000006d005f0049006e00740041007200670075006d0065006e007400000000001f010f0000006d005f0046006c006f006100740041007200670075006d0065006e007400000000002701100000006d005f0053007400720069006e00670041007200670075006d0065006e00740001000000002b010e0000006d005f0042006f006f006c0041007200670075006d0065006e00740001051d010b0000006d005f00430061006c006c005300740061007400650002000000000000000507050505050705
     ReferencedUnityObjects:
     - {fileID: 12594338}
     - {fileID: 0}
@@ -20261,529 +20042,121 @@ MonoBehaviour:
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes:
-    - Name: events
-      Entry: 7
-      Data: 0|System.Collections.Generic.Dictionary`2[[UnitState, Assembly-CSharp],[UnityEngine.Events.UnityEvent,
-        UnityEngine.CoreModule]], mscorlib
-    - Name: comparer
-      Entry: 7
-      Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[UnitState, Assembly-CSharp]],
-        mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 12
-      Data: 4
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 0
-    - Name: $v
-      Entry: 7
-      Data: 2|UnityEngine.Events.UnityEvent, UnityEngine.CoreModule
-    - Name: m_PersistentCalls
-      Entry: 7
-      Data: 3|UnityEngine.Events.PersistentCallGroup, UnityEngine.CoreModule
-    - Name: m_Calls
-      Entry: 7
-      Data: 4|System.Collections.Generic.List`1[[UnityEngine.Events.PersistentCall,
-        UnityEngine.CoreModule]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 1
-    - Name: 
-      Entry: 7
-      Data: 5|UnityEngine.Events.PersistentCall, UnityEngine.CoreModule
-    - Name: m_Target
-      Entry: 10
-      Data: 0
-    - Name: m_TargetAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.GameObject, UnityEngine
-    - Name: m_MethodName
-      Entry: 1
-      Data: SetActive
-    - Name: m_Mode
-      Entry: 3
-      Data: 6
-    - Name: m_Arguments
-      Entry: 7
-      Data: 6|UnityEngine.Events.ArgumentCache, UnityEngine.CoreModule
-    - Name: m_ObjectArgument
-      Entry: 10
-      Data: 1
-    - Name: m_ObjectArgumentAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.Object, UnityEngine
-    - Name: m_IntArgument
-      Entry: 3
-      Data: 0
-    - Name: m_FloatArgument
-      Entry: 4
-      Data: 0
-    - Name: m_StringArgument
-      Entry: 1
-      Data: 
-    - Name: m_BoolArgument
-      Entry: 5
-      Data: false
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_CallState
-      Entry: 3
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 1
-    - Name: $v
-      Entry: 7
-      Data: 7|UnityEngine.Events.UnityEvent, UnityEngine.CoreModule
-    - Name: m_PersistentCalls
-      Entry: 7
-      Data: 8|UnityEngine.Events.PersistentCallGroup, UnityEngine.CoreModule
-    - Name: m_Calls
-      Entry: 7
-      Data: 9|System.Collections.Generic.List`1[[UnityEngine.Events.PersistentCall,
-        UnityEngine.CoreModule]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 1
-    - Name: 
-      Entry: 7
-      Data: 10|UnityEngine.Events.PersistentCall, UnityEngine.CoreModule
-    - Name: m_Target
-      Entry: 10
-      Data: 0
-    - Name: m_TargetAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.GameObject, UnityEngine
-    - Name: m_MethodName
-      Entry: 1
-      Data: SetActive
-    - Name: m_Mode
-      Entry: 3
-      Data: 6
-    - Name: m_Arguments
-      Entry: 7
-      Data: 11|UnityEngine.Events.ArgumentCache, UnityEngine.CoreModule
-    - Name: m_ObjectArgument
-      Entry: 10
-      Data: 1
-    - Name: m_ObjectArgumentAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.Object, UnityEngine
-    - Name: m_IntArgument
-      Entry: 3
-      Data: 0
-    - Name: m_FloatArgument
-      Entry: 4
-      Data: 0
-    - Name: m_StringArgument
-      Entry: 1
-      Data: 
-    - Name: m_BoolArgument
-      Entry: 5
-      Data: false
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_CallState
-      Entry: 3
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 2
-    - Name: $v
-      Entry: 7
-      Data: 12|UnityEngine.Events.UnityEvent, UnityEngine.CoreModule
-    - Name: m_PersistentCalls
-      Entry: 7
-      Data: 13|UnityEngine.Events.PersistentCallGroup, UnityEngine.CoreModule
-    - Name: m_Calls
-      Entry: 7
-      Data: 14|System.Collections.Generic.List`1[[UnityEngine.Events.PersistentCall,
-        UnityEngine.CoreModule]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 3
-    - Name: 
-      Entry: 7
-      Data: 15|UnityEngine.Events.PersistentCall, UnityEngine.CoreModule
-    - Name: m_Target
-      Entry: 10
-      Data: 0
-    - Name: m_TargetAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.GameObject, UnityEngine
-    - Name: m_MethodName
-      Entry: 1
-      Data: SetActive
-    - Name: m_Mode
-      Entry: 3
-      Data: 6
-    - Name: m_Arguments
-      Entry: 7
-      Data: 16|UnityEngine.Events.ArgumentCache, UnityEngine.CoreModule
-    - Name: m_ObjectArgument
-      Entry: 10
-      Data: 2
-    - Name: m_ObjectArgumentAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.Object, UnityEngine
-    - Name: m_IntArgument
-      Entry: 3
-      Data: 0
-    - Name: m_FloatArgument
-      Entry: 4
-      Data: 0
-    - Name: m_StringArgument
-      Entry: 1
-      Data: 
-    - Name: m_BoolArgument
-      Entry: 5
-      Data: true
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_CallState
-      Entry: 3
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 17|UnityEngine.Events.PersistentCall, UnityEngine.CoreModule
-    - Name: m_Target
-      Entry: 10
-      Data: 3
-    - Name: m_TargetAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.GameObject, UnityEngine
-    - Name: m_MethodName
-      Entry: 1
-      Data: SetActive
-    - Name: m_Mode
-      Entry: 3
-      Data: 6
-    - Name: m_Arguments
-      Entry: 7
-      Data: 18|UnityEngine.Events.ArgumentCache, UnityEngine.CoreModule
-    - Name: m_ObjectArgument
-      Entry: 10
-      Data: 4
-    - Name: m_ObjectArgumentAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.Object, UnityEngine
-    - Name: m_IntArgument
-      Entry: 3
-      Data: 0
-    - Name: m_FloatArgument
-      Entry: 4
-      Data: 0
-    - Name: m_StringArgument
-      Entry: 1
-      Data: 
-    - Name: m_BoolArgument
-      Entry: 5
-      Data: true
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_CallState
-      Entry: 3
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 19|UnityEngine.Events.PersistentCall, UnityEngine.CoreModule
-    - Name: m_Target
-      Entry: 10
-      Data: 5
-    - Name: m_TargetAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.GameObject, UnityEngine
-    - Name: m_MethodName
-      Entry: 1
-      Data: SetActive
-    - Name: m_Mode
-      Entry: 3
-      Data: 6
-    - Name: m_Arguments
-      Entry: 7
-      Data: 20|UnityEngine.Events.ArgumentCache, UnityEngine.CoreModule
-    - Name: m_ObjectArgument
-      Entry: 10
-      Data: 6
-    - Name: m_ObjectArgumentAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.Object, UnityEngine
-    - Name: m_IntArgument
-      Entry: 3
-      Data: 0
-    - Name: m_FloatArgument
-      Entry: 4
-      Data: 0
-    - Name: m_StringArgument
-      Entry: 1
-      Data: 
-    - Name: m_BoolArgument
-      Entry: 5
-      Data: false
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_CallState
-      Entry: 3
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 3
-    - Name: $v
-      Entry: 7
-      Data: 21|UnityEngine.Events.UnityEvent, UnityEngine.CoreModule
-    - Name: m_PersistentCalls
-      Entry: 7
-      Data: 22|UnityEngine.Events.PersistentCallGroup, UnityEngine.CoreModule
-    - Name: m_Calls
-      Entry: 7
-      Data: 23|System.Collections.Generic.List`1[[UnityEngine.Events.PersistentCall,
-        UnityEngine.CoreModule]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 3
-    - Name: 
-      Entry: 7
-      Data: 24|UnityEngine.Events.PersistentCall, UnityEngine.CoreModule
-    - Name: m_Target
-      Entry: 10
-      Data: 0
-    - Name: m_TargetAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.GameObject, UnityEngine
-    - Name: m_MethodName
-      Entry: 1
-      Data: SetActive
-    - Name: m_Mode
-      Entry: 3
-      Data: 6
-    - Name: m_Arguments
-      Entry: 7
-      Data: 25|UnityEngine.Events.ArgumentCache, UnityEngine.CoreModule
-    - Name: m_ObjectArgument
-      Entry: 10
-      Data: 7
-    - Name: m_ObjectArgumentAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.Object, UnityEngine
-    - Name: m_IntArgument
-      Entry: 3
-      Data: 0
-    - Name: m_FloatArgument
-      Entry: 4
-      Data: 0
-    - Name: m_StringArgument
-      Entry: 1
-      Data: 
-    - Name: m_BoolArgument
-      Entry: 5
-      Data: true
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_CallState
-      Entry: 3
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 26|UnityEngine.Events.PersistentCall, UnityEngine.CoreModule
-    - Name: m_Target
-      Entry: 10
-      Data: 3
-    - Name: m_TargetAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.GameObject, UnityEngine
-    - Name: m_MethodName
-      Entry: 1
-      Data: SetActive
-    - Name: m_Mode
-      Entry: 3
-      Data: 6
-    - Name: m_Arguments
-      Entry: 7
-      Data: 27|UnityEngine.Events.ArgumentCache, UnityEngine.CoreModule
-    - Name: m_ObjectArgument
-      Entry: 10
-      Data: 8
-    - Name: m_ObjectArgumentAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.Object, UnityEngine
-    - Name: m_IntArgument
-      Entry: 3
-      Data: 0
-    - Name: m_FloatArgument
-      Entry: 4
-      Data: 0
-    - Name: m_StringArgument
-      Entry: 1
-      Data: 
-    - Name: m_BoolArgument
-      Entry: 5
-      Data: false
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_CallState
-      Entry: 3
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 28|UnityEngine.Events.PersistentCall, UnityEngine.CoreModule
-    - Name: m_Target
-      Entry: 10
-      Data: 5
-    - Name: m_TargetAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.GameObject, UnityEngine
-    - Name: m_MethodName
-      Entry: 1
-      Data: SetActive
-    - Name: m_Mode
-      Entry: 3
-      Data: 6
-    - Name: m_Arguments
-      Entry: 7
-      Data: 29|UnityEngine.Events.ArgumentCache, UnityEngine.CoreModule
-    - Name: m_ObjectArgument
-      Entry: 10
-      Data: 9
-    - Name: m_ObjectArgumentAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.Object, UnityEngine
-    - Name: m_IntArgument
-      Entry: 3
-      Data: 0
-    - Name: m_FloatArgument
-      Entry: 4
-      Data: 0
-    - Name: m_StringArgument
-      Entry: 1
-      Data: 
-    - Name: m_BoolArgument
-      Entry: 5
-      Data: true
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_CallState
-      Entry: 3
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
+    SerializationNodes: []
+--- !u!114 &126455012
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 126455003}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28a3b4657f65046ef96ed396d5b4b729, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnitList
+  data: {fileID: 11400000, guid: 04d090dca8b184410bc442f018562a86, type: 2}
+  root: {fileID: 141525635}
+  prefab: {fileID: 8289019217356075196, guid: f0dc8c7e519d84747bb57a3405795b4a, type: 3}
+  selectable: 1
+  selectDefault: 0
+  fillBlanks: 1
+  defaultCount: 12
+  countPerSection: 0
+  blankPrefab: {fileID: 7752188492539033539, guid: 1677fe88caafb478b912113989081081,
+    type: 3}
+  unitType: 1
+  listType: 2
+  reactToUnitStateChange: 1
+  autoSelectNewElement: 1
+  priorityStates: 
+  OnAction:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 126455006}
+        m_TargetAssemblyTypeName: UnitPanel, Assembly-CSharp
+        m_MethodName: Setup
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 126455009}
+        m_TargetAssemblyTypeName: UnitMergePanel, Assembly-CSharp
+        m_MethodName: ShowMergeInfo
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 8736554474922178957}
+        m_TargetAssemblyTypeName: UnitActionButton, Assembly-CSharp
+        m_MethodName: Setup
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 2012016976}
+        m_TargetAssemblyTypeName: UnitActionButton, Assembly-CSharp
+        m_MethodName: Setup
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 126455011}
+        m_TargetAssemblyTypeName: UnitStateResult, Assembly-CSharp
+        m_MethodName: Setup
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 126455011}
+        m_TargetAssemblyTypeName: UnitStateResult, Assembly-CSharp
+        m_MethodName: CheckState
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 642752864}
+        m_TargetAssemblyTypeName: MoreMountains.Feedbacks.MMF_Player, MoreMountains.Tools
+        m_MethodName: PlayFeedbacks
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &128263177
 GameObject:
   m_ObjectHideFlags: 0
@@ -20989,8 +20362,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
+    SerializedFormat: 0
+    SerializedBytes: 010108000000730075006200730074006500700073002f000000000183000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e00440069006300740069006f006e00610072007900600032005b005b00530079007300740065006d002e0049006e007400330032002c0020006d00730063006f0072006c00690062005d002c005b0055006e0069007400790045006e00670069006e0065002e004500760065006e00740073002e0055006e006900740079004500760065006e0074002c00200055006e0069007400790045006e00670069006e0065002e0043006f00720065004d006f00640075006c0065005d005d002c0020006d00730063006f0072006c00690062000000000001010800000063006f006d00700061007200650072002f010000000158000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e00470065006e00650072006900630045007100750061006c0069007400790043006f006d0070006100720065007200600031005b005b00530079007300740065006d002e0049006e007400330032002c0020006d00730063006f0072006c00690062005d005d002c0020006d00730063006f0072006c00690062000100000005060100000000000000042e17010200000024006b0000000000010102000000240076002f02000000013500000055006e0069007400790045006e00670069006e0065002e004500760065006e00740073002e0055006e006900740079004500760065006e0074002c00200055006e0069007400790045006e00670069006e0065002e0043006f00720065004d006f00640075006c006500020000000101110000006d005f00500065007200730069007300740065006e007400430061006c006c0073002f03000000013e00000055006e0069007400790045006e00670069006e0065002e004500760065006e00740073002e00500065007200730069007300740065006e007400430061006c006c00470072006f00750070002c00200055006e0069007400790045006e00670069006e0065002e0043006f00720065004d006f00640075006c006500030000000101070000006d005f00430061006c006c0073002f040000000168000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e004c00690073007400600031005b005b0055006e0069007400790045006e00670069006e0065002e004500760065006e00740073002e00500065007200730069007300740065006e007400430061006c006c002c00200055006e0069007400790045006e00670069006e0065002e0043006f00720065004d006f00640075006c0065005d005d002c0020006d00730063006f0072006c006900620004000000060200000000000000022f05000000013900000055006e0069007400790045006e00670069006e0065002e004500760065006e00740073002e00500065007200730069007300740065006e007400430061006c006c002c00200055006e0069007400790045006e00670069006e0065002e0043006f00720065004d006f00640075006c006500050000000b01080000006d005f00540061007200670065007400000000002701180000006d005f0054006100720067006500740041007300730065006d0062006c00790054007900700065004e0061006d00650001370000004d006f00720065004d006f0075006e007400610069006e0073002e0046006500650064006200610063006b0073002e004d004d0046005f0050006c0061007900650072002c0020004d006f00720065004d006f0075006e007400610069006e0073002e0054006f006f006c00730027010c0000006d005f004d006500740068006f0064004e0061006d006500010d00000050006c006100790046006500650064006200610063006b0073001d01060000006d005f004d006f0064006500010000000000000001010b0000006d005f0041007200670075006d0065006e00740073002f06000000013800000055006e0069007400790045006e00670069006e0065002e004500760065006e00740073002e0041007200670075006d0065006e007400430061006300680065002c00200055006e0069007400790045006e00670069006e0065002e0043006f00720065004d006f00640075006c006500060000000b01100000006d005f004f0062006a0065006300740041007200670075006d0065006e007400010000002701200000006d005f004f0062006a0065006300740041007200670075006d0065006e00740041007300730065006d0062006c00790054007900700065004e0061006d006500011f00000055006e0069007400790045006e00670069006e0065002e004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650017010d0000006d005f0049006e00740041007200670075006d0065006e007400000000001f010f0000006d005f0046006c006f006100740041007200670075006d0065006e007400000000002701100000006d005f0053007400720069006e00670041007200670075006d0065006e00740001000000002b010e0000006d005f0042006f006f006c0041007200670075006d0065006e00740000051d010b0000006d005f00430061006c006c0053007400610074006500020000000000000005023005000000070000000b01080000006d005f00540061007200670065007400020000002701180000006d005f0054006100720067006500740041007300730065006d0062006c00790054007900700065004e0061006d00650001370000004d006f00720065004d006f0075006e007400610069006e0073002e0046006500650064006200610063006b0073002e004d004d0046005f0050006c0061007900650072002c0020004d006f00720065004d006f0075006e007400610069006e0073002e0054006f006f006c00730027010c0000006d005f004d006500740068006f0064004e0061006d006500010d00000050006c006100790046006500650064006200610063006b0073001d01060000006d005f004d006f0064006500010000000000000001010b0000006d005f0041007200670075006d0065006e00740073003006000000080000000b01100000006d005f004f0062006a0065006300740041007200670075006d0065006e007400030000002701200000006d005f004f0062006a0065006300740041007200670075006d0065006e00740041007300730065006d0062006c00790054007900700065004e0061006d006500011f00000055006e0069007400790045006e00670069006e0065002e004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650017010d0000006d005f0049006e00740041007200670075006d0065006e007400000000001f010f0000006d005f0046006c006f006100740041007200670075006d0065006e007400000000002701100000006d005f0053007400720069006e00670041007200670075006d0065006e00740001000000002b010e0000006d005f0042006f006f006c0041007200670075006d0065006e00740000051d010b0000006d005f00430061006c006c005300740061007400650002000000000000000507050505050705
     ReferencedUnityObjects:
     - {fileID: 1983410808}
     - {fileID: 0}
@@ -21000,151 +20373,7 @@ MonoBehaviour:
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes:
-    - Name: substeps
-      Entry: 7
-      Data: 0|System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[UnityEngine.Events.UnityEvent,
-        UnityEngine.CoreModule]], mscorlib
-    - Name: comparer
-      Entry: 7
-      Data: 1|System.Collections.Generic.GenericEqualityComparer`1[[System.Int32,
-        mscorlib]], mscorlib
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 12
-      Data: 1
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 0
-    - Name: $v
-      Entry: 7
-      Data: 2|UnityEngine.Events.UnityEvent, UnityEngine.CoreModule
-    - Name: m_PersistentCalls
-      Entry: 7
-      Data: 3|UnityEngine.Events.PersistentCallGroup, UnityEngine.CoreModule
-    - Name: m_Calls
-      Entry: 7
-      Data: 4|System.Collections.Generic.List`1[[UnityEngine.Events.PersistentCall,
-        UnityEngine.CoreModule]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 2
-    - Name: 
-      Entry: 7
-      Data: 5|UnityEngine.Events.PersistentCall, UnityEngine.CoreModule
-    - Name: m_Target
-      Entry: 10
-      Data: 0
-    - Name: m_TargetAssemblyTypeName
-      Entry: 1
-      Data: MoreMountains.Feedbacks.MMF_Player, MoreMountains.Tools
-    - Name: m_MethodName
-      Entry: 1
-      Data: PlayFeedbacks
-    - Name: m_Mode
-      Entry: 3
-      Data: 1
-    - Name: m_Arguments
-      Entry: 7
-      Data: 6|UnityEngine.Events.ArgumentCache, UnityEngine.CoreModule
-    - Name: m_ObjectArgument
-      Entry: 10
-      Data: 1
-    - Name: m_ObjectArgumentAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.Object, UnityEngine
-    - Name: m_IntArgument
-      Entry: 3
-      Data: 0
-    - Name: m_FloatArgument
-      Entry: 4
-      Data: 0
-    - Name: m_StringArgument
-      Entry: 1
-      Data: 
-    - Name: m_BoolArgument
-      Entry: 5
-      Data: false
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_CallState
-      Entry: 3
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 7|UnityEngine.Events.PersistentCall, UnityEngine.CoreModule
-    - Name: m_Target
-      Entry: 10
-      Data: 2
-    - Name: m_TargetAssemblyTypeName
-      Entry: 1
-      Data: MoreMountains.Feedbacks.MMF_Player, MoreMountains.Tools
-    - Name: m_MethodName
-      Entry: 1
-      Data: PlayFeedbacks
-    - Name: m_Mode
-      Entry: 3
-      Data: 1
-    - Name: m_Arguments
-      Entry: 7
-      Data: 8|UnityEngine.Events.ArgumentCache, UnityEngine.CoreModule
-    - Name: m_ObjectArgument
-      Entry: 10
-      Data: 3
-    - Name: m_ObjectArgumentAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.Object, UnityEngine
-    - Name: m_IntArgument
-      Entry: 3
-      Data: 0
-    - Name: m_FloatArgument
-      Entry: 4
-      Data: 0
-    - Name: m_StringArgument
-      Entry: 1
-      Data: 
-    - Name: m_BoolArgument
-      Entry: 5
-      Data: false
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_CallState
-      Entry: 3
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
+    SerializationNodes: []
   OnHide:
     m_PersistentCalls:
       m_Calls:
@@ -71518,8 +70747,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
+    SerializedFormat: 0
+    SerializedBytes: 010108000000730075006200730074006500700073002f000000000183000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e00440069006300740069006f006e00610072007900600032005b005b00530079007300740065006d002e0049006e007400330032002c0020006d00730063006f0072006c00690062005d002c005b0055006e0069007400790045006e00670069006e0065002e004500760065006e00740073002e0055006e006900740079004500760065006e0074002c00200055006e0069007400790045006e00670069006e0065002e0043006f00720065004d006f00640075006c0065005d005d002c0020006d00730063006f0072006c00690062000000000001010800000063006f006d00700061007200650072002f010000000158000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e00470065006e00650072006900630045007100750061006c0069007400790043006f006d0070006100720065007200600031005b005b00530079007300740065006d002e0049006e007400330032002c0020006d00730063006f0072006c00690062005d005d002c0020006d00730063006f0072006c00690062000100000005060100000000000000042e17010200000024006b0000000000010102000000240076002f02000000013500000055006e0069007400790045006e00670069006e0065002e004500760065006e00740073002e0055006e006900740079004500760065006e0074002c00200055006e0069007400790045006e00670069006e0065002e0043006f00720065004d006f00640075006c006500020000000101110000006d005f00500065007200730069007300740065006e007400430061006c006c0073002f03000000013e00000055006e0069007400790045006e00670069006e0065002e004500760065006e00740073002e00500065007200730069007300740065006e007400430061006c006c00470072006f00750070002c00200055006e0069007400790045006e00670069006e0065002e0043006f00720065004d006f00640075006c006500030000000101070000006d005f00430061006c006c0073002f040000000168000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e004c00690073007400600031005b005b0055006e0069007400790045006e00670069006e0065002e004500760065006e00740073002e00500065007200730069007300740065006e007400430061006c006c002c00200055006e0069007400790045006e00670069006e0065002e0043006f00720065004d006f00640075006c0065005d005d002c0020006d00730063006f0072006c006900620004000000060200000000000000022f05000000013900000055006e0069007400790045006e00670069006e0065002e004500760065006e00740073002e00500065007200730069007300740065006e007400430061006c006c002c00200055006e0069007400790045006e00670069006e0065002e0043006f00720065004d006f00640075006c006500050000000b01080000006d005f00540061007200670065007400000000002701180000006d005f0054006100720067006500740041007300730065006d0062006c00790054007900700065004e0061006d00650001370000004d006f00720065004d006f0075006e007400610069006e0073002e0046006500650064006200610063006b0073002e004d004d0046005f0050006c0061007900650072002c0020004d006f00720065004d006f0075006e007400610069006e0073002e0054006f006f006c00730027010c0000006d005f004d006500740068006f0064004e0061006d006500010d00000050006c006100790046006500650064006200610063006b0073001d01060000006d005f004d006f0064006500010000000000000001010b0000006d005f0041007200670075006d0065006e00740073002f06000000013800000055006e0069007400790045006e00670069006e0065002e004500760065006e00740073002e0041007200670075006d0065006e007400430061006300680065002c00200055006e0069007400790045006e00670069006e0065002e0043006f00720065004d006f00640075006c006500060000000b01100000006d005f004f0062006a0065006300740041007200670075006d0065006e007400010000002701200000006d005f004f0062006a0065006300740041007200670075006d0065006e00740041007300730065006d0062006c00790054007900700065004e0061006d006500011f00000055006e0069007400790045006e00670069006e0065002e004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650017010d0000006d005f0049006e00740041007200670075006d0065006e007400000000001f010f0000006d005f0046006c006f006100740041007200670075006d0065006e007400000000002701100000006d005f0053007400720069006e00670041007200670075006d0065006e00740001000000002b010e0000006d005f0042006f006f006c0041007200670075006d0065006e00740000051d010b0000006d005f00430061006c006c0053007400610074006500020000000000000005023005000000070000000b01080000006d005f00540061007200670065007400020000002701180000006d005f0054006100720067006500740041007300730065006d0062006c00790054007900700065004e0061006d00650001370000004d006f00720065004d006f0075006e007400610069006e0073002e0046006500650064006200610063006b0073002e004d004d0046005f0050006c0061007900650072002c0020004d006f00720065004d006f0075006e007400610069006e0073002e0054006f006f006c00730027010c0000006d005f004d006500740068006f0064004e0061006d006500010d00000050006c006100790046006500650064006200610063006b0073001d01060000006d005f004d006f0064006500010000000000000001010b0000006d005f0041007200670075006d0065006e00740073003006000000080000000b01100000006d005f004f0062006a0065006300740041007200670075006d0065006e007400030000002701200000006d005f004f0062006a0065006300740041007200670075006d0065006e00740041007300730065006d0062006c00790054007900700065004e0061006d006500011f00000055006e0069007400790045006e00670069006e0065002e004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650017010d0000006d005f0049006e00740041007200670075006d0065006e007400000000001f010f0000006d005f0046006c006f006100740041007200670075006d0065006e007400000000002701100000006d005f0053007400720069006e00670041007200670075006d0065006e00740001000000002b010e0000006d005f0042006f006f006c0041007200670075006d0065006e00740000051d010b0000006d005f00430061006c006c005300740061007400650002000000000000000507050505050705
     ReferencedUnityObjects:
     - {fileID: 1301873616}
     - {fileID: 0}
@@ -71529,151 +70758,7 @@ MonoBehaviour:
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes:
-    - Name: substeps
-      Entry: 7
-      Data: 0|System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[UnityEngine.Events.UnityEvent,
-        UnityEngine.CoreModule]], mscorlib
-    - Name: comparer
-      Entry: 7
-      Data: 1|System.Collections.Generic.GenericEqualityComparer`1[[System.Int32,
-        mscorlib]], mscorlib
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 12
-      Data: 1
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 0
-    - Name: $v
-      Entry: 7
-      Data: 2|UnityEngine.Events.UnityEvent, UnityEngine.CoreModule
-    - Name: m_PersistentCalls
-      Entry: 7
-      Data: 3|UnityEngine.Events.PersistentCallGroup, UnityEngine.CoreModule
-    - Name: m_Calls
-      Entry: 7
-      Data: 4|System.Collections.Generic.List`1[[UnityEngine.Events.PersistentCall,
-        UnityEngine.CoreModule]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 2
-    - Name: 
-      Entry: 7
-      Data: 5|UnityEngine.Events.PersistentCall, UnityEngine.CoreModule
-    - Name: m_Target
-      Entry: 10
-      Data: 0
-    - Name: m_TargetAssemblyTypeName
-      Entry: 1
-      Data: MoreMountains.Feedbacks.MMF_Player, MoreMountains.Tools
-    - Name: m_MethodName
-      Entry: 1
-      Data: PlayFeedbacks
-    - Name: m_Mode
-      Entry: 3
-      Data: 1
-    - Name: m_Arguments
-      Entry: 7
-      Data: 6|UnityEngine.Events.ArgumentCache, UnityEngine.CoreModule
-    - Name: m_ObjectArgument
-      Entry: 10
-      Data: 1
-    - Name: m_ObjectArgumentAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.Object, UnityEngine
-    - Name: m_IntArgument
-      Entry: 3
-      Data: 0
-    - Name: m_FloatArgument
-      Entry: 4
-      Data: 0
-    - Name: m_StringArgument
-      Entry: 1
-      Data: 
-    - Name: m_BoolArgument
-      Entry: 5
-      Data: false
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_CallState
-      Entry: 3
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 7|UnityEngine.Events.PersistentCall, UnityEngine.CoreModule
-    - Name: m_Target
-      Entry: 10
-      Data: 2
-    - Name: m_TargetAssemblyTypeName
-      Entry: 1
-      Data: MoreMountains.Feedbacks.MMF_Player, MoreMountains.Tools
-    - Name: m_MethodName
-      Entry: 1
-      Data: PlayFeedbacks
-    - Name: m_Mode
-      Entry: 3
-      Data: 1
-    - Name: m_Arguments
-      Entry: 7
-      Data: 8|UnityEngine.Events.ArgumentCache, UnityEngine.CoreModule
-    - Name: m_ObjectArgument
-      Entry: 10
-      Data: 3
-    - Name: m_ObjectArgumentAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.Object, UnityEngine
-    - Name: m_IntArgument
-      Entry: 3
-      Data: 0
-    - Name: m_FloatArgument
-      Entry: 4
-      Data: 0
-    - Name: m_StringArgument
-      Entry: 1
-      Data: 
-    - Name: m_BoolArgument
-      Entry: 5
-      Data: false
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_CallState
-      Entry: 3
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
+    SerializationNodes: []
   OnHide:
     m_PersistentCalls:
       m_Calls:
@@ -117985,7 +117070,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
-    SerializedFormat: 2
+    SerializedFormat: 0
     SerializedBytes: 
     ReferencedUnityObjects: []
     SerializedBytesString: 
@@ -118072,7 +117157,7 @@ MonoBehaviour:
   root: {fileID: 825235289}
   prefab: {fileID: 952570519535404792, guid: c21ea299d83c948ea82b33439651f786, type: 3}
   selectable: 0
-  selectFirstByDefault: 1
+  selectDefault: 1
   fillBlanks: 0
   defaultCount: 0
   countPerSection: 0
@@ -158558,7 +157643,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
-    SerializedFormat: 2
+    SerializedFormat: 0
     SerializedBytes: 
     ReferencedUnityObjects: []
     SerializedBytesString: 
@@ -158737,8 +157822,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
+    SerializedFormat: 0
+    SerializedBytes: 010108000000730075006200730074006500700073002f000000000183000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e00440069006300740069006f006e00610072007900600032005b005b00530079007300740065006d002e0049006e007400330032002c0020006d00730063006f0072006c00690062005d002c005b0055006e0069007400790045006e00670069006e0065002e004500760065006e00740073002e0055006e006900740079004500760065006e0074002c00200055006e0069007400790045006e00670069006e0065002e0043006f00720065004d006f00640075006c0065005d005d002c0020006d00730063006f0072006c00690062000000000001010800000063006f006d00700061007200650072002f010000000158000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e00470065006e00650072006900630045007100750061006c0069007400790043006f006d0070006100720065007200600031005b005b00530079007300740065006d002e0049006e007400330032002c0020006d00730063006f0072006c00690062005d005d002c0020006d00730063006f0072006c00690062000100000005060200000000000000042e17010200000024006b0000000000010102000000240076002f02000000013500000055006e0069007400790045006e00670069006e0065002e004500760065006e00740073002e0055006e006900740079004500760065006e0074002c00200055006e0069007400790045006e00670069006e0065002e0043006f00720065004d006f00640075006c006500020000000101110000006d005f00500065007200730069007300740065006e007400430061006c006c0073002f03000000013e00000055006e0069007400790045006e00670069006e0065002e004500760065006e00740073002e00500065007200730069007300740065006e007400430061006c006c00470072006f00750070002c00200055006e0069007400790045006e00670069006e0065002e0043006f00720065004d006f00640075006c006500030000000101070000006d005f00430061006c006c0073002f040000000168000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e004c00690073007400600031005b005b0055006e0069007400790045006e00670069006e0065002e004500760065006e00740073002e00500065007200730069007300740065006e007400430061006c006c002c00200055006e0069007400790045006e00670069006e0065002e0043006f00720065004d006f00640075006c0065005d005d002c0020006d00730063006f0072006c006900620004000000060200000000000000022f05000000013900000055006e0069007400790045006e00670069006e0065002e004500760065006e00740073002e00500065007200730069007300740065006e007400430061006c006c002c00200055006e0069007400790045006e00670069006e0065002e0043006f00720065004d006f00640075006c006500050000000b01080000006d005f00540061007200670065007400000000002701180000006d005f0054006100720067006500740041007300730065006d0062006c00790054007900700065004e0061006d00650001370000004d006f00720065004d006f0075006e007400610069006e0073002e0046006500650064006200610063006b0073002e004d004d0046005f0050006c0061007900650072002c0020004d006f00720065004d006f0075006e007400610069006e0073002e0054006f006f006c00730027010c0000006d005f004d006500740068006f0064004e0061006d006500010d00000050006c006100790046006500650064006200610063006b0073001d01060000006d005f004d006f0064006500010000000000000001010b0000006d005f0041007200670075006d0065006e00740073002f06000000013800000055006e0069007400790045006e00670069006e0065002e004500760065006e00740073002e0041007200670075006d0065006e007400430061006300680065002c00200055006e0069007400790045006e00670069006e0065002e0043006f00720065004d006f00640075006c006500060000000b01100000006d005f004f0062006a0065006300740041007200670075006d0065006e007400010000002701200000006d005f004f0062006a0065006300740041007200670075006d0065006e00740041007300730065006d0062006c00790054007900700065004e0061006d006500011f00000055006e0069007400790045006e00670069006e0065002e004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650017010d0000006d005f0049006e00740041007200670075006d0065006e007400000000001f010f0000006d005f0046006c006f006100740041007200670075006d0065006e007400000000002701100000006d005f0053007400720069006e00670041007200670075006d0065006e00740001000000002b010e0000006d005f0042006f006f006c0041007200670075006d0065006e00740000051d010b0000006d005f00430061006c006c0053007400610074006500020000000000000005023005000000070000000b01080000006d005f00540061007200670065007400020000002701180000006d005f0054006100720067006500740041007300730065006d0062006c00790054007900700065004e0061006d00650001370000004d006f00720065004d006f0075006e007400610069006e0073002e0046006500650064006200610063006b0073002e004d004d0046005f0050006c0061007900650072002c0020004d006f00720065004d006f0075006e007400610069006e0073002e0054006f006f006c00730027010c0000006d005f004d006500740068006f0064004e0061006d006500010d00000050006c006100790046006500650064006200610063006b0073001d01060000006d005f004d006f0064006500010000000000000001010b0000006d005f0041007200670075006d0065006e00740073003006000000080000000b01100000006d005f004f0062006a0065006300740041007200670075006d0065006e007400030000002701200000006d005f004f0062006a0065006300740041007200670075006d0065006e00740041007300730065006d0062006c00790054007900700065004e0061006d006500011f00000055006e0069007400790045006e00670069006e0065002e004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650017010d0000006d005f0049006e00740041007200670075006d0065006e007400000000001f010f0000006d005f0046006c006f006100740041007200670075006d0065006e007400000000002701100000006d005f0053007400720069006e00670041007200670075006d0065006e00740001000000002b010e0000006d005f0042006f006f006c0041007200670075006d0065006e00740000051d010b0000006d005f00430061006c006c00530074006100740065000200000000000000050705050505042e17010200000024006b0001000000010102000000240076003002000000090000000101110000006d005f00500065007200730069007300740065006e007400430061006c006c00730030030000000a0000000101070000006d005f00430061006c006c00730030040000000b0000000605000000000000000230050000000c0000000b01080000006d005f00540061007200670065007400040000002701180000006d005f0054006100720067006500740041007300730065006d0062006c00790054007900700065004e0061006d00650001370000004d006f00720065004d006f0075006e007400610069006e0073002e0046006500650064006200610063006b0073002e004d004d0046005f0050006c0061007900650072002c0020004d006f00720065004d006f0075006e007400610069006e0073002e0054006f006f006c00730027010c0000006d005f004d006500740068006f0064004e0061006d006500010d00000050006c006100790046006500650064006200610063006b0073001d01060000006d005f004d006f0064006500010000000000000001010b0000006d005f0041007200670075006d0065006e007400730030060000000d0000000b01100000006d005f004f0062006a0065006300740041007200670075006d0065006e007400050000002701200000006d005f004f0062006a0065006300740041007200670075006d0065006e00740041007300730065006d0062006c00790054007900700065004e0061006d006500011f00000055006e0069007400790045006e00670069006e0065002e004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650017010d0000006d005f0049006e00740041007200670075006d0065006e007400000000001f010f0000006d005f0046006c006f006100740041007200670075006d0065006e007400000000002701100000006d005f0053007400720069006e00670041007200670075006d0065006e00740001000000002b010e0000006d005f0042006f006f006c0041007200670075006d0065006e00740000051d010b0000006d005f00430061006c006c00530074006100740065000200000000000000050230050000000e0000000b01080000006d005f00540061007200670065007400060000002701180000006d005f0054006100720067006500740041007300730065006d0062006c00790054007900700065004e0061006d00650001370000004d006f00720065004d006f0075006e007400610069006e0073002e0046006500650064006200610063006b0073002e004d004d0046005f0050006c0061007900650072002c0020004d006f00720065004d006f0075006e007400610069006e0073002e0054006f006f006c00730027010c0000006d005f004d006500740068006f0064004e0061006d006500010d00000050006c006100790046006500650064006200610063006b0073001d01060000006d005f004d006f0064006500010000000000000001010b0000006d005f0041007200670075006d0065006e007400730030060000000f0000000b01100000006d005f004f0062006a0065006300740041007200670075006d0065006e007400070000002701200000006d005f004f0062006a0065006300740041007200670075006d0065006e00740041007300730065006d0062006c00790054007900700065004e0061006d006500011f00000055006e0069007400790045006e00670069006e0065002e004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650017010d0000006d005f0049006e00740041007200670075006d0065006e007400000000001f010f0000006d005f0046006c006f006100740041007200670075006d0065006e007400000000002701100000006d005f0053007400720069006e00670041007200670075006d0065006e00740001000000002b010e0000006d005f0042006f006f006c0041007200670075006d0065006e00740000051d010b0000006d005f00430061006c006c0053007400610074006500020000000000000005023005000000100000000b01080000006d005f00540061007200670065007400080000002701180000006d005f0054006100720067006500740041007300730065006d0062006c00790054007900700065004e0061006d00650001370000004d006f00720065004d006f0075006e007400610069006e0073002e0046006500650064006200610063006b0073002e004d004d0046005f0050006c0061007900650072002c0020004d006f00720065004d006f0075006e007400610069006e0073002e0054006f006f006c00730027010c0000006d005f004d006500740068006f0064004e0061006d006500010d00000050006c006100790046006500650064006200610063006b0073001d01060000006d005f004d006f0064006500010000000000000001010b0000006d005f0041007200670075006d0065006e00740073003006000000110000000b01100000006d005f004f0062006a0065006300740041007200670075006d0065006e007400090000002701200000006d005f004f0062006a0065006300740041007200670075006d0065006e00740041007300730065006d0062006c00790054007900700065004e0061006d006500011f00000055006e0069007400790045006e00670069006e0065002e004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650017010d0000006d005f0049006e00740041007200670075006d0065006e007400000000001f010f0000006d005f0046006c006f006100740041007200670075006d0065006e007400000000002701100000006d005f0053007400720069006e00670041007200670075006d0065006e00740001000000002b010e0000006d005f0042006f006f006c0041007200670075006d0065006e00740000051d010b0000006d005f00430061006c006c0053007400610074006500020000000000000005023005000000120000000b01080000006d005f005400610072006700650074000a0000002701180000006d005f0054006100720067006500740041007300730065006d0062006c00790054007900700065004e0061006d00650001370000004d006f00720065004d006f0075006e007400610069006e0073002e0046006500650064006200610063006b0073002e004d004d0046005f0050006c0061007900650072002c0020004d006f00720065004d006f0075006e007400610069006e0073002e0054006f006f006c00730027010c0000006d005f004d006500740068006f0064004e0061006d006500010d00000050006c006100790046006500650064006200610063006b0073001d01060000006d005f004d006f0064006500010000000000000001010b0000006d005f0041007200670075006d0065006e00740073003006000000130000000b01100000006d005f004f0062006a0065006300740041007200670075006d0065006e0074000b0000002701200000006d005f004f0062006a0065006300740041007200670075006d0065006e00740041007300730065006d0062006c00790054007900700065004e0061006d006500011f00000055006e0069007400790045006e00670069006e0065002e004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650017010d0000006d005f0049006e00740041007200670075006d0065006e007400000000001f010f0000006d005f0046006c006f006100740041007200670075006d0065006e007400000000002701100000006d005f0053007400720069006e00670041007200670075006d0065006e00740001000000002b010e0000006d005f0042006f006f006c0041007200670075006d0065006e00740000051d010b0000006d005f00430061006c006c0053007400610074006500020000000000000005023005000000140000000b01080000006d005f005400610072006700650074000c0000002701180000006d005f0054006100720067006500740041007300730065006d0062006c00790054007900700065004e0061006d006500012200000055006e0069007400790045006e00670069006e0065002e004200650068006100760069006f00750072002c00200055006e0069007400790045006e00670069006e00650027010c0000006d005f004d006500740068006f0064004e0061006d006500010b0000007300650074005f0065006e00610062006c00650064001d01060000006d005f004d006f0064006500060000000000000001010b0000006d005f0041007200670075006d0065006e00740073003006000000150000000b01100000006d005f004f0062006a0065006300740041007200670075006d0065006e0074000d0000002701200000006d005f004f0062006a0065006300740041007200670075006d0065006e00740041007300730065006d0062006c00790054007900700065004e0061006d006500011f00000055006e0069007400790045006e00670069006e0065002e004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650017010d0000006d005f0049006e00740041007200670075006d0065006e007400000000001f010f0000006d005f0046006c006f006100740041007200670075006d0065006e007400000000002701100000006d005f0053007400720069006e00670041007200670075006d0065006e00740001000000002b010e0000006d005f0042006f006f006c0041007200670075006d0065006e00740000051d010b0000006d005f00430061006c006c005300740061007400650002000000000000000507050505050705
     ReferencedUnityObjects:
     - {fileID: 492355359}
     - {fileID: 0}
@@ -158758,410 +157843,7 @@ MonoBehaviour:
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes:
-    - Name: substeps
-      Entry: 7
-      Data: 0|System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[UnityEngine.Events.UnityEvent,
-        UnityEngine.CoreModule]], mscorlib
-    - Name: comparer
-      Entry: 7
-      Data: 1|System.Collections.Generic.GenericEqualityComparer`1[[System.Int32,
-        mscorlib]], mscorlib
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 12
-      Data: 2
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 0
-    - Name: $v
-      Entry: 7
-      Data: 2|UnityEngine.Events.UnityEvent, UnityEngine.CoreModule
-    - Name: m_PersistentCalls
-      Entry: 7
-      Data: 3|UnityEngine.Events.PersistentCallGroup, UnityEngine.CoreModule
-    - Name: m_Calls
-      Entry: 7
-      Data: 4|System.Collections.Generic.List`1[[UnityEngine.Events.PersistentCall,
-        UnityEngine.CoreModule]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 2
-    - Name: 
-      Entry: 7
-      Data: 5|UnityEngine.Events.PersistentCall, UnityEngine.CoreModule
-    - Name: m_Target
-      Entry: 10
-      Data: 0
-    - Name: m_TargetAssemblyTypeName
-      Entry: 1
-      Data: MoreMountains.Feedbacks.MMF_Player, MoreMountains.Tools
-    - Name: m_MethodName
-      Entry: 1
-      Data: PlayFeedbacks
-    - Name: m_Mode
-      Entry: 3
-      Data: 1
-    - Name: m_Arguments
-      Entry: 7
-      Data: 6|UnityEngine.Events.ArgumentCache, UnityEngine.CoreModule
-    - Name: m_ObjectArgument
-      Entry: 10
-      Data: 1
-    - Name: m_ObjectArgumentAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.Object, UnityEngine
-    - Name: m_IntArgument
-      Entry: 3
-      Data: 0
-    - Name: m_FloatArgument
-      Entry: 4
-      Data: 0
-    - Name: m_StringArgument
-      Entry: 1
-      Data: 
-    - Name: m_BoolArgument
-      Entry: 5
-      Data: false
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_CallState
-      Entry: 3
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 7|UnityEngine.Events.PersistentCall, UnityEngine.CoreModule
-    - Name: m_Target
-      Entry: 10
-      Data: 2
-    - Name: m_TargetAssemblyTypeName
-      Entry: 1
-      Data: MoreMountains.Feedbacks.MMF_Player, MoreMountains.Tools
-    - Name: m_MethodName
-      Entry: 1
-      Data: PlayFeedbacks
-    - Name: m_Mode
-      Entry: 3
-      Data: 1
-    - Name: m_Arguments
-      Entry: 7
-      Data: 8|UnityEngine.Events.ArgumentCache, UnityEngine.CoreModule
-    - Name: m_ObjectArgument
-      Entry: 10
-      Data: 3
-    - Name: m_ObjectArgumentAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.Object, UnityEngine
-    - Name: m_IntArgument
-      Entry: 3
-      Data: 0
-    - Name: m_FloatArgument
-      Entry: 4
-      Data: 0
-    - Name: m_StringArgument
-      Entry: 1
-      Data: 
-    - Name: m_BoolArgument
-      Entry: 5
-      Data: false
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_CallState
-      Entry: 3
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 1
-    - Name: $v
-      Entry: 7
-      Data: 9|UnityEngine.Events.UnityEvent, UnityEngine.CoreModule
-    - Name: m_PersistentCalls
-      Entry: 7
-      Data: 10|UnityEngine.Events.PersistentCallGroup, UnityEngine.CoreModule
-    - Name: m_Calls
-      Entry: 7
-      Data: 11|System.Collections.Generic.List`1[[UnityEngine.Events.PersistentCall,
-        UnityEngine.CoreModule]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 5
-    - Name: 
-      Entry: 7
-      Data: 12|UnityEngine.Events.PersistentCall, UnityEngine.CoreModule
-    - Name: m_Target
-      Entry: 10
-      Data: 4
-    - Name: m_TargetAssemblyTypeName
-      Entry: 1
-      Data: MoreMountains.Feedbacks.MMF_Player, MoreMountains.Tools
-    - Name: m_MethodName
-      Entry: 1
-      Data: PlayFeedbacks
-    - Name: m_Mode
-      Entry: 3
-      Data: 1
-    - Name: m_Arguments
-      Entry: 7
-      Data: 13|UnityEngine.Events.ArgumentCache, UnityEngine.CoreModule
-    - Name: m_ObjectArgument
-      Entry: 10
-      Data: 5
-    - Name: m_ObjectArgumentAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.Object, UnityEngine
-    - Name: m_IntArgument
-      Entry: 3
-      Data: 0
-    - Name: m_FloatArgument
-      Entry: 4
-      Data: 0
-    - Name: m_StringArgument
-      Entry: 1
-      Data: 
-    - Name: m_BoolArgument
-      Entry: 5
-      Data: false
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_CallState
-      Entry: 3
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 14|UnityEngine.Events.PersistentCall, UnityEngine.CoreModule
-    - Name: m_Target
-      Entry: 10
-      Data: 6
-    - Name: m_TargetAssemblyTypeName
-      Entry: 1
-      Data: MoreMountains.Feedbacks.MMF_Player, MoreMountains.Tools
-    - Name: m_MethodName
-      Entry: 1
-      Data: PlayFeedbacks
-    - Name: m_Mode
-      Entry: 3
-      Data: 1
-    - Name: m_Arguments
-      Entry: 7
-      Data: 15|UnityEngine.Events.ArgumentCache, UnityEngine.CoreModule
-    - Name: m_ObjectArgument
-      Entry: 10
-      Data: 7
-    - Name: m_ObjectArgumentAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.Object, UnityEngine
-    - Name: m_IntArgument
-      Entry: 3
-      Data: 0
-    - Name: m_FloatArgument
-      Entry: 4
-      Data: 0
-    - Name: m_StringArgument
-      Entry: 1
-      Data: 
-    - Name: m_BoolArgument
-      Entry: 5
-      Data: false
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_CallState
-      Entry: 3
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 16|UnityEngine.Events.PersistentCall, UnityEngine.CoreModule
-    - Name: m_Target
-      Entry: 10
-      Data: 8
-    - Name: m_TargetAssemblyTypeName
-      Entry: 1
-      Data: MoreMountains.Feedbacks.MMF_Player, MoreMountains.Tools
-    - Name: m_MethodName
-      Entry: 1
-      Data: PlayFeedbacks
-    - Name: m_Mode
-      Entry: 3
-      Data: 1
-    - Name: m_Arguments
-      Entry: 7
-      Data: 17|UnityEngine.Events.ArgumentCache, UnityEngine.CoreModule
-    - Name: m_ObjectArgument
-      Entry: 10
-      Data: 9
-    - Name: m_ObjectArgumentAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.Object, UnityEngine
-    - Name: m_IntArgument
-      Entry: 3
-      Data: 0
-    - Name: m_FloatArgument
-      Entry: 4
-      Data: 0
-    - Name: m_StringArgument
-      Entry: 1
-      Data: 
-    - Name: m_BoolArgument
-      Entry: 5
-      Data: false
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_CallState
-      Entry: 3
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 18|UnityEngine.Events.PersistentCall, UnityEngine.CoreModule
-    - Name: m_Target
-      Entry: 10
-      Data: 10
-    - Name: m_TargetAssemblyTypeName
-      Entry: 1
-      Data: MoreMountains.Feedbacks.MMF_Player, MoreMountains.Tools
-    - Name: m_MethodName
-      Entry: 1
-      Data: PlayFeedbacks
-    - Name: m_Mode
-      Entry: 3
-      Data: 1
-    - Name: m_Arguments
-      Entry: 7
-      Data: 19|UnityEngine.Events.ArgumentCache, UnityEngine.CoreModule
-    - Name: m_ObjectArgument
-      Entry: 10
-      Data: 11
-    - Name: m_ObjectArgumentAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.Object, UnityEngine
-    - Name: m_IntArgument
-      Entry: 3
-      Data: 0
-    - Name: m_FloatArgument
-      Entry: 4
-      Data: 0
-    - Name: m_StringArgument
-      Entry: 1
-      Data: 
-    - Name: m_BoolArgument
-      Entry: 5
-      Data: false
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_CallState
-      Entry: 3
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 20|UnityEngine.Events.PersistentCall, UnityEngine.CoreModule
-    - Name: m_Target
-      Entry: 10
-      Data: 12
-    - Name: m_TargetAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.Behaviour, UnityEngine
-    - Name: m_MethodName
-      Entry: 1
-      Data: set_enabled
-    - Name: m_Mode
-      Entry: 3
-      Data: 6
-    - Name: m_Arguments
-      Entry: 7
-      Data: 21|UnityEngine.Events.ArgumentCache, UnityEngine.CoreModule
-    - Name: m_ObjectArgument
-      Entry: 10
-      Data: 13
-    - Name: m_ObjectArgumentAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.Object, UnityEngine
-    - Name: m_IntArgument
-      Entry: 3
-      Data: 0
-    - Name: m_FloatArgument
-      Entry: 4
-      Data: 0
-    - Name: m_StringArgument
-      Entry: 1
-      Data: 
-    - Name: m_BoolArgument
-      Entry: 5
-      Data: false
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_CallState
-      Entry: 3
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
+    SerializationNodes: []
   OnHide:
     m_PersistentCalls:
       m_Calls:
@@ -190346,8 +189028,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
+    SerializedFormat: 0
+    SerializedBytes: 01010e0000007200650073006f0075007200630065004c006100620065006c0073002f00000000017d000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e00440069006300740069006f006e00610072007900600032005b005b005200650073006f00750072006300650054007900700065002c00200041007300730065006d0062006c0079002d004300530068006100720070005d002c005b0054004d00500072006f002e0054006500780074004d00650073006800500072006f0055004700550049002c00200055006e006900740079002e0054006500780074004d00650073006800500072006f005d005d002c0020006d00730063006f0072006c00690062000000000001010800000063006f006d00700061007200650072002f01000000015c000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e0045006e0075006d0045007100750061006c0069007400790043006f006d0070006100720065007200600031005b005b005200650073006f00750072006300650054007900700065002c00200041007300730065006d0062006c0079002d004300530068006100720070005d005d002c0020006d00730063006f0072006c0069006200010000000600000000000000000705060400000000000000042e1d010200000024006b0000000000000000000b0102000000240076000000000005042e1d010200000024006b0002000000000000000b0102000000240076000100000005042e1d010200000024006b0004000000000000000b0102000000240076000200000005042e1d010200000024006b0003000000000000000b01020000002400760003000000050705
     ReferencedUnityObjects:
     - {fileID: 2086086572}
     - {fileID: 388935569}
@@ -190357,81 +189039,7 @@ MonoBehaviour:
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes:
-    - Name: resourceLabels
-      Entry: 7
-      Data: 0|System.Collections.Generic.Dictionary`2[[ResourceType, Assembly-CSharp],[TMPro.TextMeshProUGUI,
-        Unity.TextMeshPro]], mscorlib
-    - Name: comparer
-      Entry: 7
-      Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[ResourceType, Assembly-CSharp]],
-        mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 12
-      Data: 4
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 0
-    - Name: $v
-      Entry: 10
-      Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 2
-    - Name: $v
-      Entry: 10
-      Data: 1
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 4
-    - Name: $v
-      Entry: 10
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 3
-    - Name: $v
-      Entry: 10
-      Data: 3
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
+    SerializationNodes: []
   data: {fileID: 11400000, guid: b35e02bdc968942ec9c0bd2f9b6f8099, type: 2}
   animator: {fileID: 953912126}
   positionContainer: {fileID: 0}
@@ -242468,8 +241076,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
+    SerializedFormat: 0
+    SerializedBytes: 010108000000730075006200730074006500700073002f000000000183000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e00440069006300740069006f006e00610072007900600032005b005b00530079007300740065006d002e0049006e007400330032002c0020006d00730063006f0072006c00690062005d002c005b0055006e0069007400790045006e00670069006e0065002e004500760065006e00740073002e0055006e006900740079004500760065006e0074002c00200055006e0069007400790045006e00670069006e0065002e0043006f00720065004d006f00640075006c0065005d005d002c0020006d00730063006f0072006c00690062000000000001010800000063006f006d00700061007200650072002f010000000158000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e00470065006e00650072006900630045007100750061006c0069007400790043006f006d0070006100720065007200600031005b005b00530079007300740065006d002e0049006e007400330032002c0020006d00730063006f0072006c00690062005d005d002c0020006d00730063006f0072006c00690062000100000005060200000000000000042e17010200000024006b0000000000010102000000240076002f02000000013500000055006e0069007400790045006e00670069006e0065002e004500760065006e00740073002e0055006e006900740079004500760065006e0074002c00200055006e0069007400790045006e00670069006e0065002e0043006f00720065004d006f00640075006c006500020000000101110000006d005f00500065007200730069007300740065006e007400430061006c006c0073002f03000000013e00000055006e0069007400790045006e00670069006e0065002e004500760065006e00740073002e00500065007200730069007300740065006e007400430061006c006c00470072006f00750070002c00200055006e0069007400790045006e00670069006e0065002e0043006f00720065004d006f00640075006c006500030000000101070000006d005f00430061006c006c0073002f040000000168000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e004c00690073007400600031005b005b0055006e0069007400790045006e00670069006e0065002e004500760065006e00740073002e00500065007200730069007300740065006e007400430061006c006c002c00200055006e0069007400790045006e00670069006e0065002e0043006f00720065004d006f00640075006c0065005d005d002c0020006d00730063006f0072006c006900620004000000060200000000000000022f05000000013900000055006e0069007400790045006e00670069006e0065002e004500760065006e00740073002e00500065007200730069007300740065006e007400430061006c006c002c00200055006e0069007400790045006e00670069006e0065002e0043006f00720065004d006f00640075006c006500050000000b01080000006d005f00540061007200670065007400000000002701180000006d005f0054006100720067006500740041007300730065006d0062006c00790054007900700065004e0061006d00650001370000004d006f00720065004d006f0075006e007400610069006e0073002e0046006500650064006200610063006b0073002e004d004d0046005f0050006c0061007900650072002c0020004d006f00720065004d006f0075006e007400610069006e0073002e0054006f006f006c00730027010c0000006d005f004d006500740068006f0064004e0061006d006500010d00000050006c006100790046006500650064006200610063006b0073001d01060000006d005f004d006f0064006500010000000000000001010b0000006d005f0041007200670075006d0065006e00740073002f06000000013800000055006e0069007400790045006e00670069006e0065002e004500760065006e00740073002e0041007200670075006d0065006e007400430061006300680065002c00200055006e0069007400790045006e00670069006e0065002e0043006f00720065004d006f00640075006c006500060000000b01100000006d005f004f0062006a0065006300740041007200670075006d0065006e007400010000002701200000006d005f004f0062006a0065006300740041007200670075006d0065006e00740041007300730065006d0062006c00790054007900700065004e0061006d006500011f00000055006e0069007400790045006e00670069006e0065002e004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650017010d0000006d005f0049006e00740041007200670075006d0065006e007400000000001f010f0000006d005f0046006c006f006100740041007200670075006d0065006e007400000000002701100000006d005f0053007400720069006e00670041007200670075006d0065006e00740001000000002b010e0000006d005f0042006f006f006c0041007200670075006d0065006e00740000051d010b0000006d005f00430061006c006c0053007400610074006500020000000000000005023005000000070000000b01080000006d005f00540061007200670065007400020000002701180000006d005f0054006100720067006500740041007300730065006d0062006c00790054007900700065004e0061006d00650001370000004d006f00720065004d006f0075006e007400610069006e0073002e0046006500650064006200610063006b0073002e004d004d0046005f0050006c0061007900650072002c0020004d006f00720065004d006f0075006e007400610069006e0073002e0054006f006f006c00730027010c0000006d005f004d006500740068006f0064004e0061006d006500010d00000050006c006100790046006500650064006200610063006b0073001d01060000006d005f004d006f0064006500010000000000000001010b0000006d005f0041007200670075006d0065006e00740073003006000000080000000b01100000006d005f004f0062006a0065006300740041007200670075006d0065006e007400030000002701200000006d005f004f0062006a0065006300740041007200670075006d0065006e00740041007300730065006d0062006c00790054007900700065004e0061006d006500011f00000055006e0069007400790045006e00670069006e0065002e004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650017010d0000006d005f0049006e00740041007200670075006d0065006e007400000000001f010f0000006d005f0046006c006f006100740041007200670075006d0065006e007400000000002701100000006d005f0053007400720069006e00670041007200670075006d0065006e00740001000000002b010e0000006d005f0042006f006f006c0041007200670075006d0065006e00740000051d010b0000006d005f00430061006c006c00530074006100740065000200000000000000050705050505042e17010200000024006b0001000000010102000000240076003002000000090000000101110000006d005f00500065007200730069007300740065006e007400430061006c006c00730030030000000a0000000101070000006d005f00430061006c006c00730030040000000b0000000605000000000000000230050000000c0000000b01080000006d005f00540061007200670065007400040000002701180000006d005f0054006100720067006500740041007300730065006d0062006c00790054007900700065004e0061006d00650001370000004d006f00720065004d006f0075006e007400610069006e0073002e0046006500650064006200610063006b0073002e004d004d0046005f0050006c0061007900650072002c0020004d006f00720065004d006f0075006e007400610069006e0073002e0054006f006f006c00730027010c0000006d005f004d006500740068006f0064004e0061006d006500010d00000050006c006100790046006500650064006200610063006b0073001d01060000006d005f004d006f0064006500010000000000000001010b0000006d005f0041007200670075006d0065006e007400730030060000000d0000000b01100000006d005f004f0062006a0065006300740041007200670075006d0065006e007400050000002701200000006d005f004f0062006a0065006300740041007200670075006d0065006e00740041007300730065006d0062006c00790054007900700065004e0061006d006500011f00000055006e0069007400790045006e00670069006e0065002e004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650017010d0000006d005f0049006e00740041007200670075006d0065006e007400000000001f010f0000006d005f0046006c006f006100740041007200670075006d0065006e007400000000002701100000006d005f0053007400720069006e00670041007200670075006d0065006e00740001000000002b010e0000006d005f0042006f006f006c0041007200670075006d0065006e00740000051d010b0000006d005f00430061006c006c00530074006100740065000200000000000000050230050000000e0000000b01080000006d005f00540061007200670065007400060000002701180000006d005f0054006100720067006500740041007300730065006d0062006c00790054007900700065004e0061006d00650001370000004d006f00720065004d006f0075006e007400610069006e0073002e0046006500650064006200610063006b0073002e004d004d0046005f0050006c0061007900650072002c0020004d006f00720065004d006f0075006e007400610069006e0073002e0054006f006f006c00730027010c0000006d005f004d006500740068006f0064004e0061006d006500010d00000050006c006100790046006500650064006200610063006b0073001d01060000006d005f004d006f0064006500010000000000000001010b0000006d005f0041007200670075006d0065006e007400730030060000000f0000000b01100000006d005f004f0062006a0065006300740041007200670075006d0065006e007400070000002701200000006d005f004f0062006a0065006300740041007200670075006d0065006e00740041007300730065006d0062006c00790054007900700065004e0061006d006500011f00000055006e0069007400790045006e00670069006e0065002e004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650017010d0000006d005f0049006e00740041007200670075006d0065006e007400000000001f010f0000006d005f0046006c006f006100740041007200670075006d0065006e007400000000002701100000006d005f0053007400720069006e00670041007200670075006d0065006e00740001000000002b010e0000006d005f0042006f006f006c0041007200670075006d0065006e00740000051d010b0000006d005f00430061006c006c0053007400610074006500020000000000000005023005000000100000000b01080000006d005f00540061007200670065007400080000002701180000006d005f0054006100720067006500740041007300730065006d0062006c00790054007900700065004e0061006d00650001370000004d006f00720065004d006f0075006e007400610069006e0073002e0046006500650064006200610063006b0073002e004d004d0046005f0050006c0061007900650072002c0020004d006f00720065004d006f0075006e007400610069006e0073002e0054006f006f006c00730027010c0000006d005f004d006500740068006f0064004e0061006d006500010d00000050006c006100790046006500650064006200610063006b0073001d01060000006d005f004d006f0064006500010000000000000001010b0000006d005f0041007200670075006d0065006e00740073003006000000110000000b01100000006d005f004f0062006a0065006300740041007200670075006d0065006e007400090000002701200000006d005f004f0062006a0065006300740041007200670075006d0065006e00740041007300730065006d0062006c00790054007900700065004e0061006d006500011f00000055006e0069007400790045006e00670069006e0065002e004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650017010d0000006d005f0049006e00740041007200670075006d0065006e007400000000001f010f0000006d005f0046006c006f006100740041007200670075006d0065006e007400000000002701100000006d005f0053007400720069006e00670041007200670075006d0065006e00740001000000002b010e0000006d005f0042006f006f006c0041007200670075006d0065006e00740000051d010b0000006d005f00430061006c006c0053007400610074006500020000000000000005023005000000120000000b01080000006d005f005400610072006700650074000a0000002701180000006d005f0054006100720067006500740041007300730065006d0062006c00790054007900700065004e0061006d00650001370000004d006f00720065004d006f0075006e007400610069006e0073002e0046006500650064006200610063006b0073002e004d004d0046005f0050006c0061007900650072002c0020004d006f00720065004d006f0075006e007400610069006e0073002e0054006f006f006c00730027010c0000006d005f004d006500740068006f0064004e0061006d006500010d00000050006c006100790046006500650064006200610063006b0073001d01060000006d005f004d006f0064006500010000000000000001010b0000006d005f0041007200670075006d0065006e00740073003006000000130000000b01100000006d005f004f0062006a0065006300740041007200670075006d0065006e0074000b0000002701200000006d005f004f0062006a0065006300740041007200670075006d0065006e00740041007300730065006d0062006c00790054007900700065004e0061006d006500011f00000055006e0069007400790045006e00670069006e0065002e004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650017010d0000006d005f0049006e00740041007200670075006d0065006e007400000000001f010f0000006d005f0046006c006f006100740041007200670075006d0065006e007400000000002701100000006d005f0053007400720069006e00670041007200670075006d0065006e00740001000000002b010e0000006d005f0042006f006f006c0041007200670075006d0065006e00740000051d010b0000006d005f00430061006c006c0053007400610074006500020000000000000005023005000000140000000b01080000006d005f005400610072006700650074000c0000002701180000006d005f0054006100720067006500740041007300730065006d0062006c00790054007900700065004e0061006d006500012200000055006e0069007400790045006e00670069006e0065002e004200650068006100760069006f00750072002c00200055006e0069007400790045006e00670069006e00650027010c0000006d005f004d006500740068006f0064004e0061006d006500010b0000007300650074005f0065006e00610062006c00650064001d01060000006d005f004d006f0064006500060000000000000001010b0000006d005f0041007200670075006d0065006e00740073003006000000150000000b01100000006d005f004f0062006a0065006300740041007200670075006d0065006e0074000d0000002701200000006d005f004f0062006a0065006300740041007200670075006d0065006e00740041007300730065006d0062006c00790054007900700065004e0061006d006500011f00000055006e0069007400790045006e00670069006e0065002e004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650017010d0000006d005f0049006e00740041007200670075006d0065006e007400000000001f010f0000006d005f0046006c006f006100740041007200670075006d0065006e007400000000002701100000006d005f0053007400720069006e00670041007200670075006d0065006e00740001000000002b010e0000006d005f0042006f006f006c0041007200670075006d0065006e00740000051d010b0000006d005f00430061006c006c005300740061007400650002000000000000000507050505050705
     ReferencedUnityObjects:
     - {fileID: 1243936449}
     - {fileID: 0}
@@ -242489,410 +241097,7 @@ MonoBehaviour:
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes:
-    - Name: substeps
-      Entry: 7
-      Data: 0|System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[UnityEngine.Events.UnityEvent,
-        UnityEngine.CoreModule]], mscorlib
-    - Name: comparer
-      Entry: 7
-      Data: 1|System.Collections.Generic.GenericEqualityComparer`1[[System.Int32,
-        mscorlib]], mscorlib
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 12
-      Data: 2
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 0
-    - Name: $v
-      Entry: 7
-      Data: 2|UnityEngine.Events.UnityEvent, UnityEngine.CoreModule
-    - Name: m_PersistentCalls
-      Entry: 7
-      Data: 3|UnityEngine.Events.PersistentCallGroup, UnityEngine.CoreModule
-    - Name: m_Calls
-      Entry: 7
-      Data: 4|System.Collections.Generic.List`1[[UnityEngine.Events.PersistentCall,
-        UnityEngine.CoreModule]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 2
-    - Name: 
-      Entry: 7
-      Data: 5|UnityEngine.Events.PersistentCall, UnityEngine.CoreModule
-    - Name: m_Target
-      Entry: 10
-      Data: 0
-    - Name: m_TargetAssemblyTypeName
-      Entry: 1
-      Data: MoreMountains.Feedbacks.MMF_Player, MoreMountains.Tools
-    - Name: m_MethodName
-      Entry: 1
-      Data: PlayFeedbacks
-    - Name: m_Mode
-      Entry: 3
-      Data: 1
-    - Name: m_Arguments
-      Entry: 7
-      Data: 6|UnityEngine.Events.ArgumentCache, UnityEngine.CoreModule
-    - Name: m_ObjectArgument
-      Entry: 10
-      Data: 1
-    - Name: m_ObjectArgumentAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.Object, UnityEngine
-    - Name: m_IntArgument
-      Entry: 3
-      Data: 0
-    - Name: m_FloatArgument
-      Entry: 4
-      Data: 0
-    - Name: m_StringArgument
-      Entry: 1
-      Data: 
-    - Name: m_BoolArgument
-      Entry: 5
-      Data: false
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_CallState
-      Entry: 3
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 7|UnityEngine.Events.PersistentCall, UnityEngine.CoreModule
-    - Name: m_Target
-      Entry: 10
-      Data: 2
-    - Name: m_TargetAssemblyTypeName
-      Entry: 1
-      Data: MoreMountains.Feedbacks.MMF_Player, MoreMountains.Tools
-    - Name: m_MethodName
-      Entry: 1
-      Data: PlayFeedbacks
-    - Name: m_Mode
-      Entry: 3
-      Data: 1
-    - Name: m_Arguments
-      Entry: 7
-      Data: 8|UnityEngine.Events.ArgumentCache, UnityEngine.CoreModule
-    - Name: m_ObjectArgument
-      Entry: 10
-      Data: 3
-    - Name: m_ObjectArgumentAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.Object, UnityEngine
-    - Name: m_IntArgument
-      Entry: 3
-      Data: 0
-    - Name: m_FloatArgument
-      Entry: 4
-      Data: 0
-    - Name: m_StringArgument
-      Entry: 1
-      Data: 
-    - Name: m_BoolArgument
-      Entry: 5
-      Data: false
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_CallState
-      Entry: 3
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 1
-    - Name: $v
-      Entry: 7
-      Data: 9|UnityEngine.Events.UnityEvent, UnityEngine.CoreModule
-    - Name: m_PersistentCalls
-      Entry: 7
-      Data: 10|UnityEngine.Events.PersistentCallGroup, UnityEngine.CoreModule
-    - Name: m_Calls
-      Entry: 7
-      Data: 11|System.Collections.Generic.List`1[[UnityEngine.Events.PersistentCall,
-        UnityEngine.CoreModule]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 5
-    - Name: 
-      Entry: 7
-      Data: 12|UnityEngine.Events.PersistentCall, UnityEngine.CoreModule
-    - Name: m_Target
-      Entry: 10
-      Data: 4
-    - Name: m_TargetAssemblyTypeName
-      Entry: 1
-      Data: MoreMountains.Feedbacks.MMF_Player, MoreMountains.Tools
-    - Name: m_MethodName
-      Entry: 1
-      Data: PlayFeedbacks
-    - Name: m_Mode
-      Entry: 3
-      Data: 1
-    - Name: m_Arguments
-      Entry: 7
-      Data: 13|UnityEngine.Events.ArgumentCache, UnityEngine.CoreModule
-    - Name: m_ObjectArgument
-      Entry: 10
-      Data: 5
-    - Name: m_ObjectArgumentAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.Object, UnityEngine
-    - Name: m_IntArgument
-      Entry: 3
-      Data: 0
-    - Name: m_FloatArgument
-      Entry: 4
-      Data: 0
-    - Name: m_StringArgument
-      Entry: 1
-      Data: 
-    - Name: m_BoolArgument
-      Entry: 5
-      Data: false
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_CallState
-      Entry: 3
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 14|UnityEngine.Events.PersistentCall, UnityEngine.CoreModule
-    - Name: m_Target
-      Entry: 10
-      Data: 6
-    - Name: m_TargetAssemblyTypeName
-      Entry: 1
-      Data: MoreMountains.Feedbacks.MMF_Player, MoreMountains.Tools
-    - Name: m_MethodName
-      Entry: 1
-      Data: PlayFeedbacks
-    - Name: m_Mode
-      Entry: 3
-      Data: 1
-    - Name: m_Arguments
-      Entry: 7
-      Data: 15|UnityEngine.Events.ArgumentCache, UnityEngine.CoreModule
-    - Name: m_ObjectArgument
-      Entry: 10
-      Data: 7
-    - Name: m_ObjectArgumentAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.Object, UnityEngine
-    - Name: m_IntArgument
-      Entry: 3
-      Data: 0
-    - Name: m_FloatArgument
-      Entry: 4
-      Data: 0
-    - Name: m_StringArgument
-      Entry: 1
-      Data: 
-    - Name: m_BoolArgument
-      Entry: 5
-      Data: false
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_CallState
-      Entry: 3
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 16|UnityEngine.Events.PersistentCall, UnityEngine.CoreModule
-    - Name: m_Target
-      Entry: 10
-      Data: 8
-    - Name: m_TargetAssemblyTypeName
-      Entry: 1
-      Data: MoreMountains.Feedbacks.MMF_Player, MoreMountains.Tools
-    - Name: m_MethodName
-      Entry: 1
-      Data: PlayFeedbacks
-    - Name: m_Mode
-      Entry: 3
-      Data: 1
-    - Name: m_Arguments
-      Entry: 7
-      Data: 17|UnityEngine.Events.ArgumentCache, UnityEngine.CoreModule
-    - Name: m_ObjectArgument
-      Entry: 10
-      Data: 9
-    - Name: m_ObjectArgumentAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.Object, UnityEngine
-    - Name: m_IntArgument
-      Entry: 3
-      Data: 0
-    - Name: m_FloatArgument
-      Entry: 4
-      Data: 0
-    - Name: m_StringArgument
-      Entry: 1
-      Data: 
-    - Name: m_BoolArgument
-      Entry: 5
-      Data: false
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_CallState
-      Entry: 3
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 18|UnityEngine.Events.PersistentCall, UnityEngine.CoreModule
-    - Name: m_Target
-      Entry: 10
-      Data: 10
-    - Name: m_TargetAssemblyTypeName
-      Entry: 1
-      Data: MoreMountains.Feedbacks.MMF_Player, MoreMountains.Tools
-    - Name: m_MethodName
-      Entry: 1
-      Data: PlayFeedbacks
-    - Name: m_Mode
-      Entry: 3
-      Data: 1
-    - Name: m_Arguments
-      Entry: 7
-      Data: 19|UnityEngine.Events.ArgumentCache, UnityEngine.CoreModule
-    - Name: m_ObjectArgument
-      Entry: 10
-      Data: 11
-    - Name: m_ObjectArgumentAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.Object, UnityEngine
-    - Name: m_IntArgument
-      Entry: 3
-      Data: 0
-    - Name: m_FloatArgument
-      Entry: 4
-      Data: 0
-    - Name: m_StringArgument
-      Entry: 1
-      Data: 
-    - Name: m_BoolArgument
-      Entry: 5
-      Data: false
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_CallState
-      Entry: 3
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 20|UnityEngine.Events.PersistentCall, UnityEngine.CoreModule
-    - Name: m_Target
-      Entry: 10
-      Data: 12
-    - Name: m_TargetAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.Behaviour, UnityEngine
-    - Name: m_MethodName
-      Entry: 1
-      Data: set_enabled
-    - Name: m_Mode
-      Entry: 3
-      Data: 6
-    - Name: m_Arguments
-      Entry: 7
-      Data: 21|UnityEngine.Events.ArgumentCache, UnityEngine.CoreModule
-    - Name: m_ObjectArgument
-      Entry: 10
-      Data: 13
-    - Name: m_ObjectArgumentAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.Object, UnityEngine
-    - Name: m_IntArgument
-      Entry: 3
-      Data: 0
-    - Name: m_FloatArgument
-      Entry: 4
-      Data: 0
-    - Name: m_StringArgument
-      Entry: 1
-      Data: 
-    - Name: m_BoolArgument
-      Entry: 5
-      Data: false
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_CallState
-      Entry: 3
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
+    SerializationNodes: []
   OnHide:
     m_PersistentCalls:
       m_Calls:
@@ -254091,8 +252296,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
+    SerializedFormat: 0
+    SerializedBytes: 01010b0000007200650077006100720064004900740065006d0073002f000000000170000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e00440069006300740069006f006e00610072007900600032005b005b0052006500770061007200640054007900700065002c00200041007300730065006d0062006c0079002d004300530068006100720070005d002c005b00490063006f006e0054006500780074004900740065006d002c00200041007300730065006d0062006c0079002d004300530068006100720070005d005d002c0020006d00730063006f0072006c00690062000000000001010800000063006f006d00700061007200650072002f01000000015a000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e0045006e0075006d0045007100750061006c0069007400790043006f006d0070006100720065007200600031005b005b0052006500770061007200640054007900700065002c00200041007300730065006d0062006c0079002d004300530068006100720070005d005d002c0020006d00730063006f0072006c0069006200010000000600000000000000000705060100000000000000042e1d010200000024006b0003000000000000000b0102000000240076000000000005070501010d0000006d00610072006b006500720050007200650066006100620073002f020000000181000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e00440069006300740069006f006e00610072007900600032005b005b004c006500760065006c00530074006100740065002c00200041007300730065006d0062006c0079002d004300530068006100720070005d002c005b0055006e0069007400790045006e00670069006e0065002e00470061006d0065004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e0065002e0043006f00720065004d006f00640075006c0065005d005d002c0020006d00730063006f0072006c00690062000200000001010800000063006f006d00700061007200650072002f03000000015a000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e0045006e0075006d0045007100750061006c0069007400790043006f006d0070006100720065007200600031005b005b004c006500760065006c00530074006100740065002c00200041007300730065006d0062006c0079002d004300530068006100720070005d005d002c0020006d00730063006f0072006c0069006200030000000600000000000000000705060400000000000000042e1d010200000024006b0000000000000000000b0102000000240076000100000005042e1d010200000024006b00ffffffffffffffff0b0102000000240076000200000005042e1d010200000024006b0001000000000000000b0102000000240076000300000005042e1d010200000024006b0002000000000000000b01020000002400760004000000050705
     ReferencedUnityObjects:
     - {fileID: 5583114839918814558, guid: 02a9b6ecfc11942088d69bd1c6f68c2e, type: 3}
     - {fileID: 2726706316750031454, guid: f93cd6bbd692a43ff88496dd20c530a5, type: 3}
@@ -254103,119 +252308,7 @@ MonoBehaviour:
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes:
-    - Name: rewardItems
-      Entry: 7
-      Data: 0|System.Collections.Generic.Dictionary`2[[RewardType, Assembly-CSharp],[IconTextItem,
-        Assembly-CSharp]], mscorlib
-    - Name: comparer
-      Entry: 7
-      Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[RewardType, Assembly-CSharp]],
-        mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 12
-      Data: 1
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 3
-    - Name: $v
-      Entry: 10
-      Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: markerPrefabs
-      Entry: 7
-      Data: 2|System.Collections.Generic.Dictionary`2[[LevelState, Assembly-CSharp],[UnityEngine.GameObject,
-        UnityEngine.CoreModule]], mscorlib
-    - Name: comparer
-      Entry: 7
-      Data: 3|System.Collections.Generic.EnumEqualityComparer`1[[LevelState, Assembly-CSharp]],
-        mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 12
-      Data: 4
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 0
-    - Name: $v
-      Entry: 10
-      Data: 1
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 18446744073709551615
-    - Name: $v
-      Entry: 10
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 1
-    - Name: $v
-      Entry: 10
-      Data: 3
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 2
-    - Name: $v
-      Entry: 10
-      Data: 4
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
+    SerializationNodes: []
   locations: {fileID: 11400000, guid: dead2bdcbff2743468f3202d9b67a4a6, type: 2}
   units: {fileID: 11400000, guid: 04d090dca8b184410bc442f018562a86, type: 2}
   locationLabel: {fileID: 1422154349}
@@ -295673,8 +293766,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
+    SerializedFormat: 0
+    SerializedBytes: 0101090000007200650073006f00750072006300650073002f000000000173000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e00440069006300740069006f006e00610072007900600032005b005b005200650073006f00750072006300650054007900700065002c00200041007300730065006d0062006c0079002d004300530068006100720070005d002c005b0052006500770061007200640046006c00790044006100740061002c00200041007300730065006d0062006c0079002d004300530068006100720070005d005d002c0020006d00730063006f0072006c00690062000000000001010800000063006f006d00700061007200650072002f01000000015c000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e0045006e0075006d0045007100750061006c0069007400790043006f006d0070006100720065007200600031005b005b005200650073006f00750072006300650054007900700065002c00200041007300730065006d0062006c0079002d004300530068006100720070005d005d002c0020006d00730063006f0072006c0069006200010000000600000000000000000705060300000000000000042e1d010200000024006b000000000000000000010102000000240076002f02000000011e00000052006500770061007200640046006c00790044006100740061002c00200041007300730065006d0062006c0079002d00430053006800610072007000020000000b0106000000740061007200670065007400000000000b0106000000700072006500660061006200010000000505042e1d010200000024006b000100000000000000010102000000240076003002000000030000000b0106000000740061007200670065007400020000000b0106000000700072006500660061006200030000000505042e1d010200000024006b000200000000000000010102000000240076003002000000040000000b0106000000740061007200670065007400040000000b0106000000700072006500660061006200050000000505070501010900000075006e0069007400430061007200640073002f03000000016f000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e00440069006300740069006f006e00610072007900600032005b005b0055006e006900740054007900700065002c00200041007300730065006d0062006c0079002d004300530068006100720070005d002c005b0052006500770061007200640046006c00790044006100740061002c00200041007300730065006d0062006c0079002d004300530068006100720070005d005d002c0020006d00730063006f0072006c00690062000500000001010800000063006f006d00700061007200650072002f040000000158000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e0045006e0075006d0045007100750061006c0069007400790043006f006d0070006100720065007200600031005b005b0055006e006900740054007900700065002c00200041007300730065006d0062006c0079002d004300530068006100720070005d005d002c0020006d00730063006f0072006c0069006200060000000600000000000000000705060200000000000000042e1d010200000024006b000100000000000000010102000000240076003002000000070000000b0106000000740061007200670065007400060000000b0106000000700072006500660061006200070000000505042e1d010200000024006b000200000000000000010102000000240076003002000000080000000b0106000000740061007200670065007400080000000b01060000007000720065006600610062000900000005050705
     ReferencedUnityObjects:
     - {fileID: 403508096}
     - {fileID: 1572468704333392493, guid: cabec44f622cf48448f8cad98108d735, type: 3}
@@ -295690,164 +293783,7 @@ MonoBehaviour:
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes:
-    - Name: resources
-      Entry: 7
-      Data: 0|System.Collections.Generic.Dictionary`2[[ResourceType, Assembly-CSharp],[RewardFlyData,
-        Assembly-CSharp]], mscorlib
-    - Name: comparer
-      Entry: 7
-      Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[ResourceType, Assembly-CSharp]],
-        mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 12
-      Data: 3
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 0
-    - Name: $v
-      Entry: 7
-      Data: 2|RewardFlyData, Assembly-CSharp
-    - Name: target
-      Entry: 10
-      Data: 0
-    - Name: prefab
-      Entry: 10
-      Data: 1
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 1
-    - Name: $v
-      Entry: 7
-      Data: 3|RewardFlyData, Assembly-CSharp
-    - Name: target
-      Entry: 10
-      Data: 2
-    - Name: prefab
-      Entry: 10
-      Data: 3
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 2
-    - Name: $v
-      Entry: 7
-      Data: 4|RewardFlyData, Assembly-CSharp
-    - Name: target
-      Entry: 10
-      Data: 4
-    - Name: prefab
-      Entry: 10
-      Data: 5
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: unitCards
-      Entry: 7
-      Data: 5|System.Collections.Generic.Dictionary`2[[UnitType, Assembly-CSharp],[RewardFlyData,
-        Assembly-CSharp]], mscorlib
-    - Name: comparer
-      Entry: 7
-      Data: 6|System.Collections.Generic.EnumEqualityComparer`1[[UnitType, Assembly-CSharp]],
-        mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 12
-      Data: 2
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 1
-    - Name: $v
-      Entry: 7
-      Data: 7|RewardFlyData, Assembly-CSharp
-    - Name: target
-      Entry: 10
-      Data: 6
-    - Name: prefab
-      Entry: 10
-      Data: 7
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 2
-    - Name: $v
-      Entry: 7
-      Data: 8|RewardFlyData, Assembly-CSharp
-    - Name: target
-      Entry: 10
-      Data: 8
-    - Name: prefab
-      Entry: 10
-      Data: 9
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
+    SerializationNodes: []
   duration: 0.5
   initialDelay: 0.5
   flyDelay: 0.5
@@ -296014,8 +293950,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
+    SerializedFormat: 0
+    SerializedBytes: 0101050000006900740065006d0073002f000000000172000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e00440069006300740069006f006e00610072007900600032005b005b005200650073006f00750072006300650054007900700065002c00200041007300730065006d0062006c0079002d004300530068006100720070005d002c005b00490063006f006e0054006500780074004900740065006d002c00200041007300730065006d0062006c0079002d004300530068006100720070005d005d002c0020006d00730063006f0072006c00690062000000000001010800000063006f006d00700061007200650072002f01000000015c000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e0045006e0075006d0045007100750061006c0069007400790043006f006d0070006100720065007200600031005b005b005200650073006f00750072006300650054007900700065002c00200041007300730065006d0062006c0079002d004300530068006100720070005d005d002c0020006d00730063006f0072006c0069006200010000000600000000000000000705060300000000000000042e1d010200000024006b0002000000000000000b0102000000240076000000000005042e1d010200000024006b0000000000000000000b0102000000240076000100000005042e1d010200000024006b0001000000000000000b01020000002400760002000000050705
     ReferencedUnityObjects:
     - {fileID: 2564567}
     - {fileID: 1842498665}
@@ -296024,69 +293960,7 @@ MonoBehaviour:
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes:
-    - Name: items
-      Entry: 7
-      Data: 0|System.Collections.Generic.Dictionary`2[[ResourceType, Assembly-CSharp],[IconTextItem,
-        Assembly-CSharp]], mscorlib
-    - Name: comparer
-      Entry: 7
-      Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[ResourceType, Assembly-CSharp]],
-        mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 12
-      Data: 3
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 2
-    - Name: $v
-      Entry: 10
-      Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 0
-    - Name: $v
-      Entry: 10
-      Data: 1
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 1
-    - Name: $v
-      Entry: 10
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
+    SerializationNodes: []
   itemsRoot: {fileID: 1281083035}
   resourcesData: {fileID: 11400000, guid: b35e02bdc968942ec9c0bd2f9b6f8099, type: 2}
   prefab: {fileID: 7519767463698298754, guid: 3f239bf7484af4d8aaca7274212c3bb5, type: 3}
@@ -329410,7 +327284,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
-    SerializedFormat: 2
+    SerializedFormat: 0
     SerializedBytes: 
     ReferencedUnityObjects: []
     SerializedBytesString: 
@@ -399067,8 +396941,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
+    SerializedFormat: 0
+    SerializedBytes: 010105000000730074006100740073002f00000000016f000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e00440069006300740069006f006e00610072007900600032005b005b004100740074007200690062007500740065002c00200041007300730065006d0062006c0079002d004300530068006100720070005d002c005b00490063006f006e0054006500780074004900740065006d002c00200041007300730065006d0062006c0079002d004300530068006100720070005d005d002c0020006d00730063006f0072006c00690062000000000001010800000063006f006d00700061007200650072002f010000000159000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e0045006e0075006d0045007100750061006c0069007400790043006f006d0070006100720065007200600031005b005b004100740074007200690062007500740065002c00200041007300730065006d0062006c0079002d004300530068006100720070005d005d002c0020006d00730063006f0072006c0069006200010000000600000000000000000705060500000000000000042e1d010200000024006b0000000000000000000b0102000000240076000000000005042e1d010200000024006b0001000000000000000b0102000000240076000100000005042e1d010200000024006b0002000000000000000b0102000000240076000200000005042e1d010200000024006b0004000000000000000b0102000000240076000300000005042e1d010200000024006b0003000000000000000b01020000002400760004000000050705
     ReferencedUnityObjects:
     - {fileID: 814520926}
     - {fileID: 607818655}
@@ -399079,93 +396953,7 @@ MonoBehaviour:
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes:
-    - Name: stats
-      Entry: 7
-      Data: 0|System.Collections.Generic.Dictionary`2[[Attribute, Assembly-CSharp],[IconTextItem,
-        Assembly-CSharp]], mscorlib
-    - Name: comparer
-      Entry: 7
-      Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[Attribute, Assembly-CSharp]],
-        mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 12
-      Data: 5
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 0
-    - Name: $v
-      Entry: 10
-      Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 1
-    - Name: $v
-      Entry: 10
-      Data: 1
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 2
-    - Name: $v
-      Entry: 10
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 4
-    - Name: $v
-      Entry: 10
-      Data: 3
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 3
-    - Name: $v
-      Entry: 10
-      Data: 4
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
+    SerializationNodes: []
   avatar: {fileID: 335036083}
   lockedIcon: {fileID: 315521004}
   readyIcon: {fileID: 598082018}
@@ -399280,8 +397068,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitStateResult
   serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
+    SerializedFormat: 0
+    SerializedBytes: 0101060000006500760065006e00740073002f000000000187000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e00440069006300740069006f006e00610072007900600032005b005b0055006e0069007400530074006100740065002c00200041007300730065006d0062006c0079002d004300530068006100720070005d002c005b0055006e0069007400790045006e00670069006e0065002e004500760065006e00740073002e0055006e006900740079004500760065006e0074002c00200055006e0069007400790045006e00670069006e0065002e0043006f00720065004d006f00640075006c0065005d005d002c0020006d00730063006f0072006c00690062000000000001010800000063006f006d00700061007200650072002f010000000159000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e0045006e0075006d0045007100750061006c0069007400790043006f006d0070006100720065007200600031005b005b0055006e0069007400530074006100740065002c00200041007300730065006d0062006c0079002d004300530068006100720070005d005d002c0020006d00730063006f0072006c0069006200010000000600000000000000000705060400000000000000042e1d010200000024006b000300000000000000010102000000240076002f02000000013500000055006e0069007400790045006e00670069006e0065002e004500760065006e00740073002e0055006e006900740079004500760065006e0074002c00200055006e0069007400790045006e00670069006e0065002e0043006f00720065004d006f00640075006c006500020000000101110000006d005f00500065007200730069007300740065006e007400430061006c006c0073002f03000000013e00000055006e0069007400790045006e00670069006e0065002e004500760065006e00740073002e00500065007200730069007300740065006e007400430061006c006c00470072006f00750070002c00200055006e0069007400790045006e00670069006e0065002e0043006f00720065004d006f00640075006c006500030000000101070000006d005f00430061006c006c0073002f040000000168000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e004c00690073007400600031005b005b0055006e0069007400790045006e00670069006e0065002e004500760065006e00740073002e00500065007200730069007300740065006e007400430061006c006c002c00200055006e0069007400790045006e00670069006e0065002e0043006f00720065004d006f00640075006c0065005d005d002c0020006d00730063006f0072006c006900620004000000060200000000000000022f05000000013900000055006e0069007400790045006e00670069006e0065002e004500760065006e00740073002e00500065007200730069007300740065006e007400430061006c006c002c00200055006e0069007400790045006e00670069006e0065002e0043006f00720065004d006f00640075006c006500050000000b01080000006d005f00540061007200670065007400000000002701180000006d005f0054006100720067006500740041007300730065006d0062006c00790054007900700065004e0061006d006500012300000055006e0069007400790045006e00670069006e0065002e00470061006d0065004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650027010c0000006d005f004d006500740068006f0064004e0061006d00650001090000005300650074004100630074006900760065001d01060000006d005f004d006f0064006500060000000000000001010b0000006d005f0041007200670075006d0065006e00740073002f06000000013800000055006e0069007400790045006e00670069006e0065002e004500760065006e00740073002e0041007200670075006d0065006e007400430061006300680065002c00200055006e0069007400790045006e00670069006e0065002e0043006f00720065004d006f00640075006c006500060000000b01100000006d005f004f0062006a0065006300740041007200670075006d0065006e007400010000002701200000006d005f004f0062006a0065006300740041007200670075006d0065006e00740041007300730065006d0062006c00790054007900700065004e0061006d006500011f00000055006e0069007400790045006e00670069006e0065002e004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650017010d0000006d005f0049006e00740041007200670075006d0065006e007400000000001f010f0000006d005f0046006c006f006100740041007200670075006d0065006e007400000000002701100000006d005f0053007400720069006e00670041007200670075006d0065006e00740001000000002b010e0000006d005f0042006f006f006c0041007200670075006d0065006e00740001051d010b0000006d005f00430061006c006c0053007400610074006500020000000000000005023005000000070000000b01080000006d005f00540061007200670065007400020000002701180000006d005f0054006100720067006500740041007300730065006d0062006c00790054007900700065004e0061006d006500012300000055006e0069007400790045006e00670069006e0065002e00470061006d0065004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650027010c0000006d005f004d006500740068006f0064004e0061006d00650001090000005300650074004100630074006900760065001d01060000006d005f004d006f0064006500060000000000000001010b0000006d005f0041007200670075006d0065006e00740073003006000000080000000b01100000006d005f004f0062006a0065006300740041007200670075006d0065006e007400030000002701200000006d005f004f0062006a0065006300740041007200670075006d0065006e00740041007300730065006d0062006c00790054007900700065004e0061006d006500011f00000055006e0069007400790045006e00670069006e0065002e004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650017010d0000006d005f0049006e00740041007200670075006d0065006e007400000000001f010f0000006d005f0046006c006f006100740041007200670075006d0065006e007400000000002701100000006d005f0053007400720069006e00670041007200670075006d0065006e00740001000000002b010e0000006d005f0042006f006f006c0041007200670075006d0065006e00740001051d010b0000006d005f00430061006c006c00530074006100740065000200000000000000050705050505042e1d010200000024006b000000000000000000010102000000240076003002000000090000000101110000006d005f00500065007200730069007300740065006e007400430061006c006c00730030030000000a0000000101070000006d005f00430061006c006c00730030040000000b0000000602000000000000000230050000000c0000000b01080000006d005f00540061007200670065007400000000002701180000006d005f0054006100720067006500740041007300730065006d0062006c00790054007900700065004e0061006d006500012300000055006e0069007400790045006e00670069006e0065002e00470061006d0065004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650027010c0000006d005f004d006500740068006f0064004e0061006d00650001090000005300650074004100630074006900760065001d01060000006d005f004d006f0064006500060000000000000001010b0000006d005f0041007200670075006d0065006e007400730030060000000d0000000b01100000006d005f004f0062006a0065006300740041007200670075006d0065006e007400040000002701200000006d005f004f0062006a0065006300740041007200670075006d0065006e00740041007300730065006d0062006c00790054007900700065004e0061006d006500011f00000055006e0069007400790045006e00670069006e0065002e004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650017010d0000006d005f0049006e00740041007200670075006d0065006e007400000000001f010f0000006d005f0046006c006f006100740041007200670075006d0065006e007400000000002701100000006d005f0053007400720069006e00670041007200670075006d0065006e00740001000000002b010e0000006d005f0042006f006f006c0041007200670075006d0065006e00740000051d010b0000006d005f00430061006c006c00530074006100740065000200000000000000050230050000000e0000000b01080000006d005f00540061007200670065007400020000002701180000006d005f0054006100720067006500740041007300730065006d0062006c00790054007900700065004e0061006d006500012300000055006e0069007400790045006e00670069006e0065002e00470061006d0065004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650027010c0000006d005f004d006500740068006f0064004e0061006d00650001090000005300650074004100630074006900760065001d01060000006d005f004d006f0064006500060000000000000001010b0000006d005f0041007200670075006d0065006e007400730030060000000f0000000b01100000006d005f004f0062006a0065006300740041007200670075006d0065006e007400050000002701200000006d005f004f0062006a0065006300740041007200670075006d0065006e00740041007300730065006d0062006c00790054007900700065004e0061006d006500011f00000055006e0069007400790045006e00670069006e0065002e004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650017010d0000006d005f0049006e00740041007200670075006d0065006e007400000000001f010f0000006d005f0046006c006f006100740041007200670075006d0065006e007400000000002701100000006d005f0053007400720069006e00670041007200670075006d0065006e00740001000000002b010e0000006d005f0042006f006f006c0041007200670075006d0065006e00740000051d010b0000006d005f00430061006c006c00530074006100740065000200000000000000050705050505042e1d010200000024006b000100000000000000010102000000240076003002000000100000000101110000006d005f00500065007200730069007300740065006e007400430061006c006c0073003003000000110000000101070000006d005f00430061006c006c007300300400000012000000060200000000000000023005000000130000000b01080000006d005f00540061007200670065007400000000002701180000006d005f0054006100720067006500740041007300730065006d0062006c00790054007900700065004e0061006d006500012300000055006e0069007400790045006e00670069006e0065002e00470061006d0065004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650027010c0000006d005f004d006500740068006f0064004e0061006d00650001090000005300650074004100630074006900760065001d01060000006d005f004d006f0064006500060000000000000001010b0000006d005f0041007200670075006d0065006e00740073003006000000140000000b01100000006d005f004f0062006a0065006300740041007200670075006d0065006e007400040000002701200000006d005f004f0062006a0065006300740041007200670075006d0065006e00740041007300730065006d0062006c00790054007900700065004e0061006d006500011f00000055006e0069007400790045006e00670069006e0065002e004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650017010d0000006d005f0049006e00740041007200670075006d0065006e007400000000001f010f0000006d005f0046006c006f006100740041007200670075006d0065006e007400000000002701100000006d005f0053007400720069006e00670041007200670075006d0065006e00740001000000002b010e0000006d005f0042006f006f006c0041007200670075006d0065006e00740000051d010b0000006d005f00430061006c006c0053007400610074006500020000000000000005023005000000150000000b01080000006d005f00540061007200670065007400020000002701180000006d005f0054006100720067006500740041007300730065006d0062006c00790054007900700065004e0061006d006500012300000055006e0069007400790045006e00670069006e0065002e00470061006d0065004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650027010c0000006d005f004d006500740068006f0064004e0061006d00650001090000005300650074004100630074006900760065001d01060000006d005f004d006f0064006500060000000000000001010b0000006d005f0041007200670075006d0065006e00740073003006000000160000000b01100000006d005f004f0062006a0065006300740041007200670075006d0065006e007400050000002701200000006d005f004f0062006a0065006300740041007200670075006d0065006e00740041007300730065006d0062006c00790054007900700065004e0061006d006500011f00000055006e0069007400790045006e00670069006e0065002e004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650017010d0000006d005f0049006e00740041007200670075006d0065006e007400000000001f010f0000006d005f0046006c006f006100740041007200670075006d0065006e007400000000002701100000006d005f0053007400720069006e00670041007200670075006d0065006e00740001000000002b010e0000006d005f0042006f006f006c0041007200670075006d0065006e00740000051d010b0000006d005f00430061006c006c00530074006100740065000200000000000000050705050505042e1d010200000024006b000200000000000000010102000000240076003002000000170000000101110000006d005f00500065007200730069007300740065006e007400430061006c006c0073003003000000180000000101070000006d005f00430061006c006c0073003004000000190000000602000000000000000230050000001a0000000b01080000006d005f00540061007200670065007400000000002701180000006d005f0054006100720067006500740041007300730065006d0062006c00790054007900700065004e0061006d006500012300000055006e0069007400790045006e00670069006e0065002e00470061006d0065004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650027010c0000006d005f004d006500740068006f0064004e0061006d00650001090000005300650074004100630074006900760065001d01060000006d005f004d006f0064006500060000000000000001010b0000006d005f0041007200670075006d0065006e007400730030060000001b0000000b01100000006d005f004f0062006a0065006300740041007200670075006d0065006e007400060000002701200000006d005f004f0062006a0065006300740041007200670075006d0065006e00740041007300730065006d0062006c00790054007900700065004e0061006d006500011f00000055006e0069007400790045006e00670069006e0065002e004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650017010d0000006d005f0049006e00740041007200670075006d0065006e007400000000001f010f0000006d005f0046006c006f006100740041007200670075006d0065006e007400000000002701100000006d005f0053007400720069006e00670041007200670075006d0065006e00740001000000002b010e0000006d005f0042006f006f006c0041007200670075006d0065006e00740000051d010b0000006d005f00430061006c006c00530074006100740065000200000000000000050230050000001c0000000b01080000006d005f00540061007200670065007400020000002701180000006d005f0054006100720067006500740041007300730065006d0062006c00790054007900700065004e0061006d006500012300000055006e0069007400790045006e00670069006e0065002e00470061006d0065004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650027010c0000006d005f004d006500740068006f0064004e0061006d00650001090000005300650074004100630074006900760065001d01060000006d005f004d006f0064006500060000000000000001010b0000006d005f0041007200670075006d0065006e007400730030060000001d0000000b01100000006d005f004f0062006a0065006300740041007200670075006d0065006e007400070000002701200000006d005f004f0062006a0065006300740041007200670075006d0065006e00740041007300730065006d0062006c00790054007900700065004e0061006d006500011f00000055006e0069007400790045006e00670069006e0065002e004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650017010d0000006d005f0049006e00740041007200670075006d0065006e007400000000001f010f0000006d005f0046006c006f006100740041007200670075006d0065006e007400000000002701100000006d005f0053007400720069006e00670041007200670075006d0065006e00740001000000002b010e0000006d005f0042006f006f006c0041007200670075006d0065006e00740001051d010b0000006d005f00430061006c006c005300740061007400650002000000000000000507050505050705
     ReferencedUnityObjects:
     - {fileID: 925730244}
     - {fileID: 0}
@@ -399295,529 +397083,7 @@ MonoBehaviour:
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes:
-    - Name: events
-      Entry: 7
-      Data: 0|System.Collections.Generic.Dictionary`2[[UnitState, Assembly-CSharp],[UnityEngine.Events.UnityEvent,
-        UnityEngine.CoreModule]], mscorlib
-    - Name: comparer
-      Entry: 7
-      Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[UnitState, Assembly-CSharp]],
-        mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 12
-      Data: 4
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 3
-    - Name: $v
-      Entry: 7
-      Data: 2|UnityEngine.Events.UnityEvent, UnityEngine.CoreModule
-    - Name: m_PersistentCalls
-      Entry: 7
-      Data: 3|UnityEngine.Events.PersistentCallGroup, UnityEngine.CoreModule
-    - Name: m_Calls
-      Entry: 7
-      Data: 4|System.Collections.Generic.List`1[[UnityEngine.Events.PersistentCall,
-        UnityEngine.CoreModule]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 2
-    - Name: 
-      Entry: 7
-      Data: 5|UnityEngine.Events.PersistentCall, UnityEngine.CoreModule
-    - Name: m_Target
-      Entry: 10
-      Data: 0
-    - Name: m_TargetAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.GameObject, UnityEngine
-    - Name: m_MethodName
-      Entry: 1
-      Data: SetActive
-    - Name: m_Mode
-      Entry: 3
-      Data: 6
-    - Name: m_Arguments
-      Entry: 7
-      Data: 6|UnityEngine.Events.ArgumentCache, UnityEngine.CoreModule
-    - Name: m_ObjectArgument
-      Entry: 10
-      Data: 1
-    - Name: m_ObjectArgumentAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.Object, UnityEngine
-    - Name: m_IntArgument
-      Entry: 3
-      Data: 0
-    - Name: m_FloatArgument
-      Entry: 4
-      Data: 0
-    - Name: m_StringArgument
-      Entry: 1
-      Data: 
-    - Name: m_BoolArgument
-      Entry: 5
-      Data: true
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_CallState
-      Entry: 3
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 7|UnityEngine.Events.PersistentCall, UnityEngine.CoreModule
-    - Name: m_Target
-      Entry: 10
-      Data: 2
-    - Name: m_TargetAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.GameObject, UnityEngine
-    - Name: m_MethodName
-      Entry: 1
-      Data: SetActive
-    - Name: m_Mode
-      Entry: 3
-      Data: 6
-    - Name: m_Arguments
-      Entry: 7
-      Data: 8|UnityEngine.Events.ArgumentCache, UnityEngine.CoreModule
-    - Name: m_ObjectArgument
-      Entry: 10
-      Data: 3
-    - Name: m_ObjectArgumentAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.Object, UnityEngine
-    - Name: m_IntArgument
-      Entry: 3
-      Data: 0
-    - Name: m_FloatArgument
-      Entry: 4
-      Data: 0
-    - Name: m_StringArgument
-      Entry: 1
-      Data: 
-    - Name: m_BoolArgument
-      Entry: 5
-      Data: true
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_CallState
-      Entry: 3
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 0
-    - Name: $v
-      Entry: 7
-      Data: 9|UnityEngine.Events.UnityEvent, UnityEngine.CoreModule
-    - Name: m_PersistentCalls
-      Entry: 7
-      Data: 10|UnityEngine.Events.PersistentCallGroup, UnityEngine.CoreModule
-    - Name: m_Calls
-      Entry: 7
-      Data: 11|System.Collections.Generic.List`1[[UnityEngine.Events.PersistentCall,
-        UnityEngine.CoreModule]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 2
-    - Name: 
-      Entry: 7
-      Data: 12|UnityEngine.Events.PersistentCall, UnityEngine.CoreModule
-    - Name: m_Target
-      Entry: 10
-      Data: 0
-    - Name: m_TargetAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.GameObject, UnityEngine
-    - Name: m_MethodName
-      Entry: 1
-      Data: SetActive
-    - Name: m_Mode
-      Entry: 3
-      Data: 6
-    - Name: m_Arguments
-      Entry: 7
-      Data: 13|UnityEngine.Events.ArgumentCache, UnityEngine.CoreModule
-    - Name: m_ObjectArgument
-      Entry: 10
-      Data: 4
-    - Name: m_ObjectArgumentAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.Object, UnityEngine
-    - Name: m_IntArgument
-      Entry: 3
-      Data: 0
-    - Name: m_FloatArgument
-      Entry: 4
-      Data: 0
-    - Name: m_StringArgument
-      Entry: 1
-      Data: 
-    - Name: m_BoolArgument
-      Entry: 5
-      Data: false
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_CallState
-      Entry: 3
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 14|UnityEngine.Events.PersistentCall, UnityEngine.CoreModule
-    - Name: m_Target
-      Entry: 10
-      Data: 2
-    - Name: m_TargetAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.GameObject, UnityEngine
-    - Name: m_MethodName
-      Entry: 1
-      Data: SetActive
-    - Name: m_Mode
-      Entry: 3
-      Data: 6
-    - Name: m_Arguments
-      Entry: 7
-      Data: 15|UnityEngine.Events.ArgumentCache, UnityEngine.CoreModule
-    - Name: m_ObjectArgument
-      Entry: 10
-      Data: 5
-    - Name: m_ObjectArgumentAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.Object, UnityEngine
-    - Name: m_IntArgument
-      Entry: 3
-      Data: 0
-    - Name: m_FloatArgument
-      Entry: 4
-      Data: 0
-    - Name: m_StringArgument
-      Entry: 1
-      Data: 
-    - Name: m_BoolArgument
-      Entry: 5
-      Data: false
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_CallState
-      Entry: 3
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 1
-    - Name: $v
-      Entry: 7
-      Data: 16|UnityEngine.Events.UnityEvent, UnityEngine.CoreModule
-    - Name: m_PersistentCalls
-      Entry: 7
-      Data: 17|UnityEngine.Events.PersistentCallGroup, UnityEngine.CoreModule
-    - Name: m_Calls
-      Entry: 7
-      Data: 18|System.Collections.Generic.List`1[[UnityEngine.Events.PersistentCall,
-        UnityEngine.CoreModule]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 2
-    - Name: 
-      Entry: 7
-      Data: 19|UnityEngine.Events.PersistentCall, UnityEngine.CoreModule
-    - Name: m_Target
-      Entry: 10
-      Data: 0
-    - Name: m_TargetAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.GameObject, UnityEngine
-    - Name: m_MethodName
-      Entry: 1
-      Data: SetActive
-    - Name: m_Mode
-      Entry: 3
-      Data: 6
-    - Name: m_Arguments
-      Entry: 7
-      Data: 20|UnityEngine.Events.ArgumentCache, UnityEngine.CoreModule
-    - Name: m_ObjectArgument
-      Entry: 10
-      Data: 4
-    - Name: m_ObjectArgumentAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.Object, UnityEngine
-    - Name: m_IntArgument
-      Entry: 3
-      Data: 0
-    - Name: m_FloatArgument
-      Entry: 4
-      Data: 0
-    - Name: m_StringArgument
-      Entry: 1
-      Data: 
-    - Name: m_BoolArgument
-      Entry: 5
-      Data: false
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_CallState
-      Entry: 3
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 21|UnityEngine.Events.PersistentCall, UnityEngine.CoreModule
-    - Name: m_Target
-      Entry: 10
-      Data: 2
-    - Name: m_TargetAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.GameObject, UnityEngine
-    - Name: m_MethodName
-      Entry: 1
-      Data: SetActive
-    - Name: m_Mode
-      Entry: 3
-      Data: 6
-    - Name: m_Arguments
-      Entry: 7
-      Data: 22|UnityEngine.Events.ArgumentCache, UnityEngine.CoreModule
-    - Name: m_ObjectArgument
-      Entry: 10
-      Data: 5
-    - Name: m_ObjectArgumentAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.Object, UnityEngine
-    - Name: m_IntArgument
-      Entry: 3
-      Data: 0
-    - Name: m_FloatArgument
-      Entry: 4
-      Data: 0
-    - Name: m_StringArgument
-      Entry: 1
-      Data: 
-    - Name: m_BoolArgument
-      Entry: 5
-      Data: false
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_CallState
-      Entry: 3
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 2
-    - Name: $v
-      Entry: 7
-      Data: 23|UnityEngine.Events.UnityEvent, UnityEngine.CoreModule
-    - Name: m_PersistentCalls
-      Entry: 7
-      Data: 24|UnityEngine.Events.PersistentCallGroup, UnityEngine.CoreModule
-    - Name: m_Calls
-      Entry: 7
-      Data: 25|System.Collections.Generic.List`1[[UnityEngine.Events.PersistentCall,
-        UnityEngine.CoreModule]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 2
-    - Name: 
-      Entry: 7
-      Data: 26|UnityEngine.Events.PersistentCall, UnityEngine.CoreModule
-    - Name: m_Target
-      Entry: 10
-      Data: 0
-    - Name: m_TargetAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.GameObject, UnityEngine
-    - Name: m_MethodName
-      Entry: 1
-      Data: SetActive
-    - Name: m_Mode
-      Entry: 3
-      Data: 6
-    - Name: m_Arguments
-      Entry: 7
-      Data: 27|UnityEngine.Events.ArgumentCache, UnityEngine.CoreModule
-    - Name: m_ObjectArgument
-      Entry: 10
-      Data: 6
-    - Name: m_ObjectArgumentAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.Object, UnityEngine
-    - Name: m_IntArgument
-      Entry: 3
-      Data: 0
-    - Name: m_FloatArgument
-      Entry: 4
-      Data: 0
-    - Name: m_StringArgument
-      Entry: 1
-      Data: 
-    - Name: m_BoolArgument
-      Entry: 5
-      Data: false
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_CallState
-      Entry: 3
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 28|UnityEngine.Events.PersistentCall, UnityEngine.CoreModule
-    - Name: m_Target
-      Entry: 10
-      Data: 2
-    - Name: m_TargetAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.GameObject, UnityEngine
-    - Name: m_MethodName
-      Entry: 1
-      Data: SetActive
-    - Name: m_Mode
-      Entry: 3
-      Data: 6
-    - Name: m_Arguments
-      Entry: 7
-      Data: 29|UnityEngine.Events.ArgumentCache, UnityEngine.CoreModule
-    - Name: m_ObjectArgument
-      Entry: 10
-      Data: 7
-    - Name: m_ObjectArgumentAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.Object, UnityEngine
-    - Name: m_IntArgument
-      Entry: 3
-      Data: 0
-    - Name: m_FloatArgument
-      Entry: 4
-      Data: 0
-    - Name: m_StringArgument
-      Entry: 1
-      Data: 
-    - Name: m_BoolArgument
-      Entry: 5
-      Data: true
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_CallState
-      Entry: 3
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
+    SerializationNodes: []
 --- !u!114 &1622786627
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -406325,8 +403591,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
+    SerializedFormat: 0
+    SerializedBytes: 010105000000730074006500700073002f000000000173000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e00440069006300740069006f006e00610072007900600032005b005b005400750074006f007200690061006c0053007400650070002c00200041007300730065006d0062006c0079002d004300530068006100720070005d002c005b005400750074006f007200690061006c00500061006e0065006c002c00200041007300730065006d0062006c0079002d004300530068006100720070005d005d002c0020006d00730063006f0072006c00690062000000000001010800000063006f006d00700061007200650072002f01000000015c000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e0045006e0075006d0045007100750061006c0069007400790043006f006d0070006100720065007200600031005b005b005400750074006f007200690061006c0053007400650070002c00200041007300730065006d0062006c0079002d004300530068006100720070005d005d002c0020006d00730063006f0072006c0069006200010000000600000000000000000705060700000000000000042e1d010200000024006b0001000000000000000b0102000000240076000000000005042e1d010200000024006b0008000000000000000b0102000000240076000100000005042e1d010200000024006b000a000000000000000b0102000000240076000000000005042e1d010200000024006b000d000000000000000b0102000000240076000000000005042e1d010200000024006b0009000000000000000b0102000000240076000200000005042e1d010200000024006b000b000000000000000b0102000000240076000300000005042e1d010200000024006b000c000000000000000b01020000002400760004000000050705
     ReferencedUnityObjects:
     - {fileID: 1798223328}
     - {fileID: 137459827}
@@ -406337,117 +403603,7 @@ MonoBehaviour:
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes:
-    - Name: steps
-      Entry: 7
-      Data: 0|System.Collections.Generic.Dictionary`2[[TutorialStep, Assembly-CSharp],[TutorialPanel,
-        Assembly-CSharp]], mscorlib
-    - Name: comparer
-      Entry: 7
-      Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[TutorialStep, Assembly-CSharp]],
-        mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 12
-      Data: 7
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 1
-    - Name: $v
-      Entry: 10
-      Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 8
-    - Name: $v
-      Entry: 10
-      Data: 1
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 10
-    - Name: $v
-      Entry: 10
-      Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 13
-    - Name: $v
-      Entry: 10
-      Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 9
-    - Name: $v
-      Entry: 10
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 11
-    - Name: $v
-      Entry: 10
-      Data: 3
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 12
-    - Name: $v
-      Entry: 10
-      Data: 4
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
+    SerializationNodes: []
   markComplete: 1
 --- !u!1 &1668265625
 GameObject:
@@ -407888,8 +405044,8 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
-      - m_Target: {fileID: 126455005}
-        m_TargetAssemblyTypeName: ItemList`2[[AllUnitsData, Assembly-CSharp
+      - m_Target: {fileID: 126455012}
+        m_TargetAssemblyTypeName: UnitList, Assembly-CSharp
         m_MethodName: Setup
         m_Mode: 1
         m_Arguments:
@@ -426117,8 +423273,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
+    SerializedFormat: 0
+    SerializedBytes: 010108000000730075006200730074006500700073002f000000000183000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e00440069006300740069006f006e00610072007900600032005b005b00530079007300740065006d002e0049006e007400330032002c0020006d00730063006f0072006c00690062005d002c005b0055006e0069007400790045006e00670069006e0065002e004500760065006e00740073002e0055006e006900740079004500760065006e0074002c00200055006e0069007400790045006e00670069006e0065002e0043006f00720065004d006f00640075006c0065005d005d002c0020006d00730063006f0072006c00690062000000000001010800000063006f006d00700061007200650072002f010000000158000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e00470065006e00650072006900630045007100750061006c0069007400790043006f006d0070006100720065007200600031005b005b00530079007300740065006d002e0049006e007400330032002c0020006d00730063006f0072006c00690062005d005d002c0020006d00730063006f0072006c00690062000100000005060100000000000000042e17010200000024006b0000000000010102000000240076002f02000000013500000055006e0069007400790045006e00670069006e0065002e004500760065006e00740073002e0055006e006900740079004500760065006e0074002c00200055006e0069007400790045006e00670069006e0065002e0043006f00720065004d006f00640075006c006500020000000101110000006d005f00500065007200730069007300740065006e007400430061006c006c0073002f03000000013e00000055006e0069007400790045006e00670069006e0065002e004500760065006e00740073002e00500065007200730069007300740065006e007400430061006c006c00470072006f00750070002c00200055006e0069007400790045006e00670069006e0065002e0043006f00720065004d006f00640075006c006500030000000101070000006d005f00430061006c006c0073002f040000000168000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e004c00690073007400600031005b005b0055006e0069007400790045006e00670069006e0065002e004500760065006e00740073002e00500065007200730069007300740065006e007400430061006c006c002c00200055006e0069007400790045006e00670069006e0065002e0043006f00720065004d006f00640075006c0065005d005d002c0020006d00730063006f0072006c006900620004000000060200000000000000022f05000000013900000055006e0069007400790045006e00670069006e0065002e004500760065006e00740073002e00500065007200730069007300740065006e007400430061006c006c002c00200055006e0069007400790045006e00670069006e0065002e0043006f00720065004d006f00640075006c006500050000000b01080000006d005f00540061007200670065007400000000002701180000006d005f0054006100720067006500740041007300730065006d0062006c00790054007900700065004e0061006d00650001370000004d006f00720065004d006f0075006e007400610069006e0073002e0046006500650064006200610063006b0073002e004d004d0046005f0050006c0061007900650072002c0020004d006f00720065004d006f0075006e007400610069006e0073002e0054006f006f006c00730027010c0000006d005f004d006500740068006f0064004e0061006d006500010d00000050006c006100790046006500650064006200610063006b0073001d01060000006d005f004d006f0064006500010000000000000001010b0000006d005f0041007200670075006d0065006e00740073002f06000000013800000055006e0069007400790045006e00670069006e0065002e004500760065006e00740073002e0041007200670075006d0065006e007400430061006300680065002c00200055006e0069007400790045006e00670069006e0065002e0043006f00720065004d006f00640075006c006500060000000b01100000006d005f004f0062006a0065006300740041007200670075006d0065006e007400010000002701200000006d005f004f0062006a0065006300740041007200670075006d0065006e00740041007300730065006d0062006c00790054007900700065004e0061006d006500011f00000055006e0069007400790045006e00670069006e0065002e004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650017010d0000006d005f0049006e00740041007200670075006d0065006e007400000000001f010f0000006d005f0046006c006f006100740041007200670075006d0065006e007400000000002701100000006d005f0053007400720069006e00670041007200670075006d0065006e00740001000000002b010e0000006d005f0042006f006f006c0041007200670075006d0065006e00740000051d010b0000006d005f00430061006c006c0053007400610074006500020000000000000005023005000000070000000b01080000006d005f00540061007200670065007400020000002701180000006d005f0054006100720067006500740041007300730065006d0062006c00790054007900700065004e0061006d00650001370000004d006f00720065004d006f0075006e007400610069006e0073002e0046006500650064006200610063006b0073002e004d004d0046005f0050006c0061007900650072002c0020004d006f00720065004d006f0075006e007400610069006e0073002e0054006f006f006c00730027010c0000006d005f004d006500740068006f0064004e0061006d006500010d00000050006c006100790046006500650064006200610063006b0073001d01060000006d005f004d006f0064006500010000000000000001010b0000006d005f0041007200670075006d0065006e00740073003006000000080000000b01100000006d005f004f0062006a0065006300740041007200670075006d0065006e007400030000002701200000006d005f004f0062006a0065006300740041007200670075006d0065006e00740041007300730065006d0062006c00790054007900700065004e0061006d006500011f00000055006e0069007400790045006e00670069006e0065002e004f0062006a006500630074002c00200055006e0069007400790045006e00670069006e00650017010d0000006d005f0049006e00740041007200670075006d0065006e007400000000001f010f0000006d005f0046006c006f006100740041007200670075006d0065006e007400000000002701100000006d005f0053007400720069006e00670041007200670075006d0065006e00740001000000002b010e0000006d005f0042006f006f006c0041007200670075006d0065006e00740000051d010b0000006d005f00430061006c006c005300740061007400650002000000000000000507050505050705
     ReferencedUnityObjects:
     - {fileID: 462343538}
     - {fileID: 0}
@@ -426128,151 +423284,7 @@ MonoBehaviour:
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes:
-    - Name: substeps
-      Entry: 7
-      Data: 0|System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[UnityEngine.Events.UnityEvent,
-        UnityEngine.CoreModule]], mscorlib
-    - Name: comparer
-      Entry: 7
-      Data: 1|System.Collections.Generic.GenericEqualityComparer`1[[System.Int32,
-        mscorlib]], mscorlib
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 12
-      Data: 1
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 0
-    - Name: $v
-      Entry: 7
-      Data: 2|UnityEngine.Events.UnityEvent, UnityEngine.CoreModule
-    - Name: m_PersistentCalls
-      Entry: 7
-      Data: 3|UnityEngine.Events.PersistentCallGroup, UnityEngine.CoreModule
-    - Name: m_Calls
-      Entry: 7
-      Data: 4|System.Collections.Generic.List`1[[UnityEngine.Events.PersistentCall,
-        UnityEngine.CoreModule]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 2
-    - Name: 
-      Entry: 7
-      Data: 5|UnityEngine.Events.PersistentCall, UnityEngine.CoreModule
-    - Name: m_Target
-      Entry: 10
-      Data: 0
-    - Name: m_TargetAssemblyTypeName
-      Entry: 1
-      Data: MoreMountains.Feedbacks.MMF_Player, MoreMountains.Tools
-    - Name: m_MethodName
-      Entry: 1
-      Data: PlayFeedbacks
-    - Name: m_Mode
-      Entry: 3
-      Data: 1
-    - Name: m_Arguments
-      Entry: 7
-      Data: 6|UnityEngine.Events.ArgumentCache, UnityEngine.CoreModule
-    - Name: m_ObjectArgument
-      Entry: 10
-      Data: 1
-    - Name: m_ObjectArgumentAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.Object, UnityEngine
-    - Name: m_IntArgument
-      Entry: 3
-      Data: 0
-    - Name: m_FloatArgument
-      Entry: 4
-      Data: 0
-    - Name: m_StringArgument
-      Entry: 1
-      Data: 
-    - Name: m_BoolArgument
-      Entry: 5
-      Data: false
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_CallState
-      Entry: 3
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 7|UnityEngine.Events.PersistentCall, UnityEngine.CoreModule
-    - Name: m_Target
-      Entry: 10
-      Data: 2
-    - Name: m_TargetAssemblyTypeName
-      Entry: 1
-      Data: MoreMountains.Feedbacks.MMF_Player, MoreMountains.Tools
-    - Name: m_MethodName
-      Entry: 1
-      Data: PlayFeedbacks
-    - Name: m_Mode
-      Entry: 3
-      Data: 1
-    - Name: m_Arguments
-      Entry: 7
-      Data: 8|UnityEngine.Events.ArgumentCache, UnityEngine.CoreModule
-    - Name: m_ObjectArgument
-      Entry: 10
-      Data: 3
-    - Name: m_ObjectArgumentAssemblyTypeName
-      Entry: 1
-      Data: UnityEngine.Object, UnityEngine
-    - Name: m_IntArgument
-      Entry: 3
-      Data: 0
-    - Name: m_FloatArgument
-      Entry: 4
-      Data: 0
-    - Name: m_StringArgument
-      Entry: 1
-      Data: 
-    - Name: m_BoolArgument
-      Entry: 5
-      Data: false
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: m_CallState
-      Entry: 3
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
+    SerializationNodes: []
   OnHide:
     m_PersistentCalls:
       m_Calls:
@@ -488125,8 +485137,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
+    SerializedFormat: 0
+    SerializedBytes: 2d0104000000640061007400610001010b0000006900740065006d0050007200650066006100620073002f000000000170000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e00440069006300740069006f006e00610072007900600032005b005b0052006500770061007200640054007900700065002c00200041007300730065006d0062006c0079002d004300530068006100720070005d002c005b00490063006f006e0054006500780074004900740065006d002c00200041007300730065006d0062006c0079002d004300530068006100720070005d005d002c0020006d00730063006f0072006c00690062000000000001010800000063006f006d00700061007200650072002f01000000015a000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e0045006e0075006d0045007100750061006c0069007400790043006f006d0070006100720065007200600031005b005b0052006500770061007200640054007900700065002c00200041007300730065006d0062006c0079002d004300530068006100720070005d005d002c0020006d00730063006f0072006c0069006200010000000600000000000000000705060300000000000000042e1d010200000024006b0001000000000000000b0102000000240076000000000005042e1d010200000024006b0004000000000000000b0102000000240076000100000005042e1d010200000024006b0003000000000000000b01020000002400760002000000050705
     ReferencedUnityObjects:
     - {fileID: 5017214256597859196, guid: 86ba82a2a2f8a4e3a88cbfd923af24c2, type: 3}
     - {fileID: 7615611818773194131, guid: 25869288fe01e4441bee87edfc61c5dd, type: 3}
@@ -488135,72 +485147,7 @@ MonoBehaviour:
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes:
-    - Name: data
-      Entry: 6
-      Data: 
-    - Name: itemPrefabs
-      Entry: 7
-      Data: 0|System.Collections.Generic.Dictionary`2[[RewardType, Assembly-CSharp],[IconTextItem,
-        Assembly-CSharp]], mscorlib
-    - Name: comparer
-      Entry: 7
-      Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[RewardType, Assembly-CSharp]],
-        mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 12
-      Data: 3
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 1
-    - Name: $v
-      Entry: 10
-      Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 4
-    - Name: $v
-      Entry: 10
-      Data: 1
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 3
-    - Name: $v
-      Entry: 10
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
+    SerializationNodes: []
   animator: {fileID: 2062757286}
   positionContainer: {fileID: 1215464087}
   showDelay: 0
@@ -495423,7 +492370,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
-    SerializedFormat: 2
+    SerializedFormat: 0
     SerializedBytes: 
     ReferencedUnityObjects: []
     SerializedBytesString: 
@@ -591173,7 +588120,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
-    SerializedFormat: 2
+    SerializedFormat: 0
     SerializedBytes: 
     ReferencedUnityObjects: []
     SerializedBytesString: 

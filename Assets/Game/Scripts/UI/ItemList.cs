@@ -11,7 +11,7 @@ public abstract class ItemList<T, P> : MonoBehaviour
     [SerializeField] protected Transform root;
     [SerializeField] protected P prefab;
     [SerializeField] protected bool selectable = true;
-    [SerializeField] protected bool selectFirstByDefault = true;
+    [SerializeField] protected bool selectDefault = true;
 
     [Header("Blank Items")]
     [SerializeField] protected bool fillBlanks;

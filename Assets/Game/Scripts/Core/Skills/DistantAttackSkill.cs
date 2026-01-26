@@ -16,7 +16,7 @@ public class DistantAttackSkill : AttackSkill {
 
         DistantWeapon projectileWeapon = weapon as DistantWeapon;
         if (elements == null && projectileWeapon == null) {
-            Debug.LogFormat("ProjectileWeaponSkill Setup: projectileWeapon or projectileWeapon is NULL for {0}", data.Title);
+            Debug.LogFormat("ProjectileWeaponSkill Setup: projectileWeapon or projectileWeapon is NULL for {0}", Data.Title);
             return false;
         }
 

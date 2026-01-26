@@ -17,8 +17,6 @@ public struct SkillLevelUpEvent {
 }
 
 public class Skill : SerializedMonoBehaviour {
-    [SerializeField] protected SkillData data;
-
     [Header("Events")]
     [SerializeField] protected UnityEvent OnActivate;
     [SerializeField] protected UnityEvent OnDeactivate;
@@ -36,7 +34,7 @@ public class Skill : SerializedMonoBehaviour {
     public virtual SkillTarget Target { get; protected set; }
     public virtual Attribute Attribute { get; protected set; }
     public virtual Element Element { get; protected set; }
-    public SkillData Data => data;
+    public SkillData Data { get; protected set; }
     public SkillLevel CurrentLevel => Data != null ? Data.GetLevel(_level) : null;
     public bool IsMaxLevel => _level >= LevelsCount - 1;
     public bool IsAssigned => _level > -1 && _level < LevelsCount;
@@ -64,7 +62,7 @@ public class Skill : SerializedMonoBehaviour {
     }
 
     public virtual bool Setup(GameObject owner, SkillData skillData, Dictionary<Element, float> multipliers, float skillSpeed, bool activate) {
-        if ((data == null && skillData == null) || multipliers == null) {
+        if ((Data == null && skillData == null) || multipliers == null) {
             Debug.LogErrorFormat("Skill Setup: owner, data or multipliers is NULL for {0}", gameObject.name);
             return false;
         }
@@ -78,7 +76,7 @@ public class Skill : SerializedMonoBehaviour {
             Owner = owner != null ? owner : gameObject;
 
         if (Data != skillData && skillData != null)
-            data = skillData;
+            Data = skillData;
 
         if (Data != null) {
             LevelsCount = Data.LevelsCount;

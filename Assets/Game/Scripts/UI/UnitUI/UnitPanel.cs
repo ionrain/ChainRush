@@ -106,7 +106,7 @@ public class UnitPanel : SerializedMonoBehaviour, MMEventListener<UnitEvent>, MM
 
     void SetupAvatar() {
         if (avatar != null && _data != null) {
-            MergeStateData mergeData = _data.GetMergeData(UnitMergeState.First);
+            MergeStateData mergeData = _data.GetMergeData(0);
             if (mergeData != null) {
                 avatar.skeletonDataAsset = mergeData.spineData;
                 if (_data.animations.ContainsKey(AnimationState.Idle)) 

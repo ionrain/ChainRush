@@ -52,7 +52,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 12
-      Data: 3
+      Data: 4
     - Name: 
       Entry: 7
       Data: 
@@ -85,7 +85,19 @@ MonoBehaviour:
       Data: 2
     - Name: $v
       Entry: 4
-      Data: 0.3
+      Data: 1
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 12
+    - Name: $v
+      Entry: 4
+      Data: 25
     - Name: 
       Entry: 8
       Data: 
@@ -131,7 +143,7 @@ MonoBehaviour:
   targetType: 1
   targetMode: 0
   forcedState: 0
-  prefab: {fileID: 0}
+  prefab: {fileID: 8838955413040687899, guid: 4409f6cbd2b344acdbc59b345b4dfcb5, type: 3}
   exchangeSkill: {fileID: 0}
   complementarySkill: {fileID: 0}
   references:

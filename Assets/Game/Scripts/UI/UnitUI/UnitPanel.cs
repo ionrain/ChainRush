@@ -41,10 +41,6 @@ public class UnitPanel : SerializedMonoBehaviour, MMEventListener<UnitEvent>, MM
     bool _locked;
     UnitType _unitType;
 
-    void Start() {
-        
-    }
-
     public void Upgrade() {
         if (_data != null) {
             _data.SpendCards();
@@ -152,7 +148,7 @@ public class UnitPanel : SerializedMonoBehaviour, MMEventListener<UnitEvent>, MM
             _soft = e.Balance.GetValueOrDefault(ResourceType.SoftCurrency).Value;
             
             if (_data != null)
-                buyButton?.UpdateBalance(new Dictionary<ResourceType, int>() { { ResourceType.SoftCurrency, _soft }, { ResourceType.UnitCard, _data.CardBalance } }); 
+                buyButton?.UpdateBalance(new Dictionary<ResourceType, int>() { { ResourceType.SoftCurrency, _soft }, { UnitCardType, _data.CardBalance } }); 
             //UpdateTabNotification();
         }
     }

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5024703355005933546}
   - component: {fileID: 1159087955659736507}
   - component: {fileID: 6594602235852754838}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Glow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4905,7 +4905,7 @@ GameObject:
   - component: {fileID: 4750459092598488655}
   - component: {fileID: 2888576248238814442}
   - component: {fileID: 7610826502893043081}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Fireflies
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9806,7 +9806,7 @@ GameObject:
   - component: {fileID: 2274700631653045629}
   - component: {fileID: 1986444597615479620}
   - component: {fileID: 2730424826975137434}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Brain
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10022,7 +10022,7 @@ GameObject:
   m_Component:
   - component: {fileID: 633844510069762344}
   - component: {fileID: 4284938769404666804}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: HealFeedback
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10595,7 +10595,7 @@ GameObject:
   - component: {fileID: 9077041366550211737}
   - component: {fileID: 8711738478214210420}
   - component: {fileID: 487388404229377486}
-  m_Layer: 6
+  m_Layer: 10
   m_Name: Flare
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15431,7 +15431,7 @@ GameObject:
   - component: {fileID: 5061449553183105534}
   - component: {fileID: 9132025431065397382}
   - component: {fileID: 6045009158810841694}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: HarfGlowAdd
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -20324,7 +20324,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2292287994781773570}
   - component: {fileID: 8881104043453736139}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Shadow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -20416,7 +20416,7 @@ GameObject:
   - component: {fileID: 5097981466255061374}
   - component: {fileID: 7814024186665681902}
   - component: {fileID: 6005976058881784819}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: HarfGlowAdd
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -25310,7 +25310,7 @@ GameObject:
   - component: {fileID: 5096575526506835648}
   - component: {fileID: 755549714479138533}
   - component: {fileID: 5073226966969813678}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: UpSight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -30204,7 +30204,7 @@ GameObject:
   - component: {fileID: 2295153476016467702}
   - component: {fileID: 2183598363585250162}
   - component: {fileID: 3937576268828630461}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: FireAdd
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -35107,7 +35107,7 @@ GameObject:
   - component: {fileID: 9022841375778423373}
   - component: {fileID: 7537816403546588871}
   - component: {fileID: 4207636525046255627}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Sparks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -40001,7 +40001,7 @@ GameObject:
   - component: {fileID: 4197552337415638295}
   - component: {fileID: 6690505050526509051}
   - component: {fileID: 3027598788611686268}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: GlowBack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -44837,7 +44837,7 @@ GameObject:
   - component: {fileID: 4219959295478744460}
   - component: {fileID: 4662315779478769644}
   - component: {fileID: 5301687099757235891}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: HealthBar Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -44910,7 +44910,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2563597765184305926}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: ProjectilePeakPosition
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -44943,7 +44943,7 @@ GameObject:
   - component: {fileID: 450211159193016308}
   - component: {fileID: 5703907296509480579}
   - component: {fileID: 5598821082552753705}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: HarfGlow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -49836,7 +49836,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1674675591215168995}
   - component: {fileID: 3405506011973093439}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -49930,7 +49930,7 @@ GameObject:
   - component: {fileID: 7253333353532738870}
   - component: {fileID: 2648497945700846673}
   - component: {fileID: 2747629251170107106}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: CharacterAbilitites
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -50103,7 +50103,7 @@ GameObject:
   - component: {fileID: 8101966790858648314}
   - component: {fileID: 880221508349306962}
   - component: {fileID: 6309390869423908448}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Rays
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -54997,7 +54997,7 @@ GameObject:
   - component: {fileID: 3724266765875038571}
   - component: {fileID: 5753791225284632181}
   - component: {fileID: 2862137801979974567}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Rays
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -59925,7 +59925,7 @@ GameObject:
   - component: {fileID: 1039318514391028920}
   - component: {fileID: 6187040523463475273}
   - component: {fileID: 1029217161712279723}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: LevelLabel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -60107,7 +60107,7 @@ GameObject:
   - component: {fileID: 810892172334241384}
   - component: {fileID: 3099034160492024641}
   - component: {fileID: 1918733381235568802}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: RingAdd
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -64943,7 +64943,7 @@ GameObject:
   - component: {fileID: 8446551431895830727}
   - component: {fileID: 7619540072112638492}
   - component: {fileID: 6696940414129985061}
-  m_Layer: 6
+  m_Layer: 10
   m_Name: HarfGlow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -69779,7 +69779,7 @@ GameObject:
   - component: {fileID: 3070375573917063300}
   - component: {fileID: 6824797760624281352}
   - component: {fileID: 2513332704913478375}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Flare
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -74673,7 +74673,7 @@ GameObject:
   - component: {fileID: 1482222560108456442}
   - component: {fileID: 637712625347530122}
   - component: {fileID: 2114925596962969992}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Particles
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -79513,7 +79513,7 @@ GameObject:
   - component: {fileID: 6436293745233741200}
   - component: {fileID: 3418062520780205904}
   - component: {fileID: 3962585881210839952}
-  m_Layer: 6
+  m_Layer: 10
   m_Name: SpawnVFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -84409,7 +84409,7 @@ GameObject:
   - component: {fileID: 801994147191776049}
   - component: {fileID: 4222233482566856632}
   - component: {fileID: 7386853478315606163}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Fireflies
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -89392,7 +89392,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5964311509151396070}
   - component: {fileID: 4554532526221671844}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Icon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -89484,7 +89484,7 @@ GameObject:
   - component: {fileID: 4271514697578322680}
   - component: {fileID: 4793063750691048521}
   - component: {fileID: 2685737013065067039}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: 'BubbleAdd '
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94378,7 +94378,7 @@ GameObject:
   - component: {fileID: 7814290075663825917}
   - component: {fileID: 5058066183640684285}
   - component: {fileID: 5600251239205080589}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: BombHitFeedback
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -95174,7 +95174,7 @@ GameObject:
   - component: {fileID: 2805665874771964092}
   - component: {fileID: 2412940679248889790}
   - component: {fileID: 186296145917741534}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: HealthBar Delayed Foreground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -95248,7 +95248,7 @@ GameObject:
   m_Component:
   - component: {fileID: 828969743883148575}
   - component: {fileID: 3263053444607237883}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: SpawnFeedback
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -96037,7 +96037,7 @@ GameObject:
   - component: {fileID: 5667143658809435326}
   - component: {fileID: 495245160182772257}
   - component: {fileID: 775470814061926186}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Flare
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -100931,7 +100931,7 @@ GameObject:
   - component: {fileID: 5479200969598250738}
   - component: {fileID: 2244269110822263141}
   - component: {fileID: 478800428621837035}
-  m_Layer: 6
+  m_Layer: 10
   m_Name: HarfGlow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -105767,7 +105767,7 @@ GameObject:
   - component: {fileID: 8874551421855937264}
   - component: {fileID: 4676088506599001392}
   - component: {fileID: 8710898227037388951}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Glow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -110602,7 +110602,7 @@ GameObject:
   m_Component:
   - component: {fileID: 725637245375147138}
   - component: {fileID: 3954125854627997957}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Bomb
   m_TagString: Bomb
   m_Icon: {fileID: 0}
@@ -110652,7 +110652,7 @@ GameObject:
   - component: {fileID: 3057361565009952082}
   - component: {fileID: 4967335072201924488}
   - component: {fileID: 6860818648871207855}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: BubbleAdd
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -115546,7 +115546,7 @@ GameObject:
   - component: {fileID: 9039071398173452035}
   - component: {fileID: 5679386599933867363}
   - component: {fileID: 7742295166295812028}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Cloud
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -120481,7 +120481,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8553621446697080897}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Container
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -120515,7 +120515,7 @@ GameObject:
   - component: {fileID: 2642653008676762466}
   - component: {fileID: 3164965114883525817}
   - component: {fileID: 1727442047243315805}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: SpawnVFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -125414,7 +125414,7 @@ GameObject:
   - component: {fileID: 2081061684162712014}
   - component: {fileID: 7293837608629991908}
   - component: {fileID: 604675861051679262}
-  m_Layer: 6
+  m_Layer: 10
   m_Name: SpawnVFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -130310,7 +130310,7 @@ GameObject:
   - component: {fileID: 8906881886017607917}
   - component: {fileID: 3142145892607602635}
   - component: {fileID: 479605369894527235}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Glow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -135203,7 +135203,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5341418774879116167}
   - component: {fileID: 5287566387210678870}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Buff
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -135251,7 +135251,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2804175533794200137}
   - component: {fileID: 341312791028745561}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: BuffResultFeedback
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -135823,7 +135823,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9089349481916645312}
   - component: {fileID: 967797884132873640}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: BoneFollower
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -135879,7 +135879,7 @@ GameObject:
   - component: {fileID: 958318228126742489}
   - component: {fileID: 6812999348760677763}
   - component: {fileID: 9076776385608656912}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Lines
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -140715,7 +140715,7 @@ GameObject:
   - component: {fileID: 3539549276083040770}
   - component: {fileID: 2180435502667363714}
   - component: {fileID: 4719755193869677016}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: SpawnVFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -145615,7 +145615,7 @@ GameObject:
   - component: {fileID: 4987972004100752212}
   - component: {fileID: 5045883914914665910}
   - component: {fileID: 7539709118983053004}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Particles
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -150455,7 +150455,7 @@ GameObject:
   - component: {fileID: 8447353441097827777}
   - component: {fileID: 501049917761666231}
   - component: {fileID: 8593908569831903275}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: AnitifreezeFeedback
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -152051,7 +152051,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7315552489045437678}
   - component: {fileID: 3355161787576764903}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Trail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -152210,7 +152210,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 321077023072391789}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: DamageResistance
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -152243,7 +152243,7 @@ GameObject:
   - component: {fileID: 60469424351072123}
   - component: {fileID: 3293426401201475075}
   - component: {fileID: 7477526284055725341}
-  m_Layer: 6
+  m_Layer: 10
   m_Name: HarfGlow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -157079,7 +157079,7 @@ GameObject:
   - component: {fileID: 8164618630789158406}
   - component: {fileID: 687216361798670397}
   - component: {fileID: 6771227846867504902}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Ring
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -161915,7 +161915,7 @@ GameObject:
   - component: {fileID: 1203591072922772185}
   - component: {fileID: 7417811692918218354}
   - component: {fileID: 5167892125179382469}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Ring
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -166809,7 +166809,7 @@ GameObject:
   - component: {fileID: 7924200724390029920}
   - component: {fileID: 1158006256125577803}
   - component: {fileID: 6199709747682251168}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Sparks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -171703,7 +171703,7 @@ GameObject:
   - component: {fileID: 3077619891792122080}
   - component: {fileID: 7020101121430055872}
   - component: {fileID: 2674496266501816891}
-  m_Layer: 6
+  m_Layer: 10
   m_Name: Flare
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -176539,7 +176539,7 @@ GameObject:
   - component: {fileID: 3165144440798055709}
   - component: {fileID: 6367642802964212727}
   - component: {fileID: 1346591769435964346}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Rays
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -181375,7 +181375,7 @@ GameObject:
   - component: {fileID: 6965459743193145155}
   - component: {fileID: 7860380043711382177}
   - component: {fileID: 8250106286375851522}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: BombFeedback
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -182610,7 +182610,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4115406552356980786}
   - component: {fileID: 1126821161541234867}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: LevelBack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -182702,7 +182702,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4219579497391205971}
   - component: {fileID: 3158948278663822713}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Trail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -182863,7 +182863,7 @@ GameObject:
   - component: {fileID: 8401710740448438261}
   - component: {fileID: 7485763014728735367}
   - component: {fileID: 5149937307719154535}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: FireAdd
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -187765,7 +187765,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4800213468141052827}
   - component: {fileID: 7258229802456999425}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Trail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -187925,7 +187925,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5698420795074792043}
   - component: {fileID: 5804755173679068512}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Antifreeze
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -188223,6 +188223,8 @@ MonoBehaviour:
   resistanceHost: {fileID: 2778214384932019373}
   resistanceProcessor: {fileID: 2326046152140334740}
   elements: {fileID: 11400000, guid: 1f30a30e0442f438f81d96396c66cccb, type: 2}
+  canBeHealed: 1
+  changeColliderSettings: 1
   deathParticlesRoot: {fileID: 4884206376339697632}
   spawnFeedback: {fileID: 3263053444607237883}
   mergeFeedback: {fileID: 6895387763885592992}
@@ -188366,7 +188368,7 @@ GameObject:
   - component: {fileID: 7467003197472197573}
   - component: {fileID: 3552742556187180253}
   - component: {fileID: 8127518641441047963}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: HarfGlow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -193321,7 +193323,7 @@ GameObject:
   - component: {fileID: 4257906340678841563}
   - component: {fileID: 9045716499413651501}
   - component: {fileID: 254826694303570899}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Crest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -198268,7 +198270,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7900393415440618078}
   - component: {fileID: 8480426429016992344}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: DamageFeedback
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -198755,7 +198757,7 @@ GameObject:
   - component: {fileID: 4884206376339697632}
   - component: {fileID: 1488062266801815585}
   - component: {fileID: 7085997577169364229}
-  m_Layer: 13
+  m_Layer: 10
   m_Name: DeathParticles
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -203592,7 +203594,7 @@ GameObject:
   - component: {fileID: 280525614310933063}
   - component: {fileID: 6182842896746809985}
   - component: {fileID: 4112748165417988261}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Spine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -203725,7 +203727,7 @@ GameObject:
   - component: {fileID: 8011158868502947401}
   - component: {fileID: 1544545970950242250}
   - component: {fileID: 5274355476337903181}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Flashes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -208569,7 +208571,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7250171256427279068}
   - component: {fileID: 5066839297071640318}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Trail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -208730,7 +208732,7 @@ GameObject:
   - component: {fileID: 2619669660135509323}
   - component: {fileID: 9217649021787415379}
   - component: {fileID: 4902473319934778589}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: HarfGlow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -213624,7 +213626,7 @@ GameObject:
   - component: {fileID: 8031969748054462075}
   - component: {fileID: 8132864890749364547}
   - component: {fileID: 1599236363726045140}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Fireflies
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -218608,7 +218610,7 @@ GameObject:
   - component: {fileID: 7032044576060039622}
   - component: {fileID: 7258474849841650470}
   - component: {fileID: 7786907941623832721}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Fog
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -223452,7 +223454,7 @@ GameObject:
   - component: {fileID: 4819840916072182909}
   - component: {fileID: 6855802871553023286}
   - component: {fileID: 515126022105470758}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Fire
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -228355,7 +228357,7 @@ GameObject:
   - component: {fileID: 3582347868220962437}
   - component: {fileID: 584536467840503609}
   - component: {fileID: 191680151025514202}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Bubble
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -233249,7 +233251,7 @@ GameObject:
   - component: {fileID: 2470576778049222493}
   - component: {fileID: 2903824166591611861}
   - component: {fileID: 3116976363001277014}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: HarfGlow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -238143,7 +238145,7 @@ GameObject:
   - component: {fileID: 402715746637174541}
   - component: {fileID: 6699694258224602258}
   - component: {fileID: 6722698767961759218}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: GlowBack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -242977,7 +242979,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7074823938607101766}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: SkillRoot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -243582,7 +243584,7 @@ GameObject:
   - component: {fileID: 6911498769921168355}
   - component: {fileID: 2750586987940908772}
   - component: {fileID: 6879927295285007659}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: SpawnVFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -248480,7 +248482,7 @@ GameObject:
   m_Component:
   - component: {fileID: 62453080652300446}
   - component: {fileID: 7948137094676300275}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Freezer
   m_TagString: Bomb
   m_Icon: {fileID: 0}
@@ -248527,7 +248529,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8510767370714936850}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: MMProgressBarContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -248565,7 +248567,7 @@ GameObject:
   - component: {fileID: 3349806641324359103}
   - component: {fileID: 9137946940344955363}
   - component: {fileID: 157177611293286859}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Spine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -248699,7 +248701,7 @@ GameObject:
   - component: {fileID: 8261206393196980190}
   - component: {fileID: 2633705445053951768}
   - component: {fileID: 5211361121574262076}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Spine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -248831,7 +248833,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2233739154095398066}
   - component: {fileID: 7603116651148583590}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Heal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -248879,7 +248881,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8161085628387406795}
   - component: {fileID: 5333406858549086671}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: RootFollower
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -248936,7 +248938,7 @@ GameObject:
   - component: {fileID: 4390894698556561603}
   - component: {fileID: 7359854106312345386}
   - component: {fileID: 389258819604948666}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Spine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -249068,7 +249070,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4410887306709340995}
   - component: {fileID: 5715899149176274194}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: RootFollower
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -249124,7 +249126,7 @@ GameObject:
   - component: {fileID: 698543646284414059}
   - component: {fileID: 4888860374881366605}
   - component: {fileID: 6174819452297835370}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Bubble
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -254018,7 +254020,7 @@ GameObject:
   - component: {fileID: 2931630648872613981}
   - component: {fileID: 8924697769332325552}
   - component: {fileID: 6758786813760545528}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Fireflies
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -259002,7 +259004,7 @@ GameObject:
   - component: {fileID: 5328320500854364593}
   - component: {fileID: 1546024230895857446}
   - component: {fileID: 1079837604930440299}
-  m_Layer: 6
+  m_Layer: 10
   m_Name: Flare
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -263838,7 +263840,7 @@ GameObject:
   - component: {fileID: 6872225336002783119}
   - component: {fileID: 2771437745742272686}
   - component: {fileID: 1697761852208233161}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: FreezerFeedback
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -265073,7 +265075,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8275370199155456387}
   - component: {fileID: 7850100132946071286}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Trail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -265234,7 +265236,7 @@ GameObject:
   - component: {fileID: 139672353223258910}
   - component: {fileID: 2495103129819763221}
   - component: {fileID: 3644855906857794605}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: HarfGlowAdd
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -270128,7 +270130,7 @@ GameObject:
   - component: {fileID: 4417761530029442257}
   - component: {fileID: 2265965632960667440}
   - component: {fileID: 9127829800111307853}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Shadow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -270242,7 +270244,7 @@ GameObject:
   - component: {fileID: 7621474660357299832}
   - component: {fileID: 1459732157395476970}
   - component: {fileID: 763731609356829167}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: FloorFog
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -275078,7 +275080,7 @@ GameObject:
   - component: {fileID: 9138367729079344303}
   - component: {fileID: 8726808988333548860}
   - component: {fileID: 9154542423017947310}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Particles
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -279916,7 +279918,7 @@ GameObject:
   - component: {fileID: 7900144106435217253}
   - component: {fileID: 8641325661557283557}
   - component: {fileID: 4023864258518668809}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Flare
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -284809,7 +284811,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2300788790064862671}
   - component: {fileID: 6895387763885592992}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: MergeFeedback
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -285382,7 +285384,7 @@ GameObject:
   - component: {fileID: 3854808369554057496}
   - component: {fileID: 1335424612517926418}
   - component: {fileID: 6412521390440896532}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Ring
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -290276,7 +290278,7 @@ GameObject:
   - component: {fileID: 1979657095657229664}
   - component: {fileID: 8734286263633690177}
   - component: {fileID: 5540507345284498146}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Parts
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -295260,7 +295262,7 @@ GameObject:
   - component: {fileID: 172891704432943256}
   - component: {fileID: 7236281261665757157}
   - component: {fileID: 7156843724962580769}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Fire
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -300163,7 +300165,7 @@ GameObject:
   - component: {fileID: 2652932722993290452}
   - component: {fileID: 2900723443387653731}
   - component: {fileID: 7283195400924556112}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: HealthBar Border
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -300239,7 +300241,7 @@ GameObject:
   - component: {fileID: 6384667082559839351}
   - component: {fileID: 5741340892031760197}
   - component: {fileID: 4322939604848991930}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: FrozenContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -300359,7 +300361,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7458888161896949335}
   - component: {fileID: 6252418102729081295}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: StatDelta
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -301722,7 +301724,7 @@ GameObject:
   - component: {fileID: 7557178480371772423}
   - component: {fileID: 8381297042487967588}
   - component: {fileID: 4040456059169418465}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Rays
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -306558,7 +306560,7 @@ GameObject:
   - component: {fileID: 3377289601841910835}
   - component: {fileID: 1589076019304399516}
   - component: {fileID: 4136826079231801268}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: BubbleAdd
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -311452,7 +311454,7 @@ GameObject:
   - component: {fileID: 7648897333666839598}
   - component: {fileID: 5082619068698751004}
   - component: {fileID: 7973750508483164064}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Flare
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -316346,7 +316348,7 @@ GameObject:
   - component: {fileID: 7917415550890368572}
   - component: {fileID: 2222081029042422334}
   - component: {fileID: 5855067891527503251}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Particles
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -321187,7 +321189,7 @@ GameObject:
   - component: {fileID: 1162014327533441931}
   - component: {fileID: 4150340602356069408}
   - component: {fileID: 2016985809512565063}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Fireflies
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -326023,7 +326025,7 @@ GameObject:
   - component: {fileID: 3880207293024706322}
   - component: {fileID: 7168210845146213829}
   - component: {fileID: 1383657551906625229}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: HarfGlowAdd
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -330917,7 +330919,7 @@ GameObject:
   - component: {fileID: 1021933529845763566}
   - component: {fileID: 5888347793324293441}
   - component: {fileID: 4341532893840488625}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Liquid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -335820,7 +335822,7 @@ GameObject:
   - component: {fileID: 5799786031261480931}
   - component: {fileID: 8143498238827223419}
   - component: {fileID: 4453720496801583236}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: HarfGlowAdd
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -340714,7 +340716,7 @@ GameObject:
   - component: {fileID: 3417025581626401917}
   - component: {fileID: 6429039636383976055}
   - component: {fileID: 8016118794370861124}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Label
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -340896,7 +340898,7 @@ GameObject:
   - component: {fileID: 512042439277349501}
   - component: {fileID: 8176219941919218978}
   - component: {fileID: 4306039034772286917}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: HealFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -345736,7 +345738,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4649937014152353109}
   - component: {fileID: 8470687317768729821}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Antifreeze
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -345785,7 +345787,7 @@ GameObject:
   - component: {fileID: 8300698607875739273}
   - component: {fileID: 4249848231566517576}
   - component: {fileID: 5513005100165585138}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Flare
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -350679,7 +350681,7 @@ GameObject:
   - component: {fileID: 8729134572042787126}
   - component: {fileID: 8813735332691176395}
   - component: {fileID: 6362758861510563311}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Ring
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -355573,7 +355575,7 @@ GameObject:
   - component: {fileID: 4177245344503567979}
   - component: {fileID: 5520044832016760451}
   - component: {fileID: 2060039648710462466}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Ring
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -360409,7 +360411,7 @@ GameObject:
   - component: {fileID: 6251951369605133557}
   - component: {fileID: 5276477901468272677}
   - component: {fileID: 4530708235489115776}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: HealthBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -360755,7 +360757,7 @@ GameObject:
   - component: {fileID: 2916584312987284705}
   - component: {fileID: 1793724733388944435}
   - component: {fileID: 5812701397081000343}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: FreezerHitFeedback
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -361598,7 +361600,7 @@ GameObject:
   - component: {fileID: 4764677074031793189}
   - component: {fileID: 6597192905347529178}
   - component: {fileID: 5409610445188928690}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Cloud
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -366535,7 +366537,7 @@ GameObject:
   - component: {fileID: 2569149718128519939}
   - component: {fileID: 5195894479264274787}
   - component: {fileID: 7956387982744369674}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: HarfGlowAdd
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -371429,7 +371431,7 @@ GameObject:
   - component: {fileID: 6804274456743521662}
   - component: {fileID: 9037151515410807109}
   - component: {fileID: 1311646805620106548}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Glow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -376266,7 +376268,7 @@ GameObject:
   - component: {fileID: 1186211318484387091}
   - component: {fileID: 8471299012572832740}
   - component: {fileID: 933973384363051144}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Spine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -376399,7 +376401,7 @@ GameObject:
   - component: {fileID: 7559261221554010948}
   - component: {fileID: 5901129497499040072}
   - component: {fileID: 7463138116127307198}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Lines
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -381235,7 +381237,7 @@ GameObject:
   - component: {fileID: 5473645054182421528}
   - component: {fileID: 3740608321825495464}
   - component: {fileID: 4868904594859250608}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Flare
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -386128,7 +386130,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5291782888245162434}
   - component: {fileID: 3917818942232944428}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: CordFollower
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -386184,7 +386186,7 @@ GameObject:
   - component: {fileID: 2805223681437659565}
   - component: {fileID: 2123838360401850309}
   - component: {fileID: 3413937859352536509}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: SpawnVFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -391084,7 +391086,7 @@ GameObject:
   - component: {fileID: 1939100729466190919}
   - component: {fileID: 333887203346861388}
   - component: {fileID: 2610968386899165038}
-  m_Layer: 6
+  m_Layer: 10
   m_Name: SpawnVFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -395980,7 +395982,7 @@ GameObject:
   - component: {fileID: 7176179200641744984}
   - component: {fileID: 891522775639936733}
   - component: {fileID: 5799858256091842806}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: HealthBar Foreground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -396055,7 +396057,7 @@ GameObject:
   - component: {fileID: 4708080420752635646}
   - component: {fileID: 5169728968839423200}
   - component: {fileID: 5702248766074961328}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: BuffFeedback
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -397262,7 +397264,7 @@ GameObject:
   - component: {fileID: 2575533654317627616}
   - component: {fileID: 8338593700058416586}
   - component: {fileID: 592209227661309881}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Lines
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -402098,7 +402100,7 @@ GameObject:
   - component: {fileID: 1501390753558448708}
   - component: {fileID: 1261710831837111310}
   - component: {fileID: 3462244497993403177}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Sparks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -406934,7 +406936,7 @@ GameObject:
   - component: {fileID: 3550025863173393496}
   - component: {fileID: 8659403268428769048}
   - component: {fileID: 3824879441211272672}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: RingAdd
   m_TagString: Untagged
   m_Icon: {fileID: 0}

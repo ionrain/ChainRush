@@ -314,7 +314,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 12
-      Data: 4
+      Data: 3
     - Name: 
       Entry: 7
       Data: 
@@ -419,46 +419,6 @@ MonoBehaviour:
     - Name: dontInterruptStates
       Entry: 7
       Data: 20|System.Collections.Generic.List`1[[AnimationState, Assembly-CSharp]],
-        mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 3
-    - Name: $v
-      Entry: 7
-      Data: 21|SpineAnimationData, Assembly-CSharp
-    - Name: name
-      Entry: 1
-      Data: Death
-    - Name: track
-      Entry: 3
-      Data: 0
-    - Name: loop
-      Entry: 5
-      Data: false
-    - Name: addAfter
-      Entry: 3
-      Data: 0
-    - Name: dontInterruptStates
-      Entry: 7
-      Data: 22|System.Collections.Generic.List`1[[AnimationState, Assembly-CSharp]],
         mscorlib
     - Name: 
       Entry: 12

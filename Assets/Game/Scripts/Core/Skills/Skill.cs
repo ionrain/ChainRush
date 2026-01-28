@@ -53,6 +53,13 @@ public class Skill : SerializedMonoBehaviour {
         }
     }
 
+    public virtual void SetLevel(int level) {
+        if (level >= 0 && level < LevelsCount) {
+            _level = level;
+            UpdateMultipliers(_multipliers);
+        }
+    }
+
     public virtual void SetSkillSpeed(float skillSpeed) {
         _skillSpeed = skillSpeed;
     }

@@ -5,7 +5,6 @@ using Sirenix.OdinInspector;
 using MoreMountains.TopDownEngine;
 
 public enum SkillListType { All, Aquired }
-public enum SkillEventType { LevelUp, Buy }
 
 public enum SkillParameterType {
     Amount, AmountOverTime, Duration, IntervalBetween, Count, Radius, Speed, Lifetime,

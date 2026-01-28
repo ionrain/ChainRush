@@ -1,0 +1,735 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Skills_en
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: 502a1febe991449ee85cee7cf9a6cafa, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 13240360960
+    m_Localized: Mighty Blow
+    m_Metadata:
+      m_Items: []
+  - m_Id: 93896826880
+    m_Localized: 'Deals physical damage and knockbacks all enemies around '
+    m_Metadata:
+      m_Items: []
+  - m_Id: 616423219200
+    m_Localized: Increases damage and attack radius
+    m_Metadata:
+      m_Items: []
+  - m_Id: 653500866560
+    m_Localized: Increases damage and attack radius
+    m_Metadata:
+      m_Items: []
+  - m_Id: 689961951232
+    m_Localized: Increases damage and attack radius
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1197363683328
+    m_Localized: Increases damage and attack radius
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40977914001350656
+    m_Localized: Throwing Dagger
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40978270496219136
+    m_Localized: Fast and deadly daggers to attack from a distance.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40978892087877632
+    m_Localized: Increases damage and number of daggers
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40978903479607296
+    m_Localized: Increases damage and number of daggers
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40978914879725568
+    m_Localized: Increases damage and number of daggers
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40978926128848896
+    m_Localized: Increases damage and number of daggers
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40981720420311040
+    m_Localized: Forcefield
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40981839811174400
+    m_Localized: Deals small amount of physical damage to enemies around
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40982415722668032
+    m_Localized: Increases damage and attack radius
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40982430608252928
+    m_Localized: Increases damage and attack radius
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40982440678776832
+    m_Localized: Increases damage and attack radius
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40982453257494528
+    m_Localized: Increases damage and attack radius
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40984049945141248
+    m_Localized: Meteor Shower
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40984122926030848
+    m_Localized: Meteors fall in random plances, dealing fire damage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40984361229606912
+    m_Localized: Increases damage and radius
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40984495585746944
+    m_Localized: Increases number of meteors
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40984549415444480
+    m_Localized: Increases damage and radius
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40984584853118976
+    m_Localized: Increases number of meteors
+    m_Metadata:
+      m_Items: []
+  - m_Id: 41375088333807616
+    m_Localized: Lightning Bolt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 41375167186722816
+    m_Localized: Attacks random enemy on the screen with AOE damage.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 41375578715054080
+    m_Localized: Increases damage and attack radius
+    m_Metadata:
+      m_Items: []
+  - m_Id: 41375698596651008
+    m_Localized: Increases bolts number
+    m_Metadata:
+      m_Items: []
+  - m_Id: 41375793878654976
+    m_Localized: Increases damage and attack radius
+    m_Metadata:
+      m_Items: []
+  - m_Id: 41375849381879808
+    m_Localized: Increases damage and attack radius
+    m_Metadata:
+      m_Items: []
+  - m_Id: 56847420867207168
+    m_Localized: '{0} attack boost'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 56847634067873792
+    m_Localized: Increases {0} damage by 10%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 56847734521454592
+    m_Localized: Increases {0} damage by 20%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 56847766956007424
+    m_Localized: Increases {0} damage by 30%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 56847779471810560
+    m_Localized: Increases {0} damage by 40%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 56847791773704192
+    m_Localized: Increases {0} damage by 50%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 58023190838894592
+    m_Localized: Increases {0} damage by 10-50%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 58025274778836992
+    m_Localized: Increases maximum health by 10-50%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 58025409415995392
+    m_Localized: Health boost
+    m_Metadata:
+      m_Items: []
+  - m_Id: 58025462893371392
+    m_Localized: Increases maximum health by 10%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 58025535664545792
+    m_Localized: Increases maximum health by 20%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 58025566001946624
+    m_Localized: Increases maximum health by 30%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 58025575858561024
+    m_Localized: Increases maximum health by 40%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 58025589561352192
+    m_Localized: Increases maximum health by 50%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 58026081972641792
+    m_Localized: Speed boost
+    m_Metadata:
+      m_Items: []
+  - m_Id: 58026126574870528
+    m_Localized: Increases walk speed by 10-50%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 58026145872863232
+    m_Localized: Increases walk speed by 10%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 58026155444264960
+    m_Localized: Increases walk speed by 20%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 58026165581897728
+    m_Localized: Increases walk speed by 30%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 58026176977821696
+    m_Localized: Increases walk speed by 40%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 58026245764407296
+    m_Localized: Increases walk speed by 50%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 58031235811762176
+    m_Localized: Magnet boost
+    m_Metadata:
+      m_Items: []
+  - m_Id: 58031374429315072
+    m_Localized: Increases magnet radius by 10-50%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 58031401344163840
+    m_Localized: Increases magnet radius by 10%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 58031423016132608
+    m_Localized: Increases magnet radius by 20%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 58031441051639808
+    m_Localized: Increases magnet radius by 30%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 58031455031255040
+    m_Localized: Increases magnet radius by 40%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 58031466494287872
+    m_Localized: Increases magnet radius by 50%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68534007141228544
+    m_Localized: Vampiric aura (Ultimate)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68534325346295808
+    m_Localized: Converts 1% of damage to heal your hero
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68868378792550400
+    m_Localized: Chaos Dagger (Ultimate)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68868486091235328
+    m_Localized: Dagger now pierces through 3 targets
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68958040026505216
+    m_Localized: Rage of Zeus (Ultimate)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68958217235849216
+    m_Localized: God power to destroy your enemies.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 69181848742256640
+    m_Localized: Crushing blow (Ultimate)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 69181924306837504
+    m_Localized: No being can parry your sword
+    m_Metadata:
+      m_Items: []
+  - m_Id: 71040925487325184
+    m_Localized: Get a pack of {0} coins
+    m_Metadata:
+      m_Items: []
+  - m_Id: 71041018730897408
+    m_Localized: Restore 20% of your heroes health
+    m_Metadata:
+      m_Items: []
+  - m_Id: 96051990331645952
+    m_Localized: Weakness
+    m_Metadata:
+      m_Items: []
+  - m_Id: 96052148385603584
+    m_Localized: Weakens enemies around reducing thier attack by 5-25%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 96052645121220608
+    m_Localized: Weakens enemies around reducing thier attack by 5%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 96052754173124608
+    m_Localized: Weakens enemies around reducing thier attack by 10%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 96052764939902976
+    m_Localized: Weakens enemies around reducing thier attack by 15%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 96052789971509248
+    m_Localized: Weakens enemies around reducing thier attack by 20%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 96052801992384512
+    m_Localized: Weakens enemies around reducing thier attack by 25%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 96137391998230528
+    m_Localized: Guard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 96137451901280256
+    m_Localized: Guards roatate around hero dealing damage to enemies around
+    m_Metadata:
+      m_Items: []
+  - m_Id: 96137698174033920
+    m_Localized: Guards roatate around hero dealing damage to enemies around
+    m_Metadata:
+      m_Items: []
+  - m_Id: 96137875601481728
+    m_Localized: Adds 1 more guard, increases damage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 96138004014292992
+    m_Localized: Adds 1 more guard, increases damage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 96138015552823296
+    m_Localized: Adds 1 more guard, increases damage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 96138028064432128
+    m_Localized: Adds 1 more guard, increases damage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 96717596835962880
+    m_Localized: Shadow guardian (Ultimate)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 96717708387672064
+    m_Localized: Walk safely, no soul will ever touch you.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 96742710872891392
+    m_Localized: '{0} defense boost'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 96742797728538624
+    m_Localized: Increases party's {0} defense by 5-25%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 96743052742221824
+    m_Localized: Increases party's {0} defense by 5%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 96743065958473728
+    m_Localized: Increases party's {0} defense by 10%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 96743080776949760
+    m_Localized: Increases party's {0} defense by 15%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 96743090977497088
+    m_Localized: Increases party's {0} defense by 20%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 96743098246225920
+    m_Localized: Increases party's {0} defense by 25%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 97781298393767936
+    m_Localized: Ground fire
+    m_Metadata:
+      m_Items: []
+  - m_Id: 97781370024091648
+    m_Localized: Spawns fire on the ground that deals damage in the area.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 97781891036340224
+    m_Localized: Spawns fire on the ground that deals damage in the area
+    m_Metadata:
+      m_Items: []
+  - m_Id: 97781931574288384
+    m_Localized: Adds another fire and increases damage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 97781944295612416
+    m_Localized: Adds another fire and increases damage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 97781954018009088
+    m_Localized: Adds another fire and increases damage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 97781965065805824
+    m_Localized: Adds another fire and increases damage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 97782243286573056
+    m_Localized: Firewall (Ultimate)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 97782329408217088
+    m_Localized: The ground will burn around you
+    m_Metadata:
+      m_Items: []
+  - m_Id: 103582237277020160
+    m_Localized: Greed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 103582384350289920
+    m_Localized: Increases resources collection by 10-50%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 103582419431448576
+    m_Localized: Increases resources collection by 10%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 103582432102440960
+    m_Localized: Increases resources collection by 20%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 103582441942278144
+    m_Localized: Increases resources collection by 30%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 103582452662919168
+    m_Localized: Increases resources collection by 40%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 103582461655506944
+    m_Localized: Increases resources collection by 50%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 103646399680208896
+    m_Localized: Laggard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 103646469301460992
+    m_Localized: Reduces all enemies walk speed by 5-25%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 103646639237881856
+    m_Localized: Reduces all enemies walk speed by 5%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 103646660570112000
+    m_Localized: Reduces all enemies walk speed by 10%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 103646668962914304
+    m_Localized: Reduces all enemies walk speed by 15%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 103646678395904000
+    m_Localized: Reduces all enemies walk speed by 20%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 103646690349670400
+    m_Localized: Reduces all enemies walk speed by 25%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 104417459853844480
+    m_Localized: Boomerang
+    m_Metadata:
+      m_Items: []
+  - m_Id: 104417506892963840
+    m_Localized: Throws a boomerang to the ramdom enemy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 104417536316006400
+    m_Localized: Throws a boomerang to the ramdom enemy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 104417547426717696
+    m_Localized: Adds another boomerang
+    m_Metadata:
+      m_Items: []
+  - m_Id: 104417569371316224
+    m_Localized: Doubles the  damage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 104417582319132672
+    m_Localized: Increases the damage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 104417558629703680
+    m_Localized: Adds another boomerang
+    m_Metadata:
+      m_Items: []
+  - m_Id: 104791610586292224
+    m_Localized: Whirlwind
+    m_Metadata:
+      m_Items: []
+  - m_Id: 104791701418139648
+    m_Localized: Creates a whirlwind that damages enemies around for some time
+    m_Metadata:
+      m_Items: []
+  - m_Id: 104792191304458240
+    m_Localized: Creates a whirlwind that damages enemies around for some time
+    m_Metadata:
+      m_Items: []
+  - m_Id: 104792203392442368
+    m_Localized: Increases damage and attack radius
+    m_Metadata:
+      m_Items: []
+  - m_Id: 104792213668487168
+    m_Localized: Increases damage and attack radius
+    m_Metadata:
+      m_Items: []
+  - m_Id: 104792221989986304
+    m_Localized: Increases damage and attack radius
+    m_Metadata:
+      m_Items: []
+  - m_Id: 104792230034661376
+    m_Localized: Increases damage and attack radius
+    m_Metadata:
+      m_Items: []
+  - m_Id: 104792591495585792
+    m_Localized: Poison aura
+    m_Metadata:
+      m_Items: []
+  - m_Id: 104792663981547520
+    m_Localized: Deals a small amount of poison damage in certain radius
+    m_Metadata:
+      m_Items: []
+  - m_Id: 104792688937656320
+    m_Localized: Deals a small amount of poison damage in certain radius
+    m_Metadata:
+      m_Items: []
+  - m_Id: 104792697183657984
+    m_Localized: Increases damage and attack radius
+    m_Metadata:
+      m_Items: []
+  - m_Id: 104792706205605888
+    m_Localized: Increases damage and attack radius
+    m_Metadata:
+      m_Items: []
+  - m_Id: 104792715290468352
+    m_Localized: Increases damage and attack radius
+    m_Metadata:
+      m_Items: []
+  - m_Id: 104792725923028992
+    m_Localized: Increases damage and attack radius
+    m_Metadata:
+      m_Items: []
+  - m_Id: 104793280179331072
+    m_Localized: Posion splash
+    m_Metadata:
+      m_Items: []
+  - m_Id: 104793348961722368
+    m_Localized: Spawns random splashes of poison around
+    m_Metadata:
+      m_Items: []
+  - m_Id: 104793380569997312
+    m_Localized: Spawns random splashes of poison around
+    m_Metadata:
+      m_Items: []
+  - m_Id: 104793389021519872
+    m_Localized: Adds one more splash and increases damage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 104793396646764544
+    m_Localized: Increases damage and splash size
+    m_Metadata:
+      m_Items: []
+  - m_Id: 104793404620136448
+    m_Localized: Adds one more splash and increases damage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 104793412723531776
+    m_Localized: Increases damage and splash size
+    m_Metadata:
+      m_Items: []
+  - m_Id: 147132384698949632
+    m_Localized: Cutter (Ultimate)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 147133098531741696
+    m_Localized: Now you can shread anyone into pieces
+    m_Metadata:
+      m_Items: []
+  - m_Id: 147134071954202624
+    m_Localized: Deathwind (Ultimate)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 147134122222936064
+    m_Localized: Scatter all your enemies around
+    m_Metadata:
+      m_Items: []
+  - m_Id: 147135005685964800
+    m_Localized: Poison lake (Ultimate)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 147135094802341888
+    m_Localized: Watch enemy corpes floating around you
+    m_Metadata:
+      m_Items: []
+  - m_Id: 147135315225600000
+    m_Localized: Swamp aura (Ultimate)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 147135411270967296
+    m_Localized: Posion smoke fills your enemies until they suffocate
+    m_Metadata:
+      m_Items: []
+  - m_Id: 208780793138372608
+    m_Localized: Increases resources collection by 60%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 208780939729297408
+    m_Localized: Reduces all enemies walk speed by 30%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 208781121820811264
+    m_Localized: Increases damage and attack radius
+    m_Metadata:
+      m_Items: []
+  - m_Id: 208781196349399040
+    m_Localized: Increases knockback
+    m_Metadata:
+      m_Items: []
+  - m_Id: 208781350070640640
+    m_Localized: Increases damage and attack radius
+    m_Metadata:
+      m_Items: []
+  - m_Id: 208781457855864832
+    m_Localized: Increases damage and attack radius
+    m_Metadata:
+      m_Items: []
+  - m_Id: 208783908528971776
+    m_Localized: Increases {0} damage by 60%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 208784151295287296
+    m_Localized: Increases walk speed by 60%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 208784373794725888
+    m_Localized: Increases magnet radius by 60%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 208784605391609856
+    m_Localized: Converts 2% of damage to heal your hero
+    m_Metadata:
+      m_Items: []
+  - m_Id: 208784703173419008
+    m_Localized: Dagger pierces through 5 targets
+    m_Metadata:
+      m_Items: []
+  - m_Id: 208785063472521216
+    m_Localized: No being can parry your sword
+    m_Metadata:
+      m_Items: []
+  - m_Id: 208785118203994112
+    m_Localized: No being can parry your sword
+    m_Metadata:
+      m_Items: []
+  - m_Id: 208785262479663104
+    m_Localized: Weakens enemies around reducing thier attack by 30%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 208785375235137536
+    m_Localized: Increases damage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 208785560262664192
+    m_Localized: Walk safely, no soul will ever touch you.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 208785613387718656
+    m_Localized: Increases party's {0} defense by 30%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 208785766408511488
+    m_Localized: Increases damage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 208785957379366912
+    m_Localized: The ground will burn around you
+    m_Metadata:
+      m_Items: []
+  - m_Id: 208785998835867648
+    m_Localized: Increases the damage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 208786148916453376
+    m_Localized: Increases damage and attack radius
+    m_Metadata:
+      m_Items: []
+  - m_Id: 208786209876467712
+    m_Localized: Increases damage and attack radius
+    m_Metadata:
+      m_Items: []
+  - m_Id: 208786318076928000
+    m_Localized: Increases damage and splash size
+    m_Metadata:
+      m_Items: []
+  - m_Id: 208786430287142912
+    m_Localized: Now you can shread anyone into pieces
+    m_Metadata:
+      m_Items: []
+  - m_Id: 208786465015980032
+    m_Localized: Scatter all your enemies around
+    m_Metadata:
+      m_Items: []
+  - m_Id: 208786495017836544
+    m_Localized: Watch enemy corpes floating around you
+    m_Metadata:
+      m_Items: []
+  - m_Id: 208786523102896128
+    m_Localized: Posion smoke fills your enemies until they suffocate
+    m_Metadata:
+      m_Items: []
+  - m_Id: 208795114023149568
+    m_Localized: Increases maximum health by 60%
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

@@ -327,7 +327,7 @@ MonoBehaviour:
   skillType: 30
   target: 0
   element: 1
-  attribute: 0
+  attribute: 2
   mathAction: 2
   targetType: 0
   targetMode: 1

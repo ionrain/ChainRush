@@ -25,6 +25,11 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 502a1febe991449ee85cee7cf9a6cafa
+    m_Address: Assets/Game/Localization/Skills Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: aa2915f58d0934c2e8c9abd2a52b4a20
     m_Address: Assets/Game/Localization/Genearl Shared Data.asset
     m_ReadOnly: 1

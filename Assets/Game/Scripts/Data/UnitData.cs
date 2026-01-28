@@ -251,6 +251,10 @@ public class UnitData : SerializedScriptableObject, IListItemData {
         return result;
     }
 
+    public UnitSkill GetSkillByName(string skillName) {
+        return skills.Find(t => t.Name.Equals(skillName));
+    }
+
     public Dictionary<ElementalAttribute, float> GetAllAttributes(bool returnZero = true) {
         Dictionary<ElementalAttribute, float> result = new Dictionary<ElementalAttribute, float>();
         Array attributes = Enum.GetValues(typeof(Attribute));

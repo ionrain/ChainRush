@@ -9,9 +9,8 @@ public class ResourceData {
     public Sprite icon;
     public Sprite smallIcon;
     public int capacity;
-    public int productionBase;
-    public int productionRate;
-    public float productionMultiplier;
+    public float productionBase;
+    public float productionRate;
 
     public int Value { get; private set; }
     public string Title => !title.IsEmpty ? title.GetLocalizedString() : string.Empty;
@@ -19,7 +18,7 @@ public class ResourceData {
     public ResourceBalanceData GetBalance() => new ResourceBalanceData(Value, capacity);
 
     public int GetProduction(int level, float timeMultiplier = 1) {
-        int result = Mathf.RoundToInt((productionBase + productionRate * productionMultiplier * level) * timeMultiplier);
+        int result = Mathf.RoundToInt((productionBase + productionRate * level) * timeMultiplier);
         return capacity > 0 ? Mathf.Min(result, capacity - Value) : result;
     }
 

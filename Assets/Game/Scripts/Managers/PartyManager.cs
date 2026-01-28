@@ -41,6 +41,10 @@ public class PartyManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEv
         _units.Clear();
     }
 
+    public Unit GetHero() {
+        return _units.Find(u => u.Data != null && u.Data.type == UnitType.Hero);
+    }
+
     public void OnMMEvent(LevelLoadEvent e) {
         if (e.Stage == EventStage.Start && e.Data != null) {
             Setup();
@@ -202,6 +206,9 @@ public class PartyManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEv
             case CellItemType.Booster:
                 HandleBoosterSelection(e.Item.Id, e.Count);
                 break;
+            case CellItemType.HeroSkill:
+                HandleHeroSkillSelection(e.Item.Id, e.Count);
+                break;
             case CellItemType.SoftCurrency:
                 break;
         }
@@ -248,7 +255,26 @@ public class PartyManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEv
             OnHeal?.Invoke();
         }
         else if (boosterType == BoosterType.Bomb) {
-            
+
+        }
+    }
+
+    void HandleHeroSkillSelection(string skillId, int count) {
+        Unit hero = GetHero();
+        if (hero == null) return;
+
+        Skill skill = hero.Skills.Find(s => s.Data != null && s.Data.name == skillId);
+        if (skill == null) return;
+
+        int maxLevelIndex = skill.LevelsCount - 1;
+        int skillLevel = Mathf.Min(count - 1, maxLevelIndex);
+
+        skill.SetLevel(skillLevel);
+
+        AttackSkill attackSkill = skill as AttackSkill;
+        if (attackSkill != null) {
+            attackSkill.StartAttack();
+            attackSkill.StopAttack();
         }
     }
 

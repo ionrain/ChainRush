@@ -116,14 +116,11 @@ MonoBehaviour:
       Entry: 3
       Data: 0
     - Name: productionBase
-      Entry: 3
+      Entry: 4
       Data: 50
     - Name: productionRate
-      Entry: 3
-      Data: 50
-    - Name: productionMultiplier
       Entry: 4
-      Data: 1
+      Data: 50
     - Name: 
       Entry: 8
       Data: 
@@ -195,12 +192,9 @@ MonoBehaviour:
       Entry: 3
       Data: 0
     - Name: productionBase
-      Entry: 3
+      Entry: 4
       Data: 0
     - Name: productionRate
-      Entry: 3
-      Data: 0
-    - Name: productionMultiplier
       Entry: 4
       Data: 0
     - Name: 
@@ -274,12 +268,9 @@ MonoBehaviour:
       Entry: 3
       Data: 30
     - Name: productionBase
-      Entry: 3
+      Entry: 4
       Data: 2
     - Name: productionRate
-      Entry: 3
-      Data: 0
-    - Name: productionMultiplier
       Entry: 4
       Data: 0
     - Name: 
@@ -353,12 +344,9 @@ MonoBehaviour:
       Entry: 3
       Data: 0
     - Name: productionBase
-      Entry: 3
+      Entry: 4
       Data: 1
     - Name: productionRate
-      Entry: 3
-      Data: 1
-    - Name: productionMultiplier
       Entry: 4
       Data: 1
     - Name: 
@@ -432,14 +420,11 @@ MonoBehaviour:
       Entry: 3
       Data: 0
     - Name: productionBase
-      Entry: 3
-      Data: 1
-    - Name: productionRate
-      Entry: 3
-      Data: 1
-    - Name: productionMultiplier
       Entry: 4
-      Data: 1
+      Data: 0.5
+    - Name: productionRate
+      Entry: 4
+      Data: 0.5
     - Name: 
       Entry: 8
       Data: 

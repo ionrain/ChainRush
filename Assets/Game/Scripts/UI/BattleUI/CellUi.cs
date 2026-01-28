@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 using MoreMountains.Tools;
 using UnityEngine.Events;
 
-public enum CellItemType { None = 0, Unit = 1, Buff = 2, Booster = 4, SoftCurrency = 8 }
+public enum CellItemType { None = 0, Unit = 1, HeroSkill = 2, Buff = 4, Booster = 8, SoftCurrency = 16 }
 
 public class CellUiItem {
     public CellItemType Type { get; private set; }

@@ -25,7 +25,6 @@ public class RewardManager : MMSingleton<RewardManager>, MMEventListener<RewardE
                     } else if (reward.Type == RewardType.Resource && reward is ResourceReward resourceUnitCardReward && resourceUnitCardReward.Resource == ResourceType.UnitCard) {
                         rewards.Remove(reward);
                         cards[UnitType.Normal] = cards.GetValueOrDefault(UnitType.Normal) + reward.Amount;
-                        rewards.AddRange(GenerateUnitCardReward(UnitType.Normal, reward.Amount));
                     } else if (reward.Type == RewardType.Resource &&  reward is ResourceReward resourceHeroCardReward && resourceHeroCardReward.Resource == ResourceType.HeroCard) {
                         rewards.Remove(reward);
                         cards[UnitType.Hero] = cards.GetValueOrDefault(UnitType.Hero) + reward.Amount;
@@ -44,11 +43,11 @@ public class RewardManager : MMSingleton<RewardManager>, MMEventListener<RewardE
 
     List<UnitCardReward> GenerateUnitCardReward(UnitType unitType, int amount) {   
         List<UnitCardReward> result = new ();
-        List<UnitData> unlocked = units.Get(unitType, UnitListType.Unlocked);
-        unlocked.Sort((a, b) => a.CardBalance.CompareTo(b.CardBalance));        
+        List<UnitData> unlocked = units.Get(unitType, UnitListType.Unlocked);       
         if (unlocked.Count <= 1 || amount < 5) {
             result.Add(new UnitCardReward(unlocked[0], amount));
         } else {
+            unlocked.Sort((a, b) => a.CardBalance.CompareTo(b.CardBalance)); 
             int total = unlocked[0].CardBalance + unlocked[1].CardBalance;
             float probability = total > 0 ? (float)unlocked[0].CardBalance / total : 0.5f;
             int unlocked0Cards = 0;
@@ -66,7 +65,7 @@ public class RewardManager : MMSingleton<RewardManager>, MMEventListener<RewardE
         }
 
         foreach (var reward in result) {
-            reward.TransferCards();;
+            reward.TransferCards();
             UnitEvent.Trigger(EventStage.End, UnitEventType.CardBalanceChange, reward.Unit);
         }
 

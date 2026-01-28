@@ -22,7 +22,7 @@ public struct TargetListRequestEvent {
 }
 
 public class AttackSkillAimer : MonoBehaviour, MMEventListener<TargetListRequestEvent>  {
-    [SerializeField] LayerMask enemyMask;
+    [SerializeField] LayerMask targetMask;
 
     BoxCollider2D _searchBox;
     ContactFilter2D _contactFilter;
@@ -36,7 +36,9 @@ public class AttackSkillAimer : MonoBehaviour, MMEventListener<TargetListRequest
         if (_searchBox != null)
             _searchBox.size = Camera.main.GetScreenSize();
 
-        _contactFilter = new ContactFilter2D() { layerMask = enemyMask };
+        _contactFilter = new ContactFilter2D();
+        _contactFilter.SetLayerMask(targetMask);
+        _contactFilter.useTriggers = true;
     }
 
     public void OnMMEvent(TargetListRequestEvent e) {

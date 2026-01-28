@@ -78,6 +78,9 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
     Dictionary<CellItemType, float> _typeCooldownIntervals = new();
     bool _isRefreshPaused;
 
+    // Types unavailable for this level (cached at start)
+    HashSet<CellItemType> _unavailableTypes = new();
+
     public void OnMMEvent(LevelLoadEvent e) {
         if (e.Stage == EventStage.Start && e.Data != null) {
             _data = e.Data;
@@ -93,6 +96,7 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
 
             CreateCells();
             InitializeTypeCooldowns();
+            InitializeUnavailableTypes();
             UpdateRefreshIntervals(0);
             _refreshTimer = _refreshInterval;
             RefreshBoard();
@@ -156,6 +160,23 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
             _typeCooldowns[kvp.Key] = kvp.Value.Evaluate(0f);
             _typeCooldownIntervals[kvp.Key] = kvp.Value.Evaluate(0f);
         }
+    }
+
+    void InitializeUnavailableTypes() {
+        _unavailableTypes.Clear();
+
+        List<UnitData> selectedHeroes = unitsData != null ? unitsData.Get(UnitType.Hero, UnitListType.Selected) : null;
+        bool heroAvailable = false;
+        if (selectedHeroes != null) {
+            foreach (UnitData hero in selectedHeroes) {
+                List<UnitSkill> skills = hero.GetSkills(SkillListType.Aquired);
+                if (skills != null && skills.Count > 1) {
+                    heroAvailable = true;
+                    break;
+                }
+            }
+        }
+        if (!heroAvailable) _unavailableTypes.Add(CellItemType.HeroSkill);
     }
 
     void UpdateRefreshIntervals(float progress) {
@@ -262,6 +283,21 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
                     UnitData unit = selectedUnits[Random.Range(0, selectedUnits.Count)];
                     icon = unit.Icon;
                     id = unit.name;
+                }
+                break;
+
+            case CellItemType.HeroSkill:
+                List<UnitData> selectedHeroes = unitsData != null ? unitsData.Get(UnitType.Hero, UnitListType.Selected) : null;
+                if (selectedHeroes != null && selectedHeroes.Count > 0) {
+                    UnitData hero = selectedHeroes[Random.Range(0, selectedHeroes.Count)];
+                    List<UnitSkill> heroSkills = hero.GetSkills(SkillListType.Aquired);
+                    if (heroSkills != null && heroSkills.Count > 1) {
+                        UnitSkill skill = heroSkills[Random.Range(1, heroSkills.Count)];
+                        if (skill.data != null) {
+                            icon = skill.data.icon;
+                            id = skill.Name;
+                        }
+                    }
                 }
                 break;
 
@@ -461,6 +497,8 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
         if (_data?.difficulty?.alwaysAvailableOnRefresh != null) {
             foreach (var kvp in _data.difficulty.alwaysAvailableOnRefresh) {
                 CellItemType type = kvp.Key;
+                if (_unavailableTypes.Contains(type)) continue;
+
                 float fraction = kvp.Value;
                 int count = Mathf.RoundToInt(totalPatterns * fraction);
 
@@ -481,7 +519,8 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
             fallbackTypes.AddRange(_data.difficulty.alwaysAvailableOnRefresh.Keys);
         }
 
-        List<CellItemType> fillTypes = cooldownReady.Count > 0 ? cooldownReady : fallbackTypes;
+        List<CellItemType> fillTypes = (cooldownReady.Count > 0 ? cooldownReady : fallbackTypes)
+            .FindAll(t => !_unavailableTypes.Contains(t));
 
         if (fillTypes.Count > 0) {
             while (assignedIndex < patterns.Count) {

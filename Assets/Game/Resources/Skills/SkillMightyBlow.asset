@@ -291,10 +291,11 @@ MonoBehaviour:
   skillType: 30
   target: 0
   element: 1
-  attribute: 0
+  attribute: 2
   mathAction: 2
   targetType: 2
   targetMode: 3
+  forcedState: 0
   prefab: {fileID: 8866102333183273848, guid: c7f12a50549d14e5e92fec0f623a2d89, type: 3}
   exchangeSkill: {fileID: 0}
   complementarySkill: {fileID: 0}

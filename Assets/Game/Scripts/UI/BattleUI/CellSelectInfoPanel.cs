@@ -12,7 +12,7 @@ public class CellSelectInfoPanel : MonoBehaviour, MMEventListener<CellUiItemSele
 
     [SerializeField] RectTransform panelRoot;
     [SerializeField] IconMultiTextItem itemPrefab;
-    [SerializeField] LocalizedString unitLevelFormat;
+    [SerializeField] LocalizedString levelFormat;
 
     [Header("Item Data")]
     [SerializeField] ResourcesData resourcesData;
@@ -27,11 +27,11 @@ public class CellSelectInfoPanel : MonoBehaviour, MMEventListener<CellUiItemSele
 
     readonly List<IconMultiTextItem> _items = new();
     readonly Dictionary<Attribute, float> _buffs = new();
-    string _unitLevelFormat = "Lv.{0}";
+    string _levelFormat = "Lv.{0}";
 
     void Awake() {
-        if (unitLevelFormat != null && !unitLevelFormat.IsEmpty)
-            _unitLevelFormat = unitLevelFormat.GetLocalizedString();
+        if (levelFormat != null && !levelFormat.IsEmpty)
+            _levelFormat = levelFormat.GetLocalizedString();
     }
 
     public void OnMMEvent(CellUiItemSelectEvent e) {
@@ -78,6 +78,9 @@ public class CellSelectInfoPanel : MonoBehaviour, MMEventListener<CellUiItemSele
             case CellItemType.Booster:
                 DisplayBooster(item.Id, count);
                 break;
+            case CellItemType.HeroSkill:
+                DisplayHeroSkill(item.Id, count);
+                break;
         }
 
         panelRoot.gameObject.SetActive(_items.Count > 0);
@@ -113,13 +116,13 @@ public class CellSelectInfoPanel : MonoBehaviour, MMEventListener<CellUiItemSele
         for (int i = 0; i < fullUnits; i++) {
             MergeStateData mergeData = unitData.GetMergeData(maxMergeLevel - 1);
             Sprite icon = mergeData != null ? mergeData.icon : unitData.Icon;
-            CreateItem(icon, new List<string>() { unitName, string.Format(_unitLevelFormat, maxMergeLevel) });
+            CreateItem(icon, new List<string>() { unitName, string.Format(_levelFormat, maxMergeLevel) });
         }
 
         if (remainder > 0) {
             MergeStateData mergeData = unitData.GetMergeData(remainder - 1);
             Sprite icon = mergeData != null ? mergeData.icon : unitData.Icon;
-            CreateItem(icon, new List<string>() { unitName, string.Format(_unitLevelFormat, remainder) });
+            CreateItem(icon, new List<string>() { unitName, string.Format(_levelFormat, remainder) });
         }
     }
 
@@ -201,6 +204,40 @@ public class CellSelectInfoPanel : MonoBehaviour, MMEventListener<CellUiItemSele
             }
         }
         CreateItem(icon, new List<string>() { title, $"{stat * 100:F0}%" });
+    }
+
+    // ==================== HERO SKILL ====================
+    void DisplayHeroSkill(string skillId, int count) {
+        if (unitsData == null) return;
+
+        List<UnitData> selectedHeroes = unitsData.Get(UnitType.Hero, UnitListType.Selected);
+        if (selectedHeroes == null || selectedHeroes.Count == 0) return;
+
+        SkillData skillData = null;
+        foreach (UnitData hero in selectedHeroes) {
+            List<UnitSkill> skills = hero.GetSkills(SkillListType.Aquired);
+            UnitSkill foundSkill = skills.Find(s => s.Name == skillId);
+            if (foundSkill != null && foundSkill.data != null) {
+                skillData = foundSkill.data;
+                break;
+            }
+        }
+
+        if (skillData == null) return;
+
+        int maxLevelIndex = Mathf.Max(0, skillData.LevelsCount - 1);
+        int skillLevel = Mathf.Min(count - 1, maxLevelIndex);
+
+        Sprite icon = skillData.Icon;
+        string level = string.Format(_levelFormat, skillLevel + 1);
+        string title = string.Format("{0} ({1})", skillData.Title, level);
+
+        SkillLevel levelData = skillData.GetLevel(skillLevel);
+        string description = levelData?.description != null && !levelData.description.IsEmpty
+            ? levelData.description.GetLocalizedString()
+            : level;
+
+        CreateItem(icon, new List<string>() { title, description });
     }
 
     void OnEnable() {

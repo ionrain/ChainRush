@@ -1,0 +1,56 @@
+grid:
+  sizes_allowed: [4x4, 5x4, 5x5, 6x5, 6x6]
+  refresh:
+    base_interval_seconds: 5.0
+    significant_refresh_ratio: 0.33   # 1 of 3 refreshes are "meaningful"
+    time_acceleration_per_stage: 1.0  # multiplier that can change per level segment
+
+selection:
+  adjacency_mode: "4-way"
+  max_tier_default: 3
+
+reward_scaling:
+  tier_by_chain:
+    1: { tier: 1 }
+    2: { tier: 2 }
+    3: { tier: 3 }
+  overflow:
+    mode: "extra_count"  # chain > maxTier => tier=maxTier plus extra count
+    extra_per_tile_over_max: 1
+
+run_constraints:
+  hero_slots: 1
+  unit_slots: 4
+
+level_objectives:
+  types:
+    - survive_time
+    - survive_waves
+    - reach_point
+    - destroy_chest_get_artifact
+    - destroy_enemy_structure
+    
+enemy_ai:
+  target_evaluation_interval: 1.0
+  target_lock_time: 1.5
+  retarget_cooldown: 1.0
+  commit_time: 0.8
+  reacquire_grace_seconds: 0.25
+  
+enemy_spawning:
+  uses_progress_0_1: true
+  max_fill_count: 100
+  max_simultaneous_count: 100
+  # curves/shares live in content (EnemyGenerationData), but we фиксируем что они "по прогрессу"
+
+enemy_multipliers:
+  stacking: "multiplicative"   # base * wave * skills
+  
+level_progress:
+  normalized_range: [0.0, 1.0]
+  update_frequency_seconds: 1
+  sources:
+    survive_time:
+      progress = "elapsed_time_seconds / goal_amount"
+    distance:
+      progress = "(hero_x - hero_start_x) / goal_amount"

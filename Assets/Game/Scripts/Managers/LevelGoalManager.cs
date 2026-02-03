@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using MoreMountains.Tools;
 using Sirenix.OdinInspector;
+using UnityEngine;
 
 public class LevelGoalReward : IRewardItem {
     public LevelGoal goal;
@@ -130,7 +131,7 @@ public class LevelGoalManager : SerializedMonoBehaviour, MMEventListener<EarnRes
 
     public void OnMMEvent(EnemySpawnEvent e) {
         if (e.EventType == EnemySpawnEventType.Cleared)
-            ManageGoals(LevelGoalType.Survive, MathAction.Set, 1);
+            ManageGoals(LevelGoalType.Survive, MathAction.Set, int.MaxValue);
     }
 
     public void OnMMEvent(EarnResourceEvent e) {
@@ -164,8 +165,7 @@ public class LevelGoalManager : SerializedMonoBehaviour, MMEventListener<EarnRes
     }
 
     public void OnMMEvent(LevelProgressEvent e) {
-        if (e.Progress >= 1f)
-            ManageGoals(LevelGoalType.Distance, MathAction.Set, 1);
+        ManageGoals(LevelGoalType.Distance, MathAction.Set, Mathf.RoundToInt(e.Distance));
     }
 
     void OnEnable() {

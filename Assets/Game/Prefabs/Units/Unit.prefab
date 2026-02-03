@@ -188541,21 +188541,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 644edbd08fe2649549eccf5411910f77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitAIController
-  heroFarDistance: 20
-  heroSpeedBoostDistance: 3
+  returnRadius: 20
+  followRadius: 15
+  maxChaseDistanceFromAnchor: 16
   enemyDetectRadius: 12
-  allyDefendRadius: 15
+  allyDefendRadius: 12
   heroSpeedMultiplier: 2
   enemyLayer:
     serializedVersion: 2
     m_Bits: 12288
-  targetEvaluationInterval: 0.3
-  overlapMaximum: 10
+  targetEvaluationInterval: 1
+  overlapMaximum: 12
   heroHitResponseDuration: 2
   allyHitResponseDuration: 1.5
-  stuckCheckInterval: 1
-  stuckDistanceThreshold: 0.3
-  steeringAngle: 60
+  targetLockTime: 2
+  retargetCooldown: 1.5
+  enemyCommitTime: 1.2
+  leashRecoveryTime: 1.5
+  combatLingerTime: 0.8
   rallyRestInterval: {x: 1, y: 2}
 --- !u!1 &3572560000541372990
 GameObject:

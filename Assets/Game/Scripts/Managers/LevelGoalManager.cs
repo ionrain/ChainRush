@@ -12,6 +12,8 @@ public class LevelGoalReward : IRewardItem {
     public RewardItemType Type => RewardItemType.LevelGoalReward;
     public bool Completed => State >= RewardState.Ready;
     public bool Achieved => goal != null ? goal.Achieved : false;
+    public LevelGoalType GoalType => goal != null ? goal.Type : LevelGoalType.Survive;
+    public int GoalAmount => goal != null ? goal.Amount : 0;
 
     public List<Reward> GetRewards(RewardType rewardType) {
         return rewards.FindAll(r => rewardType == RewardType.Any || r.Type == rewardType);
@@ -64,7 +66,8 @@ public struct LevelGoalResultEvent {
 }
 
 public class LevelGoalManager : SerializedMonoBehaviour, MMEventListener<EarnResourceEvent>, MMEventListener<LevelGoalProgressEvent>, MMEventListener<LevelLoadEvent>,
-    MMEventListener<ItemEvent>, MMEventListener<EnemyDeathEvent>, MMEventListener<LevelGoalEvent>, MMEventListener<EnemySpawnEvent> {
+    MMEventListener<ItemEvent>, MMEventListener<EnemyDeathEvent>, MMEventListener<LevelGoalEvent>, MMEventListener<EnemySpawnEvent>,
+    MMEventListener<LevelProgressEvent> {
     
     Dictionary<string, LevelGoal> _goals = new Dictionary<string, LevelGoal>();
     List<LevelGoalType> _goalTypes = new List<LevelGoalType>();
@@ -160,6 +163,11 @@ public class LevelGoalManager : SerializedMonoBehaviour, MMEventListener<EarnRes
         ManageGoals(e.Type, MathAction.Add, e.Amount);
     }
 
+    public void OnMMEvent(LevelProgressEvent e) {
+        if (e.Progress >= 1f)
+            ManageGoals(LevelGoalType.Distance, MathAction.Set, 1);
+    }
+
     void OnEnable() {
         Subscribe();
         this.MMEventStartListening<LevelLoadEvent>();
@@ -184,6 +192,8 @@ public class LevelGoalManager : SerializedMonoBehaviour, MMEventListener<EarnRes
                 this.MMEventStartListening<ItemEvent>();
             else if (goalType == LevelGoalType.Enemy || goalType == LevelGoalType.EnemyType)
                 this.MMEventStartListening<EnemyDeathEvent>();
+            else if (goalType == LevelGoalType.Distance)
+                this.MMEventStartListening<LevelProgressEvent>();
             _goalTypes.Add(goalType);
         }
     }
@@ -195,6 +205,7 @@ public class LevelGoalManager : SerializedMonoBehaviour, MMEventListener<EarnRes
         this.MMEventStopListening<LevelGoalEvent>();
         this.MMEventStopListening<EnemyDeathEvent>();
         this.MMEventStopListening<EnemySpawnEvent>();
+        this.MMEventStopListening<LevelProgressEvent>();
     }
 
     void OnDisable() {

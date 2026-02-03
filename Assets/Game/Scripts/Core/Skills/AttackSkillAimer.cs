@@ -24,17 +24,19 @@ public struct TargetListRequestEvent {
 public class AttackSkillAimer : MonoBehaviour, MMEventListener<TargetListRequestEvent>  {
     [SerializeField] LayerMask targetMask;
 
-    BoxCollider2D _searchBox;
+    Vector2 _searchBox;
     ContactFilter2D _contactFilter;
+    Transform _cameraTransform;
  
     void Start() {
         Setup();
     }
 
     void Setup() {
-        _searchBox = GetComponent<BoxCollider2D>();
-        if (_searchBox != null)
-            _searchBox.size = Camera.main.GetScreenSize();
+        if (_searchBox != null) {
+            _cameraTransform = Camera.main.transform;
+            _searchBox = Camera.main.GetScreenSize();
+        }
 
         _contactFilter = new ContactFilter2D();
         _contactFilter.SetLayerMask(targetMask);
@@ -46,7 +48,7 @@ public class AttackSkillAimer : MonoBehaviour, MMEventListener<TargetListRequest
             List<Collider2D> found = new List<Collider2D>();
             List<Vector2> result = new List<Vector2>();
 
-            Physics2D.OverlapBox(_searchBox.transform.position, _searchBox.size, 0, _contactFilter, found);
+            Physics2D.OverlapBox(_cameraTransform.position, _searchBox, 0, _contactFilter, found);
 
             if (found.Count > 0) {
                 if (e.TargetMode == TargetMode.Random)

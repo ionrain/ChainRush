@@ -41,34 +41,22 @@ public struct EnemySpawnEvent {
     }   
 }
 
-public class EnemyManager : SimplePoolUser, MMEventListener<EnemySpawnTriggerEvent>, 
-                            MMEventListener<SkillLevelUpEvent>, MMEventListener<LevelLoadEvent> {
+public class EnemyManager : SimplePoolUser, MMEventListener<EnemySpawnTriggerEvent>,
+                            MMEventListener<SkillLevelUpEvent>, MMEventListener<LevelLoadEvent>,
+                            MMEventListener<UnitActionEvent>, MMEventListener<LevelProgressEvent> {
     [Header("Enemy Manager")]
     [SerializeField] GameNotificationTrigger notificationTrigger;
     [SerializeField] Transform defaultTarget;
 
     [Header("Spawning")]
     [SerializeField] Collider2D fillBounds;
+    [SerializeField] bool moveFillBoundsWithCamera = true;
     [SerializeField] FullProgressSpawnAction fullProgressAction = FullProgressSpawnAction.Continue;
     [SerializeField] SpawnShape fillShape = SpawnShape.OnBox;
+    [SerializeField] SpawnSide spawnSides = SpawnSide.None;
     [SerializeField] LayerMask spawnBlock;
     [SerializeField] LayerMask targetLayers;
     [SerializeField] int maxSpawnAttempts = 100;
-
-    [Header("Removing")]
-    [SerializeField] bool removeOffscreen;
-    [MMCondition("removeOffscreen", true)]
-    [SerializeField] Vector2 removerOffset;
-    [MMCondition("removeOffscreen", true)]
-    [SerializeField] Vector2 removerSize;
-    [MMCondition("removeOffscreen", true)]
-    [SerializeField] BoxCollider2D topRemover;
-    [MMCondition("removeOffscreen", true)]
-    [SerializeField] BoxCollider2D bottomRemover;
-    [MMCondition("removeOffscreen", true)]
-    [SerializeField] BoxCollider2D leftRemover;
-    [MMCondition("removeOffscreen", true)]
-    [SerializeField] BoxCollider2D rightRemover;
 
     int EnemiesCount => _enemies.Count;
     public int MaxFillCount { get; set; }
@@ -92,11 +80,11 @@ public class EnemyManager : SimplePoolUser, MMEventListener<EnemySpawnTriggerEve
     List<Enemy> _enemies = new List<Enemy>();
     LayerMask _scanLayers;
     bool _spawning;
-    int _duration;
     float _time;
     int _timeInSeconds;
     float _progress;
     bool _showHealthBars = true;
+    float _fillBoundsOffset;
     //Vector2 _spawnAngleRange = new Vector2(0, 360);
 
     public void SetHealthbarVisibility(bool value) {
@@ -114,11 +102,13 @@ public class EnemyManager : SimplePoolUser, MMEventListener<EnemySpawnTriggerEve
         _fillEnemyShares.Clear();
         _waveTimings.Clear();
         _nextFillTime = 0;
-        _duration = levelData.duration;
         _progress = 0;
         _timeInSeconds = 0;
         _time = 0;
         EnemySpawnEvent.Trigger(EnemySpawnEventType.Started);
+
+        if (moveFillBoundsWithCamera && fillBounds != null)
+            _fillBoundsOffset = fillBounds.transform.position.x - Camera.main.transform.position.x;
 
         if (_dataOK) {
             MaxFillCount = _data.maxFillCount;
@@ -140,35 +130,32 @@ public class EnemyManager : SimplePoolUser, MMEventListener<EnemySpawnTriggerEve
                     _nextFillTime = _fillTimings[0];
             }
             _spawning = true;
-            //UpdateFillBounds();
         } else
             Debug.LogError("EnemyManager StartSpawn: data is not OK");
     }
 
     void FixedUpdate() {
         if (_dataOK && _spawning) {
-            float deltaTime = Time.fixedDeltaTime;
-            _time += deltaTime;
-            int intTime = (int)Mathf.Floor(_time);
+            if (moveFillBoundsWithCamera && fillBounds != null) {
+                Vector3 cameraPos = Camera.main.transform.position;
+                Vector3 fillPos = fillBounds.transform.position;
+                fillPos.x = cameraPos.x + _fillBoundsOffset;
+                fillBounds.transform.position = fillPos;
+            }
 
-            if (_timeInSeconds < intTime) {
-                _timeInSeconds++;
-                _progress = Mathf.Clamp01((float)_timeInSeconds / _duration);
-
-                if (_progress < 1) {
-                    if (_proportionsOK) {
-                        _fillCount = (int)(_data.enemyCountCurve.Evaluate(_progress) * MaxFillCount);
-                        UpdateEnemyShares();
-                        SpawnFill();
-                    }
-                    CheckWaves();
-                    EnemySpawnEvent.Trigger(EnemySpawnEventType.InProgress, _progress);
-                } else if (fullProgressAction == FullProgressSpawnAction.Stop) {
-                    _spawning = false;
-                    EnemySpawnEvent.Trigger(EnemySpawnEventType.Finished, _progress);
-                    if (_enemies.Count == 0)
-                        EnemySpawnEvent.Trigger(EnemySpawnEventType.Cleared, _progress);
+            if (_progress < 1) {
+                if (_proportionsOK) {
+                    _fillCount = (int)(_data.enemyCountCurve.Evaluate(_progress) * MaxFillCount);
+                    UpdateEnemyShares();
+                    SpawnFill();
                 }
+                CheckWaves();
+                EnemySpawnEvent.Trigger(EnemySpawnEventType.InProgress, _progress);
+            } else if (fullProgressAction == FullProgressSpawnAction.Stop) {
+                _spawning = false;
+                EnemySpawnEvent.Trigger(EnemySpawnEventType.Finished, _progress);
+                if (_enemies.Count == 0)
+                    EnemySpawnEvent.Trigger(EnemySpawnEventType.Cleared, _progress);
             }
         }
     }
@@ -197,39 +184,6 @@ public class EnemyManager : SimplePoolUser, MMEventListener<EnemySpawnTriggerEve
             poolerObjects = poolData;
             SetupPools();
         }
-
-        //UpdateFillBounds();
-    }
-
-    public void UpdateFillBounds() {
-        if (fillBounds != null) {
-            Camera camera = Camera.main;
-            Vector2 size = camera.GetScreenSize() * 1.1f;
-            //fillBounds.size = size;
-
-            if (topRemover != null && bottomRemover != null && leftRemover != null && rightRemover != null) {
-                bool useRemover = _data != null;// && _data.teleportEnemies;
-
-                if (useRemover) {
-                    topRemover.offset = new Vector2(0, size.y * 0.5f + removerOffset.y + removerSize.y * 0.5f);
-                    topRemover.size = new Vector2(size.x + 2 * removerOffset.x + 2 * removerSize.y, removerSize.y);
-                    bottomRemover.offset = -topRemover.offset;
-                    bottomRemover.size = topRemover.size;
-
-                    rightRemover.offset = new Vector2(size.x * 0.5f + removerOffset.x + removerSize.x * 0.5f, 0);
-                    rightRemover.size = new Vector2(removerSize.x, size.y + 2 * removerOffset.y + 2 * removerSize.x);
-                    leftRemover.offset = - rightRemover.offset;
-                    leftRemover.size = rightRemover.size;
-                }
-
-                topRemover.gameObject.SetActive(useRemover);
-                bottomRemover.gameObject.SetActive(useRemover);
-                leftRemover.gameObject.SetActive(useRemover);
-                rightRemover.gameObject.SetActive(useRemover);
-            } else
-                Debug.LogWarning("EnemyManager UpdateFillBounds: one of remover colliders is NULL. Removing off screen units won't happen.");
-        } else
-            Debug.LogError("EnemyManager UpdateFillBounds: FillBounds is NULL");
     }
 
     protected override bool Suitable(GameObject poolerObject) {
@@ -514,6 +468,15 @@ public class EnemyManager : SimplePoolUser, MMEventListener<EnemySpawnTriggerEve
         }
     }
 
+    public void OnMMEvent(UnitActionEvent e) {
+        if (e.Type == UnitActionType.Spawn && e.Unit != null)
+            defaultTarget = e.Unit.transform;
+    }
+
+    public void OnMMEvent(LevelProgressEvent e) {
+        _progress = e.Progress;
+    }
+
     /*public void SetHealthbarVisibiity(bool visible) {
         _showHealthBars = visible;
 
@@ -530,12 +493,15 @@ public class EnemyManager : SimplePoolUser, MMEventListener<EnemySpawnTriggerEve
         this.MMEventStartListening<LevelLoadEvent>();
         this.MMEventStartListening<EnemySpawnTriggerEvent>();
         this.MMEventStartListening<SkillLevelUpEvent>();
-
+        this.MMEventStartListening<UnitActionEvent>();
+        this.MMEventStartListening<LevelProgressEvent>();
     }
 
     void OnDisable() {
         this.MMEventStopListening<LevelLoadEvent>();
         this.MMEventStopListening<EnemySpawnTriggerEvent>();
         this.MMEventStopListening<SkillLevelUpEvent>();
+        this.MMEventStopListening<UnitActionEvent>();
+        this.MMEventStopListening<LevelProgressEvent>();
     }
 }

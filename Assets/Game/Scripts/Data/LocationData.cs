@@ -48,7 +48,7 @@ public class LocationData : SerializedScriptableObject {
     [Header("Battle UI")]
     public GameObject backPrefab;
     public LocationIcon iconPrefab;
-    public Sprite levelBack;
+    public GameObject levelBack;
     public List<LevelData> levels = new List<LevelData>();
 
     public string Title => title != null && !title.IsEmpty ? title.GetLocalizedString() : string.Empty;

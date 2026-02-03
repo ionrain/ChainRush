@@ -23,7 +23,7 @@ public class Progressbar : MonoBehaviour {
     public void Awake() {
         if (initializeOnAwake) {
             Setup();
-            SetValue(0);
+            //SetValue(0);
         }
     }
 

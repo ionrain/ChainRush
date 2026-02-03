@@ -6,6 +6,20 @@ using Sirenix.Utilities;
 using UnityEngine;
 using UnityEngine.Events;
 
+public enum UnitActionType { Spawn, Hit }
+
+public struct UnitActionEvent {
+    public Unit Unit { get; private set; }
+    public UnitActionType Type { get; private set; }
+
+    static UnitActionEvent e;
+    public static void Trigger(Unit unit, UnitActionType type) {
+        e.Unit = unit;
+        e.Type = type;
+        MMEventManager.TriggerEvent(e);
+    }
+}
+
 public class PartyManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>, MMEventListener<CellUiItemSelectEvent> {
     [SerializeField] AllUnitsData unitsData;
     [SerializeField] BuffsData buffsData;    
@@ -23,11 +37,23 @@ public class PartyManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEv
     [SerializeField] Progressbar heroHealthBar;
 
     public bool Valid => _units.Count > 0;
+    public Unit Hero { get; private set; }
 
     Dictionary<Attribute, float> _buffs = new();
     List<Unit> _units = new List<Unit>();
+    Dictionary<BoxCollider2D, float> _spawnAreaXOffsets = new();
 
     bool _showHealthBars = true;
+
+    void FixedUpdate() {
+        if (Hero == null || spawnAreas == null || _spawnAreaXOffsets == null) return;
+        
+        foreach (var pair in _spawnAreaXOffsets) {
+            Vector3 pos = pair.Key.transform.position;
+            pos.x = Hero.transform.position.x + pair.Value;
+            pair.Key.transform.position = pos;
+        }
+    }
 
     public void SetHealthbarVisibility(bool value) {
         if (_showHealthBars != value) {
@@ -41,10 +67,6 @@ public class PartyManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEv
         _units.Clear();
     }
 
-    public Unit GetHero() {
-        return _units.Find(u => u.Data != null && u.Data.type == UnitType.Hero);
-    }
-
     public void OnMMEvent(LevelLoadEvent e) {
         if (e.Stage == EventStage.Start && e.Data != null) {
             Setup();
@@ -56,6 +78,11 @@ public class PartyManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEv
         _units.Clear();
         if (selected != null && spawnAreas != null && spawnAreas.Count > 0)
             selected.ForEach(t => CreateUnit(t, 0));
+        
+        if (heroSpawnPoint != null)
+            foreach (var pair in spawnAreas)
+                if (pair.Value != null && !_spawnAreaXOffsets.ContainsKey(pair.Value))
+                    _spawnAreaXOffsets[pair.Value] = pair.Value.transform.position.x - heroSpawnPoint.position.x;
     }
 
     void SpawnHero(LevelData levelData) {
@@ -68,12 +95,23 @@ public class PartyManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEv
         if (heroData == null) return;
 
         LevelGoalType goalType = (levelData != null && levelData.goal != null && levelData.goal.goal != null)
-            ? levelData.goal.goal.Type
+            ? levelData.goal.GoalType
             : LevelGoalType.Survive;
 
         if (heroPrefabs == null || !heroPrefabs.TryGetValue(goalType, out Unit heroPrefab) || heroPrefab == null) return;
 
-        CreateUnit(heroData, 0, heroSpawnPoint.position, heroPrefab, heroSpawnPoint);
+        Hero = CreateUnit(heroData, 0, heroSpawnPoint.position, heroPrefab, heroSpawnPoint);
+
+        if (Hero != null && goalType == LevelGoalType.Distance) {
+            GameObject targetObject = new GameObject("HeroTarget");
+            
+            Vector3 position = Hero.transform.position;
+            position.x += levelData.goal.GoalAmount;
+            targetObject.transform.position = position;
+            targetObject.transform.SetParent(heroSpawnPoint, true);
+            Hero.SetTarget(targetObject.transform);
+            UnitActionEvent.Trigger(Hero, UnitActionType.Spawn);
+        }
     }
 
     IEnumerator CreateUnitWithDelay(UnitData data, int mergeState, float delay) {
@@ -81,37 +119,52 @@ public class PartyManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEv
         CreateUnit(data, mergeState);
     }
 
-    void CreateUnit(UnitData data, int mergeState, Vector3? position = null, Unit prefab = null, Transform parent = null) {
+    Unit CreateUnit(UnitData data, int mergeState, Vector3? position = null, Unit prefab = null, Transform parent = null) {
         Vector3 spawnPosition;
-        Transform spawnParent;
+        Transform spawnParent = null;
+        Unit unit = null;
 
         if (position.HasValue) {
             spawnPosition = position.Value;
             spawnParent = parent;
         } else {
+            prefab = unitPrefab;
             var area = spawnAreas.GetValueOrDefault(data.speciality, null);
-            if (area == null) return;
+            if (area == null) return null;
             spawnPosition = new Vector2(Random.Range(0, area.size.x), Random.Range(0, area.size.y)) - area.size * 0.5f + (Vector2)area.transform.position;
-            spawnParent = area.transform;
         }
 
-        Unit unitToSpawn = prefab != null ? prefab : unitPrefab;
-        Unit unit = Instantiate(unitToSpawn, spawnPosition, Quaternion.identity, spawnParent);
-        data.ResetSkillLevels();
-        unit.Setup(data, mergeState);
-        unit.SetHealthbarVisibility(_showHealthBars);
-        unit.OnDeath += OnUnitDeath;
-        _units.Add(unit);
-        ApplySupportMultipliers(unit);
+        if (prefab != null) {
+            unit = Instantiate(prefab, spawnPosition, Quaternion.identity, spawnParent);
+            data.ResetSkillLevels();
+            unit.Setup(data, mergeState);
+            unit.SetHealthbarVisibility(_showHealthBars);
+            unit.OnDeath += OnUnitDeath;
+            unit.OnHit += (u) => UnitActionEvent.Trigger(u, UnitActionType.Hit);
+            _units.Add(unit);
+            ApplySupportMultipliers(unit);
 
-        if (data.type == UnitType.Hero) {
-            unit.OnHit += OnHeroHit;
-            unit.OnDeath += OnHeroDeath;
-            if (heroHealthBar != null) {
-                heroHealthBar.Setup();
-                heroHealthBar.SetTotal(unit.MaxHealth);
-                heroHealthBar.SetValue(unit.MaxHealth);
+            if (data.type == UnitType.Hero) {
+                unit.OnHit += OnHeroHit;
+                unit.OnDeath += OnHeroDeath;
+                UpdateHeroHealthBar(unit);
+            } else if (Hero != null) {
+                unit.SetTarget(Hero.transform);
+                UnitAIController aiController = unit.GetComponent<UnitAIController>();
+                if (aiController != null) {
+                    BoxCollider2D area = spawnAreas.GetValueOrDefault(data.speciality, null);
+                    aiController.Initialize(Hero, area);
+                }
             }
+        }
+        return unit;
+    }
+
+    void UpdateHeroHealthBar(Unit unit = null) {
+        Unit hero = unit == null ? Hero : unit;
+        if (hero != null && heroHealthBar != null) {
+            heroHealthBar.SetTotal(hero.MaxHealth);
+            heroHealthBar.SetValue(hero.CurrentHealth);
         }
     }
 
@@ -120,14 +173,15 @@ public class PartyManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEv
         foreach (Attribute attribute in array) {
             if (unit != null)
                 ApplySupportMultipliers(new List<Unit> { unit }, attribute, playFeedback);
-            else
+            else {
                 ApplySupportMultipliers(_units, attribute, playFeedback);
+                UpdateHeroHealthBar();
+            }
         }
     }
 
     void OnHeroHit(Unit unit) {
-        if (heroHealthBar != null)
-            heroHealthBar.SetValue(unit.CurrentHealth);
+        UpdateHeroHealthBar(unit);
     }
 
     void OnUnitDeath(Unit unit) {
@@ -260,10 +314,9 @@ public class PartyManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEv
     }
 
     void HandleHeroSkillSelection(string skillId, int count) {
-        Unit hero = GetHero();
-        if (hero == null) return;
+        if (Hero == null) return;
 
-        Skill skill = hero.Skills.Find(s => s.Data != null && s.Data.name == skillId);
+        Skill skill = Hero.Skills.Find(s => s.Data != null && s.Data.name == skillId);
         if (skill == null) return;
 
         int maxLevelIndex = skill.LevelsCount - 1;

@@ -17,13 +17,11 @@ public class LevelData : SerializedScriptableObject {
     [Header("General Settings")]
     public string id;
     public LevelData required;
-    public int duration;
     public LevelGoalReward goal;
     public LevelDifficultyData difficulty;
     public EnemyGenerationData enemyData;
     public Dictionary<Attribute, float> enemyMultipliers = new Dictionary<Attribute, float>();
     public Vector2Int boardSize = new Vector2Int(6, 6);
-    public float cellSize = 2;
     
     public string Id => id;
     public int Best { get; set; }
@@ -56,10 +54,8 @@ public class LevelData : SerializedScriptableObject {
     }
 
     public void SetPassed() {
-        if (State < LevelState.Passed) {
+        if (State < LevelState.Passed)
             State = LevelState.Passed;
-            Best = duration;
-        }
     }
 
     public void SetCompleted() {

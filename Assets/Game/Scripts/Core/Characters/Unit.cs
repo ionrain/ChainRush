@@ -44,6 +44,8 @@ public class Unit : SerializedMonoBehaviour, MMEventListener<LevelResultEvent> {
     public float HPLoss => _health ? _health.CurrentHealth - _health.MaximumHealth : 0;
     public float MaxHealth => _health ? _health.MaximumHealth : 0;
     public float CurrentHealth => _health ? _health.CurrentHealth : 0;
+    public AIBrain Brain => _character != null ? _character.CharacterBrain : null;
+    public CharacterMovement MovementAbility => _movement;
 
     Dictionary<MovementStates, AnimationState> _movementToAnimation = new Dictionary<MovementStates, AnimationState>() {
         { MovementStates.Idle, AnimationState.Idle}, {MovementStates.Walking, AnimationState.Walk },
@@ -118,11 +120,11 @@ public class Unit : SerializedMonoBehaviour, MMEventListener<LevelResultEvent> {
         _attackState = Data.attackState;
         CreateSkills();
 
-        if (Data != null && _distanceDecision != null) {
+        /*if (Data != null && _distanceDecision != null) {
             Skill main = Skills.Find(t => t.Main);
             if (main != null && main.CurrentLevel != null)
                 _distanceDecision.Distance = main is MeleeAttackSkill ? 4 : main.CurrentLevel.GetParameterValue(SkillParameterType.Distance) - 2;
-        }
+        }*/
 
         
         //spine?.PlayAnimation(AnimationState.Appear);
@@ -153,6 +155,11 @@ public class Unit : SerializedMonoBehaviour, MMEventListener<LevelResultEvent> {
         spawnFeedback?.PlayFeedbacks();        
     }
 
+    public void SetTarget(Transform target) {
+        if (_character != null && _character.CharacterBrain != null)
+            _character.CharacterBrain.Target = target;
+    }
+
     void UpdateStats() {
         float tempSkillSpeed = GetAttributeValue(Attribute.SkillSpeed);
         _skillSpeed = tempSkillSpeed > 0 ? 1 / tempSkillSpeed : 1;
@@ -163,8 +170,7 @@ public class Unit : SerializedMonoBehaviour, MMEventListener<LevelResultEvent> {
     }
 
     void UpdateMergeState() {
-        int mergeIndex = (int)MergeState + 1;
-        name = string.Format("{0}-Grade-{1}", Data.name, mergeIndex);
+        name = string.Format("{0}-Grade-{1}", Data.name, MergeState + 1);
         MergeStateData mergeData = Data.GetMergeData(MergeState);
         if (mergeData != null) {
             if (changeColliderSettings && _collider != null && _collider.attachedRigidbody != null) {

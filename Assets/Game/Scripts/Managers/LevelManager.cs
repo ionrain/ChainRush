@@ -66,16 +66,18 @@ public struct LevelLoadEvent {
 public struct LevelProgressEvent {
     public float Progress { get; private set; }
     public int Time { get; private set; }
+    public float Distance { get; private set; }
 
     static LevelProgressEvent e;
-    public static void Trigger(float progress, int time) {
+    public static void Trigger(float progress, int time, float distance) {
         e.Progress = progress;
         e.Time = time;
+        e.Distance = distance;
         MMEventManager.TriggerEvent(e);
     }
 }
 
-public class LevelManager : MonoBehaviour, MMEventListener<LevelActionEvent>, MMEventListener<LevelGoalResultEvent> {
+public class LevelManager : MonoBehaviour, MMEventListener<LevelActionEvent>, MMEventListener<LevelGoalResultEvent>, MMEventListener<UnitActionEvent> {
     [SerializeField] SpriteRenderer background;
     [SerializeField] AllLocationsData locations;
     [SerializeField] UnityEvent OnLevelLoaded;
@@ -83,23 +85,36 @@ public class LevelManager : MonoBehaviour, MMEventListener<LevelActionEvent>, MM
     LevelData _data;
     int _stageIndex;
     float _time;
-    float _duration;
+    float _limit;
     LevelResult _result = LevelResult.None;
     int _timeInSeconds;
+    bool _isDistanceMode;
+    Transform _heroTransform;
+    float _heroStartX;
+    float _progress;
 
     void Start() {
         Setup();
     }
 
     void FixedUpdate() {
-        if (_time < _duration) {
+        if (_progress < 1) {
             float deltaTime = Time.fixedDeltaTime;
             _time += deltaTime;
             int intTime = (int)Mathf.Floor(_time);
 
             if (_timeInSeconds < intTime) {
                 _timeInSeconds++;
-                LevelProgressEvent.Trigger(Mathf.Clamp01(_time / _duration), _timeInSeconds);
+
+                float distance = 0;
+                if (_isDistanceMode && _heroTransform != null) {
+                     distance = _heroTransform.position.x - _heroStartX;
+                    _progress = Mathf.Clamp01(distance / _limit);
+                } else {
+                    _progress = Mathf.Clamp01(_time / _limit);
+                }
+
+                LevelProgressEvent.Trigger(_progress, _timeInSeconds, distance);
             }
         }
     }
@@ -108,13 +123,23 @@ public class LevelManager : MonoBehaviour, MMEventListener<LevelActionEvent>, MM
         if (locations != null && locations.Current != null && locations.Current.Current != null) {
             _data = locations.Current.Current;
             _data.PlaysCount++;
-            _duration = _data.duration;
+            if (_data.Goal != null) {
+                _limit = _data.Goal.GoalAmount;
+                _isDistanceMode = _data.Goal.GoalType == LevelGoalType.Distance;
+            }
             _timeInSeconds = 0;
             _time = 0;
-            if (background != null)
-                background.sprite = locations.Current.levelBack;
+            _heroTransform = null;
+            _heroStartX = 0;
             LevelLoadEvent.Trigger(EventStage.Start, _data);
             OnLevelLoaded?.Invoke();
+        }
+    }
+
+    public void OnMMEvent(UnitActionEvent e) {
+        if (e.Type == UnitActionType.Spawn && e.Unit != null && e.Unit.Data != null && e.Unit.Data.type == UnitType.Hero) {
+            _heroTransform = e.Unit.transform;
+            _heroStartX = _heroTransform.position.x;
         }
     }
 
@@ -192,11 +217,13 @@ public class LevelManager : MonoBehaviour, MMEventListener<LevelActionEvent>, MM
     void OnEnable() {
         this.MMEventStartListening<LevelActionEvent>();
         this.MMEventStartListening<LevelGoalResultEvent>();
+        this.MMEventStartListening<UnitActionEvent>();
     }
 
     void OnDisable() {
         this.MMEventStopListening<LevelActionEvent>();
         this.MMEventStopListening<LevelGoalResultEvent>();
+        this.MMEventStopListening<UnitActionEvent>();
     }
 
 }

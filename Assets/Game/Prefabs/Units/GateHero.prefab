@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 3346723448445401399}
   - component: {fileID: 9099639183815089010}
   m_Layer: 10
-  m_Name: Gate
+  m_Name: GateHero
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

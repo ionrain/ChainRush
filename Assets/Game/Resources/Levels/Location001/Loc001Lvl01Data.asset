@@ -26,10 +26,13 @@ MonoBehaviour:
       Data: 0|LevelGoalReward, Assembly-CSharp
     - Name: goal
       Entry: 7
-      Data: 1|LevelGoal, Assembly-CSharp
+      Data: 1|AmountLevelGoal, Assembly-CSharp
     - Name: goalType
       Entry: 3
       Data: 0
+    - Name: amount
+      Entry: 3
+      Data: 300
     - Name: 
       Entry: 8
       Data: 
@@ -91,8 +94,6 @@ MonoBehaviour:
       Data: 
   id: Level01
   required: {fileID: 0}
-  duration: 300
   difficulty: {fileID: 11400000, guid: 8d275dbbff7d0491db9ccb8b28712bc9, type: 2}
   enemyData: {fileID: 11400000, guid: 597fab95242c34c10bb063af89e6b69c, type: 2}
   boardSize: {x: 4, y: 4}
-  cellSize: 2.2

@@ -70,7 +70,7 @@ public class Board : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>, M
         if (e.Stage == EventStage.Start && e.Data != null) {
             _data = e.Data;
             _boardSize = _data.boardSize;
-            cellSize = _data.cellSize;
+            //cellSize = _data.cellSize;
             Setup();
             _visible = true;
             OnBoardShow?.Invoke();            

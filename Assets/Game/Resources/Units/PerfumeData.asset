@@ -149,7 +149,7 @@ MonoBehaviour:
       Data: 6|AttributeUpgradeData, Assembly-CSharp
     - Name: baseValue
       Entry: 4
-      Data: 3
+      Data: 0.5
     - Name: minDelta
       Entry: 4
       Data: 0
@@ -235,7 +235,7 @@ MonoBehaviour:
       Data: 1.8
     - Name: mass
       Entry: 4
-      Data: 3
+      Data: 100
     - Name: colliderSize
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule

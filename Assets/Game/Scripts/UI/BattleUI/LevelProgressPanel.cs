@@ -3,7 +3,7 @@ using MoreMountains.Tools;
 using TMPro;
 using UnityEngine;
 
-public class LevelTimePanel : MonoBehaviour, MMEventListener<LevelLoadEvent>, MMEventListener<LevelProgressEvent>{
+public class LevelProgressPanel : MonoBehaviour, MMEventListener<LevelLoadEvent>, MMEventListener<LevelProgressEvent>{
     [SerializeField] Progressbar progressbar;
     [SerializeField] TextMeshProUGUI timeLabel;
 
@@ -11,7 +11,7 @@ public class LevelTimePanel : MonoBehaviour, MMEventListener<LevelLoadEvent>, MM
 
     public void OnMMEvent(LevelLoadEvent e) {
         if (e.Stage == EventStage.Start && e.Data != null && progressbar != null) {
-            _duration = e.Data.duration;
+            _duration = e.Data.Goal.GoalAmount;
             //progressbar.Setup();
             //progressbar.SetTotal(_duration);
             //progressbar?.SetValue(0f);
@@ -20,7 +20,7 @@ public class LevelTimePanel : MonoBehaviour, MMEventListener<LevelLoadEvent>, MM
 
     public void OnMMEvent(LevelProgressEvent e) {
         progressbar?.SetValue(e.Progress);
-        TimeSpan time = TimeSpan.FromSeconds(_duration - e.Time);
+        TimeSpan time = TimeSpan.FromSeconds(e.Time);
         timeLabel?.SetText(time.ToString(@"m\:ss"));
     }
 

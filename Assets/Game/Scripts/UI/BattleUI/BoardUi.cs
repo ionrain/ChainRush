@@ -41,6 +41,8 @@ public class CellSelectPattern {
 public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>, MMEventListener<LevelProgressEvent> {
     [SerializeField] RectTransform panelRoot;
     [SerializeField] float panelHeightPercent = 50;
+
+    public float PanelHeightPercent => panelHeightPercent;
     [SerializeField] GridLayoutGroup cellContainer;
     [SerializeField] CellUi cellPrefab;
     [SerializeField] Dictionary<CellItemType, Color> cellColors = new();

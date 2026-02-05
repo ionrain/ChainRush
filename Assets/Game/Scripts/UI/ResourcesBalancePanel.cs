@@ -1,9 +1,11 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using MoreMountains.Tools;
 using Sirenix.OdinInspector;
+using UnityEditor.iOS;
 using UnityEngine;
 
-public class ResourcesBalancePanel : SerializedMonoBehaviour, MMEventListener<BalanceResourcesEvent> {
+public class ResourcesBalancePanel : SerializedMonoBehaviour, MMEventListener<BalanceResourcesEvent>, MMEventListener<UnitEvent> {
     [SerializeField] Dictionary<ResourceType, IconTextItem> items = new Dictionary<ResourceType, IconTextItem>();
     [SerializeField] RectTransform itemsRoot;
     [SerializeField] ResourcesData resourcesData;
@@ -42,12 +44,27 @@ public class ResourcesBalancePanel : SerializedMonoBehaviour, MMEventListener<Ba
         }
     }
 
+    public void OnMMEvent(UnitEvent e) {
+        if (e.Data != null)
+            UpdateCardBalance(e.Data);
+    }
+
+    public void UpdateCardBalance(UnitData data) {
+        ResourceType resourceType = data.type == UnitType.Hero ? ResourceType.HeroCard : ResourceType.UnitCard;
+        IconTextItem item = items.GetValueOrDefault(resourceType, null);
+
+        if (item != null)
+            item.SetText(string.Format(_soloPattern, data.CardBalance.ToShortString()));
+    }
+
     void OnEnable() {
         this.MMEventStartListening<BalanceResourcesEvent>();
+        this.MMEventStartListening<UnitEvent>();
         
     }
 
     void OnDisable() {
         this.MMEventStopListening<BalanceResourcesEvent>();
+        this.MMEventStopListening<UnitEvent>();
     }
 }

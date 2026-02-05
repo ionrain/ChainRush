@@ -95,5 +95,5 @@ MonoBehaviour:
   id: Level02
   required: {fileID: 0}
   difficulty: {fileID: 11400000, guid: 8d275dbbff7d0491db9ccb8b28712bc9, type: 2}
-  enemyData: {fileID: 11400000, guid: 597fab95242c34c10bb063af89e6b69c, type: 2}
+  enemyData: {fileID: 11400000, guid: f30a9a681748147ccbab05c05825990a, type: 2}
   boardSize: {x: 4, y: 4}

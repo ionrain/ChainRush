@@ -24368,7 +24368,7 @@ GameObject:
   m_Component:
   - component: {fileID: 559624540}
   - component: {fileID: 559624541}
-  m_Layer: 14
+  m_Layer: 8
   m_Name: Bottom
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -24843,7 +24843,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: MoreMountains.Tools::MoreMountains.Tools.MMFollowTarget
   FollowPosition: 1
   FollowPositionX: 1
-  FollowPositionY: 0
+  FollowPositionY: 1
   FollowPositionZ: 0
   PositionSpace: 0
   FollowRotation: 0
@@ -29505,7 +29505,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelTimePanel
   progressbar: {fileID: 867538348}
-  timeLabel: {fileID: 1611366678}
+  label: {fileID: 1611366678}
 --- !u!1 &873522146
 GameObject:
   m_ObjectHideFlags: 0
@@ -78565,7 +78565,7 @@ GameObject:
   - component: {fileID: 1611366679}
   - component: {fileID: 1611366678}
   m_Layer: 5
-  m_Name: TimeLabel
+  m_Name: Label
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -78736,7 +78736,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1643721146}
   - component: {fileID: 1643721147}
-  m_Layer: 14
+  m_Layer: 8
   m_Name: Left
   m_TagString: Untagged
   m_Icon: {fileID: 0}

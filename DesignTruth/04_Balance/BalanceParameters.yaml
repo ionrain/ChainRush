@@ -54,3 +54,28 @@ level_progress:
       progress = "elapsed_time_seconds / goal_amount"
     distance:
       progress = "(hero_x - hero_start_x) / goal_amount"
+      
+grid_refresh:
+  refresh_interval_seconds_base: 5.0
+
+  scheduler:
+    meaningful_ratio_base: 0.33
+    meaningful_ratio_high: 0.75
+    max_filler_streak: 2
+    max_meaningful_streak: 2   # optional
+
+    onboarding_end_progress: 0.15
+    onboarding_meaningful_ratio: 0.6
+
+    late_game_start_progress: 0.75
+
+  danger:
+    danger_window_seconds: 6
+    force_meaningful_on_high_danger: true
+
+  # Profiles name list; concrete weights live in tile pool docs/catalog
+  profiles:
+    filler_low_danger: {}
+    neutral_mixed: {}
+    meaningful_power: {}
+    meaningful_booster: {}

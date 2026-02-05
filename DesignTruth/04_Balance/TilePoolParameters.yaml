@@ -1,0 +1,90 @@
+tile_pools:
+  profiles:
+    filler_low_danger:
+      category_weights:
+        GOLD: 40
+        UPGRADE_MINOR: 40
+        UNIT: 15
+        HERO_ABILITY: 3
+        BOOSTER: 1
+        UPGRADE_MAJOR: 1
+
+    neutral_mixed:
+      category_weights:
+        GOLD: 25
+        UPGRADE_MINOR: 25
+        UNIT: 35
+        HERO_ABILITY: 7
+        UPGRADE_MAJOR: 6
+        BOOSTER: 2
+
+    meaningful_power:
+      category_weights:
+        UNIT: 45
+        HERO_ABILITY: 20
+        UPGRADE_MAJOR: 20
+        UPGRADE_MINOR: 10
+        GOLD: 5
+        BOOSTER: 0
+
+    meaningful_booster:
+      category_weights:
+        BOOSTER: 25
+        UNIT: 30
+        HERO_ABILITY: 20
+        UPGRADE_MAJOR: 15
+        UPGRADE_MINOR: 7
+        GOLD: 3
+
+  subpools:
+    UNIT:
+      weights:
+        slime_tank: 25
+        slime_dps: 35
+        slime_ranged: 25
+        slime_support: 15
+
+    UPGRADE_MINOR:
+      weights:
+        hp_percent_small: 20
+        atk_percent_small: 20
+        attack_speed_small: 15
+        crit_chance_small: 15
+        crit_damage_small: 10
+        range_small: 10
+        defense_small: 10
+
+    UPGRADE_MAJOR:
+      weights:
+        atk_percent_big: 25
+        hp_percent_big: 25
+        splash: 15
+        pierce: 15
+        chain_lightning: 10
+        lifesteal: 10
+
+    HERO_ABILITY:
+      weights:
+        fireball: 40
+        frost_nova: 30
+        arcane_bolt: 30
+
+    BOOSTER:
+      weights:
+        time_slow: 40
+        heal: 35
+        screen_nuke: 25
+
+  tier_scaling:
+    max_tier: 3
+    overflow:
+      unit_extra_spawn_per_tile: 1
+      gold_extra_amount_per_tile: 1.0
+      upgrade_extra_step_per_tile: 0.25
+      ability_extra_power_step_per_tile: 0.2
+      booster_extra_power_step_per_tile: 0.15
+
+  safety:
+    high_danger:
+      min_meaningful_tiles_on_grid: 3
+      ensure_at_least_one_of_categories: ["UNIT", "BOOSTER"]

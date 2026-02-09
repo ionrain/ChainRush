@@ -10,6 +10,7 @@ public class UnitAIController : MonoBehaviour, MMEventListener<UnitActionEvent>,
     [SerializeField] float followRadius = 5f;                // (A) hysteresis: clears forced return, resumes normal logic
     [SerializeField] float maxChaseDistanceFromAnchor = 4f;  // (B) soft leash: max distance from anchor while chasing enemy
     [SerializeField] float enemyDetectRadius = 6f;
+    [SerializeField] float heroThreatRadius = 0f;            // hero-centered detection radius (0 = use enemyDetectRadius)
     [SerializeField] float allyDefendRadius = 8f;
 
     [Header("Speed")]
@@ -19,6 +20,14 @@ public class UnitAIController : MonoBehaviour, MMEventListener<UnitActionEvent>,
     [SerializeField] LayerMask enemyLayer;
     [SerializeField] float targetEvaluationInterval = 0.3f;
     [SerializeField] int overlapMaximum = 10;
+    [SerializeField] float maxUnitAcquireDistance = 0f;      // hard gate: skip enemies farther than this from unit (0 = use effective radius)
+
+    [Header("Target Scoring")]
+    [SerializeField] float wHero = 3f;
+    [SerializeField] float wUnit = 1f;
+    [SerializeField] float wCrowd = 2f;
+    [SerializeField] float wLeash = 1.5f;
+    [SerializeField] float combatRadius = 5f;
 
     [Header("Hit Response")]
     [SerializeField] float heroHitResponseDuration = 2f;
@@ -30,6 +39,7 @@ public class UnitAIController : MonoBehaviour, MMEventListener<UnitActionEvent>,
     [SerializeField] float enemyCommitTime = 0.5f;           // (D) grace period: allows finishing attack before leash yank (only while within returnRadius)
     [SerializeField] float leashRecoveryTime = 1.5f;         // after leash abort, suppress enemy targeting for this duration
     [SerializeField] float combatLingerTime = 0.8f;          // after losing last enemy, hold position before retreating to rally
+    [SerializeField] float idleRoamDelayAfterThreat = 1.2f;  // seconds after last threat before switching from formation to idle roam
 
     Unit _unit;
     Unit _heroUnit;
@@ -51,6 +61,25 @@ public class UnitAIController : MonoBehaviour, MMEventListener<UnitActionEvent>,
     float _heroLastHitTime = -100f;
     Transform _lastHitAllyTransform;
     float _allyLastHitTime = -100f;
+
+    // Formation
+    UnitManager _unitManager;
+    FormationProfile _formationProfile;
+    int _slotIndex;
+    Transform _formationPoint;
+    UnitAIProfile _aiProfile;
+
+    // Target distribution
+    int _reservedEnemyInstanceId = -1;
+
+    // Catch-up
+    bool _isCatchingUp;
+
+    // Threat tracking (for hybrid idle roam / formation)
+    float _lastThreatTime = -999f;
+
+    // Force re-evaluation flag (set when reserved enemy becomes invalid)
+    bool _forceReevaluate;
 
     // Rally waypoint (parented to spawn area, moves with hero)
     Transform _rallyWaypoint;
@@ -109,7 +138,7 @@ public class UnitAIController : MonoBehaviour, MMEventListener<UnitActionEvent>,
         Idle
     }
 
-    public void Initialize(Unit hero, BoxCollider2D spawnArea = null) {
+    public void Initialize(Unit hero, BoxCollider2D spawnArea = null, UnitManager partyManager = null) {
         _unit = GetComponent<Unit>();
         if (_unit == null) return;
 
@@ -134,7 +163,56 @@ public class UnitAIController : MonoBehaviour, MMEventListener<UnitActionEvent>,
             RandomizeRallyPosition();
         }
 
+        // Profile + formation setup (Normal units only)
+        _unitManager = partyManager;
+        if (_unitManager != null && _unit.Data != null && _unit.Data.type == UnitType.Normal) {
+            _aiProfile = _unitManager.GetAIProfile(_unit.Data.speciality);
+            ApplyProfile(_aiProfile);
+
+            // Formation: sourced exclusively from AI profile
+            if (_aiProfile != null && _aiProfile.formation != null) {
+                _formationProfile = _aiProfile.formation;
+                _slotIndex = _unitManager.AssignSlotIndex(_unit.Data.speciality);
+                GameObject fpObj = new GameObject($"FormationPoint_{gameObject.name}");
+                _formationPoint = fpObj.transform;
+                UpdateFormationPointPosition();
+            }
+        }
+
         _active = true;
+    }
+
+    void ApplyProfile(UnitAIProfile p) {
+        if (p == null) return;
+        if (p.overrideDistances) {
+            returnRadius = p.returnRadius;
+            followRadius = p.followRadius;
+            maxChaseDistanceFromAnchor = p.maxChaseDistanceFromAnchor;
+            allyDefendRadius = p.allyDefendRadius;
+        }
+        if (p.overrideDetection) {
+            enemyDetectRadius = p.enemyDetectRadius;
+            heroThreatRadius = p.heroThreatRadius;
+            maxUnitAcquireDistance = p.maxUnitAcquireDistance;
+        }
+        if (p.overrideTiming) {
+            targetEvaluationInterval = p.targetEvaluationInterval;
+            targetLockTime = p.targetLockTime;
+            retargetCooldown = p.retargetCooldown;
+            enemyCommitTime = p.enemyCommitTime;
+            leashRecoveryTime = p.leashRecoveryTime;
+            combatLingerTime = p.combatLingerTime;
+        }
+        if (p.overrideScoring) {
+            wHero = p.wHero;
+            wUnit = p.wUnit;
+            wCrowd = p.wCrowd;
+            wLeash = p.wLeash;
+            combatRadius = p.combatRadius;
+        }
+        if (p.overrideSpeed) {
+            heroSpeedMultiplier = p.heroSpeedMultiplier;
+        }
     }
 
     void SetHero(Unit hero) {
@@ -159,24 +237,35 @@ public class UnitAIController : MonoBehaviour, MMEventListener<UnitActionEvent>,
     void Update() {
         if (!_active || _brain == null) return;
 
-        // Immediate re-evaluation when current enemy dies (don't wait for interval).
-        // Prevents the unit from walking toward a dead enemy for up to targetEvaluationInterval
-        // before noticing it's dead and reversing direction.
-        if (_targetReason == TargetReason.Enemy && !IsCurrentEnemyAlive())
-            _lastEvaluationTime = 0f;
+        // Immediate re-evaluation when current enemy becomes invalid (dead/destroyed/inactive).
+        // Prevents the unit from walking toward a dead enemy for up to targetEvaluationInterval.
+        if (_targetReason == TargetReason.Enemy && !IsReservedEnemyValid()) {
+            // Release reservation immediately so other units see updated counts
+            if (_reservedEnemyInstanceId >= 0 && _unitManager != null) {
+                _unitManager.ReleaseEnemy(_reservedEnemyInstanceId);
+                _reservedEnemyInstanceId = -1;
+            }
+            _forceReevaluate = true;
+        }
 
         EvaluateTarget();
+        UpdateCatchUpState();
         UpdateSpeedBoost();
     }
 
-    bool IsCurrentEnemyAlive() {
+    bool IsReservedEnemyValid() {
         return _currentTarget != null
+            && _currentTarget.gameObject.activeInHierarchy
             && (_currentTargetHealth == null || _currentTargetHealth.CurrentHealth > 0);
     }
 
     void EvaluateTarget() {
-        if (Time.time - _lastEvaluationTime < targetEvaluationInterval) return;
+        if (!_forceReevaluate && Time.time - _lastEvaluationTime < targetEvaluationInterval) return;
+        _forceReevaluate = false;
         _lastEvaluationTime = Time.time;
+
+        // Update formation point to track hero position every tick
+        UpdateFormationPointPosition();
 
         // === Phase 1: Compute hero distance and update hysteresis flag ===
         float distToHero = float.MaxValue;
@@ -290,6 +379,17 @@ public class UnitAIController : MonoBehaviour, MMEventListener<UnitActionEvent>,
     /// Sets timing flags (lock, cooldown, commit, anchor) when switching to Enemy.
     /// </summary>
     void ApplyTarget(Transform target, TargetReason reason) {
+        // Reservation management: determine new instanceId
+        int newInstanceId = (reason == TargetReason.Enemy && target != null)
+            ? target.gameObject.GetInstanceID()
+            : -1;
+
+        // Release previous reservation only if target actually changed
+        if (_reservedEnemyInstanceId >= 0 && _reservedEnemyInstanceId != newInstanceId && _unitManager != null) {
+            _unitManager.ReleaseEnemy(_reservedEnemyInstanceId);
+            _reservedEnemyInstanceId = -1;
+        }
+
         if (reason == TargetReason.Enemy)
             _engagedUnits.Add(this);
         else
@@ -308,6 +408,12 @@ public class UnitAIController : MonoBehaviour, MMEventListener<UnitActionEvent>,
             _chaseAnchorPosition = _heroTransform != null
                 ? (Vector2)_heroTransform.position
                 : (Vector2)transform.position;
+
+            // Reserve the new enemy (only if not already reserved — same id)
+            if (newInstanceId >= 0 && newInstanceId != _reservedEnemyInstanceId && _unitManager != null) {
+                _reservedEnemyInstanceId = newInstanceId;
+                _unitManager.ReserveEnemy(_reservedEnemyInstanceId);
+            }
         }
 
         _unit.SetTarget(target);
@@ -364,12 +470,46 @@ public class UnitAIController : MonoBehaviour, MMEventListener<UnitActionEvent>,
         );
     }
 
+    void UpdateFormationPointPosition() {
+        if (_formationPoint == null || _formationProfile == null) return;
+
+        // Base position: spawnArea center (follows hero via PartyManager.FixedUpdate)
+        // Fallback to hero position if no spawnArea
+        Vector3 basePos = _spawnArea != null
+            ? _spawnArea.bounds.center
+            : (_heroTransform != null ? _heroTransform.position : transform.position);
+
+        int maxPerLine = Mathf.Max(1, _formationProfile.maxPerLine);
+        int line = _slotIndex / maxPerLine;
+        int posInLine = _slotIndex % maxPerLine;
+
+        float x = _formationProfile.forwardOffsetX - line * _formationProfile.rowBackstepX;
+        float y = (posInLine - (maxPerLine - 1) * 0.5f) * _formationProfile.spreadY;
+
+        _formationPoint.position = basePos + new Vector3(x, y, 0f);
+    }
+
+    bool ShouldUseFormationNow() {
+        if (_formationPoint == null || _formationProfile == null) return false;
+        if (_isReturningToHero || _isCatchingUp) return true;
+        if (_targetReason == TargetReason.Enemy || _targetReason == TargetReason.HeroDefend
+            || _targetReason == TargetReason.AllyDefend || _targetReason == TargetReason.AllyAssist)
+            return true;
+        if (Time.time - _lastThreatTime < idleRoamDelayAfterThreat) return true;
+        return false;
+    }
+
     /// <summary>
     /// Returns a valid rally target. Never returns null.
     /// During resting, returns the current waypoint so the unit stands still near it
     /// instead of receiving null which would cause idle/walk jitter.
     /// </summary>
     Transform GetSafeRallyTarget() {
+        // HYBRID: formation during threats/catchup/return, roam when idle
+        if (ShouldUseFormationNow())
+            return _formationPoint;
+
+        // Idle roam: original rally waypoint behavior
         if (_rallyWaypoint == null) return _heroTransform;
 
         if (_rallyResting) {
@@ -392,11 +532,18 @@ public class UnitAIController : MonoBehaviour, MMEventListener<UnitActionEvent>,
     }
 
     Transform FindNearestEnemy() {
-        int count = Physics2D.OverlapCircle(transform.position, enemyDetectRadius, _contactFilter, _overlapResults);
+        if (_heroTransform == null) return null;
+
+        float effectiveRadius = heroThreatRadius > 0f ? heroThreatRadius : enemyDetectRadius;
+        int count = Physics2D.OverlapCircle(_heroTransform.position, effectiveRadius, _contactFilter, _overlapResults);
         if (count == 0) return null;
 
-        Transform nearest = null;
-        float minDistance = float.MaxValue;
+        float acquireLimit = maxUnitAcquireDistance > 0f ? maxUnitAcquireDistance : effectiveRadius;
+        float dUnitToHero = Vector2.Distance(transform.position, _heroTransform.position);
+
+        Transform best = null;
+        float bestScore = float.MinValue;
+        bool anyValidCandidate = false;
 
         for (int i = 0; i < count; i++) {
             if (_overlapResults[i] == null) continue;
@@ -404,14 +551,35 @@ public class UnitAIController : MonoBehaviour, MMEventListener<UnitActionEvent>,
             Health health = _overlapResults[i].GetComponent<Health>();
             if (health != null && health.CurrentHealth <= 0) continue;
 
-            float dist = Vector2.Distance(transform.position, _overlapResults[i].transform.position);
-            if (dist < minDistance) {
-                minDistance = dist;
-                nearest = _overlapResults[i].transform;
+            Transform candidate = _overlapResults[i].transform;
+            float dHero = Vector2.Distance(_heroTransform.position, candidate.position);
+            float dUnit = Vector2.Distance(transform.position, candidate.position);
+
+            // Guard 2: hard gate — skip candidates physically too far from this unit
+            if (dUnit > acquireLimit) continue;
+
+            anyValidCandidate = true;
+
+            int assignedCount = _unitManager != null
+                ? _unitManager.GetAssignedCount(candidate.gameObject.GetInstanceID())
+                : 0;
+
+            float score = wHero / (0.5f + dHero)
+                        + wUnit / (0.5f + dUnit)
+                        - wCrowd * assignedCount
+                        - wLeash * Mathf.Max(0f, dHero - combatRadius)
+                        - wLeash * Mathf.Max(0f, dUnit - dUnitToHero);
+
+            if (score > bestScore) {
+                bestScore = score;
+                best = candidate;
             }
         }
 
-        return nearest;
+        if (anyValidCandidate)
+            _lastThreatTime = Time.time;
+
+        return best;
     }
 
     Transform FindNearestFightingAlly() {
@@ -430,20 +598,48 @@ public class UnitAIController : MonoBehaviour, MMEventListener<UnitActionEvent>,
         return nearest;
     }
 
+    void UpdateCatchUpState() {
+        if (_formationPoint == null || _formationProfile == null) {
+            _isCatchingUp = false;
+            return;
+        }
+
+        // Disable catch-up during combat or forced return
+        if (_targetReason == TargetReason.Enemy || _isReturningToHero) {
+            _isCatchingUp = false;
+            return;
+        }
+
+        float distToFormation = Vector2.Distance(transform.position, _formationPoint.position);
+
+        // Hysteresis: enter at catchupDistance, exit at catchupStopDistance
+        if (distToFormation > _formationProfile.catchupDistance)
+            _isCatchingUp = true;
+        else if (distToFormation < _formationProfile.catchupStopDistance)
+            _isCatchingUp = false;
+        // Between thresholds: keep current state
+    }
+
     /// <summary>
-    /// Speed boost tied to _isReturningToHero flag.
-    /// Activates when hysteresis triggers return (beyond returnRadius),
-    /// deactivates when unit reaches followRadius.
+    /// Speed boost priority: forced return > catch-up > normal.
+    /// Forced return activates beyond returnRadius, catch-up when lagging behind formation.
     /// </summary>
     void UpdateSpeedBoost() {
         if (_movement == null) return;
 
-        bool shouldBoost = _isReturningToHero;
+        float targetMultiplier = 1f;
 
-        if (shouldBoost && !_speedBoosted) {
-            _movement.WalkSpeed = _baseWalkSpeed * heroSpeedMultiplier;
+        if (_isReturningToHero)
+            targetMultiplier = heroSpeedMultiplier;
+        else if (_isCatchingUp && _formationProfile != null)
+            targetMultiplier = _formationProfile.catchupSpeedMultiplier;
+
+        bool shouldBoost = targetMultiplier != 1f;
+
+        if (shouldBoost) {
+            _movement.WalkSpeed = _baseWalkSpeed * targetMultiplier;
             _speedBoosted = true;
-        } else if (!shouldBoost && _speedBoosted) {
+        } else if (_speedBoosted) {
             _movement.WalkSpeed = _baseWalkSpeed;
             _speedBoosted = false;
         }
@@ -454,11 +650,13 @@ public class UnitAIController : MonoBehaviour, MMEventListener<UnitActionEvent>,
 
         if (e.Unit.Data != null && e.Unit.Data.type == UnitType.Hero) {
             _heroLastHitTime = Time.time;
+            _lastThreatTime = Time.time;
         } else {
             float distance = Vector2.Distance(transform.position, e.Unit.transform.position);
             if (distance <= allyDefendRadius) {
                 _lastHitAllyTransform = e.Unit.transform;
                 _allyLastHitTime = Time.time;
+                _lastThreatTime = Time.time;
             }
         }
     }
@@ -481,10 +679,19 @@ public class UnitAIController : MonoBehaviour, MMEventListener<UnitActionEvent>,
         this.MMEventStopListening<LevelResultEvent>();
         _engagedUnits.Remove(this);
 
+        // Release enemy reservation
+        if (_reservedEnemyInstanceId >= 0 && _unitManager != null) {
+            _unitManager.ReleaseEnemy(_reservedEnemyInstanceId);
+            _reservedEnemyInstanceId = -1;
+        }
+
         if (_heroUnit != null)
             _heroUnit.OnDeath -= OnHeroDeath;
 
         if (_rallyWaypoint != null)
             Destroy(_rallyWaypoint.gameObject);
+
+        if (_formationPoint != null)
+            Destroy(_formationPoint.gameObject);
     }
 }

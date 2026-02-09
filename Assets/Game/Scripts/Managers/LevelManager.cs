@@ -6,7 +6,6 @@ using UnityEngine.Events;
 
 public enum LevelResult { None, Success, Failure, Reload, Quit }
 public enum LevelActionType { Pause, Unpause, RequestResult, Succeed, Fail, Reload, Quit }
-public enum LevelExp { None = 0, Smallest = 3, Small = 6, Medium = 20, Large = 100, Largest = 200 }
 
 public class LevelResultData : IRewardList {
     public LevelData LevelData { get; private set; }

@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb340c6cbfad34b5e9b2248f4c5a5b97, type: 3}
+  m_Name: RangeUnitProfile
+  m_EditorClassIdentifier: Assembly-CSharp::UnitAIProfile
+  formation:
+    forwardOffsetX: -0.3
+    rowBackstepX: 0
+    spreadY: 1.2
+    maxPerLine: 4
+    catchupSpeedMultiplier: 1.6
+    catchupDistance: 3
+    catchupStopDistance: 1.8
+  overrideDistances: 1
+  overrideDetection: 1
+  overrideTiming: 1
+  overrideScoring: 1
+  overrideSpeed: 1
+  returnRadius: 9
+  followRadius: 6.5
+  maxChaseDistanceFromAnchor: 2.8
+  allyDefendRadius: 9
+  enemyDetectRadius: 7
+  heroThreatRadius: 10
+  maxUnitAcquireDistance: 5.5
+  targetEvaluationInterval: 0.3
+  targetLockTime: 1.15
+  retargetCooldown: 0.55
+  enemyCommitTime: 0.45
+  leashRecoveryTime: 1.7
+  combatLingerTime: 0.95
+  wHero: 3.2
+  wUnit: 0.9
+  wCrowd: 2.6
+  wLeash: 2.1
+  combatRadius: 6
+  heroSpeedMultiplier: 2.3

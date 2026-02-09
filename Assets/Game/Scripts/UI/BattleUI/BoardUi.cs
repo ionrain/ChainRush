@@ -56,6 +56,7 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
 
     [Header("Refresh Settings")]
     [SerializeField] BoardRefreshMode refreshMode = BoardRefreshMode.Auto;
+    [SerializeField] bool pauseTimerOnSelection;
     [SerializeField] float minIntervalBetweenRefreshes = 1f;
     [SerializeField] float refreshDuration = 1f;
     [SerializeField] Progressbar refreshProgressbar;
@@ -64,7 +65,9 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
 
     [Header("Events")]
     [SerializeField] UnityEvent OnBoardRefresh;
+    [SerializeField] UnityEvent OnBoardSelectStart;
     [SerializeField] UnityEvent OnBoardSelectEnd;
+    [SerializeField] UnityEvent<float> OnPanelTopChanged;
 
     LevelData _data;
     Vector2Int _boardSize = Vector2Int.zero;
@@ -110,10 +113,10 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
         UpdateRefreshIntervals(e.Progress);
     }
 
-    void FixedUpdate() {
+    void Update() {
         if (_data?.difficulty == null) return;
 
-        float dt = Time.fixedDeltaTime;
+        float dt = Time.unscaledDeltaTime;
         UpdateCooldowns(dt);
 
         if (!_isRefreshPaused)
@@ -146,7 +149,6 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
 
     public void TriggerRefresh() {
         RefreshBoard();
-        OnBoardRefresh?.Invoke();
         _refreshTimer = _refreshInterval;
         _isRefreshPaused = false;
     }
@@ -215,6 +217,7 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
         ApplyPatternsToBoard();
         _cellsMap.ForEach(t => { if (t.Value != null) t.Value.SetActive(true); });
         BoardUiEvent.Trigger(BoardUiEventType.SetupItems, this);
+        OnBoardRefresh?.Invoke();
     }
         
     void ResizePanel() {
@@ -227,6 +230,11 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
         float targetHeight = parentHeight * (panelHeightPercent / 100f);
 
         panelRoot.sizeDelta = new Vector2(panelRoot.sizeDelta.x, targetHeight);
+
+        Canvas.ForceUpdateCanvases();
+        Vector3[] corners = new Vector3[4];
+        panelRoot.GetWorldCorners(corners);
+        OnPanelTopChanged?.Invoke(corners[1].y);
     }
 
     void CreateCells() {
@@ -491,23 +499,31 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
         List<CellSelectPattern> patterns = GeneratePatterns();
         if (patterns.Count == 0) return;
 
-        int totalPatterns = patterns.Count;
-        int assignedIndex = 0;
+        ShuffleList(patterns);
+
+        int totalCells = 0;
+        foreach (var p in patterns)
+            totalCells += p.Count;
+
+        HashSet<int> assignedIndices = new();
         HashSet<CellItemType> usedTypes = new();
 
-        // 1. Распределяем гарантированные доли из alwaysAvailableOnRefresh
+        // 1. Распределяем гарантированные доли из alwaysAvailableOnRefresh (по количеству ячеек)
         if (_data?.difficulty?.alwaysAvailableOnRefresh != null) {
             foreach (var kvp in _data.difficulty.alwaysAvailableOnRefresh) {
                 CellItemType type = kvp.Key;
                 if (_unavailableTypes.Contains(type)) continue;
 
-                float fraction = kvp.Value;
-                int count = Mathf.RoundToInt(totalPatterns * fraction);
+                int targetCellCount = Mathf.RoundToInt(totalCells * kvp.Value);
+                int currentCellCount = 0;
 
-                for (int i = 0; i < count && assignedIndex < patterns.Count; i++) {
-                    ApplyItemToPattern(patterns[assignedIndex], type);
+                for (int i = 0; i < patterns.Count && currentCellCount < targetCellCount; i++) {
+                    if (assignedIndices.Contains(i)) continue;
+
+                    ApplyItemToPattern(patterns[i], type);
                     usedTypes.Add(type);
-                    assignedIndex++;
+                    assignedIndices.Add(i);
+                    currentCellCount += patterns[i].Count;
                 }
             }
         }
@@ -515,7 +531,6 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
         // 2. Оставшиеся паттерны заполняем типами из refreshCooldowns
         List<CellItemType> cooldownReady = GetCooldownReadyTypes();
 
-        // Если нет типов с готовым кулдауном — используем типы из alwaysAvailableOnRefresh
         List<CellItemType> fallbackTypes = new();
         if (_data?.difficulty?.alwaysAvailableOnRefresh != null) {
             fallbackTypes.AddRange(_data.difficulty.alwaysAvailableOnRefresh.Keys);
@@ -525,19 +540,18 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
             .FindAll(t => !_unavailableTypes.Contains(t));
 
         if (fillTypes.Count > 0) {
-            while (assignedIndex < patterns.Count) {
+            for (int i = 0; i < patterns.Count; i++) {
+                if (assignedIndices.Contains(i)) continue;
                 CellItemType type = fillTypes[Random.Range(0, fillTypes.Count)];
-                ApplyItemToPattern(patterns[assignedIndex], type);
+                ApplyItemToPattern(patterns[i], type);
                 usedTypes.Add(type);
-                assignedIndex++;
             }
         }
 
         // 3. Сбрасываем кулдауны использованных типов из refreshCooldowns
         foreach (var type in usedTypes) {
-            if (_typeCooldowns.ContainsKey(type)) {
+            if (_typeCooldowns.ContainsKey(type))
                 _typeCooldowns[type] = 0f;
-            }
         }
     }
 
@@ -615,6 +629,7 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
             if (refreshMode == BoardRefreshMode.Manual) {
                 _isRefreshPaused = true;
             } else {
+                _isRefreshPaused = false;
                 _refreshTimer = minIntervalBetweenRefreshes;
                 refreshProgressbar?.SetValue(_refreshTimer);
                 refreshLabel?.SetText(string.Format(_refreshLabelFormat, Mathf.CeilToInt(_refreshTimer)));
@@ -631,6 +646,9 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
         if (cell != null && cell.Item != null && cell.Item.Type != CellItemType.None) {
             ClearSelection();
             _isSelecting = true;
+            OnBoardSelectStart?.Invoke();
+            if (pauseTimerOnSelection)
+                _isRefreshPaused = true;
             StartSelection(cell);
         }
     }

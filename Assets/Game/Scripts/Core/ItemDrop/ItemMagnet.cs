@@ -26,27 +26,21 @@ public class ItemMagnet : MonoBehaviour, MMEventListener<ItemDropEvent> {
     [SerializeField] MMF_Player feedback;
 
     List<IDropItem> _items = new List<IDropItem>();
-    //LevelStageState _stageState = LevelStageState.Start;
-    
+    RectTransform _rt;
+    Camera _camera;
+
+    void Awake() {
+        _rt = GetComponent<RectTransform>();
+        _camera = Camera.main;
+    }
+
     public void OnMMEvent(ItemDropEvent e) {
         if (e.Item != null) {
             IDropItem dropItem = e.Item.GetComponent<IDropItem>();
-            /*f (dropItem != null) {
-                if (_stageState == LevelStageState.Start)
-                    StartCoroutine(AttractOneItem(dropItem));
-                else if (_stageState == LevelStageState.Battle)
-                    _items.Add(dropItem);
-            }*/
+            if (dropItem != null)
+                StartCoroutine(AttractOneItem(dropItem));
         }
     }
-
-    /*public void OnMMEvent(LevelStageStateEvent e) {
-        if (e.EventStage == EventStage.Start)
-            _stageState = e.State;
-
-        if (e.EventStage == EventStage.End && e.State == LevelStageState.Complete)
-            AttractAllItems();
-    }*/
 
     public void AttractAllItems() {
         StartCoroutine(AttractCo());
@@ -54,7 +48,7 @@ public class ItemMagnet : MonoBehaviour, MMEventListener<ItemDropEvent> {
 
     IEnumerator AttractOneItem(IDropItem item) {
         yield return new WaitForSeconds(delay);
-        AttractItem(item, 1.5f);
+        AttractItem(item);
     }
 
     IEnumerator AttractCo() {
@@ -76,8 +70,18 @@ public class ItemMagnet : MonoBehaviour, MMEventListener<ItemDropEvent> {
     }
 
     void AttractItem(IDropItem item, float timeMultiplier = 1f) {
-        Vector3 randomOffset = new Vector3(Random.Range(-offset.x, offset.x), Random.Range(-offset.y, offset.y), 0) * 0.5f;
-        item.Transform.DOMove(transform.position + randomOffset, Random.Range(time.x, time.y) * timeMultiplier).OnComplete(() => { 
+        Vector2 position;
+
+        if (_rt != null && _camera != null) {
+            Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(null, _rt.position);
+            Vector3 worldPoint = _camera.ScreenToWorldPoint(new Vector3(screenPoint.x, screenPoint.y, _camera.nearClipPlane));
+            position = worldPoint;
+        } else {
+            position = transform.position;
+        }
+
+        Vector2 randomOffset = new Vector2(Random.Range(-offset.x, offset.x), Random.Range(-offset.y, offset.y)) * 0.5f;
+        item.Transform.DOMove(position + randomOffset, Random.Range(time.x, time.y) * timeMultiplier).OnComplete(() => { 
             item.Pick(); 
             feedback?.PlayFeedbacks();
         });        
@@ -85,11 +89,9 @@ public class ItemMagnet : MonoBehaviour, MMEventListener<ItemDropEvent> {
 
     void OnEnable() {
         this.MMEventStartListening<ItemDropEvent>();
-        //this.MMEventStartListening<LevelStageStateEvent>();
     }
 
     void OnDisable() {
         this.MMEventStopListening<ItemDropEvent>();
-        //this.MMEventStopListening<LevelStageStateEvent>();
     }
 }

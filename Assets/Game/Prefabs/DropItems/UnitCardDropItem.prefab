@@ -5185,8 +5185,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aefbc9ee66d0e4344a1a9d792ce25d4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  resource: 3
+  PickedMMFeedbacks: {fileID: 0}
+  DisableColliderOnPick: 0
+  DisableObjectOnPick: 1
+  DisableDelay: 0
+  DisableModelOnPick: 0
+  DisableTargetObjectOnPick: 0
+  TargetObjectToDisable: {fileID: 0}
+  TargetObjectDisableDelay: 1
+  Model: {fileID: 0}
+  RequireCharacterComponent: 1
+  RequirePlayerType: 1
+  data: 0
+  targetMask:
+    serializedVersion: 2
+    m_Bits: 0
   amount: 1
+  fixedAmount: 0
   OnPick:
     m_PersistentCalls:
       m_Calls:

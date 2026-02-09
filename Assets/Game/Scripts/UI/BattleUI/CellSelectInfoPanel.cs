@@ -22,12 +22,15 @@ public class CellSelectInfoPanel : MonoBehaviour, MMEventListener<CellUiItemSele
     [SerializeField] BoostersData boostersData;
 
     [Header("Events")]
+    [SerializeField] UnityEvent OnStartShow;
     [SerializeField] UnityEvent OnShow;
     [SerializeField] UnityEvent OnHide;
 
     readonly List<IconMultiTextItem> _items = new();
     readonly Dictionary<Attribute, float> _buffs = new();
     string _levelFormat = "Lv.{0}";
+
+    bool _firstItemSelected = false;
 
     void Awake() {
         if (levelFormat != null && !levelFormat.IsEmpty)
@@ -37,16 +40,21 @@ public class CellSelectInfoPanel : MonoBehaviour, MMEventListener<CellUiItemSele
     public void OnMMEvent(CellUiItemSelectEvent e) {
         if (mode == CellSelectInfoMode.OneByOne) {
             if (e.Stage == EventStage.Process) {
-                OnShow?.Invoke();
+                if (!_firstItemSelected) {
+                    _firstItemSelected = true;
+                    OnStartShow?.Invoke();
+                } else
+                    OnShow?.Invoke();
                 UpdateDisplay(e.Item, e.Count);
             } else if (e.Stage == EventStage.End) {
                 if (e.Item != null && e.Item.Type == CellItemType.Buff)
                     AccumulateBuff(e.Item.Id, e.Count);
+                _firstItemSelected = false;
                 OnHide?.Invoke();
             }
         } else {
             if (e.Stage == EventStage.End && e.Item != null && e.Count > 0) {
-                OnShow?.Invoke();
+                OnStartShow?.Invoke();
                 UpdateDisplay(e.Item, e.Count);
                 if (e.Item.Type == CellItemType.Buff)
                     AccumulateBuff(e.Item.Id, e.Count);
@@ -238,6 +246,26 @@ public class CellSelectInfoPanel : MonoBehaviour, MMEventListener<CellUiItemSele
             : level;
 
         CreateItem(icon, new List<string>() { title, description });
+    }
+
+    public void SetBounds(float boardTopY) {
+        RectTransform rect = GetComponent<RectTransform>();
+        if (rect == null) return;
+
+        Canvas canvas = panelRoot.GetComponentInParent<Canvas>();
+        if (canvas == null) return;
+
+        RectTransform canvasRect = canvas.GetComponent<RectTransform>();
+        Vector3[] canvasCorners = new Vector3[4];
+        canvasRect.GetWorldCorners(canvasCorners);
+        float screenTopY = canvasCorners[1].y;
+
+        float height = screenTopY - boardTopY;
+        float centerY = boardTopY + height / 2f;
+
+        Vector3 worldCenter = new Vector3(rect.position.x, centerY, rect.position.z);
+        rect.position = worldCenter;
+        rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height / canvas.transform.localScale.y);
     }
 
     void OnEnable() {

@@ -209,8 +209,8 @@ public class EnemyManager : SimplePoolUser, MMEventListener<EnemySpawnTriggerEve
         if (_fillEnemyShares != null && _fillEnemyShares.Count > 0) {
             _maxNow = _fillCount - EnemiesCount;
             _maxSimultanious = MaxSimulteneousCount - EnemiesCount;
-            if (_fillCount > 0 && _maxSimultanious > 0) {
-                int slots = Mathf.Min(_fillCount, _maxSimultanious);
+            if (_maxNow > 0 && _maxSimultanious > 0) {
+                int slots = Mathf.Min(_maxNow, _maxSimultanious);
                 
                 for (int i = 0; i < slots; i++) {
                     GameObject prefab = SelectEnemyPrefab(_fillEnemyShares);

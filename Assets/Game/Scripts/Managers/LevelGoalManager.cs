@@ -67,8 +67,7 @@ public struct LevelGoalResultEvent {
 }
 
 public class LevelGoalManager : SerializedMonoBehaviour, MMEventListener<EarnResourceEvent>, MMEventListener<LevelGoalProgressEvent>, MMEventListener<LevelLoadEvent>,
-    MMEventListener<ItemEvent>, MMEventListener<EnemyDeathEvent>, MMEventListener<LevelGoalEvent>, MMEventListener<EnemySpawnEvent>,
-    MMEventListener<LevelProgressEvent> {
+    MMEventListener<ItemEvent>, MMEventListener<EnemyDeathEvent>, MMEventListener<LevelGoalEvent>, MMEventListener<EnemySpawnEvent> {
     
     Dictionary<string, LevelGoal> _goals = new Dictionary<string, LevelGoal>();
     List<LevelGoalType> _goalTypes = new List<LevelGoalType>();
@@ -130,8 +129,10 @@ public class LevelGoalManager : SerializedMonoBehaviour, MMEventListener<EarnRes
     }
 
     public void OnMMEvent(EnemySpawnEvent e) {
-        if (e.EventType == EnemySpawnEventType.Cleared)
+        if (e.EventType == EnemySpawnEventType.Cleared) {
             ManageGoals(LevelGoalType.Survive, MathAction.Set, int.MaxValue);
+            ManageGoals(LevelGoalType.Distance, MathAction.Set, int.MaxValue);
+        }
     }
 
     public void OnMMEvent(EarnResourceEvent e) {
@@ -164,10 +165,6 @@ public class LevelGoalManager : SerializedMonoBehaviour, MMEventListener<EarnRes
         ManageGoals(e.Type, MathAction.Add, e.Amount);
     }
 
-    public void OnMMEvent(LevelProgressEvent e) {
-        ManageGoals(LevelGoalType.Distance, MathAction.Set, Mathf.RoundToInt(e.Distance));
-    }
-
     void OnEnable() {
         Subscribe();
         this.MMEventStartListening<LevelLoadEvent>();
@@ -184,7 +181,7 @@ public class LevelGoalManager : SerializedMonoBehaviour, MMEventListener<EarnRes
 
     void SubscribeByGoalType(LevelGoalType goalType) {
         if (!_goalTypes.Contains(goalType)) {
-            if (goalType == LevelGoalType.Survive) 
+            if (goalType == LevelGoalType.Survive || goalType == LevelGoalType.Distance) 
                 this.MMEventStartListening<EnemySpawnEvent>();
             else if (goalType == LevelGoalType.CollectResource)
                 this.MMEventStartListening<EarnResourceEvent>();
@@ -192,8 +189,6 @@ public class LevelGoalManager : SerializedMonoBehaviour, MMEventListener<EarnRes
                 this.MMEventStartListening<ItemEvent>();
             else if (goalType == LevelGoalType.Enemy || goalType == LevelGoalType.EnemyType)
                 this.MMEventStartListening<EnemyDeathEvent>();
-            else if (goalType == LevelGoalType.Distance)
-                this.MMEventStartListening<LevelProgressEvent>();
             _goalTypes.Add(goalType);
         }
     }
@@ -205,7 +200,6 @@ public class LevelGoalManager : SerializedMonoBehaviour, MMEventListener<EarnRes
         this.MMEventStopListening<LevelGoalEvent>();
         this.MMEventStopListening<EnemyDeathEvent>();
         this.MMEventStopListening<EnemySpawnEvent>();
-        this.MMEventStopListening<LevelProgressEvent>();
     }
 
     void OnDisable() {

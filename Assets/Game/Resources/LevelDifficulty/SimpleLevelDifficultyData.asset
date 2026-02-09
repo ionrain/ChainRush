@@ -153,7 +153,7 @@ MonoBehaviour:
       Data: 0
     - Name: m_Value
       Entry: 4
-      Data: 10
+      Data: 8
     - Name: m_InTangent
       Entry: 4
       Data: 0
@@ -186,7 +186,7 @@ MonoBehaviour:
       Data: 1
     - Name: m_Value
       Entry: 4
-      Data: 10
+      Data: 8
     - Name: m_InTangent
       Entry: 4
       Data: 0
@@ -557,7 +557,7 @@ MonoBehaviour:
       Data: 16
     - Name: $v
       Entry: 4
-      Data: 0.5
+      Data: 0.3
     - Name: 
       Entry: 8
       Data: 
@@ -572,7 +572,7 @@ MonoBehaviour:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 5
+      value: 10
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -581,7 +581,7 @@ MonoBehaviour:
       outWeight: 0
     - serializedVersion: 3
       time: 1
-      value: 5
+      value: 10
       inSlope: 0
       outSlope: 0
       tangentMode: 0

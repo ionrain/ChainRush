@@ -3,11 +3,6 @@ using System.Collections.Generic;
 using MoreMountains.Tools;
 using UnityEngine;
 
-public interface IDropItem {
-    public Transform Transform { get; }
-    public void Pick();
-}
-
 public struct ItemDropRequestEvent {
     public int ChannelId { get; private set; }
     public int RequesterId { get; private set; }

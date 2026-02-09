@@ -20,7 +20,7 @@ public struct UnitActionEvent {
     }
 }
 
-public class PartyManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>, MMEventListener<CellUiItemSelectEvent> {
+public class UnitManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>, MMEventListener<CellUiItemSelectEvent> {
     [SerializeField] AllUnitsData unitsData;
     [SerializeField] BuffsData buffsData;    
     [SerializeField] AttributesData attributes;
@@ -28,6 +28,9 @@ public class PartyManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEv
     [SerializeField] Transform heroSpawnPoint;
     [SerializeField] Unit unitPrefab;
     [SerializeField] Dictionary<UnitSpeciality, BoxCollider2D> spawnAreas = new();
+
+    [Header("AI Profiles")]
+    [SerializeField] List<UnitAIProfileEntry> aiProfileEntries = new();
 
     [Header("Events")]
     [SerializeField] UnityEvent OnBuff;
@@ -43,6 +46,10 @@ public class PartyManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEv
     List<Unit> _units = new List<Unit>();
     Dictionary<BoxCollider2D, float> _spawnAreaXOffsets = new();
 
+    Dictionary<UnitSpeciality, UnitAIProfile> _aiProfiles = new();
+    Dictionary<UnitSpeciality, int> _slotCounters = new();
+    Dictionary<int, int> _enemyAssignedCount = new();
+
     bool _showHealthBars = true;
 
     void FixedUpdate() {
@@ -52,6 +59,37 @@ public class PartyManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEv
             Vector3 pos = pair.Key.transform.position;
             pos.x = Hero.transform.position.x + pair.Value;
             pair.Key.transform.position = pos;
+        }
+    }
+
+    // --- AI Profile API ---
+
+    public UnitAIProfile GetAIProfile(UnitSpeciality speciality) {
+        return _aiProfiles.TryGetValue(speciality, out var p) ? p : null;
+    }
+
+    public int AssignSlotIndex(UnitSpeciality speciality) {
+        int index = _slotCounters.GetValueOrDefault(speciality, 0);
+        _slotCounters[speciality] = index + 1;
+        return index;
+    }
+
+    // --- Target Distribution API ---
+
+    public int GetAssignedCount(int instanceId) {
+        return _enemyAssignedCount.GetValueOrDefault(instanceId, 0);
+    }
+
+    public void ReserveEnemy(int instanceId) {
+        _enemyAssignedCount[instanceId] = _enemyAssignedCount.GetValueOrDefault(instanceId, 0) + 1;
+    }
+
+    public void ReleaseEnemy(int instanceId) {
+        if (_enemyAssignedCount.TryGetValue(instanceId, out int count)) {
+            if (count <= 1)
+                _enemyAssignedCount.Remove(instanceId);
+            else
+                _enemyAssignedCount[instanceId] = count - 1;
         }
     }
 
@@ -76,9 +114,19 @@ public class PartyManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEv
 
     public void Setup(List<UnitData> selected = null) {
         _units.Clear();
+        _slotCounters.Clear();
+        _enemyAssignedCount.Clear();
+
+        _aiProfiles.Clear();
+        if (aiProfileEntries != null) {
+            foreach (var entry in aiProfileEntries)
+                if (entry != null && entry.profile != null)
+                    _aiProfiles[entry.speciality] = entry.profile;
+        }
+
         if (selected != null && spawnAreas != null && spawnAreas.Count > 0)
             selected.ForEach(t => CreateUnit(t, 0));
-        
+
         if (heroSpawnPoint != null)
             foreach (var pair in spawnAreas)
                 if (pair.Value != null && !_spawnAreaXOffsets.ContainsKey(pair.Value))
@@ -153,7 +201,7 @@ public class PartyManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEv
                 UnitAIController aiController = unit.GetComponent<UnitAIController>();
                 if (aiController != null) {
                     BoxCollider2D area = spawnAreas.GetValueOrDefault(data.speciality, null);
-                    aiController.Initialize(Hero, area);
+                    aiController.Initialize(Hero, area, this);
                 }
             }
         }

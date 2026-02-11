@@ -10,7 +10,7 @@ using UnityEngine.Localization;
 using UnityEngine.UI;
 
 public enum BoardUiEventType { SetupCells, SetupItems, Ready }
-public enum BoardRefreshMode { Auto, Manual }
+public enum BoardRefreshMode { Auto, SemiAuto, Manual }
 public enum CellSelectPatternType { None = 0, SelectOne = 1, Line = 2, Corner = 4, Box = 8, Zigzag = 16 }
 
 public struct BoardUiEvent {
@@ -62,6 +62,7 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
     [SerializeField] Progressbar refreshProgressbar;
     [SerializeField] TextMeshProUGUI refreshLabel;
     [SerializeField] LocalizedString refreshLabelFormat;
+    [SerializeField] List<CellItemType> guaranteedOnFirstRefresh = new();
 
     [Header("Events")]
     [SerializeField] UnityEvent OnBoardRefresh;
@@ -82,6 +83,7 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
     Dictionary<CellItemType, float> _typeCooldowns = new();
     Dictionary<CellItemType, float> _typeCooldownIntervals = new();
     bool _isRefreshPaused;
+    bool _isFirstRefresh;
 
     // Types unavailable for this level (cached at start)
     HashSet<CellItemType> _unavailableTypes = new();
@@ -104,6 +106,7 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
             InitializeUnavailableTypes();
             UpdateRefreshIntervals(0);
             _refreshTimer = _refreshInterval;
+            _isFirstRefresh = true;
             RefreshBoard();
             BoardUiEvent.Trigger(BoardUiEventType.Ready, this);
         }
@@ -119,7 +122,7 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
         float dt = Time.unscaledDeltaTime;
         UpdateCooldowns(dt);
 
-        if (!_isRefreshPaused)
+        if (!_isRefreshPaused && refreshMode != BoardRefreshMode.Manual)
             UpdateRefreshTimer(dt);
     }
 
@@ -528,6 +531,24 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
             }
         }
 
+        // 1.5 First refresh: guarantee one pattern per type from guaranteedOnFirstRefresh
+        if (_isFirstRefresh) {
+            foreach (var type in guaranteedOnFirstRefresh) {
+                if (_unavailableTypes.Contains(type)) continue;
+                if (usedTypes.Contains(type)) continue;
+                if (!_typeCooldowns.ContainsKey(type)) continue;
+
+                for (int i = 0; i < patterns.Count; i++) {
+                    if (assignedIndices.Contains(i)) continue;
+                    ApplyItemToPattern(patterns[i], type);
+                    usedTypes.Add(type);
+                    assignedIndices.Add(i);
+                    break;
+                }
+            }
+            _isFirstRefresh = false;
+        }
+
         // 2. Оставшиеся паттерны заполняем типами из refreshCooldowns
         List<CellItemType> cooldownReady = GetCooldownReadyTypes();
 
@@ -626,7 +647,7 @@ public class BoardUi : SerializedMonoBehaviour, MMEventListener<LevelLoadEvent>,
 
             _cellsMap.ForEach(t => { if (t.Value != null) t.Value.SetActive(false); });
 
-            if (refreshMode == BoardRefreshMode.Manual) {
+            if (refreshMode == BoardRefreshMode.SemiAuto || refreshMode == BoardRefreshMode.Manual) {
                 _isRefreshPaused = true;
             } else {
                 _isRefreshPaused = false;

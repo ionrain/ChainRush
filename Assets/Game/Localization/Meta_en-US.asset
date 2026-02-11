@@ -230,6 +230,14 @@ MonoBehaviour:
     m_Localized: Bomb
     m_Metadata:
       m_Items: []
+  - m_Id: 143526747914100736
+    m_Localized: Range warrior with high damage but low defense and  HP
+    m_Metadata:
+      m_Items: []
+  - m_Id: 143526893800382464
+    m_Localized: Melee unit with medium damage, denfense and HP
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

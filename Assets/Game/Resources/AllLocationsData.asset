@@ -23,8 +23,5 @@ MonoBehaviour:
     SerializationNodes: []
   locations:
   - {fileID: 11400000, guid: 79eba35e1153242cf8ba13f4eb616d1c, type: 2}
-  - {fileID: 11400000, guid: 0217b8a6b4c784b05aa4d2160dc7bb53, type: 2}
-  - {fileID: 11400000, guid: c5e2eb8d3a3524b5eb77f79af0a4ef95, type: 2}
-  - {fileID: 11400000, guid: b8a75c743b2b7404e9024a07d34b4b5f, type: 2}
   - {fileID: 11400000, guid: 3544233e55e544c74b44d9e48cb65948, type: 2}
   currentIndex: 0

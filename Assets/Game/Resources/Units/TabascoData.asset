@@ -479,6 +479,7 @@ MonoBehaviour:
     defaultSkill: 1
     main: 1
     requiredLevel: 0
+    syncWithMergeState: 0
   attackState: 3
   deathParticleFX: {fileID: 0}
   references:

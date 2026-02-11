@@ -22,6 +22,16 @@ public class UnitAIController : MonoBehaviour, MMEventListener<UnitActionEvent>,
     [SerializeField] int overlapMaximum = 10;
     [SerializeField] float maxUnitAcquireDistance = 0f;      // hard gate: skip enemies farther than this from unit (0 = use effective radius)
 
+    [Header("Ally Separation (anti-clumping)")]
+    [SerializeField] LayerMask allyLayer;
+    [SerializeField] float personalSpaceRadius = 0.9f;            // personal-space circle radius around each unit
+    [SerializeField] float separationStrength = 1.2f;             // how strongly we offset the target away from nearby allies
+    [SerializeField] float maxSeparationOffset = 0.8f;            // clamp for offset (keeps unit near formation/rally)
+    [SerializeField] int separationOverlapMax = 12;               // max allies considered for separation
+    [SerializeField] bool separationOnlyForFormationOrRally = true;
+    [SerializeField] bool separationUseIntervalUpdate = true;
+    [SerializeField] float separationUpdateInterval = 0.15f;
+
     [Header("Target Scoring")]
     [SerializeField] float wHero = 3f;
     [SerializeField] float wUnit = 1f;
@@ -93,6 +103,12 @@ public class UnitAIController : MonoBehaviour, MMEventListener<UnitActionEvent>,
     Collider2D[] _overlapResults;
     ContactFilter2D _contactFilter;
 
+    // Ally separation
+    Collider2D[] _allyOverlap;
+    Transform _steeringTarget;
+    float _nextSeparationUpdateAt;
+    Vector2 _cachedSeparationOffset;
+
     // Units currently fighting enemies (for ally assist)
     static readonly HashSet<UnitAIController> _engagedUnits = new();
 
@@ -152,6 +168,10 @@ public class UnitAIController : MonoBehaviour, MMEventListener<UnitActionEvent>,
         _contactFilter = new ContactFilter2D();
         _contactFilter.SetLayerMask(enemyLayer);
         _contactFilter.useTriggers = true;
+
+        _allyOverlap = new Collider2D[Mathf.Max(1, separationOverlapMax)];
+        var stObj = new GameObject($"SteeringTarget_{gameObject.name}");
+        _steeringTarget = stObj.transform;
 
         SetHero(hero);
 
@@ -372,6 +392,76 @@ public class UnitAIController : MonoBehaviour, MMEventListener<UnitActionEvent>,
         TrySetTarget(GetSafeRallyTarget(), TargetReason.Hero);
     }
 
+    // --- Ally separation (anti-clumping) ---
+
+    Vector2 ComputeSeparationOffset() {
+        if (personalSpaceRadius <= 0f || separationStrength <= 0f) return Vector2.zero;
+        if (_allyOverlap == null || _allyOverlap.Length == 0) return Vector2.zero;
+
+        int count = Physics2D.OverlapCircleNonAlloc(transform.position, personalSpaceRadius, _allyOverlap, allyLayer);
+        if (count <= 0) return Vector2.zero;
+
+        Vector2 sum = Vector2.zero;
+        Vector2 selfPos = transform.position;
+
+        for (int i = 0; i < count; i++) {
+            Collider2D c = _allyOverlap[i];
+            if (c == null) continue;
+            if (c.transform == transform) continue;
+
+            Vector2 otherPos = c.transform.position;
+            Vector2 toSelf = selfPos - otherPos;
+            float dist = toSelf.magnitude;
+            if (dist <= 0.0001f) continue;
+
+            // closer neighbor => stronger push
+            float t = Mathf.Clamp01((personalSpaceRadius - dist) / personalSpaceRadius);
+            sum += (toSelf / dist) * t;
+        }
+
+        if (sum == Vector2.zero) return Vector2.zero;
+
+        Vector2 offset = sum.normalized * separationStrength;
+
+        // clamp so we stay near formation/rally
+        float mag = offset.magnitude;
+        if (mag > maxSeparationOffset && mag > 0.0001f)
+            offset = (offset / mag) * maxSeparationOffset;
+
+        return offset;
+    }
+
+    Vector2 GetSeparationOffsetCached() {
+        if (!separationUseIntervalUpdate)
+            return ComputeSeparationOffset();
+
+        if (Time.time >= _nextSeparationUpdateAt) {
+            _nextSeparationUpdateAt = Time.time + Mathf.Max(0.01f, separationUpdateInterval);
+            _cachedSeparationOffset = ComputeSeparationOffset();
+        }
+
+        return _cachedSeparationOffset;
+    }
+
+    Transform GetSteeredTarget(Transform baseTarget, TargetReason reason) {
+        if (baseTarget == null || _steeringTarget == null) return baseTarget;
+
+        // Never steer combat target (keeps reservations/lock/commit stable)
+        if (reason == TargetReason.Enemy) return baseTarget;
+
+        // Usually better not to steer defend targets
+        if (reason == TargetReason.HeroDefend || reason == TargetReason.AllyDefend) return baseTarget;
+
+        if (separationOnlyForFormationOrRally) {
+            bool isFormationOrRally = (baseTarget == _formationPoint) || (baseTarget == _rallyWaypoint);
+            if (!isFormationOrRally) return baseTarget;
+        }
+
+        Vector2 offset = GetSeparationOffsetCached();
+        _steeringTarget.position = (Vector2)baseTarget.position + offset;
+        return _steeringTarget;
+    }
+
     // --- Target setters (C) ---
 
     /// <summary>
@@ -424,6 +514,7 @@ public class UnitAIController : MonoBehaviour, MMEventListener<UnitActionEvent>,
     /// and cooldown hasn't elapsed. Prevents redundant brain/animation resets.
     /// </summary>
     void TrySetTarget(Transform target, TargetReason reason) {
+        target = GetSteeredTarget(target, reason);
         if (target == _currentTarget && reason == _targetReason && Time.time < _retargetAllowedAt)
             return;
 
@@ -434,6 +525,7 @@ public class UnitAIController : MonoBehaviour, MMEventListener<UnitActionEvent>,
     /// Bypasses cooldown for critical transitions (leash snap, forced hero return).
     /// </summary>
     void ForceSetTarget(Transform target, TargetReason reason) {
+        target = GetSteeredTarget(target, reason);
         ApplyTarget(target, reason);
     }
 
@@ -693,5 +785,8 @@ public class UnitAIController : MonoBehaviour, MMEventListener<UnitActionEvent>,
 
         if (_formationPoint != null)
             Destroy(_formationPoint.gameObject);
+
+        if (_steeringTarget != null)
+            Destroy(_steeringTarget.gameObject);
     }
 }

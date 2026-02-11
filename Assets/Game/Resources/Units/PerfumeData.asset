@@ -235,7 +235,7 @@ MonoBehaviour:
       Data: 1.8
     - Name: mass
       Entry: 4
-      Data: 100
+      Data: 10000
     - Name: colliderSize
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule

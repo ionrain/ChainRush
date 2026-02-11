@@ -20,6 +20,7 @@ public class SkillLevel {
     public float GetParameterValue(SkillParameterType parameterType, float notfoundValue = -1) {
         return parameters.GetValueOrDefault(parameterType, notfoundValue);
     }
+    public string Description => description != null && !description.IsEmpty ? description.GetLocalizedString() : string.Empty;
 }
 
 public enum SkillType { None = 0, Attack = 30, Support = 10, Ultimate = 50 }

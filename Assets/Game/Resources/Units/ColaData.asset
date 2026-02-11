@@ -196,7 +196,7 @@ MonoBehaviour:
       Data: UnityEngine.Localization.Tables.TableReference, Unity.Localization
     - Name: m_TableCollectionName
       Entry: 1
-      Data: 
+      Data: GUID:3780f36a553b640fbbe57d99ea3ba447
     - Name: 
       Entry: 8
       Data: 
@@ -205,7 +205,7 @@ MonoBehaviour:
       Data: UnityEngine.Localization.Tables.TableEntryReference, Unity.Localization
     - Name: m_KeyId
       Entry: 3
-      Data: 0
+      Data: 143526747914100736
     - Name: m_Key
       Entry: 1
       Data: 
@@ -901,6 +901,7 @@ MonoBehaviour:
     defaultSkill: 1
     main: 1
     requiredLevel: 0
+    syncWithMergeState: 1
   attackState: 1
   deathParticleFX: {fileID: 996422148020214651, guid: 7e35c29bb71df486e9760c13d06898c3,
     type: 3}

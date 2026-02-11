@@ -72,6 +72,7 @@ public class UnitSkill {
     public SkillData data;
     public bool defaultSkill;
     public bool main;
+    public bool syncWithMergeState;
     public int requiredLevel;
 
     public string Name => data.name;
@@ -195,6 +196,13 @@ public class UnitData : SerializedScriptableObject, IListItemData {
     public bool AddCards(int value) {
         CardBalance += value;
         return true;
+    }
+
+    public bool IsSkillSyncWithMergeState(SkillData skillData) {
+        var skill = skills.Find(t => t.data == skillData);
+        if (skill != null)
+            return skill.syncWithMergeState;
+        return false;
     }
 
     public bool SpendCards() {

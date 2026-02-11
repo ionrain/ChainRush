@@ -1,17 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using MoreMountains.Tools;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Localization;
 
 public enum CellSelectInfoMode { OneByOne, Cumulative }
 
-public class CellSelectInfoPanel : MonoBehaviour, MMEventListener<CellUiItemSelectEvent>, MMEventListener<LevelLoadEvent> {
+public class CellSelectInfoPanel : SerializedMonoBehaviour, MMEventListener<CellUiItemSelectEvent>, MMEventListener<LevelLoadEvent> {
     [SerializeField] CellSelectInfoMode mode;
 
     [SerializeField] RectTransform panelRoot;
-    [SerializeField] IconMultiTextItem itemPrefab;
+    [SerializeField] Dictionary<CellItemType, IconMultiTextItem> itemPrefabs = new();
     [SerializeField] LocalizedString levelFormat;
 
     [Header("Item Data")]
@@ -102,7 +103,9 @@ public class CellSelectInfoPanel : MonoBehaviour, MMEventListener<CellUiItemSele
         _items.Clear();
     }
 
-    IconMultiTextItem CreateItem(Sprite icon, List<string> texts) {
+    IconMultiTextItem CreateItem(CellItemType itemType, Sprite icon, List<string> texts) {
+        if (itemPrefabs == null || !itemPrefabs.TryGetValue(itemType, out IconMultiTextItem itemPrefab)) return null;
+
         IconMultiTextItem item = Instantiate(itemPrefab, panelRoot);
         item.Setup(icon, texts);
         _items.Add(item);
@@ -116,6 +119,7 @@ public class CellSelectInfoPanel : MonoBehaviour, MMEventListener<CellUiItemSele
         if (unitData == null) return;
 
         string unitName = unitData.ShortName;
+        string unitDescription = unitData.Description;
 
         int maxMergeLevel = unitData.MergeStatesCount;
         int fullUnits = count / maxMergeLevel;
@@ -124,13 +128,13 @@ public class CellSelectInfoPanel : MonoBehaviour, MMEventListener<CellUiItemSele
         for (int i = 0; i < fullUnits; i++) {
             MergeStateData mergeData = unitData.GetMergeData(maxMergeLevel - 1);
             Sprite icon = mergeData != null ? mergeData.icon : unitData.Icon;
-            CreateItem(icon, new List<string>() { unitName, string.Format(_levelFormat, maxMergeLevel) });
+            CreateItem(CellItemType.Unit, icon, new List<string>() { unitName, string.Format(_levelFormat, maxMergeLevel), mergeData.Description});
         }
 
         if (remainder > 0) {
             MergeStateData mergeData = unitData.GetMergeData(remainder - 1);
             Sprite icon = mergeData != null ? mergeData.icon : unitData.Icon;
-            CreateItem(icon, new List<string>() { unitName, string.Format(_levelFormat, remainder) });
+            CreateItem(CellItemType.Unit, icon, new List<string>() { unitName, string.Format(_levelFormat, remainder), mergeData.Description });
         }
     }
 
@@ -161,11 +165,9 @@ public class CellSelectInfoPanel : MonoBehaviour, MMEventListener<CellUiItemSele
         }
 
         string addSign = addValue >= 0 ? "+" : "";
-        string text = currentValue != 0
-            ? $"{currentValue * 100:F0}% ({addSign}{addValue * 100:F0}%)"
-            : $"{addSign}{addValue * 100:F0}%";
-
-        CreateItem(icon, new List<string> { title, text });
+        CreateItem(CellItemType.Buff, icon, new List<string> { title, 
+                  $"{currentValue * 100:F0}%",  
+                  $"{addSign}{(currentValue + addValue) * 100:F0}%"});
     }
 
     void AccumulateBuff(string buffId, int count) {
@@ -193,7 +195,7 @@ public class CellSelectInfoPanel : MonoBehaviour, MMEventListener<CellUiItemSele
                 title = goldData.Title;
             }
         }
-        CreateItem(icon, new List<string>() { title, (count * 10).ToString() });
+        CreateItem(CellItemType.SoftCurrency, icon, new List<string>() { title, (count * 10).ToString() });
     }
 
     // ==================== BOOSTER ====================
@@ -211,7 +213,7 @@ public class CellSelectInfoPanel : MonoBehaviour, MMEventListener<CellUiItemSele
                 stat = boosterData.GetMultiplier(count - 1);
             }
         }
-        CreateItem(icon, new List<string>() { title, $"{stat * 100:F0}%" });
+        CreateItem(CellItemType.Booster, icon, new List<string>() { title, $"{stat * 100:F0}%" });
     }
 
     // ==================== HERO SKILL ====================
@@ -236,16 +238,9 @@ public class CellSelectInfoPanel : MonoBehaviour, MMEventListener<CellUiItemSele
         int maxLevelIndex = Mathf.Max(0, skillData.LevelsCount - 1);
         int skillLevel = Mathf.Min(count - 1, maxLevelIndex);
 
-        Sprite icon = skillData.Icon;
-        string level = string.Format(_levelFormat, skillLevel + 1);
-        string title = string.Format("{0} ({1})", skillData.Title, level);
-
-        SkillLevel levelData = skillData.GetLevel(skillLevel);
-        string description = levelData?.description != null && !levelData.description.IsEmpty
-            ? levelData.description.GetLocalizedString()
-            : level;
-
-        CreateItem(icon, new List<string>() { title, description });
+        SkillLevel skillLevelData = skillData.GetLevel(skillLevel);
+        string description = skillLevelData != null ? skillLevelData.Description : string.Empty;
+        CreateItem(CellItemType.HeroSkill, skillData.Icon, new List<string>() { skillData.Title, string.Format(_levelFormat, skillLevel + 1), description });
     }
 
     public void SetBounds(float boardTopY) {

@@ -60,9 +60,6 @@ public class Unit : SerializedMonoBehaviour, MMEventListener<LevelResultEvent> {
     CharacterMovement _movement;
     Health _health;
     MMProgressBar _healthBar;
-    AIDecisionDistanceToTarget _distanceDecision;
-    int _layer;
-    bool _healthbarVisible = true;
 
     public void TogglePhysics(bool value) {
         if (_collider != null)
@@ -97,8 +94,6 @@ public class Unit : SerializedMonoBehaviour, MMEventListener<LevelResultEvent> {
     void Initialize() {
         _character = GetComponent<Character>();
         _collider = GetComponent<Collider2D>();
-        _layer = gameObject.layer;
-        _healthbarVisible = true;
         if (_character != null) {
             _character.MovementState.OnStateChange += OnMovementStateChange;
             _character.ConditionState.OnStateChange += OnConditionStateChange;
@@ -107,9 +102,6 @@ public class Unit : SerializedMonoBehaviour, MMEventListener<LevelResultEvent> {
             _movement = _character.FindAbility<CharacterMovement>();
             _health = _character.CharacterHealth;
             _healthBar = GetComponent<MMHealthBar>()?.TargetProgressBar;
-
-            if (_character.CharacterBrain != null)
-                _distanceDecision = _character.CharacterBrain.gameObject.GetComponent<AIDecisionDistanceToTarget>();
 
             if (_health != null) {
                 _health.OnHit += OnHealthHit;
@@ -130,12 +122,9 @@ public class Unit : SerializedMonoBehaviour, MMEventListener<LevelResultEvent> {
         //spine?.PlayAnimation(AnimationState.Appear);
     }
 
-     public void SetHealthbarVisibility(bool value, bool setValue = true) {
-        if (_healthBar != null) {
+     public void SetHealthbarVisibility(bool value) {
+        if (_healthBar != null)
             _healthBar.gameObject.SetActive(value);
-            if (setValue)
-                _healthbarVisible = value;
-        }
     }
 
     public void Setup(UnitData data, int mergeState) {
@@ -186,14 +175,15 @@ public class Unit : SerializedMonoBehaviour, MMEventListener<LevelResultEvent> {
             }
             if (spine != null)
                 spine.Setup(mergeData.spineData, string.Empty, Data.animations);
+            
+            Skills.ForEach(t => { if (Data.IsSkillSyncWithMergeState(t.Data)) t.SetLevel(MergeState); });
         }
     }
 
     public void Upgrade() {
         if (MergeState < Data.MergeStatesCount - 1) {
             MergeState++;
-            UpdateMergeState();            
-            Skills.ForEach(t => t.LevelUp());
+            UpdateMergeState();
             UpdateStats();
             if (_health != null)
                 _health.ResetHealthToMaxHealth();

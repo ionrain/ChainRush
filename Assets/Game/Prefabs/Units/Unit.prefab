@@ -188545,6 +188545,7 @@ MonoBehaviour:
   followRadius: 15
   maxChaseDistanceFromAnchor: 16
   enemyDetectRadius: 12
+  heroThreatRadius: 0
   allyDefendRadius: 12
   heroSpeedMultiplier: 2
   enemyLayer:
@@ -188552,6 +188553,22 @@ MonoBehaviour:
     m_Bits: 12288
   targetEvaluationInterval: 1
   overlapMaximum: 12
+  maxUnitAcquireDistance: 0
+  allyLayer:
+    serializedVersion: 2
+    m_Bits: 1024
+  personalSpaceRadius: 0.9
+  separationStrength: 1.2
+  maxSeparationOffset: 0.8
+  separationOverlapMax: 12
+  separationOnlyForFormationOrRally: 1
+  separationUseIntervalUpdate: 1
+  separationUpdateInterval: 0.15
+  wHero: 3
+  wUnit: 1
+  wCrowd: 2
+  wLeash: 1.5
+  combatRadius: 5
   heroHitResponseDuration: 2
   allyHitResponseDuration: 1.5
   targetLockTime: 2
@@ -188559,6 +188576,7 @@ MonoBehaviour:
   enemyCommitTime: 1.2
   leashRecoveryTime: 1.5
   combatLingerTime: 0.8
+  idleRoamDelayAfterThreat: 1.2
   rallyRestInterval: {x: 1, y: 2}
 --- !u!1 &3572560000541372990
 GameObject:

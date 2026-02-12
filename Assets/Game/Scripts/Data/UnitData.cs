@@ -13,7 +13,7 @@ public class UnitDataEvent : UnityEvent<UnitData> { }
 [Flags]
 public enum UnitType { None = 0, Normal = 1, Hero = 2 }
 public enum UnitState { Locked, ReadyToBeUnlocked, Available, Selected }
-public enum UnitSpeciality { Warrior, Assassin, Tank, Range, Mage, Support, Any }
+public enum UnitClass { Warrior, Assassin, Tank, Range, Mage, Support, Any }
 public enum UnitEventType { ChangeState, LevelUp, CardBalanceChange }
 public enum UnitMergeState { First, Second, Third, Forth, Fifth }
 
@@ -144,7 +144,7 @@ public class UnitData : SerializedScriptableObject, IListItemData {
     public Sprite icon;
     public Grade grade;
     public Element element;
-    public UnitSpeciality speciality;
+    public UnitClass unitClass;
     public Dictionary<Attribute, AttributeUpgradeData> attributes = new Dictionary<Attribute, AttributeUpgradeData>();
     public List<UnitSkill> skills = new List<UnitSkill>();
     public List<MergeStateData> mergeStates = new();
@@ -160,7 +160,7 @@ public class UnitData : SerializedScriptableObject, IListItemData {
     public int Level { get; private set;}
     public Dictionary<ItemType, ItemData> Inventory => _inventory;
     public Sprite Icon => icon;
-    public bool IsMelee => speciality < UnitSpeciality.Range;
+    public bool IsMelee => unitClass < UnitClass.Range;
     public bool Upgradable => Level + 1 < MAX_LEVEL;
     public bool LevelValid => Level >= 0;
     public int CardBalance { get; private set; }

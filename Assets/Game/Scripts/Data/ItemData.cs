@@ -54,7 +54,7 @@ public class ItemData : SerializedScriptableObject, IListItemData {
     public Sprite icon;
     public ItemType itemType;
     public Grade grade;
-    public UnitSpeciality speciality;
+    public UnitClass unitClass;
     public ItemOwner owner;
     public int level;
     public int maxLevel;
@@ -108,7 +108,7 @@ public class ItemData : SerializedScriptableObject, IListItemData {
             GeneratedFrom = stateData.generatedFrom;
             icon = templateItem.icon;
             itemType = templateItem.itemType;
-            speciality = templateItem.speciality;
+            unitClass = templateItem.unitClass;
             grade = stateData.grade;
             shopPrice = stateData.shopPrice;
             attributes = stateData.attributes;

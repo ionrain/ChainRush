@@ -11,7 +11,7 @@ public class InventoryList : ItemList<AllItemsData, InventoryItem>, MMEventListe
     [SerializeField] ItemEventType notificationEvent;
     [SerializeField] ItemOwner itemOwner = ItemOwner.Inventory;
     [SerializeField] ItemType itemType = ItemType.All;
-    [SerializeField] UnitSpeciality itemSpeciality = UnitSpeciality.Any;
+    [SerializeField] UnitClass unitClass = UnitClass.Any;
     [SerializeField] ItemEventType addEvent = ItemEventType.Unequip;
     [SerializeField] ItemEventType removeEvent = ItemEventType.Equip;
     [SerializeField] ItemPopup popup;
@@ -45,7 +45,7 @@ public class InventoryList : ItemList<AllItemsData, InventoryItem>, MMEventListe
 
     public bool Suitable(ItemData itemData) {
         return itemData != null && itemData.owner == itemOwner && (itemType == ItemType.All || itemData.itemType == itemType)
-                    && (itemSpeciality == UnitSpeciality.Any || itemData.speciality == itemSpeciality);
+                    && (unitClass == UnitClass.Any || itemData.unitClass == unitClass);
     }
 
     public void SetItemType(int value) {
@@ -56,9 +56,9 @@ public class InventoryList : ItemList<AllItemsData, InventoryItem>, MMEventListe
         //}
     }
 
-    public void SetItemSpeciality(UnitSpeciality value) {
-        if (itemSpeciality != value) {
-            itemSpeciality = value;
+    public void SetItemSpeciality(UnitClass value) {
+        if (unitClass != value) {
+            unitClass = value;
             Setup();
         }
     }

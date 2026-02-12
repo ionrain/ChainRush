@@ -41,10 +41,29 @@ public class UnitAIProfile : ScriptableObject {
 
     [Header("Speed")]
     public float heroSpeedMultiplier = 2f;
+
+    [Header("Crowd-Aware Positioning")]
+    public bool overrideCrowdAware;
+    public int pointSamples = 12;
+    public int pathChecks = 3;
+    public float crowdRadiusMultiplier = 1.25f;
+    public float wCrowdAtPoint = 1.0f;
+    public float wCrowdAlongPath = 0.75f;
+    public float wTravelCost = 0.15f;
+    public float lockTime = 0.9f;
+    public float rerollCooldown = 0.6f;
+    public int slotSamples = 12;
+    public float enemyMovedThreshold = 1.5f;
+    public float enterEnemyMargin = 0.6f;
+    public float exitEnemyMargin = 1.4f;
+    public float meleeRangeFallback = 1.5f;
+    public float rangedRangeFallback = 4.0f;
+    public float idleRoamRadius = 2.0f;
+    public float idleOffsetRefreshDistance = 4.0f;
 }
 
 [System.Serializable]
 public class UnitAIProfileEntry {
-    public UnitSpeciality speciality;
+    public UnitClass unitClass;
     public UnitAIProfile profile;
 }

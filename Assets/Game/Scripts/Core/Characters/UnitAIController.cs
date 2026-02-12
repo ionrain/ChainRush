@@ -32,6 +32,34 @@ public class UnitAIController : MonoBehaviour, MMEventListener<UnitActionEvent>,
     [SerializeField] bool separationUseIntervalUpdate = true;
     [SerializeField] float separationUpdateInterval = 0.15f;
 
+    [Header("Crowd-Aware Destination (Shared)")]
+    [SerializeField] int pointSamples = 12;
+    [SerializeField] int pathChecks = 3;
+    [SerializeField] float crowdRadiusMultiplier = 1.25f;
+    [SerializeField] float wCrowdAtPoint = 1.0f;
+    [SerializeField] float wCrowdAlongPath = 0.75f;
+    [SerializeField] float wTravelCost = 0.15f;
+
+    [Header("Lock + Stuck (Shared)")]
+    [SerializeField] float lockTime = 0.9f;
+    [SerializeField] float rerollCooldown = 0.6f;
+    [SerializeField] float stuckCheckInterval = 0.25f;
+    [SerializeField] float stuckTimeToReroll = 0.9f;
+    [SerializeField] float stuckMinDistanceProgress = 0.05f;
+    [SerializeField] float stuckMinMoveDelta = 0.03f;
+
+    [Header("Combat Slot Phase (Two-Phase Target Swap)")]
+    [SerializeField] int slotSamples = 12;
+    [SerializeField] float enemyMovedThreshold = 1.5f;
+    [SerializeField] float enterEnemyMargin = 0.6f;
+    [SerializeField] float exitEnemyMargin = 1.4f;
+    [SerializeField] float meleeRangeFallback = 1.5f;
+    [SerializeField] float rangedRangeFallback = 4.0f;
+
+    [Header("Idle Roam (Personal Anchor)")]
+    [SerializeField] float idleRoamRadius = 2.0f;
+    [SerializeField] float idleOffsetRefreshDistance = 4.0f;
+
     [Header("Target Scoring")]
     [SerializeField] float wHero = 3f;
     [SerializeField] float wUnit = 1f;
@@ -113,37 +141,57 @@ public class UnitAIController : MonoBehaviour, MMEventListener<UnitActionEvent>,
     static readonly HashSet<UnitAIController> _engagedUnits = new();
 
     // --- Hysteresis state (A) ---
-    // When true, unit is being recalled to hero and cannot pick combat targets.
-    // Flips true at returnRadius, flips false at followRadius. The gap prevents oscillation.
     bool _isReturningToHero;
 
     // --- Chase anchor / leash (B) ---
-    // Captured hero position at the moment an Enemy target is chosen.
-    // If unit wanders beyond maxChaseDistanceFromAnchor from this point, chase is aborted.
-    // We check unit-to-anchor (not enemy-to-anchor) because the unit is what we want to keep close.
     Vector2 _chaseAnchorPosition;
 
     // --- Target lock + retarget cooldown (C) ---
-    // _targetLockedUntil: prevents switching away from an Enemy target too quickly (avoids ping-ponging between enemies).
-    // _retargetAllowedAt: prevents redundant _unit.SetTarget calls that reset brain/animations.
     float _targetLockedUntil;
     float _retargetAllowedAt;
 
     // --- Commit window (D) ---
-    // Short grace period after choosing an Enemy target. During this time, a leash yank
-    // is delayed so the unit can finish its attack. Only applies while within returnRadius.
-    // returnRadius is a HARD cap — commit window never overrides it.
     float _enemyCommitUntil;
 
     // --- Leash recovery (separate from hysteresis) ---
-    // After leash abort, enemy/ally-assist targeting is suppressed for leashRecoveryTime.
-    // Uses its own timer instead of _isReturningToHero to avoid Phase 1 immediately clearing it.
     float _leashRecoveryUntil;
 
     // --- Combat linger ---
-    // After losing the last enemy (no replacement found), hold position briefly
-    // instead of immediately retreating to rally. Prevents back-and-forth when enemies die fast.
     float _combatLingerUntil;
+
+    // --- Crowd-aware destination selection ---
+    float _probeRadius;
+    float _desiredRange;
+    Collider2D[] _crowdBuffer = new Collider2D[32];
+    ContactFilter2D _allyContactFilter;
+    HashSet<Collider2D> _selfColliders;
+
+    // --- Combat slot — two-phase target swap ---
+    Transform _enemyReference;
+    Health _enemyReferenceHealth;
+    Transform _slotWaypoint;        // parented to this.transform, reused across enable/disable cycles
+    Vector2 _currentSlotPos;
+    Vector2 _enemyPosAtSlotCalc;
+    float _combatLockedUntil;
+    float _combatRerollAllowedAt;
+    bool _approachingSlot;
+
+    // Combat stuck tracking
+    float _nextCombatStuckCheckAt;
+    float _combatStuckAccum;
+    float _lastCombatDestDist;
+    Vector2 _lastCombatPos;
+
+    // Idle stuck
+    float _idleRerollAllowedAt;
+    float _nextIdleStuckCheckAt;
+    float _idleStuckAccum;
+    float _lastIdleDestDist;
+    Vector2 _lastIdlePos;
+
+    // Personal idle anchor: offset from spawnArea center, stored at spawn time
+    Vector2 _idleOffsetFromSpawnCenter;
+    float _nextIdleOffsetRefreshAt;
 
     enum TargetReason {
         Hero,
@@ -173,6 +221,20 @@ public class UnitAIController : MonoBehaviour, MMEventListener<UnitActionEvent>,
         var stObj = new GameObject($"SteeringTarget_{gameObject.name}");
         _steeringTarget = stObj.transform;
 
+        // Slot waypoint: parented to this transform, created once and reused
+        if (_slotWaypoint == null) {
+            var slotObj = new GameObject($"SlotWaypoint_{gameObject.name}");
+            slotObj.transform.SetParent(transform, false);
+            _slotWaypoint = slotObj.transform;
+        }
+
+        // Cache all own colliders for self-exclusion in crowd scoring (O(1) HashSet lookup)
+        _selfColliders = new HashSet<Collider2D>(GetComponentsInChildren<Collider2D>(true));
+
+        _allyContactFilter = new ContactFilter2D();
+        _allyContactFilter.SetLayerMask(allyLayer);
+        _allyContactFilter.useTriggers = true;
+
         SetHero(hero);
 
         _spawnArea = spawnArea;
@@ -180,24 +242,28 @@ public class UnitAIController : MonoBehaviour, MMEventListener<UnitActionEvent>,
             GameObject waypointObj = new GameObject($"RallyWaypoint_{gameObject.name}");
             waypointObj.transform.SetParent(_spawnArea.transform, false);
             _rallyWaypoint = waypointObj.transform;
-            RandomizeRallyPosition();
+            _idleOffsetFromSpawnCenter = (Vector2)transform.position - (Vector2)_spawnArea.bounds.center;
+            PickBestIdleRallyPoint();
         }
 
         // Profile + formation setup (Normal units only)
         _unitManager = partyManager;
         if (_unitManager != null && _unit.Data != null && _unit.Data.type == UnitType.Normal) {
-            _aiProfile = _unitManager.GetAIProfile(_unit.Data.speciality);
+            _aiProfile = _unitManager.GetAIProfile(_unit.Data.unitClass);
             ApplyProfile(_aiProfile);
 
             // Formation: sourced exclusively from AI profile
             if (_aiProfile != null && _aiProfile.formation != null) {
                 _formationProfile = _aiProfile.formation;
-                _slotIndex = _unitManager.AssignSlotIndex(_unit.Data.speciality);
+                _slotIndex = _unitManager.AssignSlotIndex(_unit.Data.unitClass);
                 GameObject fpObj = new GameObject($"FormationPoint_{gameObject.name}");
                 _formationPoint = fpObj.transform;
                 UpdateFormationPointPosition();
             }
         }
+
+        ComputeProbeRadius();
+        ComputeDesiredRange();
 
         _active = true;
     }
@@ -233,6 +299,24 @@ public class UnitAIController : MonoBehaviour, MMEventListener<UnitActionEvent>,
         if (p.overrideSpeed) {
             heroSpeedMultiplier = p.heroSpeedMultiplier;
         }
+        if (p.overrideCrowdAware) {
+            pointSamples = p.pointSamples;
+            pathChecks = p.pathChecks;
+            crowdRadiusMultiplier = p.crowdRadiusMultiplier;
+            wCrowdAtPoint = p.wCrowdAtPoint;
+            wCrowdAlongPath = p.wCrowdAlongPath;
+            wTravelCost = p.wTravelCost;
+            lockTime = p.lockTime;
+            rerollCooldown = p.rerollCooldown;
+            slotSamples = p.slotSamples;
+            enemyMovedThreshold = p.enemyMovedThreshold;
+            enterEnemyMargin = p.enterEnemyMargin;
+            exitEnemyMargin = p.exitEnemyMargin;
+            meleeRangeFallback = p.meleeRangeFallback;
+            rangedRangeFallback = p.rangedRangeFallback;
+            idleRoamRadius = p.idleRoamRadius;
+            idleOffsetRefreshDistance = p.idleOffsetRefreshDistance;
+        }
     }
 
     void SetHero(Unit hero) {
@@ -254,6 +338,326 @@ public class UnitAIController : MonoBehaviour, MMEventListener<UnitActionEvent>,
         _heroAlive = false;
     }
 
+    // =====================================================================
+    //  Crowd-aware helpers
+    // =====================================================================
+
+    void ComputeProbeRadius() {
+        float raw = personalSpaceRadius;
+
+        if (_unit != null && _unit.Data != null) {
+            var mergeData = _unit.Data.GetMergeData(_unit.MergeState);
+            if (mergeData != null && mergeData.colliderSize != Vector2.zero) {
+                raw = 0.5f * Mathf.Max(mergeData.colliderSize.x, mergeData.colliderSize.y);
+            } else {
+                var col = GetComponent<Collider2D>();
+                if (col != null)
+                    raw = Mathf.Max(col.bounds.extents.x, col.bounds.extents.y);
+            }
+        }
+
+        _probeRadius = raw * crowdRadiusMultiplier;
+    }
+
+    void ComputeDesiredRange() {
+        if (_unit == null || _unit.Data == null) {
+            _desiredRange = meleeRangeFallback;
+            return;
+        }
+
+        float attackRange = -1f;
+
+        // Priority 1: main skill
+        Skill mainSkill = _unit.Skills != null ? _unit.Skills.Find(s => s.Main) : null;
+        if (mainSkill != null && mainSkill.CurrentLevel != null) {
+            if (_unit.Data.IsMelee)
+                attackRange = mainSkill.CurrentLevel.GetParameterValue(SkillParameterType.Radius, -1);
+            else
+                attackRange = mainSkill.CurrentLevel.GetParameterValue(SkillParameterType.Distance, -1);
+        }
+
+        // Priority 2: scan all assigned attack skills for max range
+        if (attackRange <= 0f && _unit.Skills != null) {
+            foreach (var skill in _unit.Skills) {
+                if (skill == null || !skill.IsAssigned || skill.CurrentLevel == null) continue;
+                float d = skill.CurrentLevel.GetParameterValue(SkillParameterType.Distance, -1);
+                if (d > attackRange) attackRange = d;
+                float r = skill.CurrentLevel.GetParameterValue(SkillParameterType.Radius, -1);
+                if (r > attackRange) attackRange = r;
+            }
+        }
+
+        // Priority 3: fallback
+        if (attackRange <= 0f)
+            attackRange = _unit.Data.IsMelee ? meleeRangeFallback : rangedRangeFallback;
+
+        float minRange = Mathf.Max(_probeRadius * 1.1f, 0.3f);
+        _desiredRange = Mathf.Clamp(attackRange * 0.9f, minRange, attackRange - 0.1f);
+    }
+
+    /// <summary>
+    /// Count allies near a point, excluding self colliders. O(1) self-check via HashSet.
+    /// </summary>
+    int CountCrowdNonAlloc(Vector2 center) {
+        int raw = Physics2D.OverlapCircle(center, _probeRadius, _allyContactFilter, _crowdBuffer);
+        int count = 0;
+        for (int i = 0; i < raw; i++) {
+            if (_crowdBuffer[i] != null && !_selfColliders.Contains(_crowdBuffer[i]))
+                count++;
+        }
+        return count;
+    }
+
+    /// <summary>
+    /// Score a destination candidate. Lower score = better (less crowded, shorter path).
+    /// </summary>
+    float ScoreDestination(Vector2 candidate, Vector2 fromPos) {
+        float score = 0f;
+
+        // Crowd at destination point
+        score += CountCrowdNonAlloc(candidate) * wCrowdAtPoint;
+
+        // Crowd along path (probes at t = 1/(K+1), 2/(K+1), ..., K/(K+1))
+        for (int i = 1; i <= pathChecks; i++) {
+            float t = i / (pathChecks + 1f);
+            Vector2 probePos = Vector2.Lerp(fromPos, candidate, t);
+            score += CountCrowdNonAlloc(probePos) * wCrowdAlongPath;
+        }
+
+        // Travel distance cost
+        score += Vector2.Distance(fromPos, candidate) * wTravelCost;
+
+        return score;
+    }
+
+    /// <summary>
+    /// Parameterized stuck detection. Returns true if unit should reroll destination.
+    /// Bypasses lock timers — gated only by rerollAllowedAt (rerollCooldown).
+    /// </summary>
+    bool CheckStuck(ref float nextCheckAt, ref float accumulator, ref float lastDestDist,
+                    ref Vector2 lastPos, Vector2 destination, ref float rerollAllowedAt) {
+        if (Time.time < nextCheckAt) return false;
+        nextCheckAt = Time.time + stuckCheckInterval;
+
+        Vector2 unitPos = transform.position;
+        float newDestDist = Vector2.Distance(unitPos, destination);
+        float moveDelta = Vector2.Distance(unitPos, lastPos);
+
+        bool progressing = (lastDestDist - newDestDist) >= stuckMinDistanceProgress
+                        || moveDelta >= stuckMinMoveDelta;
+
+        if (progressing) {
+            accumulator = 0f;
+        } else {
+            accumulator += stuckCheckInterval;
+            if (accumulator >= stuckTimeToReroll && Time.time >= rerollAllowedAt) {
+                accumulator = 0f;
+                rerollAllowedAt = Time.time + rerollCooldown;
+                lastDestDist = newDestDist;
+                lastPos = unitPos;
+                return true;
+            }
+        }
+
+        lastDestDist = newDestDist;
+        lastPos = unitPos;
+        return false;
+    }
+
+    // =====================================================================
+    //  Idle: crowd-aware rally point selection (personal anchor)
+    // =====================================================================
+
+    Vector2 GetIdleAnchorWorld() {
+        if (_spawnArea == null) return transform.position;
+        return (Vector2)_spawnArea.bounds.center + _idleOffsetFromSpawnCenter;
+    }
+
+    /// <summary>
+    /// Sample candidates around personal idle anchor, pick the least crowded.
+    /// Candidates are local to the anchor (idleRoamRadius), clamped to spawnArea bounds.
+    /// Sets _rallyWaypoint position and resets idle stuck tracking.
+    /// </summary>
+    void PickBestIdleRallyPoint() {
+        if (_rallyWaypoint == null || _spawnArea == null) return;
+
+        Bounds bounds = _spawnArea.bounds;
+        Vector2 center = bounds.center;
+        Vector2 anchor = center + _idleOffsetFromSpawnCenter;
+        Vector2 unitPos = transform.position;
+
+        // Refresh offset if unit drifted far from anchor (e.g. after combat chaos)
+        // Gated by cooldown to prevent noisy re-anchoring when being pushed around
+        if (Vector2.Distance(unitPos, anchor) > idleOffsetRefreshDistance
+            && Time.time >= _nextIdleOffsetRefreshAt) {
+            _idleOffsetFromSpawnCenter = unitPos - center;
+            anchor = center + _idleOffsetFromSpawnCenter;
+            _nextIdleOffsetRefreshAt = Time.time + 1.5f;
+        }
+
+        Vector2 bestWorld = anchor; // fallback
+        float bestScore = float.MaxValue;
+
+        int samples = Mathf.Max(1, pointSamples);
+        for (int i = 0; i < samples; i++) {
+            Vector2 candidate = anchor + Random.insideUnitCircle * idleRoamRadius;
+            // Clamp to spawnArea bounds
+            candidate.x = Mathf.Clamp(candidate.x, bounds.min.x, bounds.max.x);
+            candidate.y = Mathf.Clamp(candidate.y, bounds.min.y, bounds.max.y);
+
+            float score = ScoreDestination(candidate, unitPos);
+            if (score < bestScore) {
+                bestScore = score;
+                bestWorld = candidate;
+            }
+        }
+
+        // Convert world position to local space of rally waypoint parent (spawn area)
+        if (_rallyWaypoint.parent != null)
+            _rallyWaypoint.localPosition = _rallyWaypoint.parent.InverseTransformPoint(
+                new Vector3(bestWorld.x, bestWorld.y, 0f));
+        else
+            _rallyWaypoint.position = new Vector3(bestWorld.x, bestWorld.y, 0f);
+
+        // Reset idle stuck tracking
+        _idleStuckAccum = 0f;
+        _idleRerollAllowedAt = Time.time + rerollCooldown;
+        _lastIdlePos = unitPos;
+        _lastIdleDestDist = Vector2.Distance(unitPos, bestWorld);
+    }
+
+    // =====================================================================
+    //  Combat: slot computation + two-phase target swap
+    // =====================================================================
+
+    /// <summary>
+    /// Compute best slot position on a ring around enemy within ±90° of approach direction.
+    /// </summary>
+    Vector2 ComputeAttackSlot(Vector2 enemyPos, float desiredRange) {
+        Vector2 unitPos = transform.position;
+        Vector2 approachDir = (unitPos - enemyPos);
+        if (approachDir.sqrMagnitude < 0.0001f)
+            approachDir = Vector2.right;
+        else
+            approachDir.Normalize();
+
+        float baseAngle = Mathf.Atan2(approachDir.y, approachDir.x);
+        float halfArc = 90f * Mathf.Deg2Rad; // ±90° sector
+
+        Vector2 bestCandidate = enemyPos + approachDir * desiredRange; // fallback
+        float bestScore = float.MaxValue;
+
+        int samples = Mathf.Max(2, slotSamples);
+        for (int i = 0; i < samples; i++) {
+            float t;
+            if (i == 0) {
+                t = 0f; // first candidate at exact approach angle (biased)
+            } else {
+                // spread evenly across ±90° arc
+                t = -halfArc + (2f * halfArc * i / (samples - 1));
+            }
+
+            float angle = baseAngle + t;
+            Vector2 candidate = enemyPos + new Vector2(
+                Mathf.Cos(angle) * desiredRange,
+                Mathf.Sin(angle) * desiredRange
+            );
+
+            float score = ScoreDestination(candidate, unitPos);
+            if (score < bestScore) {
+                bestScore = score;
+                bestCandidate = candidate;
+            }
+        }
+
+        return bestCandidate;
+    }
+
+    void ResetCombatStuckTracking(Vector2 destination) {
+        _combatStuckAccum = 0f;
+        _lastCombatDestDist = Vector2.Distance(transform.position, destination);
+        _lastCombatPos = transform.position;
+        _combatRerollAllowedAt = Time.time + rerollCooldown;
+    }
+
+    /// <summary>
+    /// Two-phase combat update. Swaps _brain.Target between slot waypoint (Phase 1)
+    /// and enemy transform (Phase 2) based on distance to enemy with hysteresis.
+    /// </summary>
+    void UpdateCombatSlotPhase() {
+        if (_enemyReference == null || _brain == null) return;
+
+        // Check enemy validity
+        if (!_enemyReference.gameObject.activeInHierarchy
+            || (_enemyReferenceHealth != null && _enemyReferenceHealth.CurrentHealth <= 0)) {
+            _enemyReference = null;
+            _enemyReferenceHealth = null;
+            _approachingSlot = false;
+            _forceReevaluate = true;
+            return;
+        }
+
+        Vector2 unitPos = transform.position;
+        Vector2 enemyPos = _enemyReference.position;
+        float dEnemy = Vector2.Distance(unitPos, enemyPos);
+
+        if (_approachingSlot) {
+            // Phase 1 → Phase 2: close enough to enemy
+            if (dEnemy <= _desiredRange + enterEnemyMargin) {
+                _brain.Target = _enemyReference;
+                _approachingSlot = false;
+                ResetCombatStuckTracking(enemyPos);
+                return;
+            }
+
+            // Check stuck FIRST (bypasses lock, gated by rerollCooldown)
+            bool stuck = CheckStuck(ref _nextCombatStuckCheckAt, ref _combatStuckAccum,
+                ref _lastCombatDestDist, ref _lastCombatPos, _currentSlotPos, ref _combatRerollAllowedAt);
+
+            if (stuck) {
+                Vector2 newSlot = ComputeAttackSlot(enemyPos, _desiredRange);
+                _currentSlotPos = newSlot;
+                _slotWaypoint.position = new Vector3(newSlot.x, newSlot.y, 0f);
+                _enemyPosAtSlotCalc = enemyPos;
+                _combatLockedUntil = Time.time + lockTime;
+                _brain.Target = _slotWaypoint;
+                ResetCombatStuckTracking(newSlot);
+            }
+            // Check enemy-moved (requires lock expired)
+            else if (Time.time > _combatLockedUntil) {
+                float enemyMoved = Vector2.Distance(_enemyPosAtSlotCalc, enemyPos);
+                if (enemyMoved > enemyMovedThreshold) {
+                    Vector2 newSlot = ComputeAttackSlot(enemyPos, _desiredRange);
+                    _currentSlotPos = newSlot;
+                    _slotWaypoint.position = new Vector3(newSlot.x, newSlot.y, 0f);
+                    _enemyPosAtSlotCalc = enemyPos;
+                    _combatLockedUntil = Time.time + lockTime;
+                    _brain.Target = _slotWaypoint;
+                    ResetCombatStuckTracking(newSlot);
+                }
+            }
+        } else {
+            // Phase 2 → Phase 1: too far from enemy, go back to slot approach
+            if (dEnemy >= _desiredRange + exitEnemyMargin && Time.time > _combatLockedUntil) {
+                Vector2 newSlot = ComputeAttackSlot(enemyPos, _desiredRange);
+                _currentSlotPos = newSlot;
+                _slotWaypoint.position = new Vector3(newSlot.x, newSlot.y, 0f);
+                _enemyPosAtSlotCalc = enemyPos;
+                _combatLockedUntil = Time.time + lockTime;
+                _approachingSlot = true;
+                _brain.Target = _slotWaypoint;
+                ResetCombatStuckTracking(newSlot);
+            } else {
+                // Stay in Phase 2
+                _brain.Target = _enemyReference;
+            }
+        }
+    }
+
+    // =====================================================================
+    //  Main update loop
+    // =====================================================================
+
     void Update() {
         if (!_active || _brain == null) return;
 
@@ -265,12 +669,19 @@ public class UnitAIController : MonoBehaviour, MMEventListener<UnitActionEvent>,
                 _unitManager.ReleaseEnemy(_reservedEnemyInstanceId);
                 _reservedEnemyInstanceId = -1;
             }
+            _enemyReference = null;
+            _enemyReferenceHealth = null;
+            _approachingSlot = false;
             _forceReevaluate = true;
         }
 
         EvaluateTarget();
         UpdateCatchUpState();
         UpdateSpeedBoost();
+
+        // Two-phase combat slot update
+        if (_enemyReference != null && _targetReason == TargetReason.Enemy)
+            UpdateCombatSlotPhase();
     }
 
     bool IsReservedEnemyValid() {
@@ -319,9 +730,6 @@ public class UnitAIController : MonoBehaviour, MMEventListener<UnitActionEvent>,
                     return;
 
                 // Leash snapped. Suppress enemy targeting for leashRecoveryTime
-                // so the unit doesn't immediately re-pick the same enemy.
-                // NOTE: we do NOT set _isReturningToHero here — that's for hysteresis only.
-                // If we did, Phase 1 would clear it next tick (unit is within followRadius).
                 _leashRecoveryUntil = Time.time + leashRecoveryTime;
                 ForceSetTarget(GetSafeRallyTarget(), TargetReason.Hero);
                 return;
@@ -382,7 +790,6 @@ public class UnitAIController : MonoBehaviour, MMEventListener<UnitActionEvent>,
         // P5: No threats → follow hero
         // Combat linger: if we just lost our enemy target (no replacement found),
         // hold position briefly instead of immediately retreating to rally.
-        // Prevents back-and-forth jitter when enemies die frequently.
         if (_targetReason == TargetReason.Enemy) {
             _combatLingerUntil = Time.time + combatLingerTime;
         }
@@ -467,6 +874,7 @@ public class UnitAIController : MonoBehaviour, MMEventListener<UnitActionEvent>,
     /// <summary>
     /// Low-level setter. Updates internal state and calls _unit.SetTarget().
     /// Sets timing flags (lock, cooldown, commit, anchor) when switching to Enemy.
+    /// For Enemy targets: also sets up two-phase combat slot system.
     /// </summary>
     void ApplyTarget(Transform target, TargetReason reason) {
         // Reservation management: determine new instanceId
@@ -491,6 +899,7 @@ public class UnitAIController : MonoBehaviour, MMEventListener<UnitActionEvent>,
         _retargetAllowedAt = Time.time + retargetCooldown;
 
         if (reason == TargetReason.Enemy) {
+            _lastThreatTime = Time.time; // local threat: unit actually engaged an enemy
             _targetLockedUntil = Time.time + targetLockTime;
             _enemyCommitUntil = Time.time + enemyCommitTime;
             _combatLingerUntil = 0f; // clear linger when we have a new enemy
@@ -507,6 +916,41 @@ public class UnitAIController : MonoBehaviour, MMEventListener<UnitActionEvent>,
         }
 
         _unit.SetTarget(target);
+
+        // --- Two-phase combat slot setup ---
+        if (reason == TargetReason.Enemy && target != null && _slotWaypoint != null) {
+            _enemyReference = target;
+            _enemyReferenceHealth = _currentTargetHealth;
+
+            // Recompute range in case merge state changed since last enemy
+            ComputeProbeRadius();
+            ComputeDesiredRange();
+
+            float dEnemy = Vector2.Distance(transform.position, target.position);
+            if (dEnemy <= _desiredRange + enterEnemyMargin) {
+                // Already close → Phase 2 (direct enemy target, brain.Target stays as enemy)
+                _approachingSlot = false;
+                _lastCombatDestDist = dEnemy;
+            } else {
+                // Phase 1: compute slot, override brain.Target to slot waypoint
+                Vector2 slotPos = ComputeAttackSlot(target.position, _desiredRange);
+                _currentSlotPos = slotPos;
+                _slotWaypoint.position = new Vector3(slotPos.x, slotPos.y, 0f);
+                _enemyPosAtSlotCalc = target.position;
+                _combatLockedUntil = Time.time + lockTime;
+                _approachingSlot = true;
+                _brain.Target = _slotWaypoint; // override what SetTarget just set
+                _lastCombatDestDist = Vector2.Distance(transform.position, slotPos);
+            }
+            // Reset combat stuck tracking
+            _combatStuckAccum = 0f;
+            _combatRerollAllowedAt = Time.time + rerollCooldown;
+            _lastCombatPos = transform.position;
+        } else if (reason != TargetReason.Enemy) {
+            _enemyReference = null;
+            _enemyReferenceHealth = null;
+            _approachingSlot = false;
+        }
     }
 
     /// <summary>
@@ -552,16 +996,6 @@ public class UnitAIController : MonoBehaviour, MMEventListener<UnitActionEvent>,
         }
     }
 
-    void RandomizeRallyPosition() {
-        if (_rallyWaypoint == null || _spawnArea == null) return;
-        Vector2 halfSize = _spawnArea.size * 0.5f;
-        _rallyWaypoint.localPosition = new Vector3(
-            Random.Range(-halfSize.x, halfSize.x),
-            Random.Range(-halfSize.y, halfSize.y),
-            0f
-        );
-    }
-
     void UpdateFormationPointPosition() {
         if (_formationPoint == null || _formationProfile == null) return;
 
@@ -595,21 +1029,30 @@ public class UnitAIController : MonoBehaviour, MMEventListener<UnitActionEvent>,
     /// Returns a valid rally target. Never returns null.
     /// During resting, returns the current waypoint so the unit stands still near it
     /// instead of receiving null which would cause idle/walk jitter.
+    /// Includes crowd-aware idle stuck detection.
     /// </summary>
     Transform GetSafeRallyTarget() {
         // HYBRID: formation during threats/catchup/return, roam when idle
         if (ShouldUseFormationNow())
             return _formationPoint;
 
-        // Idle roam: original rally waypoint behavior
+        // Idle roam: crowd-aware rally waypoint behavior
         if (_rallyWaypoint == null) return _heroTransform;
+
+        // Idle stuck detection: reroll if stuck while moving to rally (gated by _idleRerollAllowedAt)
+        if (!_rallyResting) {
+            bool stuck = CheckStuck(ref _nextIdleStuckCheckAt, ref _idleStuckAccum,
+                ref _lastIdleDestDist, ref _lastIdlePos, _rallyWaypoint.position, ref _idleRerollAllowedAt);
+            if (stuck)
+                PickBestIdleRallyPoint();
+        }
 
         if (_rallyResting) {
             if (Time.time < _rallyRestUntil)
                 return _rallyWaypoint;
 
             _rallyResting = false;
-            RandomizeRallyPosition();
+            PickBestIdleRallyPoint();
             return _rallyWaypoint;
         }
 
@@ -635,7 +1078,6 @@ public class UnitAIController : MonoBehaviour, MMEventListener<UnitActionEvent>,
 
         Transform best = null;
         float bestScore = float.MinValue;
-        bool anyValidCandidate = false;
 
         for (int i = 0; i < count; i++) {
             if (_overlapResults[i] == null) continue;
@@ -649,8 +1091,6 @@ public class UnitAIController : MonoBehaviour, MMEventListener<UnitActionEvent>,
 
             // Guard 2: hard gate — skip candidates physically too far from this unit
             if (dUnit > acquireLimit) continue;
-
-            anyValidCandidate = true;
 
             int assignedCount = _unitManager != null
                 ? _unitManager.GetAssignedCount(candidate.gameObject.GetInstanceID())
@@ -667,9 +1107,6 @@ public class UnitAIController : MonoBehaviour, MMEventListener<UnitActionEvent>,
                 best = candidate;
             }
         }
-
-        if (anyValidCandidate)
-            _lastThreatTime = Time.time;
 
         return best;
     }
@@ -776,6 +1213,11 @@ public class UnitAIController : MonoBehaviour, MMEventListener<UnitActionEvent>,
             _unitManager.ReleaseEnemy(_reservedEnemyInstanceId);
             _reservedEnemyInstanceId = -1;
         }
+
+        // Clear combat slot state (do NOT destroy _slotWaypoint — parented to unit, reused for pooling)
+        _enemyReference = null;
+        _enemyReferenceHealth = null;
+        _approachingSlot = false;
 
         if (_heroUnit != null)
             _heroUnit.OnDeath -= OnHeroDeath;

@@ -27,7 +27,7 @@ public class UnitManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEve
     [SerializeField] Dictionary<LevelGoalType, Unit> heroPrefabs = new();
     [SerializeField] Transform heroSpawnPoint;
     [SerializeField] Unit unitPrefab;
-    [SerializeField] Dictionary<UnitSpeciality, BoxCollider2D> spawnAreas = new();
+    [SerializeField] Dictionary<UnitClass, BoxCollider2D> spawnAreas = new();
 
     [Header("AI Profiles")]
     [SerializeField] List<UnitAIProfileEntry> aiProfileEntries = new();
@@ -46,8 +46,8 @@ public class UnitManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEve
     List<Unit> _units = new List<Unit>();
     Dictionary<BoxCollider2D, float> _spawnAreaXOffsets = new();
 
-    Dictionary<UnitSpeciality, UnitAIProfile> _aiProfiles = new();
-    Dictionary<UnitSpeciality, int> _slotCounters = new();
+    Dictionary<UnitClass, UnitAIProfile> _aiProfiles = new();
+    Dictionary<UnitClass, int> _slotCounters = new();
     Dictionary<int, int> _enemyAssignedCount = new();
 
     bool _showHealthBars = true;
@@ -64,13 +64,13 @@ public class UnitManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEve
 
     // --- AI Profile API ---
 
-    public UnitAIProfile GetAIProfile(UnitSpeciality speciality) {
-        return _aiProfiles.TryGetValue(speciality, out var p) ? p : null;
+    public UnitAIProfile GetAIProfile(UnitClass unitClass) {
+        return _aiProfiles.TryGetValue(unitClass, out var p) ? p : null;
     }
 
-    public int AssignSlotIndex(UnitSpeciality speciality) {
-        int index = _slotCounters.GetValueOrDefault(speciality, 0);
-        _slotCounters[speciality] = index + 1;
+    public int AssignSlotIndex(UnitClass unitClass) {
+        int index = _slotCounters.GetValueOrDefault(unitClass, 0);
+        _slotCounters[unitClass] = index + 1;
         return index;
     }
 
@@ -121,7 +121,7 @@ public class UnitManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEve
         if (aiProfileEntries != null) {
             foreach (var entry in aiProfileEntries)
                 if (entry != null && entry.profile != null)
-                    _aiProfiles[entry.speciality] = entry.profile;
+                    _aiProfiles[entry.unitClass] = entry.profile;
         }
 
         if (selected != null && spawnAreas != null && spawnAreas.Count > 0)
@@ -177,7 +177,7 @@ public class UnitManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEve
             spawnParent = parent;
         } else {
             prefab = unitPrefab;
-            var area = spawnAreas.GetValueOrDefault(data.speciality, null);
+            var area = spawnAreas.GetValueOrDefault(data.unitClass, null);
             if (area == null) return null;
             spawnPosition = new Vector2(Random.Range(0, area.size.x), Random.Range(0, area.size.y)) - area.size * 0.5f + (Vector2)area.transform.position;
         }
@@ -200,7 +200,7 @@ public class UnitManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEve
                 unit.SetTarget(Hero.transform);
                 UnitAIController aiController = unit.GetComponent<UnitAIController>();
                 if (aiController != null) {
-                    BoxCollider2D area = spawnAreas.GetValueOrDefault(data.speciality, null);
+                    BoxCollider2D area = spawnAreas.GetValueOrDefault(data.unitClass, null);
                     aiController.Initialize(Hero, area, this);
                 }
             }

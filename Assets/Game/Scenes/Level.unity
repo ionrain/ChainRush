@@ -1295,12 +1295,12 @@ MonoBehaviour:
       Data: 
     - Name: spawnAreas
       Entry: 7
-      Data: 2|System.Collections.Generic.Dictionary`2[[UnitSpeciality, Assembly-CSharp],[UnityEngine.BoxCollider2D,
+      Data: 2|System.Collections.Generic.Dictionary`2[[UnitClass, Assembly-CSharp],[UnityEngine.BoxCollider2D,
         UnityEngine.Physics2DModule]], mscorlib
     - Name: comparer
       Entry: 7
-      Data: 3|System.Collections.Generic.EnumEqualityComparer`1[[UnitSpeciality,
-        Assembly-CSharp]], mscorlib
+      Data: 3|System.Collections.Generic.EnumEqualityComparer`1[[UnitClass, Assembly-CSharp]],
+        mscorlib
     - Name: 
       Entry: 12
       Data: 0
@@ -1398,9 +1398,9 @@ MonoBehaviour:
   unitPrefab: {fileID: 1411303599235369572, guid: ea179427a114b4934859536e9ddade2b,
     type: 3}
   aiProfileEntries:
-  - speciality: 0
+  - unitClass: 0
     profile: {fileID: 11400000, guid: d4394710f4e4b4cc7b26a11887d65e1a, type: 2}
-  - speciality: 3
+  - unitClass: 3
     profile: {fileID: 11400000, guid: 4056dcffc168c407190e682ac13052df, type: 2}
   OnBuff:
     m_PersistentCalls:

@@ -6,7 +6,7 @@ public struct Intent
 {
     public DomainId Domain;
     public string GoalId;
-    public FactionKey Faction;
+    public FactionAsset Faction;
     public int Priority;
     public float DeadlineSeconds;
     public UnityEngine.Object Target;
@@ -16,7 +16,7 @@ public struct Intent
     public static Intent Create(
         DomainId domain,
         string goalId,
-        FactionKey faction,
+        FactionAsset faction,
         int priority = 50,
         float deadlineSeconds = -1f,
         UnityEngine.Object target = null,

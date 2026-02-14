@@ -4,7 +4,7 @@ using UnityEngine;
 [Serializable]
 public struct CombatState
 {
-    public FactionKey Faction;
+    public FactionAsset Faction;
     public int EntityId;
     public Vector2 Position;
     public float Hp01;
@@ -15,7 +15,7 @@ public struct CombatState
     public string RoleTag;
 
     public static CombatState Create(
-        FactionKey faction,
+        FactionAsset faction,
         int entityId,
         Vector2 position,
         bool isAlive,

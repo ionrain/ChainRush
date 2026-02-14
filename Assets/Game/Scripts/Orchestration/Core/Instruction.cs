@@ -7,7 +7,7 @@ public struct Instruction
     public DomainId Domain;
     public string ActionId;
     public ControlLevel Control;
-    public FactionKey Faction;
+    public FactionAsset Faction;
     public int Priority;
     public float DeadlineSeconds;
     public UnityEngine.Object Target;
@@ -18,7 +18,7 @@ public struct Instruction
     public static Instruction Create(
         DomainId domain,
         string actionId,
-        FactionKey faction,
+        FactionAsset faction,
         ControlLevel control = ControlLevel.Guided,
         int priority = 50,
         float deadlineSeconds = -1f,

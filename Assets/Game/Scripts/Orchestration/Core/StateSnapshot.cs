@@ -1,10 +1,13 @@
 using System;
 using UnityEngine;
 
+/// <summary>
+/// Typed-only faction snapshot. Null <see cref="Faction"/> means unknown/unconfigured.
+/// </summary>
 [Serializable]
 public struct StateSnapshot
 {
-    public FactionKey Faction;
+    public FactionAsset Faction;
     public int EntityId;
     public Vector2 Position;
     public bool IsAlive;
@@ -12,7 +15,7 @@ public struct StateSnapshot
     public ParamSet Metrics;
 
     public static StateSnapshot Create(
-        FactionKey faction,
+        FactionAsset faction,
         int entityId,
         Vector2 position,
         bool isAlive,

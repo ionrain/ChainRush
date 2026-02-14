@@ -9799,9 +9799,7 @@ GameObject:
   - component: {fileID: 2930422653689389407}
   - component: {fileID: 8990318576340523480}
   - component: {fileID: 3431832591465563861}
-  - component: {fileID: 8311872834467300045}
   - component: {fileID: 8692055187687283422}
-  - component: {fileID: 8448130102863244692}
   - component: {fileID: 7411851858553548647}
   - component: {fileID: 2730424826975137434}
   m_Layer: 10
@@ -9888,19 +9886,6 @@ MonoBehaviour:
   Label: MoveToTarget
   UseMinimumXDistance: 0
   MinimumXDistance: 0
---- !u!114 &8311872834467300045
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 88938530400529954}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 05f21b170839d044b8b9bf160d1be05b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Label: Target is alive?
 --- !u!114 &8692055187687283422
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9915,20 +9900,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   InitializationMode: 1
   Label: Idle
---- !u!114 &8448130102863244692
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 88938530400529954}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3458694f863824240a727a0a79ab664a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  InitializationMode: 1
-  Label: Reset Target
 --- !u!114 &7411851858553548647
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -35041,6 +35012,37 @@ ParticleSystemRenderer:
   m_MeshWeighting1: 1
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
+--- !u!1 &336539746547124894
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7463404197628668176}
+  m_Layer: 0
+  m_Name: Orch_Waypoint_Combat
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7463404197628668176
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 336539746547124894}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4367221367741785940}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &360004035567699510
 GameObject:
   m_ObjectHideFlags: 0
@@ -188193,6 +188195,11 @@ GameObject:
   - component: {fileID: 8712220277725499454}
   - component: {fileID: 2326046152140334740}
   - component: {fileID: 6402974900918719512}
+  - component: {fileID: 6257825161442359023}
+  - component: {fileID: -7754944225952176092}
+  - component: {fileID: 1238008963572229560}
+  - component: {fileID: -880026797847537015}
+  - component: {fileID: 3999842955884892598}
   m_Layer: 10
   m_Name: Unit
   m_TagString: Untagged
@@ -188225,6 +188232,7 @@ Transform:
   - {fileID: 2233739154095398066}
   - {fileID: 4649937014152353109}
   - {fileID: 2245528642213605695}
+  - {fileID: 7463404197628668176}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &721651427342410775
@@ -188536,7 +188544,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3536651080418157209}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 644edbd08fe2649549eccf5411910f77, type: 3}
   m_Name: 
@@ -188564,6 +188572,26 @@ MonoBehaviour:
   separationOnlyForFormationOrRally: 1
   separationUseIntervalUpdate: 1
   separationUpdateInterval: 0.15
+  pointSamples: 12
+  pathChecks: 3
+  crowdRadiusMultiplier: 1.25
+  wCrowdAtPoint: 1
+  wCrowdAlongPath: 0.75
+  wTravelCost: 0.15
+  lockTime: 0.9
+  rerollCooldown: 0.6
+  stuckCheckInterval: 0.25
+  stuckTimeToReroll: 0.9
+  stuckMinDistanceProgress: 0.05
+  stuckMinMoveDelta: 0.03
+  slotSamples: 12
+  enemyMovedThreshold: 1.5
+  enterEnemyMargin: 0.6
+  exitEnemyMargin: 1.4
+  meleeRangeFallback: 1.5
+  rangedRangeFallback: 4
+  idleRoamRadius: 2
+  idleOffsetRefreshDistance: 4
   wHero: 3
   wUnit: 1
   wCrowd: 2
@@ -188578,6 +188606,87 @@ MonoBehaviour:
   combatLingerTime: 0.8
   idleRoamDelayAfterThreat: 1.2
   rallyRestInterval: {x: 1, y: 2}
+--- !u!114 &6257825161442359023
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3536651080418157209}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ae268c708ee641a1a739bf1ea8ac052, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnitOrchestrationIdentity
+  faction: {fileID: 11400000, guid: c705fd72106504e2c9904710eda101d4, type: 2}
+  factionId: Player
+  roleTagOverride: 
+--- !u!114 &-7754944225952176092
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3536651080418157209}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77e0bacc0be934c4ea50964b73338aef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnitStateReporter
+  _unit: {fileID: 1411303599235369572}
+  _identity: {fileID: 6257825161442359023}
+--- !u!114 &1238008963572229560
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3536651080418157209}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bc1807b6dcbb402d8fc454e91c208be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnitCombatCommandExecutor
+  _unit: {fileID: 1411303599235369572}
+  _identity: {fileID: 6257825161442359023}
+  _selector: {fileID: 3999842955884892598}
+  createWaypointOnReset: 1
+  debugLog: 1
+--- !u!114 &-880026797847537015
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3536651080418157209}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d3c464a719694322a400653998c5def, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnitCapabilityProvider
+  _unit: {fileID: 1411303599235369572}
+  defaultCapabilities: {fileID: 11400000, guid: 99965d92e9ae8447ba3f2d8eff28da93,
+    type: 2}
+  classMap: {fileID: 11400000, guid: f50423a6480834fa89ca6fc47754faeb, type: 2}
+--- !u!114 &3999842955884892598
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3536651080418157209}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efd9a823ad49d4bc7a8c47e24c996165, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnitCombatTargetSelector
+  _unit: {fileID: 1411303599235369572}
+  _identity: {fileID: 6257825161442359023}
+  targetSet: {fileID: 0}
+  autoResolveTargetSet: 1
+  policy: {fileID: 11400000, guid: 1873fdb216e5a48b18b07d80e1b4d905, type: 2}
+  defaultPolicy: {fileID: 11400000, guid: 1873fdb216e5a48b18b07d80e1b4d905, type: 2}
+  debugLog: 1
 --- !u!1 &3572560000541372990
 GameObject:
   m_ObjectHideFlags: 0

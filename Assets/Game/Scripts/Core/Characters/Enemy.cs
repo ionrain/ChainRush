@@ -29,6 +29,7 @@ public class Enemy : ItemDropRequester {
 
     public string EnemyName => gameObject.name;
     public EnemyType Type => data != null ? data.Type : EnemyType.Normal;
+    public Health Health => _health;
     public float CitadelDamage => citadelDamage;
 
     protected Character _character;

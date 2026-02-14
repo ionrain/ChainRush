@@ -2,6 +2,33 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+
+## Code Documentation Expectations
+
+Document **invariants and reasoning**, not trivial implementation details.
+
+### Where comments are required
+- New public types and interfaces: add short XML summaries explaining purpose and key invariants.
+- Data-contract structs (IDs, snapshots, commands): document default values and constraints (e.g., `DeadlineSeconds = -1` means “no deadline”; IDs are case-sensitive).
+- Planners/arbiters/scoring code: include `RATIONALE:` comments explaining why a heuristic exists and what problem it prevents (e.g., ping-pong, clumping).
+- Adapters/Executors: must document **ownership** (which system owns target/movement/steering) and how conflicts are avoided.
+
+### Comment tags (preferred)
+- `IMPORTANT:` invariants, ownership rules, dependency boundaries.
+- `RATIONALE:` heuristics, design trade-offs, why-not alternatives.
+- `PERF:` performance constraints (no LINQ, no per-frame allocations, linear scans by design).
+
+### Style constraints
+- Keep comments short and actionable.
+- Don’t comment obvious lines (null-checks, simple setters).
+- If a rule is critical (e.g., “Core must not reference Domains”), repeat it in the relevant files as `IMPORTANT:`.
+
+### Refactor hygiene
+- Keep compilation green at each step.
+- Prefer: add/replace/update references first → delete old types last.
+
+
+
 ## Project Overview
 
 ChainRush is a Unity 6 mobile game (iOS/Android) using URP. It combines a minesweeper-like board mechanic with auto-battler combat. The codebase extends MoreMountains' TopDownEngine framework.

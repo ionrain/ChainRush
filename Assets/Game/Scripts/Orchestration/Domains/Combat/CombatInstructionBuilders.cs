@@ -33,7 +33,7 @@ public static class CombatInstructionBuilders
 
     public static Instruction Create(
         CombatActionId action,
-        FactionKey faction,
+        FactionAsset faction,
         ControlLevel control = ControlLevel.Guided,
         int priority = 50,
         float deadlineSeconds = -1f,
@@ -55,7 +55,7 @@ public static class CombatInstructionBuilders
             tag);
     }
 
-    public static Instruction Hold(FactionKey faction, int priority = 50, string tag = null)
+    public static Instruction Hold(FactionAsset faction, int priority = 50, string tag = null)
     {
         return Instruction.Create(
             DomainId.Combat,
@@ -67,7 +67,7 @@ public static class CombatInstructionBuilders
     }
 
     public static Instruction MoveToPoint(
-        FactionKey faction,
+        FactionAsset faction,
         Vector2 point,
         int priority = 50,
         float deadlineSeconds = -1f,
@@ -85,7 +85,7 @@ public static class CombatInstructionBuilders
     }
 
     public static Instruction Eliminate(
-        FactionKey faction,
+        FactionAsset faction,
         UnityEngine.Object target,
         int priority = 70,
         float deadlineSeconds = -1f,
@@ -103,7 +103,7 @@ public static class CombatInstructionBuilders
     }
 
     public static Instruction Attack(
-        FactionKey faction,
+        FactionAsset faction,
         UnityEngine.Object target,
         int priority = 60,
         float deadlineSeconds = -1f,

@@ -16,7 +16,7 @@ using UnityEngine;
 /// </para>
 /// </summary>
 [RequireComponent(typeof(Unit))]
-public sealed class UnitCombatCommandExecutor : MonoBehaviour, ICombatCommandReceiver, IOrchestrationActor
+public sealed class UnitCombatCommandExecutor : MonoBehaviour, ICombatCommandReceiver, IOrchestrationActor, IRoleAssetProvider
 {
     // ──────────────────────────────────────────────────────────────────
     //  Serialized
@@ -103,6 +103,19 @@ public sealed class UnitCombatCommandExecutor : MonoBehaviour, ICombatCommandRec
 
     void OnEnable() => OrchestrationRegistry.Register((ICombatCommandReceiver)this);
     void OnDisable() => OrchestrationRegistry.Unregister((ICombatCommandReceiver)this);
+
+    // ──────────────────────────────────────────────────────────────────
+    //  IRoleAssetProvider
+    // ──────────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Returns the typed role asset for per-role combat targeting policy injection.
+    /// Delegates to <see cref="UnitOrchestrationIdentity.GetRoleAsset"/>.
+    /// </summary>
+    public RoleAsset GetRoleAsset()
+    {
+        return _identity != null ? _identity.GetRoleAsset() : null;
+    }
 
     // ──────────────────────────────────────────────────────────────────
     //  IOrchestrationActor

@@ -188200,6 +188200,9 @@ GameObject:
   - component: {fileID: 1238008963572229560}
   - component: {fileID: -880026797847537015}
   - component: {fileID: 3999842955884892598}
+  - component: {fileID: 4424342131491077100}
+  - component: {fileID: 1655415735089758016}
+  - component: {fileID: 3988508772425012462}
   m_Layer: 10
   m_Name: Unit
   m_TagString: Untagged
@@ -188619,8 +188622,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitOrchestrationIdentity
   faction: {fileID: 11400000, guid: c705fd72106504e2c9904710eda101d4, type: 2}
-  factionId: Player
-  roleTagOverride: 
+  roleOverride: {fileID: 0}
 --- !u!114 &-7754944225952176092
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -188665,9 +188667,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitCapabilityProvider
   _unit: {fileID: 1411303599235369572}
+  _identity: {fileID: 0}
   defaultCapabilities: {fileID: 11400000, guid: 99965d92e9ae8447ba3f2d8eff28da93,
     type: 2}
-  classMap: {fileID: 11400000, guid: f50423a6480834fa89ca6fc47754faeb, type: 2}
+  roleMap: {fileID: 0}
 --- !u!114 &3999842955884892598
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -188684,9 +188687,63 @@ MonoBehaviour:
   _identity: {fileID: 6257825161442359023}
   targetSet: {fileID: 0}
   autoResolveTargetSet: 1
-  policy: {fileID: 11400000, guid: 1873fdb216e5a48b18b07d80e1b4d905, type: 2}
+  overridePolicy: {fileID: 0}
   defaultPolicy: {fileID: 11400000, guid: 1873fdb216e5a48b18b07d80e1b4d905, type: 2}
   debugLog: 1
+--- !u!114 &4424342131491077100
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3536651080418157209}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 164fce89ec6984fe1b60db5d16962686, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnitIdlePolicySelector
+  overridePolicy: {fileID: 0}
+  defaultPolicy: {fileID: 11400000, guid: f927c7d3217484a0b9d4f136c5507d74, type: 2}
+--- !u!114 &1655415735089758016
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3536651080418157209}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34e0b36cfc2234b51ac71a4518ce39f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnitIdleCommandExecutor
+  _unit: {fileID: 1411303599235369572}
+  _identity: {fileID: 6257825161442359023}
+  _selector: {fileID: 4424342131491077100}
+  _idleBoundsProviderBehaviour: {fileID: 0}
+  debugLog: 1
+--- !u!114 &3988508772425012462
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3536651080418157209}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9658f31463bb41c79638ed9daf68027, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnitAISetup
+  unit: {fileID: 1411303599235369572}
+  identity: {fileID: 6257825161442359023}
+  capabilityProvider: {fileID: -880026797847537015}
+  idlePolicySelector: {fileID: 4424342131491077100}
+  combatTargetSelector: {fileID: 3999842955884892598}
+  roleMap: {fileID: 11400000, guid: ae6b68934dfa3487f95e526f55a96429, type: 2}
+  roleCapabilitiesMap: {fileID: 11400000, guid: a27119d767bb94601910ad9ca9f4d139,
+    type: 2}
+  faction: {fileID: 11400000, guid: c705fd72106504e2c9904710eda101d4, type: 2}
+  idleOverridePolicy: {fileID: 0}
+  combatOverridePolicy: {fileID: 0}
 --- !u!1 &3572560000541372990
 GameObject:
   m_ObjectHideFlags: 0

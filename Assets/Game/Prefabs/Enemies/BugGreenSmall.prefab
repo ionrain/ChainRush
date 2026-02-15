@@ -964,7 +964,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyOrchestrationIdentity
   faction: {fileID: 11400000, guid: f4a25507508184ab3a509c259f65f78e, type: 2}
-  factionId: Enemy
   roleTagOverride: 
 --- !u!114 &3812210717216931436
 MonoBehaviour:

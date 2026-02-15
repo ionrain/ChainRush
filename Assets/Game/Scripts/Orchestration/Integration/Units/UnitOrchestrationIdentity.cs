@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Holds a unit's orchestration identity: faction and role tag.
+/// Holds a unit's orchestration identity: faction and role.
 /// IMPORTANT: Read-only identity for the orchestration layer. Does not drive gameplay.
 /// </summary>
 public sealed class UnitOrchestrationIdentity : MonoBehaviour
@@ -10,7 +10,9 @@ public sealed class UnitOrchestrationIdentity : MonoBehaviour
     [SerializeField] FactionAsset faction;
 
     [Header("Role")]
-    [SerializeField] string roleTagOverride = "";
+    [Tooltip("Typed role assignment. Used by arbiter for per-role policy dispatch. " +
+             "Currently per-prefab/per-instance; later can be sourced from UnitData.")]
+    [SerializeField] RoleAsset roleOverride;
 
     /// <summary>
     /// Returns the typed faction asset, or null if not assigned.
@@ -19,13 +21,33 @@ public sealed class UnitOrchestrationIdentity : MonoBehaviour
     public FactionAsset GetFactionAsset() => faction;
 
     /// <summary>
-    /// Returns the unit's role tag for orchestration state reporting.
-    /// Priority: roleTagOverride > UnitData.unitClass > "Unit" fallback.
+    /// Returns the typed role asset for orchestration routing, or null if not assigned.
+    /// IMPORTANT: Routing uses ReferenceEquals on this asset — never string comparison.
+    /// </summary>
+    public RoleAsset GetRoleAsset() => roleOverride;
+
+    /// <summary>
+    /// Sets the typed faction asset at runtime (e.g. from <see cref="UnitAISetup"/>).
+    /// </summary>
+    public void SetFactionAsset(FactionAsset f) { faction = f; }
+
+    /// <summary>
+    /// Sets the typed role asset at runtime (e.g. from <see cref="UnitAISetup"/>).
+    /// </summary>
+    public void SetRoleAsset(RoleAsset r) { roleOverride = r; }
+
+    /// <summary>
+    /// Returns the unit's role tag for debug/metrics reporting.
+    /// Priority: RoleAsset.Id > UnitData.unitClass > "Unit" fallback.
+    /// <para>
+    /// IMPORTANT: Debug/metrics only. Do not use for orchestration routing.
+    /// Routing is RoleAsset-only (ReferenceEquals).
+    /// </para>
     /// </summary>
     public string GetRoleTag(Unit unit)
     {
-        if (!string.IsNullOrEmpty(roleTagOverride))
-            return roleTagOverride;
+        if (roleOverride != null)
+            return roleOverride.Id;
 
         if (unit != null && unit.Data != null)
             return unit.Data.unitClass.ToString();
@@ -37,5 +59,8 @@ public sealed class UnitOrchestrationIdentity : MonoBehaviour
     {
         if (faction == null)
             Debug.LogWarning($"[{name}] UnitOrchestrationIdentity has no FactionAsset assigned.", this);
+        if (roleOverride == null)
+            Debug.LogWarning($"[{name}] UnitOrchestrationIdentity has no RoleAsset assigned. " +
+                             "Arbiter will use fallback behavior (Idle Hold, combat default).", this);
     }
 }

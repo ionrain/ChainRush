@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b03b878492e24291b5756ecefd7161f, type: 3}
+  m_Name: IdleRolePolicyMap
+  m_EditorClassIdentifier: Assembly-CSharp::IdleRolePolicyMapAsset
+  entries:
+  - role: {fileID: 11400000, guid: 19dd534fc277d4de896d3cfbe1c7f807, type: 2}
+    policy: {fileID: 11400000, guid: 18b21d00b094b4478baade4175585e49, type: 2}
+  - role: {fileID: 11400000, guid: c6736ecf493644fbe97d5d9c082c9155, type: 2}
+    policy: {fileID: 11400000, guid: 18b21d00b094b4478baade4175585e49, type: 2}

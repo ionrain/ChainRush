@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e79d2d52dcd9d4f3880276e3cd53b291, type: 3}
   m_Name: NearestToSelfPolicy
   m_EditorClassIdentifier: Assembly-CSharp::NearestToSelfPolicyAsset
-  id: PrimaryTarget
+  id: NearestToSelf

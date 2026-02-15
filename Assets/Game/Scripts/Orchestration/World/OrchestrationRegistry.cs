@@ -13,10 +13,12 @@ public static class OrchestrationRegistry
     static readonly List<IStateReporter> _stateReporters = new List<IStateReporter>(256);
     static readonly List<ICapabilityProvider> _capabilityProviders = new List<ICapabilityProvider>(256);
     static readonly List<ICombatCommandReceiver> _combatReceivers = new List<ICombatCommandReceiver>(64);
+    static readonly List<IIdleCommandReceiver> _idleReceivers = new List<IIdleCommandReceiver>(64);
 
     public static IReadOnlyList<IStateReporter> StateReporters => _stateReporters;
     public static IReadOnlyList<ICapabilityProvider> CapabilityProviders => _capabilityProviders;
     public static IReadOnlyList<ICombatCommandReceiver> CombatReceivers => _combatReceivers;
+    public static IReadOnlyList<IIdleCommandReceiver> IdleReceivers => _idleReceivers;
 
     /// <summary>Returns the underlying mutable list for internal query iteration.</summary>
     internal static List<IStateReporter> StateReportersList => _stateReporters;
@@ -58,6 +60,48 @@ public static class OrchestrationRegistry
     {
         if (receiver == null) return;
         _combatReceivers.Remove(receiver);
+    }
+
+    // ──────────────────────────────────────────────────────────────────
+    //  IIdleCommandReceiver — same idempotent pattern with null pruning
+    // ──────────────────────────────────────────────────────────────────
+
+    public static void Register(IIdleCommandReceiver receiver)
+    {
+        if (receiver == null) return;
+
+        // PERF: Backward iteration prunes Unity-null entries from pooling.
+        for (int i = _idleReceivers.Count - 1; i >= 0; i--)
+        {
+            IIdleCommandReceiver existing = _idleReceivers[i];
+            if (existing is Object obj && obj == null)
+            {
+                _idleReceivers.RemoveAt(i);
+                continue;
+            }
+            if (ReferenceEquals(existing, receiver))
+                return; // already registered
+        }
+
+        _idleReceivers.Add(receiver);
+    }
+
+    public static void Unregister(IIdleCommandReceiver receiver)
+    {
+        if (receiver == null) return;
+
+        // Backward iteration for safe removal + opportunistic null pruning.
+        for (int i = _idleReceivers.Count - 1; i >= 0; i--)
+        {
+            IIdleCommandReceiver existing = _idleReceivers[i];
+            if (ReferenceEquals(existing, receiver))
+            {
+                _idleReceivers.RemoveAt(i);
+                continue;
+            }
+            if (existing is Object obj && obj == null)
+                _idleReceivers.RemoveAt(i);
+        }
     }
 
     // ──────────────────────────────────────────────────────────────────

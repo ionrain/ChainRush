@@ -8714,10 +8714,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 258903835}
-  - component: {fileID: 258903837}
+  - component: {fileID: 258903840}
   - component: {fileID: 258903836}
-  - component: {fileID: 258903838}
+  - component: {fileID: 258903841}
   - component: {fileID: 258903839}
+  - component: {fileID: 258903838}
   m_Layer: 0
   m_Name: Orchestration
   m_TagString: Untagged
@@ -8752,33 +8753,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f27a0da450ea6407ebb3e9f427c86a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CombatOrchestratorLite
-  typedRelations: {fileID: 11400000, guid: 45bf0d83b9c4c414a9b621b1fb5a7b1a, type: 2}
-  orchestratorFaction: {fileID: 11400000, guid: c705fd72106504e2c9904710eda101d4,
-    type: 2}
-  tickInterval: 0.75
-  aggroRadius: 12
-  anchorOverride: {fileID: 0}
   searchMode: 1
+  aggroRadius: 12
   searchCamera: {fileID: 0}
   viewportMargin: 0
   targetSet: {fileID: 258903839}
   autoResolveTargetSet: 1
   targetSetSize: 4
   debugLog: 1
---- !u!114 &258903837
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 258903834}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 91526065176624d739b713116fec01e4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::OrchestrationWorldView
-  typedRelations: {fileID: 11400000, guid: 45bf0d83b9c4c414a9b621b1fb5a7b1a, type: 2}
-  maxResults: 64
 --- !u!114 &258903838
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8791,13 +8773,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f27a0da450ea6407ebb3e9f427c86a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CombatOrchestratorLite
-  typedRelations: {fileID: 11400000, guid: 45bf0d83b9c4c414a9b621b1fb5a7b1a, type: 2}
-  orchestratorFaction: {fileID: 11400000, guid: f4a25507508184ab3a509c259f65f78e,
-    type: 2}
-  tickInterval: 0.75
-  aggroRadius: 12
-  anchorOverride: {fileID: 1070189277}
   searchMode: 1
+  aggroRadius: 12
   searchCamera: {fileID: 0}
   viewportMargin: 0
   targetSet: {fileID: 0}
@@ -8819,6 +8796,45 @@ MonoBehaviour:
   capacity: 6
   ttlSeconds: 0.9
   faction: {fileID: 11400000, guid: c705fd72106504e2c9904710eda101d4, type: 2}
+--- !u!114 &258903840
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 258903834}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 410f11f3a89024a1ab356df9c29fee60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OrchestrationArbiter
+  orchestratorFaction: {fileID: 11400000, guid: c705fd72106504e2c9904710eda101d4,
+    type: 2}
+  typedRelations: {fileID: 11400000, guid: 45bf0d83b9c4c414a9b621b1fb5a7b1a, type: 2}
+  combatRolePolicyMap: {fileID: 11400000, guid: bbdd1192619974b96ae0c37c2a1af824,
+    type: 2}
+  anchorOverride: {fileID: 172273282}
+  domainBehaviours:
+  - {fileID: 258903836}
+  - {fileID: 258903841}
+  tickInterval: 0.8
+  combatMinActiveTime: 0.8
+  combatCooldownAfterThreat: 0.6
+  debugLog: 1
+--- !u!114 &258903841
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 258903834}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 120893b8fad7a4d6fbebd867b42ff493, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IdleOrchestratorLite
+  rolePolicyMap: {fileID: 11400000, guid: be3df890ebcb24f3b8fe327265fc0914, type: 2}
+  debugLog: 1
 --- !u!1 &260744812
 GameObject:
   m_ObjectHideFlags: 0
@@ -19269,6 +19285,7 @@ GameObject:
   m_Component:
   - component: {fileID: 523975915}
   - component: {fileID: 523975914}
+  - component: {fileID: 523975916}
   m_Layer: 0
   m_Name: RangeSpawnArea
   m_TagString: Untagged
@@ -19337,6 +19354,23 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1607779164}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &523975916
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 523975913}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c94f393e2aeb04ac8b4ce84002477bc6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnitIdleBoundsProvider
+  role: {fileID: 11400000, guid: c6736ecf493644fbe97d5d9c082c9155, type: 2}
+  boundsCollider: {fileID: 523975914}
+  useColliderBounds: 1
+  fallbackSize: {x: 6, y: 3}
+  anchorOverride: {fileID: 523975915}
 --- !u!1 &524261698
 GameObject:
   m_ObjectHideFlags: 0
@@ -112885,6 +112919,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2136636754}
   - component: {fileID: 2136636755}
+  - component: {fileID: 2136636756}
   m_Layer: 0
   m_Name: MeleeSpawnArea
   m_TagString: Untagged
@@ -112953,6 +112988,23 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 4, y: 24}
   m_EdgeRadius: 0
+--- !u!114 &2136636756
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2136636752}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c94f393e2aeb04ac8b4ce84002477bc6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnitIdleBoundsProvider
+  role: {fileID: 11400000, guid: 19dd534fc277d4de896d3cfbe1c7f807, type: 2}
+  boundsCollider: {fileID: 2136636755}
+  useColliderBounds: 1
+  fallbackSize: {x: 6, y: 3}
+  anchorOverride: {fileID: 2136636754}
 --- !u!1 &2137977733
 GameObject:
   m_ObjectHideFlags: 0

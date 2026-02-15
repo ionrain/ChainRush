@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -20,42 +19,34 @@ public enum TargetSearchMode
 }
 
 /// <summary>
-/// First vertical-slice orchestrator. Periodically scans for the closest hostile
-/// entity and issues <see cref="CombatCommandType.AttackTarget"/> (or
-/// <see cref="CombatCommandType.Hold"/>) to all faction-matched combat receivers.
+/// Combat domain evaluator. Scans <see cref="OrchestrationWorldCache.Actors"/> for
+/// hostile entities and writes a <see cref="CombatCommand"/> proposal.
+/// Owns the <see cref="CombatRolePolicyMapAsset"/> reference and pushes it to the
+/// arbiter via dirty-flag binding.
 /// <para>
-/// IMPORTANT — This orchestrator is intentionally naive. It exists to validate
-/// the full pipeline: Registry → Orchestrator → Executor → AIBrain.
-/// It does not implement priority queues, threat scoring, or per-unit tactics.
+/// IMPORTANT — This class does NOT tick itself. It implements
+/// <see cref="IOrchestrationDomain"/> and is polled by
+/// <see cref="OrchestrationArbiter"/> each tick.
 /// </para>
 /// <para>
-/// IMPORTANT — Requires both <see cref="orchestratorFaction"/> and
-/// <see cref="typedRelations"/> to be assigned. If either is null, the orchestrator
-/// issues Hold to all receivers and logs a one-time warning (fail-closed).
+/// IMPORTANT — Does NOT dispatch commands to receivers. Only writes proposals.
+/// The arbiter owns all dispatch logic.
 /// </para>
 /// <para>
-/// IMPORTANT — Faction identity is fully typed via <see cref="FactionAsset"/>.
-/// Actors and receivers must implement <see cref="IFactionAssetProvider"/> with a
-/// non-null faction asset to participate in combat orchestration.
+/// IMPORTANT — Does NOT scan <see cref="OrchestrationRegistry"/> directly.
+/// Uses the per-tick <see cref="OrchestrationWorldCache"/> built by the arbiter.
 /// </para>
 /// </summary>
-public sealed class CombatOrchestratorLite : MonoBehaviour
+public sealed class CombatOrchestratorLite : MonoBehaviour, IOrchestrationDomain
 {
     // ──────────────────────────────────────────────────────────────────
     //  Serialized
     // ──────────────────────────────────────────────────────────────────
 
-    [SerializeField] FactionRelationTableAsset typedRelations;
-
-    [Header("Orchestration")]
-    [SerializeField] FactionAsset orchestratorFaction;
-    [SerializeField] float tickInterval = 0.75f;
-    [SerializeField] float aggroRadius = 12f;
-    [SerializeField] Transform anchorOverride;
-
     [Header("Target Search")]
     [Tooltip("Radius: search within aggroRadius of anchor. ScreenViewport: search visible hostiles on camera.")]
     [SerializeField] TargetSearchMode searchMode = TargetSearchMode.Radius;
+    [SerializeField] float aggroRadius = 12f;
     [Tooltip("Camera for ScreenViewport mode. If null, falls back to Camera.main.")]
     [SerializeField] Camera searchCamera;
     [Tooltip("Viewport margin (0..0.2 typical). Allows slightly off-screen targets to qualify.")]
@@ -70,25 +61,36 @@ public sealed class CombatOrchestratorLite : MonoBehaviour
     [Tooltip("Number of Top-K hostile candidates to store (clamped to targetSet.Capacity).")]
     [SerializeField] int targetSetSize = 4;
 
+    [Header("Role Policies")]
+    [Tooltip("Optional per-role targeting policy map. If null, units use their own default policies.")]
+    [SerializeField] CombatRolePolicyMapAsset rolePolicyMap;
+
+    [Header("Arbiter Binding")]
+    [SerializeField] OrchestrationArbiter arbiter;
+
     [Header("Debug")]
     [SerializeField] bool debugLog;
 
     // ──────────────────────────────────────────────────────────────────
-    //  Runtime
+    //  Runtime — Top-K working arrays (allocated once, reused)
     // ──────────────────────────────────────────────────────────────────
 
-    Coroutine _tickCoroutine;
-    WaitForSeconds _wait;
-    bool _warnedNoCamera;
-    bool _warnedMissingSetup;
-
-    // Top-K working arrays — allocated once in EnsureTopKArrays(), reused each tick.
     Transform[] _topKTransforms;
     float[] _topKScores;
     int _topKCount;
 
-    // One-shot guard for auto-resolve: try once in OnEnable, once in first Tick, then stop.
+    bool _warnedNoCamera;
+
+    // One-shot guard for auto-resolve target set.
     bool _triedResolveTargetSet;
+
+    // ──────────────────────────────────────────────────────────────────
+    //  Dirty-flag binding state
+    // ──────────────────────────────────────────────────────────────────
+
+    CombatRolePolicyMapAsset _lastBoundMap;
+    bool _dirtyMap;
+    bool _warnedNoArbiter;
 
     // ──────────────────────────────────────────────────────────────────
     //  Lifecycle
@@ -96,152 +98,134 @@ public sealed class CombatOrchestratorLite : MonoBehaviour
 
     void OnEnable()
     {
-        _wait = new WaitForSeconds(tickInterval);
-        _warnedNoCamera = false;
-        _warnedMissingSetup = false;
+        _dirtyMap = true;
+        _lastBoundMap = null;
         _triedResolveTargetSet = false;
-
-        TryResolveTargetSet();
-
-        _tickCoroutine = StartCoroutine(TickLoop());
     }
 
     void OnDisable()
     {
-        if (_tickCoroutine != null)
-        {
-            StopCoroutine(_tickCoroutine);
-            _tickCoroutine = null;
-        }
+        _lastBoundMap = null; // Force rebind on re-enable
     }
 
-    IEnumerator TickLoop()
-    {
-        while (true)
-        {
-            yield return _wait;
-            Tick();
-        }
-    }
+#if UNITY_EDITOR
+    void OnValidate() { _dirtyMap = true; }
+#endif
 
     // ──────────────────────────────────────────────────────────────────
-    //  Tick — domain-level, no Unit-specific types
+    //  Arbiter binding — push map only when reference changes
+    //  IMPORTANT: Checks ref equality even without dirty flag to catch
+    //  runtime script changes.
     // ──────────────────────────────────────────────────────────────────
 
-    void Tick()
+    void BindIfDirty()
     {
-        // Fail-closed: if required typed assets are missing, issue Hold and warn once.
-        if (orchestratorFaction == null || typedRelations == null)
+        if (!_dirtyMap && ReferenceEquals(_lastBoundMap, rolePolicyMap)) return;
+        _dirtyMap = false;
+
+        if (arbiter == null)
         {
-            if (!_warnedMissingSetup)
+            if (!_warnedNoArbiter)
             {
-                _warnedMissingSetup = true;
-                Debug.LogWarning("[CombatOrchestratorLite] Missing orchestratorFaction or typedRelations. " +
-                    "Issuing Hold to all receivers. Assign both to enable combat orchestration.", this);
+                _warnedNoArbiter = true;
+                Debug.LogWarning("[CombatOrchestratorLite] Missing OrchestrationArbiter reference; " +
+                                 "combat role map not bound.", this);
             }
-
-            CombatCommand holdCmd = CombatCommand.Create(CombatCommandType.Hold,
-                debugLabel: "Orchestrator=CombatOrchestratorLite");
-            IssueToReceivers(holdCmd);
             return;
         }
 
-        Vector2 anchor = anchorOverride != null
-            ? (Vector2)anchorOverride.position
-            : (Vector2)transform.position;
+        _lastBoundMap = rolePolicyMap;
+        arbiter.SetCombatRolePolicyMap(rolePolicyMap);
 
-        // ── Find closest hostile ─────────────────────────────────────
-        Transform closestHostile = FindClosestHostile(anchor);
+        if (debugLog)
+        {
+            Debug.Log(string.Concat(
+                "[CombatOrchestratorLite] Bound combat role map: ",
+                rolePolicyMap != null ? rolePolicyMap.name : "null"), this);
+        }
+    }
 
-        // Safety guard: if the hostile was destroyed between scan and issue
+    // ──────────────────────────────────────────────────────────────────
+    //  IOrchestrationDomain
+    // ──────────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Evaluates combat state: pushes role policy map to arbiter (if dirty),
+    /// finds closest hostile from cached actors, fills Top-K target set,
+    /// and writes a combat proposal.
+    /// Does NOT dispatch commands. Does NOT scan OrchestrationRegistry.
+    /// </summary>
+    public void Evaluate(OrchestrationArbiterContext ctx, OrchestrationArbiterProposals proposals)
+    {
+        // IMPORTANT: Bind before any dispatch-relevant work so arbiter has
+        // the correct combat map before it dispatches the same tick.
+        BindIfDirty();
+
+        Vector2 anchor = ctx.Anchor;
+
+        // ── Find closest hostile from cached actors ──────────────
+        Transform closestHostile = FindClosestHostile(ctx);
+
+        // Unity-null coalesce for destroyed objects
         if (closestHostile == null)
-            closestHostile = null; // explicit null coalesce for Unity destroyed objects
+            closestHostile = null;
 
-        // ── Build command ────────────────────────────────────────────
+        // ── Build command ────────────────────────────────────────
         CombatCommand cmd = closestHostile != null
             ? CombatCommand.Create(CombatCommandType.AttackTarget, targetTransform: closestHostile,
                 debugLabel: "Orchestrator=CombatOrchestratorLite")
             : CombatCommand.Create(CombatCommandType.Hold,
                 debugLabel: "Orchestrator=CombatOrchestratorLite");
 
-        // ── Fill Top-K target set (optional) ──────────────────────
-        // Late resolve: if CombatTargetSet registered after our OnEnable, try once.
+        // ── Fill Top-K target set (optional) ─────────────────────
         if (targetSet == null && autoResolveTargetSet && !_triedResolveTargetSet)
-            TryResolveTargetSet();
+            TryResolveTargetSet(ctx.OrchestratorFaction);
 
         if (targetSet != null)
-            FillTargetSet(anchor);
+            FillTargetSet(ctx);
 
-        // ── Issue to faction-filtered receivers ──────────────────────
-        int commandedCount = IssueToReceivers(cmd);
+        // ── Write proposal ───────────────────────────────────────
+        bool threatPresent = closestHostile != null;
+        proposals.SetCombat(cmd, threatPresent);
 
-        if (debugLog)
+        if (ctx.DebugLog || debugLog)
         {
             string targetName = closestHostile != null ? closestHostile.name : "none";
             int topK = targetSet != null ? _topKCount : 0;
-            Debug.Log($"[CombatOrchestratorLite] Target={targetName}, Commanded={commandedCount}, TopK={topK}, Mode={searchMode}", this);
+            Debug.Log(string.Concat(
+                "[CombatOrchestratorLite] Target=", targetName,
+                ", TopK=", topK.ToString(),
+                ", Mode=", searchMode.ToString()), this);
         }
     }
 
     // ──────────────────────────────────────────────────────────────────
-    //  Auto-resolve (Variant B)
+    //  Auto-resolve target set
     // ──────────────────────────────────────────────────────────────────
 
-    /// <summary>
-    /// One-shot attempt to resolve <see cref="targetSet"/> from
-    /// <see cref="OrchestrationRegistry"/> by typed faction. Sets the guard flag
-    /// so subsequent calls are no-ops. Called in OnEnable and once in Tick.
-    /// </summary>
-    void TryResolveTargetSet()
+    void TryResolveTargetSet(FactionAsset faction)
     {
         _triedResolveTargetSet = true;
 
         if (targetSet != null) return;
         if (!autoResolveTargetSet) return;
-        if (orchestratorFaction == null) return;
+        if (faction == null) return;
 
-        OrchestrationRegistry.TryGetCombatTargetSet(orchestratorFaction, out targetSet);
+        OrchestrationRegistry.TryGetCombatTargetSet(faction, out targetSet);
     }
 
     // ──────────────────────────────────────────────────────────────────
-    //  Faction relation helper
+    //  Hostile search — iterates ctx.World.Actors
     // ──────────────────────────────────────────────────────────────────
 
     /// <summary>
-    /// Resolves the relation between this orchestrator and an actor using typed
-    /// <see cref="FactionAsset"/> references and <see cref="FactionRelationTableAsset"/>.
-    /// Returns <see cref="FactionRelation.Neutral"/> (skip) if the actor does not
-    /// implement <see cref="IFactionAssetProvider"/> or returns a null faction.
-    /// </summary>
-    FactionRelation GetRelationTo(IOrchestrationActor actor)
-    {
-        if (!(actor is IFactionAssetProvider provider))
-            return FactionRelation.Neutral;
-
-        FactionAsset actorFaction = provider.GetFactionAsset();
-        if (actorFaction == null)
-            return FactionRelation.Neutral;
-
-        return typedRelations.GetRelation(orchestratorFaction, actorFaction);
-    }
-
-    // ──────────────────────────────────────────────────────────────────
-    //  Hostile search
-    // ──────────────────────────────────────────────────────────────────
-
-    /// <summary>
-    /// Scans <see cref="OrchestrationRegistry.StateReporters"/> for the closest
-    /// alive hostile entity. Candidate filtering depends on <see cref="searchMode"/>:
-    /// <list type="bullet">
-    /// <item><see cref="TargetSearchMode.Radius"/>: within <see cref="aggroRadius"/> of anchor.</item>
-    /// <item><see cref="TargetSearchMode.ScreenViewport"/>: visible on camera viewport.</item>
-    /// </list>
+    /// Scans <see cref="OrchestrationWorldCache.Actors"/> for the closest alive hostile
+    /// entity. Candidate filtering depends on <see cref="searchMode"/>.
     /// Scoring is always by sqrMagnitude to anchor (closest wins).
     /// PERF: Index-based iteration, no LINQ, no per-tick allocations.
     /// </summary>
-    Transform FindClosestHostile(Vector2 anchor)
+    Transform FindClosestHostile(OrchestrationArbiterContext ctx)
     {
-        // Resolve camera once per tick for ScreenViewport mode
         Camera cam = null;
         if (searchMode == TargetSearchMode.ScreenViewport)
         {
@@ -258,27 +242,30 @@ public sealed class CombatOrchestratorLite : MonoBehaviour
             }
         }
 
+        Vector2 anchor = ctx.Anchor;
         float aggroSqr = aggroRadius * aggroRadius;
         float bestDistSqr = float.MaxValue;
         Transform bestTransform = null;
 
-        IReadOnlyList<IStateReporter> reporters = OrchestrationRegistry.StateReporters;
-        for (int i = 0; i < reporters.Count; i++)
+        List<IOrchestrationActor> actors = ctx.World.Actors;
+        for (int i = 0; i < actors.Count; i++)
         {
-            IStateReporter reporter = reporters[i];
-            if (reporter == null) continue;
+            IOrchestrationActor actor = actors[i];
+            if (actor == null) continue;
+            if (actor is Object uo && uo == null) continue;
 
-            if (!(reporter is IOrchestrationActor actor)) continue;
-            if (!actor.IsAlive()) continue;
-
-            if (GetRelationTo(actor) != FactionRelation.Hostile) continue;
+            // Hostile check — typed-only
+            if (!(actor is IFactionAssetProvider fap)) continue;
+            FactionAsset actorFaction = fap.GetFactionAsset();
+            if (actorFaction == null) continue;
+            if (ctx.Relations.GetRelation(ctx.OrchestratorFaction, actorFaction) != FactionRelation.Hostile)
+                continue;
 
             Transform actorTransform = actor.GetTransform();
             if (actorTransform == null) continue;
 
             Vector2 actorPos = (Vector2)actorTransform.position;
 
-            // ── Candidate filter ─────────────────────────────────────
             bool qualifies;
             switch (searchMode)
             {
@@ -294,7 +281,6 @@ public sealed class CombatOrchestratorLite : MonoBehaviour
 
             if (!qualifies) continue;
 
-            // ── Scoring: closest to anchor wins ──────────────────────
             float distSqr = (actorPos - anchor).sqrMagnitude;
             if (distSqr < bestDistSqr)
             {
@@ -307,16 +293,12 @@ public sealed class CombatOrchestratorLite : MonoBehaviour
     }
 
     // ──────────────────────────────────────────────────────────────────
-    //  Top-K target set
+    //  Top-K target set — iterates ctx.World.Actors
     //  IMPORTANT: Applies the exact same hostile filters as FindClosestHostile
     //  (faction Hostile, alive, Radius/ScreenViewport). No LINQ, no allocations.
     // ──────────────────────────────────────────────────────────────────
 
-    /// <summary>
-    /// Scans hostiles and fills <see cref="targetSet"/> with the Top-K closest to anchor.
-    /// Uses insertion into fixed-size arrays to avoid sorting or heap allocations.
-    /// </summary>
-    void FillTargetSet(Vector2 anchor)
+    void FillTargetSet(OrchestrationArbiterContext ctx)
     {
         int k = targetSetSize > 0 ? targetSetSize : 1;
         if (k > targetSet.Capacity) k = targetSet.Capacity;
@@ -330,18 +312,22 @@ public sealed class CombatOrchestratorLite : MonoBehaviour
             if (cam == null) return;
         }
 
+        Vector2 anchor = ctx.Anchor;
         float aggroSqr = aggroRadius * aggroRadius;
 
-        IReadOnlyList<IStateReporter> reporters = OrchestrationRegistry.StateReporters;
-        for (int i = 0; i < reporters.Count; i++)
+        List<IOrchestrationActor> actors = ctx.World.Actors;
+        for (int i = 0; i < actors.Count; i++)
         {
-            IStateReporter reporter = reporters[i];
-            if (reporter == null) continue;
+            IOrchestrationActor actor = actors[i];
+            if (actor == null) continue;
+            if (actor is Object uo && uo == null) continue;
 
-            if (!(reporter is IOrchestrationActor actor)) continue;
-            if (!actor.IsAlive()) continue;
-
-            if (GetRelationTo(actor) != FactionRelation.Hostile) continue;
+            // Hostile check — typed-only
+            if (!(actor is IFactionAssetProvider fap)) continue;
+            FactionAsset actorFaction = fap.GetFactionAsset();
+            if (actorFaction == null) continue;
+            if (ctx.Relations.GetRelation(ctx.OrchestratorFaction, actorFaction) != FactionRelation.Hostile)
+                continue;
 
             Transform actorTransform = actor.GetTransform();
             if (actorTransform == null) continue;
@@ -369,9 +355,6 @@ public sealed class CombatOrchestratorLite : MonoBehaviour
         targetSet.SetTargets(_topKTransforms, _topKCount);
     }
 
-    /// <summary>
-    /// Ensures Top-K working arrays are allocated with at least <paramref name="k"/> slots.
-    /// </summary>
     void EnsureTopKArrays(int k)
     {
         if (_topKTransforms != null && _topKTransforms.Length >= k)
@@ -380,16 +363,10 @@ public sealed class CombatOrchestratorLite : MonoBehaviour
         _topKScores = new float[k];
     }
 
-    /// <summary>
-    /// Insertion-based Top-K maintenance. Keeps entries sorted ascending by score (closest first).
-    /// If the array is not full, append. Otherwise replace the worst (last) entry if better,
-    /// then shift into sorted position.
-    /// </summary>
     void InsertTopK(Transform t, float score, int k)
     {
         if (_topKCount < k)
         {
-            // Array not full — insert in sorted position
             int pos = _topKCount;
             while (pos > 0 && _topKScores[pos - 1] > score)
             {
@@ -403,7 +380,6 @@ public sealed class CombatOrchestratorLite : MonoBehaviour
         }
         else if (score < _topKScores[_topKCount - 1])
         {
-            // Better than worst — replace last, shift into position
             int pos = _topKCount - 1;
             while (pos > 0 && _topKScores[pos - 1] > score)
             {
@@ -420,54 +396,11 @@ public sealed class CombatOrchestratorLite : MonoBehaviour
     //  Screen visibility helper
     // ──────────────────────────────────────────────────────────────────
 
-    /// <summary>
-    /// Returns true if the world position is within the camera's viewport
-    /// (plus optional margin). Designed for orthographic 2D cameras.
-    /// </summary>
     bool IsOnScreen(Vector2 worldPos, Camera cam)
     {
         Vector3 vp = cam.WorldToViewportPoint(new Vector3(worldPos.x, worldPos.y, 0f));
         if (vp.z <= 0f) return false;
         float m = Mathf.Max(0f, viewportMargin);
         return vp.x >= -m && vp.x <= 1f + m && vp.y >= -m && vp.y <= 1f + m;
-    }
-
-    // ──────────────────────────────────────────────────────────────────
-    //  Command dispatch
-    // ──────────────────────────────────────────────────────────────────
-
-    /// <summary>
-    /// Issues the command to all registered combat receivers whose faction
-    /// is Friendly to <see cref="orchestratorFaction"/> via <see cref="typedRelations"/>.
-    /// Receivers must implement <see cref="IFactionAssetProvider"/> with a non-null
-    /// faction asset. Receivers without typed faction info are skipped.
-    /// Returns the number of receivers that were commanded.
-    /// </summary>
-    int IssueToReceivers(CombatCommand cmd)
-    {
-        int count = 0;
-        IReadOnlyList<ICombatCommandReceiver> receivers = OrchestrationRegistry.CombatReceivers;
-
-        for (int i = 0; i < receivers.Count; i++)
-        {
-            ICombatCommandReceiver receiver = receivers[i];
-            if (receiver == null) continue;
-
-            // Receiver must provide typed faction via IFactionAssetProvider.
-            if (!(receiver is IFactionAssetProvider fp))
-                continue;
-
-            FactionAsset receiverFaction = fp.GetFactionAsset();
-            if (receiverFaction == null)
-                continue;
-
-            if (typedRelations.GetRelation(orchestratorFaction, receiverFaction) != FactionRelation.Friendly)
-                continue;
-
-            receiver.ApplyCombatCommand(cmd);
-            count++;
-        }
-
-        return count;
     }
 }

@@ -16,3 +16,12 @@ MonoBehaviour:
   - A: {fileID: 11400000, guid: c705fd72106504e2c9904710eda101d4, type: 2}
     B: {fileID: 11400000, guid: f4a25507508184ab3a509c259f65f78e, type: 2}
     Relation: 2
+  - A: {fileID: 11400000, guid: c705fd72106504e2c9904710eda101d4, type: 2}
+    B: {fileID: 11400000, guid: c705fd72106504e2c9904710eda101d4, type: 2}
+    Relation: 0
+  - A: {fileID: 11400000, guid: f4a25507508184ab3a509c259f65f78e, type: 2}
+    B: {fileID: 11400000, guid: c705fd72106504e2c9904710eda101d4, type: 2}
+    Relation: 2
+  - A: {fileID: 11400000, guid: f4a25507508184ab3a509c259f65f78e, type: 2}
+    B: {fileID: 11400000, guid: f4a25507508184ab3a509c259f65f78e, type: 2}
+    Relation: 0

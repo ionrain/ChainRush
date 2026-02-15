@@ -1,10 +1,11 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// Per-unit targeting hook that allows different selection criteria per unit
 /// via typed <see cref="CombatTargetingPolicyAsset"/> ScriptableObjects.
 /// <para>
-/// IMPORTANT — Without a policy asset assigned (both <see cref="policy"/> and
+/// IMPORTANT — Without a policy asset assigned (both <see cref="overridePolicy"/> and
 /// <see cref="defaultPolicy"/> null), this component is a passthrough: it returns
 /// the orchestrator-chosen primary target unchanged (<c>command.TargetTransform</c>).
 /// This component is optional; if absent, the executor uses
@@ -34,8 +35,9 @@ public sealed class UnitCombatTargetSelector : MonoBehaviour
     [SerializeField] bool autoResolveTargetSet = true;
 
     [Header("Typed Policy")]
-    [Tooltip("Per-unit targeting policy override. If null, falls back to defaultPolicy.")]
-    [SerializeField] CombatTargetingPolicyAsset policy;
+    [Tooltip("Per-unit targeting policy override. Takes priority over runtime default and defaultPolicy.")]
+    [FormerlySerializedAs("policy")]
+    [SerializeField] CombatTargetingPolicyAsset overridePolicy;
 
     [Tooltip("Scene/prefab default policy. If both policy and defaultPolicy are null, " +
              "returns command.TargetTransform (PrimaryTarget equivalent).")]
@@ -53,6 +55,12 @@ public sealed class UnitCombatTargetSelector : MonoBehaviour
     /// Reset in OnEnable for pooling safety.
     /// </summary>
     bool _triedResolveTargetSet;
+
+    /// <summary>
+    /// Runtime default policy injected by arbiter per-role dispatch.
+    /// Cleared in OnEnable for pooling safety.
+    /// </summary>
+    CombatTargetingPolicyAsset _runtimeDefaultPolicy;
 
     // ──────────────────────────────────────────────────────────────────
     //  Editor convenience
@@ -78,14 +86,42 @@ public sealed class UnitCombatTargetSelector : MonoBehaviour
 
     void OnEnable()
     {
-        // Reset for pooling: old ref may be stale after scene change / re-pool.
+        // Reset for pooling: old refs may be stale after scene change / re-pool.
         _triedResolveTargetSet = false;
+        _runtimeDefaultPolicy = null;
         TryResolveTargetSet();
     }
 
     // ──────────────────────────────────────────────────────────────────
     //  Public API
     // ──────────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Sets the per-unit override policy at runtime (e.g. from <see cref="UnitAISetup"/>).
+    /// Highest priority in resolution: overridePolicy > runtimeDefault > defaultPolicy.
+    /// </summary>
+    public void SetOverridePolicy(CombatTargetingPolicyAsset p) { overridePolicy = p; }
+
+    /// <summary>
+    /// Sets the runtime default policy injected by the arbiter per-role dispatch.
+    /// Does not override a per-unit inspector policy; only fills the gap between
+    /// per-unit override and scene default.
+    /// </summary>
+    public void SetRuntimeDefaultPolicy(CombatTargetingPolicyAsset p)
+    {
+        _runtimeDefaultPolicy = p;
+    }
+
+    /// <summary>
+    /// Resolves the active policy using strict precedence:
+    /// overridePolicy → runtime default (arbiter-injected) → defaultPolicy → null (passthrough).
+    /// </summary>
+    public CombatTargetingPolicyAsset ResolvePolicy()
+    {
+        if (overridePolicy != null) return overridePolicy;
+        if (_runtimeDefaultPolicy != null) return _runtimeDefaultPolicy;
+        return defaultPolicy;
+    }
 
     /// <summary>
     /// Selects the target transform this unit should pursue for the given command.
@@ -101,9 +137,7 @@ public sealed class UnitCombatTargetSelector : MonoBehaviour
             TryResolveTargetSet();
 
         Transform primary = command.TargetTransform;
-
-        // Resolve active policy: per-unit override → scene default → null (passthrough).
-        CombatTargetingPolicyAsset active = policy != null ? policy : defaultPolicy;
+        CombatTargetingPolicyAsset active = ResolvePolicy();
 
         if (active != null)
         {

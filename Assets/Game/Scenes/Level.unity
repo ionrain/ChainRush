@@ -8760,6 +8760,7 @@ MonoBehaviour:
   targetSet: {fileID: 258903839}
   autoResolveTargetSet: 1
   targetSetSize: 4
+  rolePolicyMap: {fileID: 11400000, guid: bbdd1192619974b96ae0c37c2a1af824, type: 2}
   debugLog: 1
 --- !u!114 &258903838
 MonoBehaviour:
@@ -8780,6 +8781,7 @@ MonoBehaviour:
   targetSet: {fileID: 0}
   autoResolveTargetSet: 1
   targetSetSize: 4
+  rolePolicyMap: {fileID: 0}
   debugLog: 1
 --- !u!114 &258903839
 MonoBehaviour:
@@ -8811,10 +8813,8 @@ MonoBehaviour:
   orchestratorFaction: {fileID: 11400000, guid: c705fd72106504e2c9904710eda101d4,
     type: 2}
   typedRelations: {fileID: 11400000, guid: 45bf0d83b9c4c414a9b621b1fb5a7b1a, type: 2}
-  combatRolePolicyMap: {fileID: 11400000, guid: bbdd1192619974b96ae0c37c2a1af824,
-    type: 2}
   anchorOverride: {fileID: 172273282}
-  domainBehaviours:
+  domainOrchestrators:
   - {fileID: 258903836}
   - {fileID: 258903841}
   tickInterval: 0.8

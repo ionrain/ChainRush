@@ -21,8 +21,8 @@ public enum TargetSearchMode
 /// <summary>
 /// Combat domain evaluator. Scans <see cref="OrchestrationWorldCache.Actors"/> for
 /// hostile entities and writes a <see cref="CombatCommand"/> proposal.
-/// Owns the <see cref="CombatRolePolicyMapAsset"/> reference and pushes it to the
-/// arbiter via dirty-flag binding.
+/// Owns the <see cref="CombatRolePolicyMapAsset"/> reference and exposes it via
+/// <see cref="ICombatRolePolicyMapSource"/> so the arbiter can pull it each tick.
 /// <para>
 /// IMPORTANT — This class does NOT tick itself. It implements
 /// <see cref="IOrchestrationDomain"/> and is polled by
@@ -37,7 +37,7 @@ public enum TargetSearchMode
 /// Uses the per-tick <see cref="OrchestrationWorldCache"/> built by the arbiter.
 /// </para>
 /// </summary>
-public sealed class CombatOrchestratorLite : MonoBehaviour, IOrchestrationDomain
+public sealed class CombatOrchestratorLite : DomainOrchestrator, ICombatRolePolicyMapSource
 {
     // ──────────────────────────────────────────────────────────────────
     //  Serialized
@@ -65,9 +65,6 @@ public sealed class CombatOrchestratorLite : MonoBehaviour, IOrchestrationDomain
     [Tooltip("Optional per-role targeting policy map. If null, units use their own default policies.")]
     [SerializeField] CombatRolePolicyMapAsset rolePolicyMap;
 
-    [Header("Arbiter Binding")]
-    [SerializeField] OrchestrationArbiter arbiter;
-
     [Header("Debug")]
     [SerializeField] bool debugLog;
 
@@ -85,82 +82,31 @@ public sealed class CombatOrchestratorLite : MonoBehaviour, IOrchestrationDomain
     bool _triedResolveTargetSet;
 
     // ──────────────────────────────────────────────────────────────────
-    //  Dirty-flag binding state
-    // ──────────────────────────────────────────────────────────────────
-
-    CombatRolePolicyMapAsset _lastBoundMap;
-    bool _dirtyMap;
-    bool _warnedNoArbiter;
-
-    // ──────────────────────────────────────────────────────────────────
     //  Lifecycle
     // ──────────────────────────────────────────────────────────────────
 
     void OnEnable()
     {
-        _dirtyMap = true;
-        _lastBoundMap = null;
         _triedResolveTargetSet = false;
     }
 
-    void OnDisable()
-    {
-        _lastBoundMap = null; // Force rebind on re-enable
-    }
-
-#if UNITY_EDITOR
-    void OnValidate() { _dirtyMap = true; }
-#endif
-
     // ──────────────────────────────────────────────────────────────────
-    //  Arbiter binding — push map only when reference changes
-    //  IMPORTANT: Checks ref equality even without dirty flag to catch
-    //  runtime script changes.
+    //  ICombatRolePolicyMapSource
     // ──────────────────────────────────────────────────────────────────
 
-    void BindIfDirty()
-    {
-        if (!_dirtyMap && ReferenceEquals(_lastBoundMap, rolePolicyMap)) return;
-        _dirtyMap = false;
-
-        if (arbiter == null)
-        {
-            if (!_warnedNoArbiter)
-            {
-                _warnedNoArbiter = true;
-                Debug.LogWarning("[CombatOrchestratorLite] Missing OrchestrationArbiter reference; " +
-                                 "combat role map not bound.", this);
-            }
-            return;
-        }
-
-        _lastBoundMap = rolePolicyMap;
-        arbiter.SetCombatRolePolicyMap(rolePolicyMap);
-
-        if (debugLog)
-        {
-            Debug.Log(string.Concat(
-                "[CombatOrchestratorLite] Bound combat role map: ",
-                rolePolicyMap != null ? rolePolicyMap.name : "null"), this);
-        }
-    }
+    public CombatRolePolicyMapAsset GetCombatRolePolicyMap() => rolePolicyMap;
 
     // ──────────────────────────────────────────────────────────────────
     //  IOrchestrationDomain
     // ──────────────────────────────────────────────────────────────────
 
     /// <summary>
-    /// Evaluates combat state: pushes role policy map to arbiter (if dirty),
-    /// finds closest hostile from cached actors, fills Top-K target set,
-    /// and writes a combat proposal.
+    /// Evaluates combat state: finds closest hostile from cached actors,
+    /// fills Top-K target set, and writes a combat proposal.
     /// Does NOT dispatch commands. Does NOT scan OrchestrationRegistry.
     /// </summary>
-    public void Evaluate(OrchestrationArbiterContext ctx, OrchestrationArbiterProposals proposals)
+    public override void Evaluate(OrchestrationArbiterContext ctx, OrchestrationArbiterProposals proposals)
     {
-        // IMPORTANT: Bind before any dispatch-relevant work so arbiter has
-        // the correct combat map before it dispatches the same tick.
-        BindIfDirty();
-
         Vector2 anchor = ctx.Anchor;
 
         // ── Find closest hostile from cached actors ──────────────

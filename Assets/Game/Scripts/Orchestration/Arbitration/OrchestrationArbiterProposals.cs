@@ -35,7 +35,7 @@ public sealed class OrchestrationArbiterProposals
     /// <summary>
     /// Sets the combat proposal for this tick.
     /// IMPORTANT: Last writer wins — if multiple domains call this in the same tick,
-    /// the last call (based on <c>domainBehaviours</c> array order) takes effect.
+    /// the last call (based on <c>domainOrchestrators</c> array order) takes effect.
     /// </summary>
     public void SetCombat(in CombatCommand cmd, bool threatPresent)
     {
@@ -47,7 +47,7 @@ public sealed class OrchestrationArbiterProposals
     /// <summary>
     /// Sets the idle proposal for this tick.
     /// IMPORTANT: Last writer wins — if multiple domains call this in the same tick,
-    /// the last call (based on <c>domainBehaviours</c> array order) takes effect.
+    /// the last call (based on <c>domainOrchestrators</c> array order) takes effect.
     /// The <paramref name="policySet"/> reference is borrowed for this tick only.
     /// </summary>
     public void SetIdle(IdleRolePolicySet policySet)

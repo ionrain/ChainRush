@@ -4,8 +4,8 @@ using UnityEngine;
 
 /// <summary>
 /// Single tick source and dispatcher that arbitrates between combat and idle domains.
-/// Domains implement <see cref="IOrchestrationDomain"/> and are polled each tick via
-/// <see cref="Evaluate"/>. The arbiter decides which domain is active (using hysteresis
+/// Domains extend <see cref="DomainOrchestrator"/> and are polled each tick via
+/// <see cref="DomainOrchestrator.Evaluate"/>. The arbiter decides which domain is active (using hysteresis
 /// to prevent thrash) and dispatches commands to registry receivers with faction filtering.
 /// <para>
 /// IMPORTANT — Ownership: The arbiter owns the final dispatch to receivers.
@@ -24,9 +24,9 @@ using UnityEngine;
 /// This yields per-role policy assignment with per-unit command uniqueness (no clumping).
 /// </para>
 /// <para>
-/// IMPORTANT — Policy maps are owned by domains and pushed via
-/// <see cref="SetIdleRolePolicyMap"/> / <see cref="SetCombatRolePolicyMap"/>.
-/// Domains bind their maps on dirty-flag change only (not per tick).
+/// IMPORTANT — Policy maps are owned by domains. The arbiter pulls map references
+/// each tick via <see cref="IIdleRolePolicyMapSource"/> / <see cref="ICombatRolePolicyMapSource"/>
+/// from cached <see cref="DomainOrchestrator"/> instances. Domains must not mutate their map reference during Evaluate.
 /// </para>
 /// </summary>
 public sealed class OrchestrationArbiter : MonoBehaviour
@@ -52,8 +52,8 @@ public sealed class OrchestrationArbiter : MonoBehaviour
     // ──────────────────────────────────────────────────────────────────
 
     [Header("Domains")]
-    [Tooltip("MonoBehaviours implementing IOrchestrationDomain. Polled each tick in array order.")]
-    [SerializeField] MonoBehaviour[] domainBehaviours;
+    [Tooltip("Domain orchestrators polled each tick in array order.")]
+    [SerializeField] DomainOrchestrator[] domainOrchestrators;
 
     // ──────────────────────────────────────────────────────────────────
     //  Serialized — Timing
@@ -75,7 +75,7 @@ public sealed class OrchestrationArbiter : MonoBehaviour
     //  Runtime — Domain cache
     // ──────────────────────────────────────────────────────────────────
 
-    IOrchestrationDomain[] _domains;
+    DomainOrchestrator[] _cachedDomains;
     int _domainCount;
     bool _warnedInvalidDomains;
 
@@ -93,8 +93,9 @@ public sealed class OrchestrationArbiter : MonoBehaviour
     OrchestrationArbiterContext _ctx;
 
     // ──────────────────────────────────────────────────────────────────
-    //  Runtime — Policy maps (owned by domains, pushed via setters)
-    //  IMPORTANT: Not serialized. Domains push these on dirty-flag change.
+    //  Runtime — Policy maps (owned by domains, pulled via interfaces)
+    //  IMPORTANT: Not serialized. Arbiter reads from domains each tick
+    //  via IIdleRolePolicyMapSource / ICombatRolePolicyMapSource.
     // ──────────────────────────────────────────────────────────────────
 
     IdleRolePolicyMapAsset _idleRolePolicyMap;
@@ -132,26 +133,14 @@ public sealed class OrchestrationArbiter : MonoBehaviour
     bool _warnedMissingRoleIdle;
     bool _warnedMissingRoleCombat;
     bool _warnedNoIdleMap;
+    bool _warnedDuplicateIdleSource;
+    bool _warnedDuplicateCombatSource;
 
     // ──────────────────────────────────────────────────────────────────
     //  Public — Domain state query
     // ──────────────────────────────────────────────────────────────────
 
     public bool IsCombatActive => _lastMode == DispatchMode.Combat;
-
-    // ──────────────────────────────────────────────────────────────────
-    //  Public — Policy map setters (called by domains on dirty-flag)
-    // ──────────────────────────────────────────────────────────────────
-
-    /// <summary>
-    /// Sets the idle role policy map. Called by idle domain when its map reference changes.
-    /// </summary>
-    public void SetIdleRolePolicyMap(IdleRolePolicyMapAsset map) { _idleRolePolicyMap = map; }
-
-    /// <summary>
-    /// Sets the combat role policy map. Called by combat domain when its map reference changes.
-    /// </summary>
-    public void SetCombatRolePolicyMap(CombatRolePolicyMapAsset map) { _combatRolePolicyMap = map; }
 
     // ──────────────────────────────────────────────────────────────────
     //  Lifecycle
@@ -196,50 +185,40 @@ public sealed class OrchestrationArbiter : MonoBehaviour
     {
         _domainCount = 0;
 
-        if (domainBehaviours == null || domainBehaviours.Length == 0)
+        if (domainOrchestrators == null || domainOrchestrators.Length == 0)
         {
-            _domains = null;
+            _cachedDomains = null;
             if (!_warnedInvalidDomains)
             {
                 _warnedInvalidDomains = true;
-                Debug.LogWarning("[OrchestrationArbiter] domainBehaviours is empty. No domains will be polled.", this);
+                Debug.LogWarning("[OrchestrationArbiter] domainOrchestrators is empty. " +
+                                 "No domains will be polled.", this);
             }
             return;
         }
 
-        if (_domains == null || _domains.Length < domainBehaviours.Length)
-            _domains = new IOrchestrationDomain[domainBehaviours.Length];
+        if (_cachedDomains == null || _cachedDomains.Length < domainOrchestrators.Length)
+            _cachedDomains = new DomainOrchestrator[domainOrchestrators.Length];
 
-        for (int i = 0; i < domainBehaviours.Length; i++)
+        for (int i = 0; i < domainOrchestrators.Length; i++)
         {
-            MonoBehaviour mb = domainBehaviours[i];
-            if (mb == null)
+            DomainOrchestrator d = domainOrchestrators[i];
+
+            // Unity-null safe: skip destroyed pooled components
+            if (d is Object uo && uo == null) { d = null; }
+            if (d == null)
             {
                 if (!_warnedInvalidDomains)
                 {
                     _warnedInvalidDomains = true;
                     Debug.LogWarning(string.Concat(
-                        "[OrchestrationArbiter] domainBehaviours[", i.ToString(),
+                        "[OrchestrationArbiter] domainOrchestrators[", i.ToString(),
                         "] is null. Skipping."), this);
                 }
                 continue;
             }
 
-            if (mb is IOrchestrationDomain d)
-            {
-                _domains[_domainCount++] = d;
-            }
-            else
-            {
-                if (!_warnedInvalidDomains)
-                {
-                    _warnedInvalidDomains = true;
-                    Debug.LogWarning(string.Concat(
-                        "[OrchestrationArbiter] domainBehaviours[", i.ToString(),
-                        "] (", mb.GetType().Name,
-                        ") does not implement IOrchestrationDomain. Skipping."), this);
-                }
-            }
+            _cachedDomains[_domainCount++] = d;
         }
     }
 
@@ -387,7 +366,10 @@ public sealed class OrchestrationArbiter : MonoBehaviour
         _proposals.Clear();
 
         for (int i = 0; i < _domainCount; i++)
-            _domains[i].Evaluate(_ctx, _proposals);
+            _cachedDomains[i].Evaluate(_ctx, _proposals);
+
+        // ── Pull policy maps from domains (after Evaluate, before dispatch) ──
+        RefreshPolicyMapsFromDomains();
 
         // ── Update hysteresis timers ────────────────────────────────
         if (_proposals.ThreatPresent)
@@ -445,6 +427,65 @@ public sealed class OrchestrationArbiter : MonoBehaviour
     }
 
     // ──────────────────────────────────────────────────────────────────
+    //  Policy map refresh — pull from cached DomainOrchestrators
+    //  IMPORTANT: Called once per tick after domain Evaluate, before dispatch.
+    //  "Last non-null wins" if multiple domains provide the same map type.
+    //  If no source provides a non-null map, the stored field becomes null.
+    //  PERF: Two `is` casts per domain per tick (0.25s interval). Negligible.
+    // ──────────────────────────────────────────────────────────────────
+
+    void RefreshPolicyMapsFromDomains()
+    {
+        IdleRolePolicyMapAsset newIdle = null;
+        CombatRolePolicyMapAsset newCombat = null;
+        bool foundIdle = false;
+        bool foundCombat = false;
+
+        for (int i = 0; i < _domainCount; i++)
+        {
+            DomainOrchestrator d = _cachedDomains[i];
+            // Unity-null safe: skip destroyed pooled components
+            if (d is Object uo && uo == null) continue;
+
+            if (d is IIdleRolePolicyMapSource idleSrc)
+            {
+                IdleRolePolicyMapAsset m = idleSrc.GetIdleRolePolicyMap();
+                if (m != null)
+                {
+                    if (foundIdle && !_warnedDuplicateIdleSource)
+                    {
+                        _warnedDuplicateIdleSource = true;
+                        Debug.LogWarning("[OrchestrationArbiter] Multiple domains provide " +
+                            "IIdleRolePolicyMapSource. Last non-null wins.", this);
+                    }
+                    newIdle = m;
+                    foundIdle = true;
+                }
+            }
+
+            if (d is ICombatRolePolicyMapSource combatSrc)
+            {
+                CombatRolePolicyMapAsset m = combatSrc.GetCombatRolePolicyMap();
+                if (m != null)
+                {
+                    if (foundCombat && !_warnedDuplicateCombatSource)
+                    {
+                        _warnedDuplicateCombatSource = true;
+                        Debug.LogWarning("[OrchestrationArbiter] Multiple domains provide " +
+                            "ICombatRolePolicyMapSource. Last non-null wins.", this);
+                    }
+                    newCombat = m;
+                    foundCombat = true;
+                }
+            }
+        }
+
+        // Null clears: if no source provides a map, stored field becomes null
+        _idleRolePolicyMap = newIdle;
+        _combatRolePolicyMap = newCombat;
+    }
+
+    // ──────────────────────────────────────────────────────────────────
     //  Combat dispatch — iterates cached friendly receivers
     // ──────────────────────────────────────────────────────────────────
 
@@ -496,10 +537,10 @@ public sealed class OrchestrationArbiter : MonoBehaviour
 
     // ──────────────────────────────────────────────────────────────────
     //  Idle dispatch — Per-role policy, per-unit command
-    //  IMPORTANT: Policy is looked up by RoleAsset from the stored
-    //  _idleRolePolicyMap (bound by domain via dirty flag). Commands are
-    //  computed per-unit using entitySeed so units of the same role
-    //  don't clump. Iterates cached friendly idle receivers.
+    //  IMPORTANT: Policy is looked up by RoleAsset from _idleRolePolicyMap
+    //  (pulled from domain via IIdleRolePolicyMapSource each tick).
+    //  Commands are computed per-unit using entitySeed so units of the
+    //  same role don't clump. Iterates cached friendly idle receivers.
     // ──────────────────────────────────────────────────────────────────
 
     void DispatchIdlePerUnit(Vector2 anchor, float now)

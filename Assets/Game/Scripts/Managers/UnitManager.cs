@@ -186,6 +186,11 @@ public class UnitManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEve
             unit = Instantiate(prefab, spawnPosition, Quaternion.identity, spawnParent);
             data.ResetSkillLevels();
             unit.Setup(data, mergeState);
+            
+            UnitAISetup aiSetup = unit.GetComponent<UnitAISetup>();
+            if (aiSetup != null)
+                aiSetup.Apply();
+
             unit.SetHealthbarVisibility(_showHealthBars);
             unit.OnDeath += OnUnitDeath;
             unit.OnHit += (u) => UnitActionEvent.Trigger(u, UnitActionType.Hit);

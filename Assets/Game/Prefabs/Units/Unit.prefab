@@ -188194,7 +188194,6 @@ GameObject:
   - component: {fileID: 6137455255140869549}
   - component: {fileID: 8712220277725499454}
   - component: {fileID: 2326046152140334740}
-  - component: {fileID: 6402974900918719512}
   - component: {fileID: 6257825161442359023}
   - component: {fileID: -7754944225952176092}
   - component: {fileID: 1238008963572229560}
@@ -188540,75 +188539,6 @@ MonoBehaviour:
   IgnoreDisabledResistances: 1
   IgnoreUnknownDamageTypes: 0
   DamageResistanceList: []
---- !u!114 &6402974900918719512
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3536651080418157209}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 644edbd08fe2649549eccf5411910f77, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::UnitAIController
-  returnRadius: 20
-  followRadius: 15
-  maxChaseDistanceFromAnchor: 16
-  enemyDetectRadius: 12
-  heroThreatRadius: 0
-  allyDefendRadius: 12
-  heroSpeedMultiplier: 2
-  enemyLayer:
-    serializedVersion: 2
-    m_Bits: 12288
-  targetEvaluationInterval: 1
-  overlapMaximum: 12
-  maxUnitAcquireDistance: 0
-  allyLayer:
-    serializedVersion: 2
-    m_Bits: 1024
-  personalSpaceRadius: 0.9
-  separationStrength: 1.2
-  maxSeparationOffset: 0.8
-  separationOverlapMax: 12
-  separationOnlyForFormationOrRally: 1
-  separationUseIntervalUpdate: 1
-  separationUpdateInterval: 0.15
-  pointSamples: 12
-  pathChecks: 3
-  crowdRadiusMultiplier: 1.25
-  wCrowdAtPoint: 1
-  wCrowdAlongPath: 0.75
-  wTravelCost: 0.15
-  lockTime: 0.9
-  rerollCooldown: 0.6
-  stuckCheckInterval: 0.25
-  stuckTimeToReroll: 0.9
-  stuckMinDistanceProgress: 0.05
-  stuckMinMoveDelta: 0.03
-  slotSamples: 12
-  enemyMovedThreshold: 1.5
-  enterEnemyMargin: 0.6
-  exitEnemyMargin: 1.4
-  meleeRangeFallback: 1.5
-  rangedRangeFallback: 4
-  idleRoamRadius: 2
-  idleOffsetRefreshDistance: 4
-  wHero: 3
-  wUnit: 1
-  wCrowd: 2
-  wLeash: 1.5
-  combatRadius: 5
-  heroHitResponseDuration: 2
-  allyHitResponseDuration: 1.5
-  targetLockTime: 2
-  retargetCooldown: 1.5
-  enemyCommitTime: 1.2
-  leashRecoveryTime: 1.5
-  combatLingerTime: 0.8
-  idleRoamDelayAfterThreat: 1.2
-  rallyRestInterval: {x: 1, y: 2}
 --- !u!114 &6257825161442359023
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -188719,7 +188649,7 @@ MonoBehaviour:
   _unit: {fileID: 1411303599235369572}
   _identity: {fileID: 6257825161442359023}
   _selector: {fileID: 4424342131491077100}
-  _idleBoundsProviderBehaviour: {fileID: 0}
+  fallbackBoundsSize: {x: 6, y: 3}
   debugLog: 1
 --- !u!114 &3988508772425012462
 MonoBehaviour:
@@ -188733,6 +188663,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9658f31463bb41c79638ed9daf68027, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitAISetup
+  applyOnEnable: 0
   unit: {fileID: 1411303599235369572}
   identity: {fileID: 6257825161442359023}
   capabilityProvider: {fileID: -880026797847537015}

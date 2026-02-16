@@ -16,6 +16,7 @@ using UnityEngine;
 /// </summary>
 public sealed class UnitAISetup : MonoBehaviour
 {
+    [SerializeField] bool applyOnEnable = true;
     // ──────────────────────────────────────────────────────────────────
     //  Serialized — Component references
     // ──────────────────────────────────────────────────────────────────
@@ -57,7 +58,7 @@ public sealed class UnitAISetup : MonoBehaviour
     [SerializeField] IdlePolicyAsset idleOverridePolicy;
 
     [Tooltip("If set, assigned as highest-priority combat targeting policy override for this unit.")]
-    [SerializeField] CombatTargetingPolicyAsset combatOverridePolicy;
+    [SerializeField] CombatTargetingPolicyAsset combatOverridePolicy;    
 
     // ──────────────────────────────────────────────────────────────────
     //  Runtime — One-shot warning flags (avoid log spam with pooling)
@@ -87,14 +88,15 @@ public sealed class UnitAISetup : MonoBehaviour
 
     void OnEnable()
     {
-        Apply();
+        if (applyOnEnable)
+            Apply();
     }
 
     // ──────────────────────────────────────────────────────────────────
     //  Apply — wires all orchestration bindings
     // ──────────────────────────────────────────────────────────────────
 
-    void Apply()
+    public void Apply()
     {
         // ── Guard: unit reference ─────────────────────────────────────
         if (unit == null)

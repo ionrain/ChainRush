@@ -223,30 +223,6 @@ public sealed class OrchestrationArbiter : MonoBehaviour
     }
 
     // ──────────────────────────────────────────────────────────────────
-    //  Obsolete — Legacy proposal submission (kept for compilation)
-    // ──────────────────────────────────────────────────────────────────
-
-    /// <summary>
-    /// Legacy submission path. No longer used in the arbiter-driven flow.
-    /// Domains now implement <see cref="IOrchestrationDomain"/> and are polled.
-    /// </summary>
-    [System.Obsolete("Use IOrchestrationDomain.Evaluate instead. Arbiter now polls domains directly.")]
-    public void SubmitCombat(in CombatCommand cmd, bool threatPresent)
-    {
-        _proposals.SetCombat(cmd, threatPresent);
-    }
-
-    /// <summary>
-    /// Legacy submission path. No longer used in the arbiter-driven flow.
-    /// Domains now implement <see cref="IOrchestrationDomain"/> and are polled.
-    /// </summary>
-    [System.Obsolete("Use IOrchestrationDomain.Evaluate instead. Arbiter now polls domains directly.")]
-    public void SubmitIdleRoles(IdleRolePolicySet policySet)
-    {
-        _proposals.SetIdle(policySet);
-    }
-
-    // ──────────────────────────────────────────────────────────────────
     //  World cache — built once per tick before domain polling
     //  IMPORTANT: One scan of OrchestrationRegistry per tick. Domains
     //  and dispatch methods iterate cached lists instead.

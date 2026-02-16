@@ -34,16 +34,12 @@ public sealed class IdleOrchestratorLite : DomainOrchestrator, IIdleRolePolicyMa
     // ──────────────────────────────────────────────────────────────────
 
     /// <summary>
-    /// Signals "idle domain is active this tick". The arbiter pulls the map
-    /// reference via <see cref="IIdleRolePolicyMapSource"/> after all domains evaluate.
-    /// <para>
-    /// IMPORTANT — <c>proposals.SetIdle(null)</c> means "idle domain present and wants
-    /// idle considered", NOT "here is a policy payload". The <c>IdlePolicies</c> field
-    /// in proposals is unused; <c>HasIdle</c> is the sole dispatch trigger.
-    /// </para>
+    /// Signals "idle domain is active this tick" by setting <c>HasIdle = true</c>.
+    /// The arbiter pulls the map reference via <see cref="IIdleRolePolicyMapSource"/>
+    /// after all domains evaluate.
     /// </summary>
     public override void Evaluate(OrchestrationArbiterContext ctx, OrchestrationArbiterProposals proposals)
     {
-        proposals.SetIdle(null);
+        proposals.SetIdle();
     }
 }

@@ -3,12 +3,6 @@
 /// A single instance is reused each tick (no per-tick allocations).
 /// Domains write proposals via <see cref="SetCombat"/> / <see cref="SetIdle"/>;
 /// the arbiter reads them after all domains have evaluated.
-/// <para>
-/// IMPORTANT: <see cref="IdlePolicies"/> is a reference to an
-/// <see cref="IdleRolePolicySet"/> owned by the idle domain.
-/// The arbiter must not store this reference across ticks;
-/// <see cref="Clear"/> nulls it each tick.
-/// </para>
 /// </summary>
 public sealed class OrchestrationArbiterProposals
 {
@@ -17,11 +11,10 @@ public sealed class OrchestrationArbiterProposals
     public bool ThreatPresent;
 
     public bool HasIdle;
-    public IdleRolePolicySet IdlePolicies;
 
     /// <summary>
     /// Resets all proposal state. Called by the arbiter at the start of each tick
-    /// before polling domains. Prevents sticky references from previous ticks.
+    /// before polling domains. Prevents sticky flags from previous ticks.
     /// </summary>
     public void Clear()
     {
@@ -29,7 +22,6 @@ public sealed class OrchestrationArbiterProposals
         CombatCommand = default;
         ThreatPresent = false;
         HasIdle = false;
-        IdlePolicies = null;
     }
 
     /// <summary>
@@ -45,14 +37,12 @@ public sealed class OrchestrationArbiterProposals
     }
 
     /// <summary>
-    /// Sets the idle proposal for this tick.
+    /// Signals that the idle domain is active this tick.
     /// IMPORTANT: Last writer wins — if multiple domains call this in the same tick,
     /// the last call (based on <c>domainOrchestrators</c> array order) takes effect.
-    /// The <paramref name="policySet"/> reference is borrowed for this tick only.
     /// </summary>
-    public void SetIdle(IdleRolePolicySet policySet)
+    public void SetIdle()
     {
         HasIdle = true;
-        IdlePolicies = policySet;
     }
 }

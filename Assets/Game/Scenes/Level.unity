@@ -8761,6 +8761,7 @@ MonoBehaviour:
   autoResolveTargetSet: 1
   targetSetSize: 4
   rolePolicyMap: {fileID: 11400000, guid: bbdd1192619974b96ae0c37c2a1af824, type: 2}
+  roleConstraintsMap: {fileID: 11400000, guid: 36710e6c9d9294b01872a62bf549b82b, type: 2}
   debugLog: 1
 --- !u!114 &258903838
 MonoBehaviour:
@@ -8782,6 +8783,7 @@ MonoBehaviour:
   autoResolveTargetSet: 1
   targetSetSize: 4
   rolePolicyMap: {fileID: 0}
+  roleConstraintsMap: {fileID: 0}
   debugLog: 1
 --- !u!114 &258903839
 MonoBehaviour:
@@ -12410,7 +12412,8 @@ MonoBehaviour:
   serializationData:
     SerializedFormat: 2
     SerializedBytes: 
-    ReferencedUnityObjects: []
+    ReferencedUnityObjects:
+    - {fileID: 831464317}
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
@@ -12436,13 +12439,47 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
+    - Name: spawnSides
+      Entry: 7
+      Data: 2|System.Collections.Generic.Dictionary`2[[SpawnSide, Assembly-CSharp],[UnityEngine.Collider2D,
+        UnityEngine.Physics2DModule]], mscorlib
+    - Name: comparer
+      Entry: 7
+      Data: 3|System.Collections.Generic.EnumEqualityComparer`1[[SpawnSide, Assembly-CSharp]],
+        mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 0
+    - Name: $v
+      Entry: 10
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
   notificationTrigger: {fileID: 0}
   defaultTarget: {fileID: 0}
-  fillBounds: {fileID: 831464317}
-  moveFillBoundsWithCamera: 1
   fullProgressAction: 1
-  fillShape: 7
-  spawnSides: 0
   spawnBlock:
     serializedVersion: 2
     m_Bits: 256

@@ -3,13 +3,15 @@ using UnityEngine;
 
 /// <summary>
 /// Idle policy that chooses a point inside provided bounds while avoiding crowding.
-/// Uses deterministic sampling with "personal space" and "crowd penalty" scoring.
+/// Uses deterministic sampling with "personal space" and "crowd penalty" scoring
+/// via the shared <see cref="CrowdScoringUtility"/>.
 /// <para>
 /// IMPORTANT — Allocation-free and stateless. Per-unit state belongs in selectors/executors.
 /// </para>
 /// <para>
-/// IMPORTANT — Crowd scoring counts FRIENDLY actors only. Without this filter,
-/// idle would treat enemies as crowd and behave oddly.
+/// IMPORTANT — Crowd scoring uses <see cref="OrchestrationWorldCache.FriendlyCrowdTransforms"/>
+/// (pre-filtered friendly spatial units). Without this filter, idle would treat enemies
+/// as crowd and behave oddly.
 /// </para>
 /// </summary>
 [CreateAssetMenu(fileName = "IdleFillAreaPolicy", menuName = "Game/Orchestration/Idle/Fill Area Policy")]
@@ -52,8 +54,6 @@ public sealed class IdleFillAreaPolicyAsset : IdlePolicyAsset
     //  Constants
     // ──────────────────────────────────────────────────────────────────
 
-    const int FNV_OFFSET = unchecked((int)2166136261);
-    const int FNV_PRIME = 16777619;
     const float PERSONAL_SPACE_PENALTY = 1000f;
     const float ANCHOR_DISTANCE_WEIGHT = 0.1f;
     const int SAMPLE_SEED_PRIME = 0x45D9F3B;
@@ -99,12 +99,12 @@ public sealed class IdleFillAreaPolicyAsset : IdlePolicyAsset
         if (!hasBounds)
             bounds = new Bounds(new Vector3(anchor.x, anchor.y, 0f), FallbackBoundsSize);
 
-        // ── Pre-compute friendly positions ────────────────────────────
-        // PERF: Iterate actors once, collect friendly positions for scoring
-        List<IOrchestrationActor> actors = ctx.World.Actors;
-        int actorCount = actors.Count;
+        // ── Pre-compute squared thresholds ──────────────────────────────
         float personalSpaceSqr = personalSpace * personalSpace;
         float crowdRadiusSqr = crowdPenaltyRadius * crowdPenaltyRadius;
+
+        // Use pre-filtered friendly crowd transforms from world cache
+        IReadOnlyList<Transform> friendlies = ctx.World.FriendlyCrowdTransforms;
 
         // ── Sample and score candidates ───────────────────────────────
         Vector2 bestPoint = anchor;
@@ -114,41 +114,12 @@ public sealed class IdleFillAreaPolicyAsset : IdlePolicyAsset
         for (int i = 0; i < sampleCount; i++)
         {
             int seed = roleSeed ^ entitySeed ^ (i * SAMPLE_SEED_PRIME);
-            Vector2 candidate = RandomPointInBounds(bounds, seed);
+            Vector2 candidate = CrowdScoringUtility.RandomPointInBounds(bounds, seed);
 
-            float score = 0f;
-
-            // Score: crowding (friendly actors only)
-            for (int a = 0; a < actorCount; a++)
-            {
-                IOrchestrationActor actor = actors[a];
-                if (actor is Object uo && uo == null) continue;
-
-                // IMPORTANT: Only count friendly actors
-                IFactionAssetProvider fap = actor as IFactionAssetProvider;
-                if (fap == null) continue;
-                FactionAsset actorFaction = fap.GetFactionAsset();
-                if (actorFaction == null) continue;
-                if (ctx.Relations.GetRelation(ctx.OrchestratorFaction, actorFaction) != FactionRelation.Friendly)
-                    continue;
-
-                Transform actorTransform = actor.GetTransform();
-                if (actorTransform == null) continue;
-
-                // Skip self
-                if (actorTransform == self) continue;
-
-                Vector2 actorPos = (Vector2)actorTransform.position;
-                float sqrDist = (candidate - actorPos).sqrMagnitude;
-
-                // Hard penalty: personal space violation
-                if (sqrDist < personalSpaceSqr)
-                    score += PERSONAL_SPACE_PENALTY;
-
-                // Soft penalty: crowding
-                if (sqrDist < crowdRadiusSqr)
-                    score += 1f;
-            }
+            // Crowd penalty via shared utility (soft penalty, never rejects)
+            float score = CrowdScoringUtility.ScoreCrowdPenalty(
+                friendlies, self, candidate,
+                personalSpaceSqr, crowdRadiusSqr, PERSONAL_SPACE_PENALTY);
 
             // Penalty for distance from anchor (keeps units generally around anchor)
             float anchorSqrDist = (candidate - anchor).sqrMagnitude;
@@ -171,38 +142,5 @@ public sealed class IdleFillAreaPolicyAsset : IdlePolicyAsset
 
         return IdleCommand.MoveToPoint(bestPoint, stopDistance,
             includeDebugInfo ? debugInfo : null);
-    }
-
-    // ──────────────────────────────────────────────────────────────────
-    //  Deterministic helpers (private static, no allocations)
-    // ──────────────────────────────────────────────────────────────────
-
-    /// <summary>
-    /// Stable FNV-1a hash normalized to [0, 1].
-    /// IMPORTANT: Does NOT use GetHashCode(). Fully deterministic.
-    /// </summary>
-    static float Hash01(int x)
-    {
-        unchecked
-        {
-            int h = FNV_OFFSET;
-            h = (h ^ (x & 0xFF)) * FNV_PRIME;
-            h = (h ^ ((x >> 8) & 0xFF)) * FNV_PRIME;
-            h = (h ^ ((x >> 16) & 0xFF)) * FNV_PRIME;
-            h = (h ^ ((x >> 24) & 0xFF)) * FNV_PRIME;
-            return (float)(h & 0x7FFFFFFF) / (float)0x7FFFFFFF;
-        }
-    }
-
-    /// <summary>
-    /// Returns a deterministic random point within the XY extents of the bounds.
-    /// </summary>
-    static Vector2 RandomPointInBounds(Bounds b, int seed)
-    {
-        float tx = Hash01(seed);
-        float ty = Hash01(seed ^ 0x6C62272E);
-        float x = b.min.x + tx * b.size.x;
-        float y = b.min.y + ty * b.size.y;
-        return new Vector2(x, y);
     }
 }

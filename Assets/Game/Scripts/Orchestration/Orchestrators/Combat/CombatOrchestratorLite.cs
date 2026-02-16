@@ -37,7 +37,7 @@ public enum TargetSearchMode
 /// Uses the per-tick <see cref="OrchestrationWorldCache"/> built by the arbiter.
 /// </para>
 /// </summary>
-public sealed class CombatOrchestratorLite : DomainOrchestrator, ICombatRolePolicyMapSource
+public sealed class CombatOrchestratorLite : DomainOrchestrator, ICombatRolePolicyMapSource, ICombatRoleConstraintsMapSource
 {
     // ──────────────────────────────────────────────────────────────────
     //  Serialized
@@ -64,6 +64,10 @@ public sealed class CombatOrchestratorLite : DomainOrchestrator, ICombatRolePoli
     [Header("Role Policies")]
     [Tooltip("Optional per-role targeting policy map. If null, units use their own default policies.")]
     [SerializeField] CombatRolePolicyMapAsset rolePolicyMap;
+
+    [Header("Role Constraints")]
+    [Tooltip("Optional per-role movement constraints map. If null, units use unconstrained movement.")]
+    [SerializeField] CombatRoleConstraintsMapAsset roleConstraintsMap;
 
     [Header("Debug")]
     [SerializeField] bool debugLog;
@@ -95,6 +99,12 @@ public sealed class CombatOrchestratorLite : DomainOrchestrator, ICombatRolePoli
     // ──────────────────────────────────────────────────────────────────
 
     public CombatRolePolicyMapAsset GetCombatRolePolicyMap() => rolePolicyMap;
+
+    // ──────────────────────────────────────────────────────────────────
+    //  ICombatRoleConstraintsMapSource
+    // ──────────────────────────────────────────────────────────────────
+
+    public CombatRoleConstraintsMapAsset GetCombatRoleConstraintsMap() => roleConstraintsMap;
 
     // ──────────────────────────────────────────────────────────────────
     //  IOrchestrationDomain

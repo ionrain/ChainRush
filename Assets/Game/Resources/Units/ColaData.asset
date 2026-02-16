@@ -895,13 +895,13 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: a0cd09aa3fea04180b93b2c8f5d74b1c, type: 3}
   grade: 0
   element: 1
-  speciality: 3
+  unitClass: 3
   skills:
   - data: {fileID: 11400000, guid: fc86a101f1ad3445e814529fdaaa7587, type: 2}
     defaultSkill: 1
     main: 1
-    requiredLevel: 0
     syncWithMergeState: 1
+    requiredLevel: 0
   attackState: 1
   deathParticleFX: {fileID: 996422148020214651, guid: 7e35c29bb71df486e9760c13d06898c3,
     type: 3}

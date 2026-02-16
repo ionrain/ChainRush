@@ -7,8 +7,7 @@ using Sirenix.Utilities;
 public enum FullProgressSpawnAction { Continue, Stop }
 public enum EnemySpawnEventType { Started, InProgress, Finished, Canceled, Cleared }
 
-[System.Flags]
-public enum SpawnSide { None, Right = 1, Bottom = 2, Left = 4, Top = 8 }
+public enum SpawnSide { Right, Bottom, Left, Top }
 
 public struct EnemySpawnTriggerEvent {
     public string Name { get; private set; }
@@ -49,11 +48,8 @@ public class EnemyManager : SimplePoolUser, MMEventListener<EnemySpawnTriggerEve
     [SerializeField] Transform defaultTarget;
 
     [Header("Spawning")]
-    [SerializeField] Collider2D fillBounds;
-    [SerializeField] bool moveFillBoundsWithCamera = true;
     [SerializeField] FullProgressSpawnAction fullProgressAction = FullProgressSpawnAction.Continue;
-    [SerializeField] SpawnShape fillShape = SpawnShape.OnBox;
-    [SerializeField] SpawnSide spawnSides = SpawnSide.None;
+    [SerializeField] Dictionary<SpawnSide, Collider2D> spawnSides = new();
     [SerializeField] LayerMask spawnBlock;
     [SerializeField] LayerMask targetLayers;
     [SerializeField] int maxSpawnAttempts = 100;
@@ -80,12 +76,8 @@ public class EnemyManager : SimplePoolUser, MMEventListener<EnemySpawnTriggerEve
     List<Enemy> _enemies = new List<Enemy>();
     LayerMask _scanLayers;
     bool _spawning;
-    float _time;
-    int _timeInSeconds;
     float _progress;
     bool _showHealthBars = true;
-    float _fillBoundsOffset;
-    //Vector2 _spawnAngleRange = new Vector2(0, 360);
 
     public void SetHealthbarVisibility(bool value) {
         if (_showHealthBars != value) {
@@ -103,12 +95,7 @@ public class EnemyManager : SimplePoolUser, MMEventListener<EnemySpawnTriggerEve
         _waveTimings.Clear();
         _nextFillTime = 0;
         _progress = 0;
-        _timeInSeconds = 0;
-        _time = 0;
         EnemySpawnEvent.Trigger(EnemySpawnEventType.Started);
-
-        if (moveFillBoundsWithCamera && fillBounds != null)
-            _fillBoundsOffset = fillBounds.transform.position.x - Camera.main.transform.position.x;
 
         if (_dataOK) {
             MaxFillCount = _data.maxFillCount;
@@ -136,13 +123,6 @@ public class EnemyManager : SimplePoolUser, MMEventListener<EnemySpawnTriggerEve
 
     void FixedUpdate() {
         if (_dataOK && _spawning) {
-            if (moveFillBoundsWithCamera && fillBounds != null) {
-                Vector3 cameraPos = Camera.main.transform.position;
-                Vector3 fillPos = fillBounds.transform.position;
-                fillPos.x = cameraPos.x + _fillBoundsOffset;
-                fillBounds.transform.position = fillPos;
-            }
-
             if (_progress < 1) {
                 if (_proportionsOK) {
                     _fillCount = (int)(_data.enemyCountCurve.Evaluate(_progress) * MaxFillCount);
@@ -164,18 +144,6 @@ public class EnemyManager : SimplePoolUser, MMEventListener<EnemySpawnTriggerEve
         _multipliersFromSkills.Clear();
         _enemies.Clear();
         _scanLayers = targetLayers | spawnBlock;
-        
-        /*f (spawnSides != SpawnSide.None) {
-            List<SpawnSide> sideList = new List<SpawnSide> { SpawnSide.Right, SpawnSide.Bottom, SpawnSide.Left, SpawnSide.Top };
-            _spawnAngleRange = new Vector2(360, 0);
-            for (int i = 0; i < 4; i++) {
-                if (spawnSides.HasFlag(sideList[i])) {
-                    _spawnAngleRange.x = Mathf.Min(_spawnAngleRange.x, -45 + 90 * i);
-                    _spawnAngleRange.y = Mathf.Max(_spawnAngleRange.y, 45 + 90 * i);
-                }
-            }
-        } else
-            Debug.LogError("Enemy Manager Initialize: SpawnSides is None, fill and wave OnBox spawning won't happen");*/
 
         if (multipliers != null)
             _multipliers = multipliers;
@@ -258,7 +226,7 @@ public class EnemyManager : SimplePoolUser, MMEventListener<EnemySpawnTriggerEve
     }
 
     Vector2 RandomPositionOnBox(Vector2 position, Vector2 size) {
-        return calCoor(Random.Range(0, 360 /*_spawnAngleRange.x, _spawnAngleRange.y*/), size.x, size.y) * 0.5f + position;
+        return calCoor(Random.Range(0, 360), size.x, size.y) * 0.5f + position;
     }
 
     Vector2 calCoor(float theta, float a, float b) {
@@ -290,18 +258,24 @@ public class EnemyManager : SimplePoolUser, MMEventListener<EnemySpawnTriggerEve
     }
 
     Vector2 CalculateFillEnemyPosition(out bool success) {
-        if (fillBounds != null) {
-            Vector2 position = fillBounds.bounds.center;
-            Vector2 size = fillBounds.bounds.size;
-            int attempt = 0;
-            while (attempt <= maxSpawnAttempts) {
-                Vector2 pos = RandomPositionInsideBox(position, size);
-                if (!CheckPositions || CheckSpawnPosition(pos)) {
-                    success = true;
-                    return pos;
+        if (spawnSides != null && spawnSides.Count > 0) {
+            List<Collider2D> sideColliders = new List<Collider2D>(spawnSides.Values);
+            Collider2D spawnCollider = sideColliders[Random.Range(0, sideColliders.Count)];
+            if (spawnCollider != null) {
+                Vector2 position = spawnCollider.bounds.center;
+                Vector2 size = spawnCollider.bounds.size;
+
+                int attempt = 0;
+                while (attempt <= maxSpawnAttempts) {
+                    Vector2 pos = RandomPositionInsideBox(position, size);
+                    if (!CheckPositions || CheckSpawnPosition(pos)) {
+                        success = true;
+                        return pos;
+                    }
+                    attempt++;
                 }
-                attempt++;
-            }
+            } else
+                Debug.LogError("EnemyManager CalculateFillEnemyPosition: spawnSides is not empty but contains NULL colliders");
         }
         success = false;
         return Vector2.zero;

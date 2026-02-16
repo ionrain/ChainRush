@@ -9,11 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6b03b878492e24291b5756ecefd7161f, type: 3}
-  m_Name: IdleRolePolicyMap
-  m_EditorClassIdentifier: Assembly-CSharp::IdleRolePolicyMapAsset
+  m_Script: {fileID: 11500000, guid: a7e31f0a24abb428599c33ef411aec41, type: 3}
+  m_Name: CombatRoleConstraintsMap
+  m_EditorClassIdentifier: Assembly-CSharp::CombatRoleConstraintsMapAsset
   entries:
   - role: {fileID: 11400000, guid: 19dd534fc277d4de896d3cfbe1c7f807, type: 2}
-    policy: {fileID: 11400000, guid: a690eb2cfca5643bdb7fc60f369ff29b, type: 2}
+    constraints: {fileID: 11400000, guid: 6962a7fe48fd64b9288f0713ef183779, type: 2}
   - role: {fileID: 11400000, guid: c6736ecf493644fbe97d5d9c082c9155, type: 2}
-    policy: {fileID: 11400000, guid: 5e4e5e8133b6c4cfbbf482eea0515837, type: 2}
+    constraints: {fileID: 11400000, guid: 2d85c4eb4a4414cc6934b5b2417bf86f, type: 2}

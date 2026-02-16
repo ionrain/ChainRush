@@ -22,6 +22,16 @@ public sealed class OrchestrationWorldCache
     public readonly List<ICombatCommandReceiver> FriendlyCombatReceivers = new List<ICombatCommandReceiver>(128);
     public readonly List<IIdleCommandReceiver> FriendlyIdleReceivers = new List<IIdleCommandReceiver>(128);
 
+    /// <summary>
+    /// Pre-filtered friendly actor transforms for crowd scoring.
+    /// IMPORTANT: Contains only transforms of friendly <see cref="IOrchestrationActor"/>
+    /// instances that also have a <c>Unit</c> component (i.e., actual spatial units that
+    /// occupy space and move — not abstract reporters or non-spatial entities).
+    /// Built once per tick in arbiter <c>BuildWorldCache</c>.
+    /// Consumed by <see cref="CrowdScoringUtility"/>.
+    /// </summary>
+    public readonly List<Transform> FriendlyCrowdTransforms = new List<Transform>(128);
+
     public Vector2 Anchor;
     public float Now;
 
@@ -33,5 +43,6 @@ public sealed class OrchestrationWorldCache
         Actors.Clear();
         FriendlyCombatReceivers.Clear();
         FriendlyIdleReceivers.Clear();
+        FriendlyCrowdTransforms.Clear();
     }
 }

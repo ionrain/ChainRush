@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 041fd60bdea7f4a69826258c80e7ed8a, type: 3}
+  m_Name: WarriorCombatMoveConstraints
+  m_EditorClassIdentifier: Assembly-CSharp::CombatMoveConstraintsAsset
+  leashRadius: 14
+  outOfBoundsMode: 2
+  stopDistance: 0.35
+  personalSpace: 9
+  crowdCheckRadius: 2
+  samples: 8
+  maxSpreadOffset: 1.2
+  anchorDistanceWeight: 0.15
+  minRepathInterval: 0.45
+  holdMinTime: 0.35
+  waypointMinTime: 0.35

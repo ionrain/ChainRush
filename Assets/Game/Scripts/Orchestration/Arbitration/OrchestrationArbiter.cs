@@ -100,6 +100,7 @@ public sealed class OrchestrationArbiter : MonoBehaviour
 
     IdleRolePolicyMapAsset _idleRolePolicyMap;
     CombatRolePolicyMapAsset _combatRolePolicyMap;
+    CombatRoleConstraintsMapAsset _combatRoleConstraintsMap;
 
     // ──────────────────────────────────────────────────────────────────
     //  Runtime — Hysteresis
@@ -135,6 +136,7 @@ public sealed class OrchestrationArbiter : MonoBehaviour
     bool _warnedNoIdleMap;
     bool _warnedDuplicateIdleSource;
     bool _warnedDuplicateCombatSource;
+    bool _warnedDuplicateConstraintsSource;
 
     // ──────────────────────────────────────────────────────────────────
     //  Public — Domain state query
@@ -166,6 +168,7 @@ public sealed class OrchestrationArbiter : MonoBehaviour
         // Clear stored maps to avoid stale refs on scene reload / domain toggles
         _idleRolePolicyMap = null;
         _combatRolePolicyMap = null;
+        _combatRoleConstraintsMap = null;
     }
 
     IEnumerator Loop()
@@ -254,6 +257,18 @@ public sealed class OrchestrationArbiter : MonoBehaviour
             if (t == null) continue;
 
             _world.Actors.Add(actor);
+
+            // Build FriendlyCrowdTransforms: only friendly actors with a Unit component
+            // (actual spatial units that occupy space). One GetComponent<Unit> per friendly
+            // actor per tick (0.25s cadence) — negligible cost.
+            // IMPORTANT: IOrchestrationActor and ICombatCommandReceiver are typically
+            // different components on the same GameObject, so "actor is ICombatCommandReceiver"
+            // won't work. Check via GetComponent on the actor's transform instead.
+            if (IsFriendlyActorTyped(actor, ctx.OrchestratorFaction, ctx.Relations))
+            {
+                if (t.GetComponent<Unit>() != null)
+                    _world.FriendlyCrowdTransforms.Add(t);
+            }
         }
 
         // ── Friendly combat receivers ────────────────────────────────
@@ -296,6 +311,23 @@ public sealed class OrchestrationArbiter : MonoBehaviour
         if (rf == null) return false;
 
         return relations.GetRelation(orchestratorFaction, rf) == FactionRelation.Friendly;
+    }
+
+    /// <summary>
+    /// Checks if an actor is friendly. Separate from <see cref="IsFriendlyReceiverTyped"/>
+    /// because actors and receivers are different classification paths.
+    /// </summary>
+    static bool IsFriendlyActorTyped(IOrchestrationActor actor, FactionAsset orchestratorFaction, FactionRelationTableAsset relations)
+    {
+        if (orchestratorFaction == null || relations == null) return false;
+
+        IFactionAssetProvider fap = actor as IFactionAssetProvider;
+        if (fap == null) return false;
+
+        FactionAsset af = fap.GetFactionAsset();
+        if (af == null) return false;
+
+        return relations.GetRelation(orchestratorFaction, af) == FactionRelation.Friendly;
     }
 
     // ──────────────────────────────────────────────────────────────────
@@ -414,8 +446,10 @@ public sealed class OrchestrationArbiter : MonoBehaviour
     {
         IdleRolePolicyMapAsset newIdle = null;
         CombatRolePolicyMapAsset newCombat = null;
+        CombatRoleConstraintsMapAsset newConstraints = null;
         bool foundIdle = false;
         bool foundCombat = false;
+        bool foundConstraints = false;
 
         for (int i = 0; i < _domainCount; i++)
         {
@@ -454,11 +488,28 @@ public sealed class OrchestrationArbiter : MonoBehaviour
                     foundCombat = true;
                 }
             }
+
+            if (d is ICombatRoleConstraintsMapSource constraintsSrc)
+            {
+                CombatRoleConstraintsMapAsset cm = constraintsSrc.GetCombatRoleConstraintsMap();
+                if (cm != null)
+                {
+                    if (foundConstraints && !_warnedDuplicateConstraintsSource)
+                    {
+                        _warnedDuplicateConstraintsSource = true;
+                        Debug.LogWarning("[OrchestrationArbiter] Multiple domains provide " +
+                            "ICombatRoleConstraintsMapSource. Last non-null wins.", this);
+                    }
+                    newConstraints = cm;
+                    foundConstraints = true;
+                }
+            }
         }
 
         // Null clears: if no source provides a map, stored field becomes null
         _idleRolePolicyMap = newIdle;
         _combatRolePolicyMap = newCombat;
+        _combatRoleConstraintsMap = newConstraints;
     }
 
     // ──────────────────────────────────────────────────────────────────
@@ -498,6 +549,22 @@ public sealed class OrchestrationArbiter : MonoBehaviour
                     Debug.LogWarning("[OrchestrationArbiter] Combat receiver missing RoleAsset; " +
                                      "combatRolePolicyMap will not inject policy.", this);
                 }
+            }
+
+            // Per-role constraints injection (after policy injection, before ApplyCombatCommand).
+            // IMPORTANT: Always call SetRuntimeContext when receiver implements
+            // IConstrainedCombatReceiver — pass null constraints when no map/role match
+            // so executor transitions cleanly to unconstrained mode.
+            if (r is IConstrainedCombatReceiver ccr)
+            {
+                CombatMoveConstraintsAsset resolved = null;
+                if (_combatRoleConstraintsMap != null && r is IRoleAssetProvider rap2)
+                {
+                    RoleAsset cRole = rap2.GetRoleAsset();
+                    if (cRole != null)
+                        _combatRoleConstraintsMap.TryGet(cRole, out resolved);
+                }
+                ccr.SetRuntimeContext(resolved, _world);
             }
 
             r.ApplyCombatCommand(cmd);

@@ -1,162 +1,189 @@
-# Orchestration Architecture Charter (v0.1)
+# Хартия архитектуры оркестрации (Orchestration Architecture Charter) v0.2
 
-## Purpose
-Build an orchestration platform that:
-- scales from realtime to turn-based without rewrites,
-- supports many roles/professions without “100 copy‑paste domains”,
-- supports hierarchical command (unit → squad → army),
-- supports mixed player control levels,
-- grows by adding modules and data, not by piling ad-hoc rules into a monolith.
+## Назначение
+Построить платформу оркестрации, которая:
+- масштабируется от realtime до turn‑based без переписываний,
+- поддерживает много ролей/профессий без «100 копипаст‑доменов»,
+- поддерживает иерархическое командование (unit → squad → army),
+- поддерживает смешанные уровни контроля игрока (direct / high‑level),
+- растёт за счёт модулей и данных, а не за счёт монолита из «флажков под каждый кейс».
 
-## Core principle
-**One decision loop. Many proposal sources. One conflict resolver. Many executors.**
+## Базовый принцип
+**Один цикл принятия решений (decision loop). Много источников предложений (proposal sources). Один арбитр (arbiter). Много исполнителей (executors).**
 
-## Glossary
-- **Actor** — world entity that can be reasoned about (unit, enemy, interactable, group).
-- **Capability** — what the entity can execute (move, attack, heal, fish, build, cook).
-- **Intent** — what we want (defend, engage, follow, harvest, repair).
-- **Policy / Tactic** — how we pick/shape an action (targeting, spacing, formation, avoidance).
-- **Command / Action** — what we actually execute this tick/step (MoveTo, Hold, UseTool, Attack).
-- **Proposal** — candidate plan for some scope with priority and constraints.
-- **Arbiter** — resolves conflicts and chooses final commands.
-- **Planner (optional)** — assigns tasks across multiple units/groups.
-- **Executor** — applies chosen commands to the engine (TDE/Unit.SetTarget/etc).
+## Глоссарий
+- **Actor (актор)** — сущность мира, о которой можно рассуждать (юнит, враг, интерактивный объект, группа).
+- **Capability (способность)** — что сущность умеет исполнять (move, attack, heal, fish, build, cook).
+- **Intent (намерение)** — чего хотим добиться (defend, engage, follow, harvest, repair).
+- **Policy / Tactic (политика / тактика)** — как выбираем/формируем действие (targeting, spacing, formation, avoidance).
+- **Command / Action (команда / действие)** — что реально исполняем в этом тике/шаге (MoveTo, Hold, UseTool, Attack).
+- **Proposal (предложение)** — кандидатный план для некоторого скоупа с приоритетом и ограничениями.
+- **Arbiter (арбитр)** — разрешает конфликты и выбирает итоговые команды.
+- **Planner (планировщик, опционально)** — распределяет задачи между несколькими акторами/группами.
+- **Executor (исполнитель)** — применяет выбранные команды к движку (engine glue).
 
-## Layering (non‑negotiable)
+## Слои (Layering) — непереговорные правила
 
-### Layer 1 — Scheduling
-- Provides “decision ticks”: realtime dt, turn step, event triggers.
-- Owns time (`Now`) and step count.
-- Orchestrators and policies **must not** self‑schedule; they run when the scheduler calls.
+### Layer 1 — Scheduling (планирование тиков)
+- Даёт «decision ticks»: realtime dt, turn steps, event‑triggered шаги.
+- Владеет временем (`Now`) и номером шага/тика (`StepCount`).
+- Оркестраторы/политики **не должны** сами себя планировать; их вызывает scheduler.
 
-### Layer 2 — World model / sensing
-- Single place builds per‑tick world cache (actors, relations, hot lists).
-- Exposes query interfaces (nearest hostile, visibility, distance checks).
-- No gameplay decisions here; **facts only**.
+### Layer 2 — World model / Sensing (модель мира / сенсинг)
+- Единственное место, где на тик строится world cache (actors, отношения, «горячие списки»).
+- Экспортирует интерфейсы запросов (nearest hostile, line‑of‑sight, distance checks, region queries).
+- Здесь **нет** геймплейных решений — только факты.
 
-### Layer 3 — Proposal sources
-- Modules that propose intents/actions but **do not dispatch commands**.
-- Examples: Combat module, Idle module, Fishing module, Player input module, Commander module.
-- Read world cache + configuration + unit capabilities.
-- Output: proposals only.
+### Layer 3 — Proposal sources (источники предложений)
+- Модули, которые формируют proposals, но **не диспатчат команды**.
+- Примеры: Combat module, Idle module, Fishing module, Player Input module, Commander module.
+- Читают world cache + конфигурацию + capabilities.
+- Выход: proposals.
 
-### Layer 4 — Arbitration
-- Resolves conflicts between proposals:
-  - priority (player > commander > AI > background),
+### Layer 4 — Arbitration (арбитраж)
+- Разруливает конфликты между proposals:
+  - приоритет (player > commander > AI > background),
   - hysteresis / anti‑thrash,
-  - compatibility rules (some proposals can coexist),
-  - engagement / ROE gating.
-- Output: final per‑unit commands (and optionally group commands).
+  - совместимость (некоторые предложения могут сосуществовать),
+  - engagement / ROE (rules of engagement).
+- Выход: итоговые per‑unit команды (и опционально group‑команды).
 
-### Layer 5 — Planning / assignment (optional)
-- For multi‑unit coordination (squad tasks, distribution, formation slot assignment).
-- Can sit between proposals and arbitration, but must follow the same flow:
-  **writes assignments/constraints, not engine commands**.
+### Layer 5 — Planning / Assignment (планирование/назначение, опционально)
+- Для координации нескольких юнитов (squad tasks, распределение целей, слоты формации).
+- Может стоять между proposals и arbitration, но обязан следовать тому же потоку:
+  **пишет назначения/ограничения, но не engine‑команды**.
 
-### Layer 6 — Execution
-- Applies commands to the engine (TDE).
-- Owns low‑level anti‑thrash state if needed (waypoint timers, smoothing).
-- Must never read global registries; receives needed context via injection.
+### Layer 6 — Execution (исполнение)
+- Применяет команды к движку.
+- Содержит низкоуровневый anti‑thrash state (таймеры waypoints, сглаживание), если он локальный.
+- Не читает глобальные регистри/синглтоны; получает контекст через инъекцию.
 
-## Cross‑cutting: primitives library
-Reusable primitives used by many modules/policies (avoid duplicated “weights/sliders” everywhere):
-- **Geometry**: clamp to circle/box/polygon; nearest point on boundary.
-- **Sampling**: deterministic sampling inside region; ring/grid patterns.
-- **Crowd**: scoring, separation, neighbor counting (engine‑agnostic utilities).
-- **Formation**: slot generation and assignment (separate from “idle policy”).
-- **Engagement rules**: gating / pursuit windows / allowed targets.
+## Сквозная библиотека примитивов (Primitives Library)
+Переиспользуемые примитивы, которые нужны многим модулям/политикам (чтобы не плодить «веса/слайдеры» в каждом месте отдельно):
+- **Geometry**: clamp к кругу/прямоугольнику/многоугольнику; nearest point on boundary.
+- **Sampling**: детерминированное семплирование внутри региона; паттерны ring/grid.
+- **Crowd**: scoring, separation, neighbour counting (движково‑агностичные утилиты).
+- **Formation**: генерация слотов и назначение (отдельно от «idle policy»).
+- **Engagement**: gating / pursuit windows / allowed targets.
 
-## Hard invariants
-1) **Single tick source**
-- Only the scheduler (via arbiter) decides tick frequency.
-- No `Update` loops in orchestrators/executors; coroutine/scheduler tick only.
+## Жёсткие инварианты
+1) **Единый источник тиков (single tick source)**
+- Только scheduler (через arbiter) определяет частоту.
+- Никаких `Update`‑циклов в orchestrators/executors; только tick‑вызовы.
 
-2) **No domain dispatch**
-- Proposal sources never call `Apply*Command` directly.
-- Only arbiter (or executor pipeline invoked by arbiter) dispatches.
+2) **Домены не диспатчат команды (no domain dispatch)**
+- Proposal sources никогда не вызывают `Apply*Command` напрямую.
+- Только arbiter (или pipeline, который он запускает) диспатчит команды.
 
-3) **Typed routing keys**
-- Roles, factions, constraints maps are typed assets (`RoleAsset`, `FactionAsset`).
-- Strings allowed only for debug labels, never for routing.
+3) **Typed routing keys (типизированные ключи маршрутизации)**
+- Роли, фракции, карты ограничений — типизированные ассеты (`RoleAsset`, `FactionAsset`).
+- Строки допустимы только для debug/labels, но не для routing.
 
-4) **Data‑driven by default + explicit override**
-- Default behavior comes from role maps + capability profiles.
-- Per‑unit override exists, but is a deliberate higher‑priority slot.
+4) **Data‑driven по умолчанию + явный override**
+- Дефолты приходят из role maps + capability profiles.
+- Per‑unit override возможен, но это отдельный, явный «верхний слот приоритета».
 
-5) **Reuse primitives instead of adding flags**
-- If two systems need “crowd avoidance”, it becomes a primitive/service,
-  not duplicated config inside each policy.
+5) **Переиспользуем примитивы вместо флажков**
+- Если двум системам нужно «avoid crowd», это становится primitive/service,
+  а не двумя независимыми конфигами в разных политиках.
 
-6) **Policies are pure decision logic**
-- Policies return “recommended intent/action parameters”.
-- Policies must not mutate global state; deterministic given seeds/context.
+6) **Политики — чистая логика выбора**
+- Политики возвращают «рекомендованное намерение/параметры действия».
+- Политики не мутируют глобальное состояние; детерминированы при заданных seed/context.
 
-7) **Executors are the only place with engine glue**
-- Waypoints, `SetTarget`, nav glue, animation triggers live in executors.
-- Persistent anti‑thrash state belongs to executor unless it’s global hysteresis.
+7) **Исполнители — единственное место с engine glue**
+- Waypoints, `SetTarget`, nav‑glue, animation hooks живут в executors.
+- Persistent anti‑thrash state живёт в executor, если это локально; глобальный hysteresis — у arbiter.
 
-## Extension points
+## Внешние связи и границы ответственности (без привязки к текущей реализации)
 
-### A) Add a new profession/role (e.g., Fisher)
-- Define capability: `CanFish`.
-- Add module: `FishingProposalSource` (reads world, proposes “Fish at spot”).
-- Add policies: fishing target selection, spacing near fishing spots (reuse crowd primitive).
-- Add executor mapping: `UseTool/Fish` → engine.
+### Что оркестрация принимает «снаружи» (Inputs)
+Оркестрация должна рассматриваться как система, которая **принимает задания/ограничения**, но не «владеет» ими.
+Типовые входы (как данные или proposals):
+- **Игровые цели/задачи** (goals/objectives): «дойти до точки», «защитить объект», «собрать ресурс».
+- **Правила взаимодействия/Engagement (ROE)**: когда вступать в бой, как преследовать, когда отступать.
+- **Параметры прогрессии/экономики** (economy/progression modifiers): модификаторы чисел (радиусы, таймеры), разблокировки тактик.
+- **Управление игрока** (player control): прямые команды, командование группой, запреты/разрешения.
+- **Контекст уровня** (level context): регионы, опасные зоны, «запрещённые области», точки интереса.
 
-### B) Add turn‑based mode
-- Swap scheduler with step‑based scheduler.
-- Keep proposal sources and arbiter.
-- Optionally actions carry “duration in steps” that executor respects.
+Важно: в документе не фиксируем конкретные классы/менеджеры. Фиксируем **форму связи**: внешние системы влияют на оркестрацию через данные/пропозалы/модификаторы, а не через «вызовы в глубину исполнения».
 
-### C) Add hierarchical control
-- Introduce Group entity + GroupContext (anchor, members, leader).
-- `CommanderProposalSource` writes group‑level intents/constraints.
-- Planner assigns per‑unit tasks based on group directives.
-- Arbiter merges group directives with unit‑level proposals.
+### Что оркестрация отдаёт «наружу» (Outputs)
+- Пер‑юнит команды на исполнение (через executors).
+- События/телеметрию (telemetry): почему выбран такой режим, что блокирует решение (для дебага/аналитики).
+- Снимки состояния (state snapshots) для UI/аналитики, но без «протекания» внутренних структур.
 
-### D) Add player control levels
-- `PlayerProposalSource` writes proposals:
-  - direct unit commands,
-  - group commands,
-  - ROE rules (“hold position”, “free fire”, “do not chase”).
-- Arbiter prioritizes player proposals and defines override semantics.
+### Какие системы чаще всего касаются оркестрации
+Чтобы учитывать в архитектуре, достаточно перечислить «потенциальные интеграции», не фиксируя конкретный код:
+- **Movement/Navigation** (navmesh/коллайдеры/локомоция)
+- **Combat/Weapons** (оружие может быть автономно, но оркестрация задаёт намерения/позиционирование)
+- **AI Perception** (сенсоры/видимость)
+- **Spawning/Waves** (создание акторов, регистрация в world model)
+- **UI/Player Input** (команды, режимы контроля)
+- **Economy/Progression** (модификаторы и unlocks)
+- **Level Goals/Objectives** (целеполагание)
+- **Networking/Replay** (детерминизм тиков и воспроизводимость решений)
+- **Debug/Gizmos** (визуализация намерений, зон, решений арбитра)
+
+## Расширяемость (Extension points)
+
+### A) Добавить новую профессию/роль (например Fisher)
+- Определить capability: `CanFish`.
+- Добавить proposal source: `FishingProposalSource` (читает мир, предлагает «ловить тут»).
+- Добавить policies: выбор точки рыбалки, spacing у точки (reuse crowd primitive).
+- Добавить executor mapping: `UseTool/Fish` → engine.
+
+### B) Добавить turn‑based режим
+- Меняем scheduler на step‑based.
+- Proposal sources и arbiter сохраняются.
+- Действия могут нести «длительность в шагах», которую executor уважает.
+
+### C) Иерархический контроль
+- Ввести Group entity + GroupContext (anchor, members, leader).
+- `CommanderProposalSource` пишет group‑level intents/constraints.
+- Planner распределяет per‑unit задачи по директивам группы.
+- Arbiter объединяет директивы группы с unit‑level proposals.
+
+### D) Смешанные уровни контроля игрока
+- `PlayerProposalSource` пишет proposals:
+  - прямые команды юниту,
+  - команды группе,
+  - ROE‑правила («hold position», «free fire», «do not chase»).
+- Arbiter задаёт приоритет и семантику override.
 
 ## Engagement / ROE (Rules of Engagement)
-Engagement is an arbitration + planning concern, not pure economy.
+Engagement — это зона ответственности arbitration + planning, а не чистой экономики.
 
-Conceptually define an `EngagementRulesAsset`:
-- when to engage (detection thresholds, allowed target types),
-- how far to pursue (leash forward‑only, chase windows),
-- when to disengage (threat gone, timer, health),
-- aggression level (passive/defensive/aggressive),
-- formation discipline (maintain line vs break).
+Концептуально можно описать `EngagementRulesAsset`:
+- когда вступать (детект‑пороги, разрешённые типы целей),
+- как преследовать (leash forward‑only, chase windows),
+- когда выходить (таймер, исчезновение угрозы, здоровье),
+- агрессивность (passive/defensive/aggressive),
+- дисциплина формации (держать строй vs ломать строй).
 
-Economy/progression may modify:
-- numeric parameters (ranges, timers),
-- unlock additional tactics,
-- change default ROE per role,
+Экономика/прогрессия может:
+- менять численные параметры,
+- открывать дополнительные тактики,
+- менять дефолтные ROE по ролям,
 
-…but should not own orchestration logic.
+…но не должна владеть логикой оркестрации.
 
-## Guardrails for future feature plans
-Every feature plan must answer:
-1) Which layer does this belong to? (sensing / proposal / arbitration / planning / execution / primitives)
-2) What data drives it? (asset map / capability profile / role rules)
-3) What is the routing key? (`RoleAsset` / `FactionAsset` / `GroupId`)
-4) Which primitives does it reuse? If none exist, should we add one?
-5) Where does anti‑thrash state belong? (executor vs arbiter hysteresis)
-6) How would it work in turn‑based? (note even if not implemented)
-7) How will it be debugged? (debug labels, gizmos, inspector visibility)
+## Чек‑лист для будущих feature‑планов
+Каждый план должен отвечать:
+1) К какому слою это относится? (sensing / proposal / arbitration / planning / execution / primitives)
+2) Чем это data‑driven? (asset map / capability profile / role rules)
+3) Какой routing key? (`RoleAsset` / `FactionAsset` / `GroupId`)
+4) Какие primitives переиспользуем? Если нет — нужно ли добавить primitive?
+5) Где anti‑thrash state? (executor vs arbiter hysteresis)
+6) Как это будет работать в turn‑based? (хотя бы заметка)
+7) Как это дебажить? (debug labels, gizmos, inspector visibility)
 
-## Notes on “BoundsProviders”
-“BoundsProvider” is just one way to supply an allowed region.
-Architecturally this should generalize to **RegionSource / ConstraintSource** (level zones, navmesh areas,
-objective areas, squad contexts, etc.). The key constraint: region supply belongs to World/Sensing or injected
-context — not embedded ad‑hoc per policy.
+## Примечание про «BoundsProviders»
+«BoundsProvider» — лишь один из способов снабжать систему «разрешённым регионом». На уровне лучших практик это должно обобщаться до **RegionSource / ConstraintSource** (level zones, navmesh areas, objective areas, squad contexts и т.д.). Ключевое: поставка регионов относится к World/Sensing или к инъецируемому контексту — не должна прятаться как ad‑hoc зависимость одной конкретной политики.
 
 ---
 
-## Suggested next actions
-- Commit this document into the repo (e.g., `Docs/Orchestration/orchestration_architecture_charter.md`).
-- Add the guardrails checklist to your “PR template” or to each Claude plan.
-- Optionally write a separate short spec: **Engagement/ROE** (parameters + ownership boundaries).
+## Рекомендуемые следующие действия
+- Закоммитить этот документ в репозиторий (например `Docs/Orchestration/orchestration_architecture_charter.md`).
+- Добавить чек‑лист в шаблон PR или как «обязательный блок» для планов.
+- Отдельно (позже) написать короткий спец‑док: Engagement/ROE — параметры и границы ответственности.

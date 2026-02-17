@@ -1,0 +1,16 @@
+{
+    "name": "Orchestration.RuntimeHost",
+    "rootNamespace": "",
+    "references": [
+        "GUID:795d977237a2463cbca13bd262514465"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

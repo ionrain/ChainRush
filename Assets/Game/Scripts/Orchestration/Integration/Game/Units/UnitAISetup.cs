@@ -14,7 +14,7 @@ using UnityEngine;
 /// optional per-unit overrides. No per-class policy maps needed.
 /// </para>
 /// </summary>
-public sealed class UnitAISetup : MonoBehaviour
+public sealed class UnitAISetup : MonoBehaviour, IPostSpawnSetup
 {
     [SerializeField] bool applyOnEnable = true;
     // ──────────────────────────────────────────────────────────────────

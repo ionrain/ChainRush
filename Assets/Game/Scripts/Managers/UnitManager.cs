@@ -187,9 +187,9 @@ public class UnitManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEve
             data.ResetSkillLevels();
             unit.Setup(data, mergeState);
             
-            UnitAISetup aiSetup = unit.GetComponent<UnitAISetup>();
-            if (aiSetup != null)
-                aiSetup.Apply();
+            IPostSpawnSetup spawnSetup = unit.GetComponent<IPostSpawnSetup>();
+            if (spawnSetup != null)
+                spawnSetup.Apply();
 
             unit.SetHealthbarVisibility(_showHealthBars);
             unit.OnDeath += OnUnitDeath;

@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 041fd60bdea7f4a69826258c80e7ed8a, type: 3}
   m_Name: WarriorCombatMoveConstraints
   m_EditorClassIdentifier: Assembly-CSharp::CombatMoveConstraintsAsset
-  leashRadius: 14
+  leashRadius: 15
   outOfBoundsMode: 2
   stopDistance: 0.35
   personalSpace: 9
-  crowdCheckRadius: 2
+  crowdCheckRadius: 3
   samples: 8
   maxSpreadOffset: 1.2
   anchorDistanceWeight: 0.15

@@ -628,12 +628,12 @@ MonoBehaviour:
     SerializationNodes:
     - Name: animations
       Entry: 7
-      Data: 0|System.Collections.Generic.Dictionary`2[[AnimationState, Assembly-CSharp],[SpineAnimationData,
-        Assembly-CSharp]], mscorlib
+      Data: 0|System.Collections.Generic.Dictionary`2[[AnimationState, Game.Runtime],[SpineAnimationData,
+        Game.Runtime]], mscorlib
     - Name: comparer
       Entry: 7
       Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[AnimationState,
-        Assembly-CSharp]], mscorlib
+        Game.Runtime]], mscorlib
     - Name: 
       Entry: 12
       Data: 0
@@ -654,7 +654,7 @@ MonoBehaviour:
       Data: 1
     - Name: $v
       Entry: 7
-      Data: 2|SpineAnimationData, Assembly-CSharp
+      Data: 2|SpineAnimationData, Game.Runtime
     - Name: name
       Entry: 1
       Data: Idle
@@ -669,7 +669,7 @@ MonoBehaviour:
       Data: 0
     - Name: dontInterruptStates
       Entry: 7
-      Data: 3|System.Collections.Generic.List`1[[AnimationState, Assembly-CSharp]],
+      Data: 3|System.Collections.Generic.List`1[[AnimationState, Game.Runtime]],
         mscorlib
     - Name: 
       Entry: 12
@@ -694,7 +694,7 @@ MonoBehaviour:
       Data: 2
     - Name: $v
       Entry: 7
-      Data: 4|SpineAnimationData, Assembly-CSharp
+      Data: 4|SpineAnimationData, Game.Runtime
     - Name: name
       Entry: 1
       Data: Walk
@@ -709,7 +709,7 @@ MonoBehaviour:
       Data: 0
     - Name: dontInterruptStates
       Entry: 7
-      Data: 5|System.Collections.Generic.List`1[[AnimationState, Assembly-CSharp]],
+      Data: 5|System.Collections.Generic.List`1[[AnimationState, Game.Runtime]],
         mscorlib
     - Name: 
       Entry: 12
@@ -734,7 +734,7 @@ MonoBehaviour:
       Data: 4
     - Name: $v
       Entry: 7
-      Data: 6|SpineAnimationData, Assembly-CSharp
+      Data: 6|SpineAnimationData, Game.Runtime
     - Name: name
       Entry: 1
       Data: Attack
@@ -749,7 +749,7 @@ MonoBehaviour:
       Data: 0
     - Name: dontInterruptStates
       Entry: 7
-      Data: 7|System.Collections.Generic.List`1[[AnimationState, Assembly-CSharp]],
+      Data: 7|System.Collections.Generic.List`1[[AnimationState, Game.Runtime]],
         mscorlib
     - Name: 
       Entry: 12
@@ -774,7 +774,7 @@ MonoBehaviour:
       Data: 5
     - Name: $v
       Entry: 7
-      Data: 8|SpineAnimationData, Assembly-CSharp
+      Data: 8|SpineAnimationData, Game.Runtime
     - Name: name
       Entry: 1
       Data: Hit
@@ -789,7 +789,7 @@ MonoBehaviour:
       Data: 0
     - Name: dontInterruptStates
       Entry: 7
-      Data: 9|System.Collections.Generic.List`1[[AnimationState, Assembly-CSharp]],
+      Data: 9|System.Collections.Generic.List`1[[AnimationState, Game.Runtime]],
         mscorlib
     - Name: 
       Entry: 12
@@ -814,7 +814,7 @@ MonoBehaviour:
       Data: 3
     - Name: $v
       Entry: 7
-      Data: 10|SpineAnimationData, Assembly-CSharp
+      Data: 10|SpineAnimationData, Game.Runtime
     - Name: name
       Entry: 1
       Data: Death
@@ -829,7 +829,7 @@ MonoBehaviour:
       Data: 0
     - Name: dontInterruptStates
       Entry: 7
-      Data: 11|System.Collections.Generic.List`1[[AnimationState, Assembly-CSharp]],
+      Data: 11|System.Collections.Generic.List`1[[AnimationState, Game.Runtime]],
         mscorlib
     - Name: 
       Entry: 12

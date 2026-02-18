@@ -9,6 +9,7 @@
   <Project Path="Assembly-CSharp.csproj" />
   <Project Path="Sirenix.OdinInspector.Modules.UnityLocalization.Editor.csproj" />
   <Project Path="MoreMountains.InventoryEngine.csproj" />
+  <Project Path="Game.Framework.csproj" />
   <Project Path="MoreMountains.Interface.csproj" />
   <Project Path="Orchestration.Integration.Game.csproj" />
   <Project Path="Assembly-CSharp-firstpass.csproj" />
@@ -23,4 +24,5 @@
   <Project Path="Lofelt.NiceVibrations.Editor.csproj" />
   <Project Path="Sirenix.OdinInspector.Modules.UnityLocalization.csproj" />
   <Project Path="MoreMountains.Interface.Editor.csproj" />
+  <Project Path="Game.Architecture.Tests.csproj" />
 </Solution>

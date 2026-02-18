@@ -115,7 +115,7 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
     //  redundant SetTarget(null) every tick.
     // ──────────────────────────────────────────────────────────────────
 
-    ActiveDomainKind _lastDomain;
+    int _lastDomain;
 
     // ──────────────────────────────────────────────────────────────────
     //  Runtime — Coroutine
@@ -143,7 +143,7 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
     //  Public — Domain state query
     // ──────────────────────────────────────────────────────────────────
 
-    public bool IsCombatActive => _lastDomain == ActiveDomainKind.Combat;
+    public bool IsCombatActive => _lastDomain == OrchestrationDomainKeys.Combat;
 
     // ──────────────────────────────────────────────────────────────────
     //  Lifecycle
@@ -152,7 +152,7 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
     void OnEnable()
     {
         _wait = new WaitForSeconds(tickInterval);
-        _lastDomain = ActiveDomainKind.None;
+        _lastDomain = OrchestrationDomainKeys.None;
         _combatLockedUntil = 0f;
         _threatMemoryUntil = 0f;
 
@@ -335,7 +335,7 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
         _world.ResolvedCombatTargetSet = resolvedTs;
 
         // ── Snapshot IWorldQuery data and freeze ─────────────────────
-        _world.SnapshotActors();
+        _world.SnapshotActors(ctx.OrchestratorFaction, ctx.Relations);
         _world.SnapshotCrowd();
         _world.BuildRoleByEntityId();
         _world.Freeze();
@@ -374,15 +374,16 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
             }
 
             // Hold everything without polling domains
-            if (_lastDomain != ActiveDomainKind.None)
+            if (_lastDomain != OrchestrationDomainKeys.None)
             {
                 ArbiterDecision holdAll = new ArbiterDecision
                 {
-                    ActiveDomain = ActiveDomainKind.None,
+                    DomainKey = OrchestrationDomainKeys.None,
+                    ProposalKey = OrchestrationProposalKeys.None,
                     ModeChanged = true
                 };
                 _router.Execute(holdAll, _world, default);
-                _lastDomain = ActiveDomainKind.None;
+                _lastDomain = OrchestrationDomainKeys.None;
             }
             return;
         }
@@ -412,7 +413,7 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
         RefreshPolicyMapsFromDomains();
 
         // ── Arbitrate: pure decision ─────────────────────────────────
-        ArbiterDecision decision = Arbitrate(_proposals, now);
+        ArbiterDecision decision = Arbitrate(_proposals.ToArbitrationInput(), now);
 
         // ── Build execution context ──────────────────────────────────
         ExecutionContext execCtx = new ExecutionContext
@@ -420,6 +421,10 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
             IdleRolePolicyMap = _idleRolePolicyMap,
             CombatRolePolicyMap = _combatRolePolicyMap,
             CombatRoleConstraintsMap = _combatRoleConstraintsMap,
+            CombatCommand = decision.DomainKey == OrchestrationDomainKeys.Combat &&
+                            decision.ProposalKey == _proposals.CombatProposalKey
+                ? _proposals.CombatCommand
+                : default,
             OrchestratorFaction = orchestratorFaction,
             Relations = typedRelations,
             Anchor = _ctx.Anchor,
@@ -429,12 +434,12 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
 
         // ── Execute: router dispatches commands to receivers ─────────
         _router.Execute(decision, _world, execCtx);
-        _lastDomain = decision.ActiveDomain;
+        _lastDomain = decision.DomainKey;
 
         if (debugLog)
         {
             Debug.Log(string.Concat(
-                "[Arbiter] mode=", decision.ActiveDomain.ToString(),
+                "[Arbiter] mode=", decision.DomainKey.ToString(),
                 " modeChanged=", decision.ModeChanged ? "1" : "0",
                 " threat=", _proposals.ThreatPresent ? "1" : "0",
                 " combatProp=", _proposals.HasCombat ? "1" : "0",
@@ -455,42 +460,44 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
     /// Selects the active domain based on proposals, hysteresis timers, and current time.
     /// Pure function aside from updating hysteresis timers.
     /// </summary>
-    public ArbiterDecision Arbitrate(OrchestrationArbiterProposals proposals, float now)
+    public ArbiterDecision Arbitrate(in ArbitrationInput input, float now)
     {
         // ── Update hysteresis timers ────────────────────────────────
-        if (proposals.ThreatPresent)
+        if (input.ThreatPresent)
         {
             _combatLockedUntil = Mathf.Max(_combatLockedUntil, now + combatMinActiveTime);
             _threatMemoryUntil = now + combatCooldownAfterThreat;
         }
 
         bool combatSticky = now <= _combatLockedUntil || now <= _threatMemoryUntil;
-        bool combatActive = proposals.HasCombat && (proposals.ThreatPresent || combatSticky);
+        bool combatActive = input.HasPrimaryProposal && (input.ThreatPresent || combatSticky);
 
         // ── Select domain ────────────────────────────────────────────
-        ActiveDomainKind selected;
-        CombatCommand combatCmd = default;
+        int selectedDomain;
+        int selectedProposal;
 
         if (combatActive)
         {
-            selected = ActiveDomainKind.Combat;
-            combatCmd = proposals.CombatCommand;
+            selectedDomain = OrchestrationDomainKeys.Combat;
+            selectedProposal = OrchestrationProposalKeys.CombatPrimary;
         }
-        else if (proposals.HasIdle)
+        else if (input.HasSecondaryProposal)
         {
-            selected = ActiveDomainKind.Idle;
+            selectedDomain = OrchestrationDomainKeys.Idle;
+            selectedProposal = OrchestrationProposalKeys.IdleDefault;
         }
         else
         {
-            selected = ActiveDomainKind.None;
+            selectedDomain = OrchestrationDomainKeys.None;
+            selectedProposal = OrchestrationProposalKeys.None;
         }
 
-        bool modeChanged = selected != _lastDomain;
+        bool modeChanged = selectedDomain != _lastDomain;
 
         return new ArbiterDecision
         {
-            ActiveDomain = selected,
-            CombatCommand = combatCmd,
+            DomainKey = selectedDomain,
+            ProposalKey = selectedProposal,
             ModeChanged = modeChanged
         };
     }

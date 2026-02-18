@@ -1,9 +1,7 @@
 {
-    "name": "Orchestration.Core",
+    "name": "Game.Framework",
     "rootNamespace": "",
-    "references": [
-        "Game.Framework"
-    ],
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

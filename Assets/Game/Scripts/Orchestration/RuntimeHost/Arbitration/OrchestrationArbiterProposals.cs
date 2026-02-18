@@ -8,9 +8,11 @@ public sealed class OrchestrationArbiterProposals
 {
     public bool HasCombat;
     public CombatCommand CombatCommand;
+    public int CombatProposalKey;
     public bool ThreatPresent;
 
     public bool HasIdle;
+    public int IdleProposalKey;
 
     /// <summary>
     /// Resets all proposal state. Called by the arbiter at the start of each tick
@@ -20,8 +22,10 @@ public sealed class OrchestrationArbiterProposals
     {
         HasCombat = false;
         CombatCommand = default;
+        CombatProposalKey = OrchestrationProposalKeys.None;
         ThreatPresent = false;
         HasIdle = false;
+        IdleProposalKey = OrchestrationProposalKeys.None;
     }
 
     /// <summary>
@@ -29,10 +33,14 @@ public sealed class OrchestrationArbiterProposals
     /// IMPORTANT: Last writer wins — if multiple domains call this in the same tick,
     /// the last call (based on <c>domainOrchestrators</c> array order) takes effect.
     /// </summary>
-    public void SetCombat(in CombatCommand cmd, bool threatPresent)
+    public void SetCombat(
+        in CombatCommand cmd,
+        bool threatPresent,
+        int proposalKey = OrchestrationProposalKeys.CombatPrimary)
     {
         HasCombat = true;
         CombatCommand = cmd;
+        CombatProposalKey = proposalKey;
         ThreatPresent = threatPresent;
     }
 
@@ -41,8 +49,14 @@ public sealed class OrchestrationArbiterProposals
     /// IMPORTANT: Last writer wins — if multiple domains call this in the same tick,
     /// the last call (based on <c>domainOrchestrators</c> array order) takes effect.
     /// </summary>
-    public void SetIdle()
+    public void SetIdle(int proposalKey = OrchestrationProposalKeys.IdleDefault)
     {
         HasIdle = true;
+        IdleProposalKey = proposalKey;
+    }
+
+    public ArbitrationInput ToArbitrationInput()
+    {
+        return new ArbitrationInput(HasCombat, HasIdle, ThreatPresent);
     }
 }

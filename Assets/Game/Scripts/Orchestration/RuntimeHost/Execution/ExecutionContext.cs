@@ -10,6 +10,7 @@ public struct ExecutionContext
     public IdleRolePolicyMapAsset IdleRolePolicyMap;
     public CombatRolePolicyMapAsset CombatRolePolicyMap;
     public CombatRoleConstraintsMapAsset CombatRoleConstraintsMap;
+    public CombatCommand CombatCommand;
     public FactionAsset OrchestratorFaction;
     public FactionRelationTableAsset Relations;
     public Vector2 Anchor;

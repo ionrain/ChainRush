@@ -47,20 +47,19 @@ public sealed class OrchestrationWorldCache : IWorldQuery
 
     /// <summary>
     /// Per-transform role lookup, resolved once per tick from friendly receivers (RuntimeHost-internal).
-    /// IMPORTANT: Kept for compatibility. Prefer IWorldQuery.TryGetRole(EntityId) for new code.
+    /// Public world contracts expose this as role keys, not ScriptableObject references.
     /// </summary>
     public readonly Dictionary<Transform, RoleAsset> RoleByTransform = new Dictionary<Transform, RoleAsset>(128);
 
     /// <summary>
     /// Per-role idle bounds, resolved from IdleBoundsRegistry once per tick.
-    /// IMPORTANT: Domains/policies read bounds ONLY through IWorldQuery.TryGetIdleBounds,
-    /// never via registry.
+    /// Internal typed cache. Public world contracts expose int role keys only.
     /// </summary>
     public readonly Dictionary<RoleAsset, Bounds> ResolvedIdleBounds = new Dictionary<RoleAsset, Bounds>(4);
 
     /// <summary>
     /// Combat target set resolved from OrchestrationRegistry once per tick.
-    /// IMPORTANT: Domains read this ONLY through IWorldQuery.GetCombatTargetSet, never via registry.
+    /// RuntimeHost-internal only.
     /// </summary>
     public CombatTargetSet ResolvedCombatTargetSet;
 
@@ -74,15 +73,16 @@ public sealed class OrchestrationWorldCache : IWorldQuery
     // Actor snapshots (parallel lists, same indices as Actors)
     readonly List<Vector2> _actorPositions = new List<Vector2>(256);
     readonly List<EntityId> _actorEntityIds = new List<EntityId>(256);
-    readonly List<FactionAsset> _actorFactions = new List<FactionAsset>(256);
+    readonly List<bool> _actorHostile = new List<bool>(256);
     readonly List<bool> _actorAlive = new List<bool>(256);
 
     // Crowd snapshots (IWorldQuery-visible, parallel to FriendlyCrowdTransforms)
     readonly List<Vector2> _crowdPositions = new List<Vector2>(128);
     readonly List<EntityId> _crowdEntityIds = new List<EntityId>(128);
 
-    // Per-entity role lookup (EntityId → RoleAsset)
-    readonly Dictionary<EntityId, RoleAsset> _roleByEntityId = new Dictionary<EntityId, RoleAsset>(128);
+    // Per-entity role lookup (EntityId → role key)
+    readonly Dictionary<EntityId, int> _roleKeyByEntityId = new Dictionary<EntityId, int>(128);
+    readonly Dictionary<int, Bounds> _idleBoundsByRoleKey = new Dictionary<int, Bounds>(16);
 
     // ──────────────────────────────────────────────────────────────────
     //  Freeze lifecycle — #if DEBUG mutation assertions
@@ -141,14 +141,14 @@ public sealed class OrchestrationWorldCache : IWorldQuery
     /// Snapshots actor data into parallel lists for IWorldQuery consumption.
     /// Called by arbiter after populating the Actors list.
     /// </summary>
-    public void SnapshotActors()
+    public void SnapshotActors(FactionAsset orchestratorFaction, FactionRelationTableAsset relations)
     {
 #if DEBUG
         Debug.Assert(!_frozen, "[OrchestrationWorldCache] SnapshotActors called after Freeze.");
 #endif
         _actorPositions.Clear();
         _actorEntityIds.Clear();
-        _actorFactions.Clear();
+        _actorHostile.Clear();
         _actorAlive.Clear();
 
         for (int i = 0; i < Actors.Count; i++)
@@ -159,8 +159,17 @@ public sealed class OrchestrationWorldCache : IWorldQuery
             _actorPositions.Add((Vector2)t.position);
             _actorAlive.Add(actor.IsAlive());
 
+            bool isHostile = false;
             IFactionAssetProvider fap = actor as IFactionAssetProvider;
-            _actorFactions.Add(fap != null ? fap.GetFactionAsset() : null);
+            if (fap != null && orchestratorFaction != null && relations != null)
+            {
+                FactionAsset actorFaction = fap.GetFactionAsset();
+                if (actorFaction != null)
+                {
+                    isHostile = relations.GetRelation(orchestratorFaction, actorFaction) == FactionRelation.Hostile;
+                }
+            }
+            _actorHostile.Add(isHostile);
 
             IEntityIdProvider idp = actor as IEntityIdProvider;
             _actorEntityIds.Add(idp != null ? idp.GetEntityId() : EntityId.None);
@@ -199,7 +208,8 @@ public sealed class OrchestrationWorldCache : IWorldQuery
 #if DEBUG
         Debug.Assert(!_frozen, "[OrchestrationWorldCache] BuildRoleByEntityId called after Freeze.");
 #endif
-        _roleByEntityId.Clear();
+        _roleKeyByEntityId.Clear();
+        _idleBoundsByRoleKey.Clear();
 
         foreach (var kvp in RoleByTransform)
         {
@@ -209,7 +219,17 @@ public sealed class OrchestrationWorldCache : IWorldQuery
             if (idp == null) continue;
             EntityId eid = idp.GetEntityId();
             if (eid.IsNone) continue;
-            _roleByEntityId[eid] = kvp.Value;
+            RoleAsset role = kvp.Value;
+            if (role == null) continue;
+
+            _roleKeyByEntityId[eid] = role.GetInstanceID();
+        }
+
+        foreach (var kvp in ResolvedIdleBounds)
+        {
+            RoleAsset role = kvp.Key;
+            if (role == null) continue;
+            _idleBoundsByRoleKey[role.GetInstanceID()] = kvp.Value;
         }
     }
 
@@ -237,8 +257,8 @@ public sealed class OrchestrationWorldCache : IWorldQuery
     public int ActorCount => _actorPositions.Count;
     public EntityId GetActorEntityId(int index) => _actorEntityIds[index];
     public Vector2 GetActorPosition(int index) => _actorPositions[index];
-    public FactionAsset GetActorFaction(int index) => _actorFactions[index];
     public bool GetActorIsAlive(int index) => _actorAlive[index];
+    public bool GetActorIsHostile(int index) => _actorHostile[index];
 
     // ──────────────────────────────────────────────────────────────────
     //  ICrowdQuery
@@ -252,28 +272,21 @@ public sealed class OrchestrationWorldCache : IWorldQuery
     //  IRoleQuery
     // ──────────────────────────────────────────────────────────────────
 
-    public bool TryGetRole(EntityId entityId, out RoleAsset role)
+    public bool TryGetRoleKey(EntityId entityId, out int roleKey)
     {
-        return _roleByEntityId.TryGetValue(entityId, out role);
+        return _roleKeyByEntityId.TryGetValue(entityId, out roleKey);
     }
 
     // ──────────────────────────────────────────────────────────────────
     //  IIdleBoundsQuery
     // ──────────────────────────────────────────────────────────────────
 
-    public bool TryGetIdleBounds(RoleAsset role, out Bounds bounds)
+    public bool TryGetIdleBounds(int roleKey, out Bounds bounds)
     {
-        return ResolvedIdleBounds.TryGetValue(role, out bounds);
+        return _idleBoundsByRoleKey.TryGetValue(roleKey, out bounds);
     }
 
-    // ──────────────────────────────────────────────────────────────────
-    //  ICombatTargetSetQuery
-    // ──────────────────────────────────────────────────────────────────
-
-    public CombatTargetSet GetCombatTargetSet()
-    {
-        return ResolvedCombatTargetSet;
-    }
+    public CombatTargetSet GetCombatTargetSetInternal() => ResolvedCombatTargetSet;
 
     // ──────────────────────────────────────────────────────────────────
     //  Clear — resets all state for next tick
@@ -298,10 +311,11 @@ public sealed class OrchestrationWorldCache : IWorldQuery
 
         _actorPositions.Clear();
         _actorEntityIds.Clear();
-        _actorFactions.Clear();
+        _actorHostile.Clear();
         _actorAlive.Clear();
         _crowdPositions.Clear();
         _crowdEntityIds.Clear();
-        _roleByEntityId.Clear();
+        _roleKeyByEntityId.Clear();
+        _idleBoundsByRoleKey.Clear();
     }
 }

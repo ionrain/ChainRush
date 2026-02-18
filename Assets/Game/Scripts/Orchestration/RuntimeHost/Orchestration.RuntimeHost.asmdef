@@ -2,7 +2,8 @@
     "name": "Orchestration.RuntimeHost",
     "rootNamespace": "",
     "references": [
-        "GUID:795d977237a2463cbca13bd262514465"
+        "GUID:795d977237a2463cbca13bd262514465",
+        "Game.Framework"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

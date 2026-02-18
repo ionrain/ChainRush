@@ -39,15 +39,15 @@ public sealed class ExecutionRouter
         OrchestrationWorldCache world,
         ExecutionContext ctx)
     {
-        switch (decision.ActiveDomain)
+        switch (decision.DomainKey)
         {
-            case ActiveDomainKind.Combat:
-                DispatchCombat(decision.CombatCommand, world, ctx);
+            case OrchestrationDomainKeys.Combat:
+                DispatchCombat(ctx.CombatCommand, world, ctx);
                 if (decision.ModeChanged)
                     DispatchIdleHoldAll(world);
                 break;
 
-            case ActiveDomainKind.Idle:
+            case OrchestrationDomainKeys.Idle:
                 DispatchIdlePerUnit(world, ctx);
                 if (decision.ModeChanged)
                     DispatchCombatHoldAll(world, ctx);
@@ -69,7 +69,7 @@ public sealed class ExecutionRouter
             string firstRxIds = BuildFirstIds(world.FriendlyCombatReceivers, 3);
             string firstCrowdIds = BuildFirstCrowdIds(world, 3);
             Debug.Log(string.Concat(
-                "[Router] domain=", decision.ActiveDomain.ToString(),
+                "[Router] domain=", decision.DomainKey.ToString(),
                 " combatRx=", world.FriendlyCombatReceivers.Count.ToString(),
                 " idleRx=", world.FriendlyIdleReceivers.Count.ToString(),
                 " firstRxIds=", firstRxIds,

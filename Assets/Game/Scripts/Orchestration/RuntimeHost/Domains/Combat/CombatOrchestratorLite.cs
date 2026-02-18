@@ -159,7 +159,7 @@ public sealed class CombatOrchestratorLite : DomainOrchestrator, ICombatRolePoli
         if (targetSet == null && autoResolveTargetSet && !_triedResolveTargetSet)
         {
             _triedResolveTargetSet = true;
-            targetSet = world.GetCombatTargetSet();  // may be null — that's ok
+            targetSet = worldCache.GetCombatTargetSetInternal(); // may be null — that's ok
         }
 
         if (targetSet != null)
@@ -217,9 +217,7 @@ public sealed class CombatOrchestratorLite : DomainOrchestrator, ICombatRolePoli
         for (int i = 0; i < actorCount; i++)
         {
             // Hostile check — typed-only via IWorldQuery
-            FactionAsset actorFaction = world.GetActorFaction(i);
-            if (actorFaction == null) continue;
-            if (ctx.Relations.GetRelation(ctx.OrchestratorFaction, actorFaction) != FactionRelation.Hostile)
+            if (!world.GetActorIsHostile(i))
                 continue;
 
             Vector2 actorPos = world.GetActorPosition(i);
@@ -278,9 +276,7 @@ public sealed class CombatOrchestratorLite : DomainOrchestrator, ICombatRolePoli
         for (int i = 0; i < actorCount; i++)
         {
             // Hostile check — typed-only via IWorldQuery
-            FactionAsset actorFaction = world.GetActorFaction(i);
-            if (actorFaction == null) continue;
-            if (ctx.Relations.GetRelation(ctx.OrchestratorFaction, actorFaction) != FactionRelation.Hostile)
+            if (!world.GetActorIsHostile(i))
                 continue;
 
             // IMPORTANT: Phase 2B removes Transform access. For now, need it for targetSet.

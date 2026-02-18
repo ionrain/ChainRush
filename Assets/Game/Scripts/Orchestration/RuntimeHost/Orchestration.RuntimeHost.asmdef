@@ -3,7 +3,7 @@
     "rootNamespace": "",
     "references": [
         "GUID:795d977237a2463cbca13bd262514465",
-        "Game.Framework"
+        "ChainRush.Framework"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

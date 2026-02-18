@@ -1,0 +1,7 @@
+{
+    "name": "com.chainrush.framework",
+    "version": "0.1.0",
+    "displayName": "ChainRush Framework",
+    "description": "Engine-agnostic orchestration framework: math types, identity, scheduling contracts, command/event abstractions.",
+    "unity": "6000.0"
+}

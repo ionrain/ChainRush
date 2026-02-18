@@ -2,7 +2,7 @@
     "name": "Orchestration.Core",
     "rootNamespace": "",
     "references": [
-        "Game.Framework"
+        "ChainRush.Framework"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

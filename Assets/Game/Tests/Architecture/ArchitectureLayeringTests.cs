@@ -10,9 +10,12 @@ using UnityEngine;
 
 public sealed class ArchitectureLayeringTests
 {
-    const string FrameworkAsmdefPath = "Assets/Game/Scripts/Framework/Game.Framework.asmdef";
+    const string FrameworkAsmdefPath = "Packages/com.chainrush.framework/Runtime/ChainRush.Framework.asmdef";
     const string CoreAsmdefPath = "Assets/Game/Scripts/Orchestration/Core/Orchestration.Core.asmdef";
     const string RuntimeHostAsmdefPath = "Assets/Game/Scripts/Orchestration/RuntimeHost/Orchestration.RuntimeHost.asmdef";
+    const string FrameworkSourceRoot = "Packages/com.chainrush.framework/Runtime";
+
+    const string FrameworkAssemblyName = "ChainRush.Framework";
 
     static readonly string[] ForbiddenForFrameworkAsmdef =
     {
@@ -42,6 +45,19 @@ public sealed class ArchitectureLayeringTests
     static readonly Regex ForbiddenRegistryInDomainsRegex =
         new Regex(@"\b(OrchestrationRegistry|IdleBoundsRegistry)\b", RegexOptions.Compiled);
 
+    /// <summary>
+    /// Tokens that must never appear in Framework source (outside comments/strings).
+    /// IMPORTANT: Catches Unity types and orchestration-specific payloads leaking into Framework.
+    /// </summary>
+    static readonly Regex ForbiddenFrameworkSourceTokens =
+        new Regex(@"\b(Transform|MonoBehaviour|ScriptableObject|CombatCommand|IdleCommand|Orchestration)\b",
+            RegexOptions.Compiled);
+
+    static readonly Regex ForbiddenFrameworkUsingDirective =
+        new Regex(@"^\s*using\s+UnityEngine\b", RegexOptions.Compiled | RegexOptions.Multiline);
+
+    // ── Existing layering tests ──────────────────────────────────────
+
     [Test]
     public void FrameworkAsmdef_DoesNotReference_Orchestration_Integration_OrGameRuntime()
     {
@@ -63,8 +79,8 @@ public sealed class ArchitectureLayeringTests
     [Test]
     public void FrameworkAssembly_HasNoTypeLeaksToOrchestrationAssemblies()
     {
-        Assembly framework = FindLoadedAssembly("Game.Framework");
-        Assert.That(framework, Is.Not.Null, "Assembly Game.Framework is not loaded.");
+        Assembly framework = FindLoadedAssembly(FrameworkAssemblyName);
+        Assert.That(framework, Is.Not.Null, $"Assembly {FrameworkAssemblyName} is not loaded.");
 
         var violations = new List<string>();
         foreach (Type type in framework.GetTypes())
@@ -97,11 +113,11 @@ public sealed class ArchitectureLayeringTests
     [Test]
     public void FrameworkWorldQuery_HasNoUnityObjectSignatures()
     {
-        Assembly framework = FindLoadedAssembly("Game.Framework");
-        Assert.That(framework, Is.Not.Null, "Assembly Game.Framework is not loaded.");
+        Assembly framework = FindLoadedAssembly(FrameworkAssemblyName);
+        Assert.That(framework, Is.Not.Null, $"Assembly {FrameworkAssemblyName} is not loaded.");
 
         Type iWorldQuery = framework.GetTypes().FirstOrDefault(t => t.Name == "IWorldQuery");
-        Assert.That(iWorldQuery, Is.Not.Null, "IWorldQuery type not found in Game.Framework.");
+        Assert.That(iWorldQuery, Is.Not.Null, $"IWorldQuery type not found in {FrameworkAssemblyName}.");
 
         var violations = new List<string>();
         var allInterfaces = new List<Type> { iWorldQuery };
@@ -179,6 +195,29 @@ public sealed class ArchitectureLayeringTests
         Assert.That(violations, Is.Empty,
             "RuntimeHost Domains/Policies still access registry statics:\n" + string.Join("\n", violations));
     }
+
+    // ── New architecture gate tests (Phase 2B) ──────────────────────
+
+    [Test]
+    public void Framework_DoesNotReference_OrchestrationAssemblies()
+    {
+        Assembly framework = FindLoadedAssembly(FrameworkAssemblyName);
+        Assert.That(framework, Is.Not.Null, $"Assembly {FrameworkAssemblyName} is not loaded.");
+
+        var referenced = framework.GetReferencedAssemblies();
+        var violations = referenced
+            .Where(r => r.Name.StartsWith("Orchestration", StringComparison.Ordinal))
+            .Select(r => r.Name)
+            .ToArray();
+
+        Assert.That(violations, Is.Empty,
+            $"{FrameworkAssemblyName} references Orchestration assemblies:\n" + string.Join("\n", violations));
+    }
+
+    // Framework_SourceHasNoForbiddenTokens and Framework_Assembly_DoesNotReferenceUnityEngine
+    // will be added in Commit 0B after IWorldQuery/WorldSnapshot are migrated to Float2/AABB2D.
+
+    // ── Helpers ──────────────────────────────────────────────────────
 
     static void AssertAsmdefHasNoForbiddenReferences(string asmdefPath, IReadOnlyList<string> forbiddenPrefixes)
     {
@@ -293,16 +332,23 @@ public sealed class ArchitectureLayeringTests
     {
         var map = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-        foreach (string asmdefPath in Directory.GetFiles("Assets", "*.asmdef", SearchOption.AllDirectories))
+        string[] searchRoots = { "Assets", "Packages" };
+        foreach (string root in searchRoots)
         {
-            AsmdefData asmdef = ReadAsmdef(asmdefPath);
-            string metaPath = asmdefPath + ".meta";
-            if (!File.Exists(metaPath))
+            if (!Directory.Exists(root))
                 continue;
 
-            string guid = ExtractGuidFromMeta(metaPath);
-            if (!string.IsNullOrEmpty(guid) && !string.IsNullOrEmpty(asmdef.name))
-                map[guid] = asmdef.name;
+            foreach (string asmdefPath in Directory.GetFiles(root, "*.asmdef", SearchOption.AllDirectories))
+            {
+                AsmdefData asmdef = ReadAsmdef(asmdefPath);
+                string metaPath = asmdefPath + ".meta";
+                if (!File.Exists(metaPath))
+                    continue;
+
+                string guid = ExtractGuidFromMeta(metaPath);
+                if (!string.IsNullOrEmpty(guid) && !string.IsNullOrEmpty(asmdef.name))
+                    map[guid] = asmdef.name;
+            }
         }
 
         return map;
@@ -486,5 +532,6 @@ public sealed class ArchitectureLayeringTests
     {
         public string name;
         public string[] references;
+        public bool noEngineReferences;
     }
 }

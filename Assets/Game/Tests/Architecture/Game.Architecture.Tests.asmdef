@@ -2,7 +2,7 @@
     "name": "Game.Architecture.Tests",
     "rootNamespace": "",
     "references": [
-        "Game.Framework",
+        "ChainRush.Framework",
         "GUID:795d977237a2463cbca13bd262514465",
         "GUID:582edfe7a1004eb787de84eb38458a9c"
     ],

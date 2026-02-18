@@ -11,5 +11,5 @@ public struct OrchestrationArbiterContext
     public Vector2 Anchor;
     public float Now;
     public bool DebugLog;
-    public OrchestrationWorldCache World;
+    public IWorldQuery World;
 }

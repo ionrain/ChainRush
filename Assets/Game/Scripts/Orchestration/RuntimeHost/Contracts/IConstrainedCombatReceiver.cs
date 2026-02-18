@@ -19,5 +19,5 @@ public interface IConstrainedCombatReceiver
     /// Called by arbiter before <c>ApplyCombatCommand</c>.
     /// Null constraints = unconstrained movement (executor delegates to original path).
     /// </summary>
-    void SetRuntimeContext(CombatMoveConstraintsAsset constraints, OrchestrationWorldCache world);
+    void SetRuntimeContext(CombatMoveConstraintsAsset constraints, IWorldQuery world);
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 /// IMPORTANT: Read-only reporter. No gameplay control, no Update loop.
 /// Called on demand by the orchestration layer.
 /// </summary>
-public sealed class EnemyStateReporter : MonoBehaviour, IStateReporter, IOrchestrationActor
+public sealed class EnemyStateReporter : MonoBehaviour, IStateReporter, IOrchestrationActor, IEntityIdProvider
 {
     [SerializeField] Enemy _enemy;
     [SerializeField] EnemyOrchestrationIdentity _identity;
@@ -17,8 +17,25 @@ public sealed class EnemyStateReporter : MonoBehaviour, IStateReporter, IOrchest
     /// </summary>
     ParamSet _cachedMetrics;
 
+    bool _warnedMissingIdentity;
+
     void OnEnable() => OrchestrationRegistry.Register((IStateReporter)this);
     void OnDisable() => OrchestrationRegistry.Unregister((IStateReporter)this);
+
+    // ──────────────────────────────────────────────────────────────────
+    //  IEntityIdProvider
+    // ──────────────────────────────────────────────────────────────────
+
+    public EntityId GetEntityId()
+    {
+        if (_identity != null) return _identity.GetEntityId();
+        if (!_warnedMissingIdentity)
+        {
+            _warnedMissingIdentity = true;
+            Debug.LogWarning("[EnemyStateReporter] Missing EnemyOrchestrationIdentity; EntityId is None.", this);
+        }
+        return EntityId.None;
+    }
 
     // ──────────────────────────────────────────────────────────────────
     //  IOrchestrationActor
@@ -81,7 +98,7 @@ public sealed class EnemyStateReporter : MonoBehaviour, IStateReporter, IOrchest
 
         return StateSnapshot.Create(
             faction,
-            GetInstanceID(),
+            GetEntityId(),
             (Vector2)transform.position,
             isAlive,
             roleTag,

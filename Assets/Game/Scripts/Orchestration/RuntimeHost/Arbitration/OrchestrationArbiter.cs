@@ -20,7 +20,7 @@ using UnityEngine;
 /// <para>
 /// IMPORTANT — Per-role idle dispatch: When idle is active, the arbiter looks up
 /// the policy for each receiver's <see cref="IRoleContextProvider.GetRoleAsset"/>, then
-/// computes a unique command per unit using <see cref="IRoleContextProvider.GetEntitySeed"/>.
+/// computes a unique command per unit using <see cref="IEntityIdProvider.GetEntityId"/>.
 /// This yields per-role policy assignment with per-unit command uniqueness (no clumping).
 /// </para>
 /// <para>
@@ -29,7 +29,7 @@ using UnityEngine;
 /// from cached <see cref="DomainOrchestrator"/> instances. Domains must not mutate their map reference during Evaluate.
 /// </para>
 /// </summary>
-public sealed class OrchestrationArbiter : MonoBehaviour
+public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
 {
     // ──────────────────────────────────────────────────────────────────
     //  Serialized — Faction
@@ -115,8 +115,7 @@ public sealed class OrchestrationArbiter : MonoBehaviour
     //  redundant SetTarget(null) every tick.
     // ──────────────────────────────────────────────────────────────────
 
-    enum DispatchMode { None, Combat, Idle }
-    DispatchMode _lastMode;
+    ActiveDomainKind _lastDomain;
 
     // ──────────────────────────────────────────────────────────────────
     //  Runtime — Coroutine
@@ -127,13 +126,15 @@ public sealed class OrchestrationArbiter : MonoBehaviour
     bool _warnedMissingSetup;
 
     // ──────────────────────────────────────────────────────────────────
+    //  Runtime — Execution router (single dispatch point)
+    // ──────────────────────────────────────────────────────────────────
+
+    readonly ExecutionRouter _router = new ExecutionRouter();
+
+    // ──────────────────────────────────────────────────────────────────
     //  Runtime — One-shot warning flags (separate per category)
     // ──────────────────────────────────────────────────────────────────
 
-    bool _warnedMissingProviderIdle;
-    bool _warnedMissingRoleIdle;
-    bool _warnedMissingRoleCombat;
-    bool _warnedNoIdleMap;
     bool _warnedDuplicateIdleSource;
     bool _warnedDuplicateCombatSource;
     bool _warnedDuplicateConstraintsSource;
@@ -142,7 +143,7 @@ public sealed class OrchestrationArbiter : MonoBehaviour
     //  Public — Domain state query
     // ──────────────────────────────────────────────────────────────────
 
-    public bool IsCombatActive => _lastMode == DispatchMode.Combat;
+    public bool IsCombatActive => _lastDomain == ActiveDomainKind.Combat;
 
     // ──────────────────────────────────────────────────────────────────
     //  Lifecycle
@@ -151,7 +152,7 @@ public sealed class OrchestrationArbiter : MonoBehaviour
     void OnEnable()
     {
         _wait = new WaitForSeconds(tickInterval);
-        _lastMode = DispatchMode.None;
+        _lastDomain = ActiveDomainKind.None;
         _combatLockedUntil = 0f;
         _threatMemoryUntil = 0f;
 
@@ -332,6 +333,12 @@ public sealed class OrchestrationArbiter : MonoBehaviour
         CombatTargetSet resolvedTs;
         OrchestrationRegistry.TryGetCombatTargetSet(ctx.OrchestratorFaction, out resolvedTs);
         _world.ResolvedCombatTargetSet = resolvedTs;
+
+        // ── Snapshot IWorldQuery data and freeze ─────────────────────
+        _world.SnapshotActors();
+        _world.SnapshotCrowd();
+        _world.BuildRoleByEntityId();
+        _world.Freeze();
     }
 
     // ──────────────────────────────────────────────────────────────────
@@ -367,11 +374,15 @@ public sealed class OrchestrationArbiter : MonoBehaviour
             }
 
             // Hold everything without polling domains
-            if (_lastMode != DispatchMode.None)
+            if (_lastDomain != ActiveDomainKind.None)
             {
-                DispatchCombatHoldAll();
-                DispatchIdleHoldAll();
-                _lastMode = DispatchMode.None;
+                ArbiterDecision holdAll = new ArbiterDecision
+                {
+                    ActiveDomain = ActiveDomainKind.None,
+                    ModeChanged = true
+                };
+                _router.Execute(holdAll, _world, default);
+                _lastDomain = ActiveDomainKind.None;
             }
             return;
         }
@@ -400,59 +411,88 @@ public sealed class OrchestrationArbiter : MonoBehaviour
         // ── Pull policy maps from domains (after Evaluate, before dispatch) ──
         RefreshPolicyMapsFromDomains();
 
+        // ── Arbitrate: pure decision ─────────────────────────────────
+        ArbiterDecision decision = Arbitrate(_proposals, now);
+
+        // ── Build execution context ──────────────────────────────────
+        ExecutionContext execCtx = new ExecutionContext
+        {
+            IdleRolePolicyMap = _idleRolePolicyMap,
+            CombatRolePolicyMap = _combatRolePolicyMap,
+            CombatRoleConstraintsMap = _combatRoleConstraintsMap,
+            OrchestratorFaction = orchestratorFaction,
+            Relations = typedRelations,
+            Anchor = _ctx.Anchor,
+            Now = now,
+            DebugLog = debugLog
+        };
+
+        // ── Execute: router dispatches commands to receivers ─────────
+        _router.Execute(decision, _world, execCtx);
+        _lastDomain = decision.ActiveDomain;
+
+        if (debugLog)
+        {
+            Debug.Log(string.Concat(
+                "[Arbiter] mode=", decision.ActiveDomain.ToString(),
+                " modeChanged=", decision.ModeChanged ? "1" : "0",
+                " threat=", _proposals.ThreatPresent ? "1" : "0",
+                " combatProp=", _proposals.HasCombat ? "1" : "0",
+                " idleProp=", _proposals.HasIdle ? "1" : "0",
+                " actors=", _world.ActorCount.ToString(),
+                " lock=", (_combatLockedUntil - now).ToString("F1"),
+                "s mem=", (_threatMemoryUntil - now).ToString("F1"), "s"), this);
+        }
+    }
+
+    // ──────────────────────────────────────────────────────────────────
+    //  IArbiter — Pure arbitration: proposals + time → decision
+    //  IMPORTANT: No side effects, no dispatch, no registry reads.
+    //  Hysteresis timers are the only mutable state touched.
+    // ──────────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Selects the active domain based on proposals, hysteresis timers, and current time.
+    /// Pure function aside from updating hysteresis timers.
+    /// </summary>
+    public ArbiterDecision Arbitrate(OrchestrationArbiterProposals proposals, float now)
+    {
         // ── Update hysteresis timers ────────────────────────────────
-        if (_proposals.ThreatPresent)
+        if (proposals.ThreatPresent)
         {
             _combatLockedUntil = Mathf.Max(_combatLockedUntil, now + combatMinActiveTime);
             _threatMemoryUntil = now + combatCooldownAfterThreat;
         }
 
         bool combatSticky = now <= _combatLockedUntil || now <= _threatMemoryUntil;
-        bool combatActive = _proposals.HasCombat && (_proposals.ThreatPresent || combatSticky);
+        bool combatActive = proposals.HasCombat && (proposals.ThreatPresent || combatSticky);
 
-        // ── Dispatch based on active domain ─────────────────────────
+        // ── Select domain ────────────────────────────────────────────
+        ActiveDomainKind selected;
+        CombatCommand combatCmd = default;
+
         if (combatActive)
         {
-            DispatchCombat(_proposals.CombatCommand);
-
-            // One-time cross-domain Hold on mode transition
-            if (_lastMode != DispatchMode.Combat)
-                DispatchIdleHoldAll();
-
-            _lastMode = DispatchMode.Combat;
+            selected = ActiveDomainKind.Combat;
+            combatCmd = proposals.CombatCommand;
         }
-        else if (_proposals.HasIdle)
+        else if (proposals.HasIdle)
         {
-            DispatchIdlePerUnit(_ctx.Anchor, now);
-
-            // One-time cross-domain Hold on mode transition
-            if (_lastMode != DispatchMode.Idle)
-                DispatchCombatHoldAll();
-
-            _lastMode = DispatchMode.Idle;
+            selected = ActiveDomainKind.Idle;
         }
         else
         {
-            // No proposals — hold everything
-            if (_lastMode != DispatchMode.None)
-            {
-                DispatchCombatHoldAll();
-                DispatchIdleHoldAll();
-            }
-            _lastMode = DispatchMode.None;
+            selected = ActiveDomainKind.None;
         }
 
-        if (debugLog)
+        bool modeChanged = selected != _lastDomain;
+
+        return new ArbiterDecision
         {
-            Debug.Log(string.Concat(
-                "[Arbiter] mode=", _lastMode.ToString(),
-                " threat=", _proposals.ThreatPresent ? "1" : "0",
-                " combatProp=", _proposals.HasCombat ? "1" : "0",
-                " idleProp=", _proposals.HasIdle ? "1" : "0",
-                " actors=", _world.Actors.Count.ToString(),
-                " lock=", (_combatLockedUntil - now).ToString("F1"),
-                "s mem=", (_threatMemoryUntil - now).ToString("F1"), "s"), this);
-        }
+            ActiveDomain = selected,
+            CombatCommand = combatCmd,
+            ModeChanged = modeChanged
+        };
     }
 
     // ──────────────────────────────────────────────────────────────────
@@ -533,193 +573,4 @@ public sealed class OrchestrationArbiter : MonoBehaviour
         _combatRoleConstraintsMap = newConstraints;
     }
 
-    // ──────────────────────────────────────────────────────────────────
-    //  Combat dispatch — iterates cached friendly receivers
-    // ──────────────────────────────────────────────────────────────────
-
-    void DispatchCombat(CombatCommand cmd)
-    {
-        List<ICombatCommandReceiver> receivers = _world.FriendlyCombatReceivers;
-        for (int i = 0; i < receivers.Count; i++)
-        {
-            ICombatCommandReceiver r = receivers[i];
-            // Unity-null guard: object can be destroyed mid-tick
-            if (r is Object uo && uo == null) continue;
-
-            // Per-role targeting policy injection via typed RoleAsset
-            if (_combatRolePolicyMap != null && r is IRoleAssetProvider rap)
-            {
-                RoleAsset role = rap.GetRoleAsset();
-                if (role != null)
-                {
-                    CombatTargetingPolicyAsset policyAsset;
-                    if (_combatRolePolicyMap.TryGet(role, out policyAsset))
-                    {
-                        if (r is Component c)
-                        {
-                            // PERF: GetComponentInParent — selector may be on parent GO
-                            ICombatTargetPolicySelector selector = c.GetComponentInParent<ICombatTargetPolicySelector>();
-                            if (selector != null)
-                                selector.SetRuntimeDefaultPolicy(policyAsset);
-                        }
-                    }
-                }
-                else if (!_warnedMissingRoleCombat)
-                {
-                    _warnedMissingRoleCombat = true;
-                    Debug.LogWarning("[OrchestrationArbiter] Combat receiver missing RoleAsset; " +
-                                     "combatRolePolicyMap will not inject policy.", this);
-                }
-            }
-
-            // Per-role constraints injection (after policy injection, before ApplyCombatCommand).
-            // IMPORTANT: Always call SetRuntimeContext when receiver implements
-            // IConstrainedCombatReceiver — pass null constraints when no map/role match
-            // so executor transitions cleanly to unconstrained mode.
-            if (r is IConstrainedCombatReceiver ccr)
-            {
-                CombatMoveConstraintsAsset resolved = null;
-                if (_combatRoleConstraintsMap != null && r is IRoleAssetProvider rap2)
-                {
-                    RoleAsset cRole = rap2.GetRoleAsset();
-                    if (cRole != null)
-                        _combatRoleConstraintsMap.TryGet(cRole, out resolved);
-                }
-                ccr.SetRuntimeContext(resolved, _world);
-            }
-
-            r.ApplyCombatCommand(cmd);
-        }
-    }
-
-    void DispatchCombatHoldAll()
-    {
-        CombatCommand hold = CombatCommand.Create(CombatCommandType.Hold,
-            debugLabel: "Arbiter=IdleActive");
-        DispatchCombat(hold);
-    }
-
-    // ──────────────────────────────────────────────────────────────────
-    //  Idle dispatch — Per-role policy, per-unit command
-    //  IMPORTANT: Policy is looked up by RoleAsset from _idleRolePolicyMap
-    //  (pulled from domain via IIdleRolePolicyMapSource each tick).
-    //  Commands are computed per-unit using entitySeed so units of the
-    //  same role don't clump. Iterates cached friendly idle receivers.
-    // ──────────────────────────────────────────────────────────────────
-
-    void DispatchIdlePerUnit(Vector2 anchor, float now)
-    {
-        List<IIdleCommandReceiver> receivers = _world.FriendlyIdleReceivers;
-
-        // Guard: no idle map bound → Hold all with warning
-        if (_idleRolePolicyMap == null)
-        {
-            if (!_warnedNoIdleMap)
-            {
-                _warnedNoIdleMap = true;
-                Debug.LogWarning("[OrchestrationArbiter] Idle domain active but no idle role policy map bound. " +
-                                 "All idlers will Hold.", this);
-            }
-
-            IdleCommand holdCmd = IdleCommand.Hold();
-            for (int i = 0; i < receivers.Count; i++)
-            {
-                IIdleCommandReceiver r = receivers[i];
-                if (r is Object obj && obj == null) continue;
-                r.ApplyIdleCommand(holdCmd);
-            }
-            return;
-        }
-
-        for (int i = 0; i < receivers.Count; i++)
-        {
-            IIdleCommandReceiver r = receivers[i];
-            // Unity-null guard: object can be destroyed mid-tick
-            if (r is Object obj && obj == null) continue;
-
-            // Resolve typed role and entity seed
-            IRoleContextProvider rcp = r as IRoleContextProvider;
-            if (rcp == null)
-            {
-                if (!_warnedMissingProviderIdle)
-                {
-                    _warnedMissingProviderIdle = true;
-                    Debug.LogWarning("[OrchestrationArbiter] Idle receiver does not implement " +
-                                     "IRoleContextProvider; idle will Hold.", this);
-                }
-                r.ApplyIdleCommand(IdleCommand.Hold());
-                continue;
-            }
-
-            RoleAsset role = rcp.GetRoleAsset();
-            int entitySeed = rcp.GetEntitySeed();
-
-            IdlePolicyAsset policy;
-            IdleCommand cmd;
-
-            if (role != null && _idleRolePolicyMap.TryGet(role, out policy) && policy != null)
-            {
-                // Inject runtime default on selector; resolve effective policy
-                // IMPORTANT: per-unit override on selector wins over role-map
-                IdlePolicyAsset effectivePolicy = policy;
-                if (r is Component comp)
-                {
-                    IIdlePolicySelector sel = comp.GetComponent<IIdlePolicySelector>();
-                    if (sel != null)
-                    {
-                        sel.SetRuntimeDefaultPolicy(policy);
-                        effectivePolicy = sel.ResolvePolicy() ?? policy;
-                    }
-                }
-
-                // Stable role seed from asset instance ID
-                int roleSeed = role.GetInstanceID();
-
-                // Get receiver transform for the policy
-                Transform self = (r is Component c) ? c.transform : transform;
-
-                string dbg;
-                cmd = effectivePolicy.ChooseCommand(self, anchor, now, roleSeed, entitySeed, _ctx, out dbg);
-
-                // PERF: Only allocate DebugLabel string when logging is on
-                if (debugLog)
-                {
-                    cmd.DebugLabel = string.Concat("Idle=", effectivePolicy.Id, ":", role.Id);
-                    if (dbg != null)
-                        Debug.Log(string.Concat("[Arbiter] role=", role.Id, " policy=", effectivePolicy.Id, " dbg=", dbg), this);
-                }
-            }
-            else
-            {
-                // Strict: no role match → Hold. Do NOT fall back to selector defaults.
-                cmd = IdleCommand.Hold();
-                if (debugLog)
-                    cmd.DebugLabel = "Arbiter=NoRoleMatch";
-
-                if (role == null && !_warnedMissingRoleIdle)
-                {
-                    _warnedMissingRoleIdle = true;
-                    Debug.LogWarning("[OrchestrationArbiter] Unit missing RoleAsset; idle will Hold.", this);
-                }
-
-                if (debugLog)
-                    Debug.Log(string.Concat("[Arbiter] No role match for '",
-                        role != null ? role.Id : "null", "'"), this);
-            }
-
-            r.ApplyIdleCommand(cmd);
-        }
-    }
-
-    void DispatchIdleHoldAll()
-    {
-        IdleCommand hold = IdleCommand.Hold();
-        List<IIdleCommandReceiver> receivers = _world.FriendlyIdleReceivers;
-        for (int i = 0; i < receivers.Count; i++)
-        {
-            IIdleCommandReceiver r = receivers[i];
-            if (r is Object obj && obj == null) continue;
-            r.ApplyIdleCommand(hold);
-        }
-    }
 }

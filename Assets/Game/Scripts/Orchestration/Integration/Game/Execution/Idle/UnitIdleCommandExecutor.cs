@@ -130,8 +130,10 @@ public sealed class UnitIdleCommandExecutor : MonoBehaviour, IIdleCommandReceive
         return _selector != null ? _selector.ResolvePolicy() : null;
     }
 
+    bool _warnedMissingIdentity;
+
     // ──────────────────────────────────────────────────────────────────
-    //  IRoleContextProvider
+    //  IRoleContextProvider (includes IEntityIdProvider + IRoleAssetProvider)
     // ──────────────────────────────────────────────────────────────────
 
     /// <summary>
@@ -144,10 +146,19 @@ public sealed class UnitIdleCommandExecutor : MonoBehaviour, IIdleCommandReceive
     }
 
     /// <summary>
-    /// Stable per-entity seed. Returns <see cref="Object.GetInstanceID"/>.
-    /// Does not change during the object's lifetime.
+    /// Returns the stable EntityId from the sibling identity component.
+    /// IMPORTANT: Missing identity is fatal — warns once and returns EntityId.None.
     /// </summary>
-    public int GetEntitySeed() => GetInstanceID();
+    public EntityId GetEntityId()
+    {
+        if (_identity != null) return _identity.GetEntityId();
+        if (!_warnedMissingIdentity)
+        {
+            _warnedMissingIdentity = true;
+            Debug.LogWarning("[UnitIdleCommandExecutor] Missing UnitOrchestrationIdentity; EntityId is None.", this);
+        }
+        return EntityId.None;
+    }
 
     // ──────────────────────────────────────────────────────────────────
     //  IFactionAssetProvider / IOrchestrationActor

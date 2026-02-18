@@ -1,16 +1,33 @@
 using UnityEngine;
 
 /// <summary>
-/// Holds an enemy's orchestration identity: faction and role tag.
+/// Holds an enemy's orchestration identity: faction, role tag, and stable <see cref="EntityId"/>.
 /// IMPORTANT: Read-only identity for the orchestration layer. Does not drive gameplay.
+/// <para>
+/// IMPORTANT — EntityId is assigned once in <see cref="Awake"/> via
+/// <see cref="EntityIdAllocator.Create"/>. Stable across OnEnable/OnDisable (pool-safe).
+/// All other components resolve EntityId from this identity.
+/// </para>
 /// </summary>
-public sealed class EnemyOrchestrationIdentity : MonoBehaviour
+public sealed class EnemyOrchestrationIdentity : MonoBehaviour, IEntityIdProvider
 {
     [Header("Faction")]
     [SerializeField] FactionAsset faction;
 
     [Header("Role")]
     [SerializeField] string roleTagOverride = "";
+
+    EntityId _entityId;
+
+    void Awake()
+    {
+        _entityId = EntityIdAllocator.Create();
+    }
+
+    /// <summary>
+    /// Returns the stable EntityId assigned in Awake. Pool-safe.
+    /// </summary>
+    public EntityId GetEntityId() => _entityId;
 
     /// <summary>
     /// Returns the typed faction asset, or null if not assigned.

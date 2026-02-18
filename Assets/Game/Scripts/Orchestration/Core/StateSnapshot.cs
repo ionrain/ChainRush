@@ -8,7 +8,7 @@ using UnityEngine;
 public struct StateSnapshot
 {
     public FactionAsset Faction;
-    public int EntityId;
+    public EntityId EntityId;
     public Vector2 Position;
     public bool IsAlive;
     public string RoleTag;
@@ -16,7 +16,7 @@ public struct StateSnapshot
 
     public static StateSnapshot Create(
         FactionAsset faction,
-        int entityId,
+        EntityId entityId,
         Vector2 position,
         bool isAlive,
         string roleTag = null,

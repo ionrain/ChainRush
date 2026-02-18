@@ -17,7 +17,7 @@ using UnityEngine;
 /// includes the matching decision/action nodes.
 /// </para>
 /// </summary>
-public sealed class EnemyCombatCommandExecutor : MonoBehaviour, ICombatCommandReceiver, IOrchestrationActor
+public sealed class EnemyCombatCommandExecutor : MonoBehaviour, ICombatCommandReceiver, IOrchestrationActor, IEntityIdProvider
 {
     // ──────────────────────────────────────────────────────────────────
     //  Serialized
@@ -96,8 +96,29 @@ public sealed class EnemyCombatCommandExecutor : MonoBehaviour, ICombatCommandRe
             _identity = GetComponent<EnemyOrchestrationIdentity>();
     }
 
+    bool _warnedMissingIdentity;
+
     void OnEnable() => OrchestrationRegistry.Register((ICombatCommandReceiver)this);
     void OnDisable() => OrchestrationRegistry.Unregister((ICombatCommandReceiver)this);
+
+    // ──────────────────────────────────────────────────────────────────
+    //  IEntityIdProvider
+    // ──────────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Returns the stable EntityId from the sibling identity component.
+    /// IMPORTANT: Missing identity is fatal — warns once and returns EntityId.None.
+    /// </summary>
+    public EntityId GetEntityId()
+    {
+        if (_identity != null) return _identity.GetEntityId();
+        if (!_warnedMissingIdentity)
+        {
+            _warnedMissingIdentity = true;
+            Debug.LogWarning("[EnemyCombatCommandExecutor] Missing EnemyOrchestrationIdentity; EntityId is None.", this);
+        }
+        return EntityId.None;
+    }
 
     // ──────────────────────────────────────────────────────────────────
     //  IOrchestrationActor

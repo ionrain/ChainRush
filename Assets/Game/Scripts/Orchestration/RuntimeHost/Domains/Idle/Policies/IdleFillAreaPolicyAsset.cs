@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -9,8 +8,8 @@ using UnityEngine;
 /// IMPORTANT — Allocation-free and stateless. Per-unit state belongs in selectors/executors.
 /// </para>
 /// <para>
-/// IMPORTANT — Crowd scoring uses <see cref="OrchestrationWorldCache.FriendlyCrowdTransforms"/>
-/// (pre-filtered friendly spatial units). Without this filter, idle would treat enemies
+/// IMPORTANT — Crowd scoring uses <see cref="ICrowdQuery"/> (pre-filtered friendly
+/// spatial units via IWorldQuery). Without this filter, idle would treat enemies
 /// as crowd and behave oddly.
 /// </para>
 /// </summary>
@@ -64,7 +63,7 @@ public sealed class IdleFillAreaPolicyAsset : IdlePolicyAsset
     static readonly Vector3 FallbackBoundsSize = new Vector3(6f, 3f, 1f);
 
     // ──────────────────────────────────────────────────────────────────
-    //  Base overload — delegates to ctx-aware
+    //  Base overload — Hold (requires world context to function)
     // ──────────────────────────────────────────────────────────────────
 
     public override IdleCommand ChooseCommand(Transform self, Vector2 anchor, float now, out string debugInfo)
@@ -74,13 +73,16 @@ public sealed class IdleFillAreaPolicyAsset : IdlePolicyAsset
     }
 
     // ──────────────────────────────────────────────────────────────────
-    //  Context-aware overload — main logic
+    //  IWorldQuery-based overload — main logic
+    //  IMPORTANT: This is the primary entry point called by the arbiter.
+    //  Uses ICrowdQuery + IRoleQuery + IIdleBoundsQuery for scoring.
     // ──────────────────────────────────────────────────────────────────
 
     public override IdleCommand ChooseCommand(
-        Transform self, Vector2 anchor, float now,
+        Vector2 selfPosition, EntityId selfId,
+        Vector2 anchor, float now,
         int roleSeed, int entitySeed,
-        OrchestrationArbiterContext ctx,
+        IWorldQuery world,
         out string debugInfo)
     {
         debugInfo = null;
@@ -89,13 +91,10 @@ public sealed class IdleFillAreaPolicyAsset : IdlePolicyAsset
         Bounds bounds = default;
         bool hasBounds = false;
 
-        // IMPORTANT: Policy reads world only via ctx.World (Charter v3 §2.1). No GetComponent.
-        if (self != null)
-        {
-            RoleAsset role;
-            if (ctx.World.RoleByTransform.TryGetValue(self, out role) && role != null)
-                hasBounds = ctx.World.ResolvedIdleBounds.TryGetValue(role, out bounds);
-        }
+        // IMPORTANT: Policy reads world only via IWorldQuery. No GetComponent.
+        RoleAsset role;
+        if (world.TryGetRole(selfId, out role) && role != null)
+            hasBounds = world.TryGetIdleBounds(role, out bounds);
 
         if (!hasBounds)
             bounds = new Bounds(new Vector3(anchor.x, anchor.y, 0f), FallbackBoundsSize);
@@ -103,9 +102,6 @@ public sealed class IdleFillAreaPolicyAsset : IdlePolicyAsset
         // ── Pre-compute squared thresholds ──────────────────────────────
         float personalSpaceSqr = personalSpace * personalSpace;
         float crowdRadiusSqr = crowdPenaltyRadius * crowdPenaltyRadius;
-
-        // Use pre-filtered friendly crowd transforms from world cache
-        IReadOnlyList<Transform> friendlies = ctx.World.FriendlyCrowdTransforms;
 
         // ── Sample and score candidates ───────────────────────────────
         Vector2 bestPoint = anchor;
@@ -119,7 +115,7 @@ public sealed class IdleFillAreaPolicyAsset : IdlePolicyAsset
 
             // Crowd penalty via shared utility (soft penalty, never rejects)
             float score = CrowdScoringUtility.ScoreCrowdPenalty(
-                friendlies, self, candidate,
+                world, selfId, candidate,
                 personalSpaceSqr, crowdRadiusSqr, PERSONAL_SPACE_PENALTY);
 
             // Penalty for distance from anchor (keeps units generally around anchor)
@@ -144,4 +140,5 @@ public sealed class IdleFillAreaPolicyAsset : IdlePolicyAsset
         return IdleCommand.MoveToPoint(bestPoint, stopDistance,
             includeDebugInfo ? debugInfo : null);
     }
+
 }

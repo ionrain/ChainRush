@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -23,7 +22,7 @@ using UnityEngine;
 /// </para>
 /// </summary>
 [RequireComponent(typeof(Unit))]
-public sealed class UnitCombatCommandExecutor : MonoBehaviour, ICombatCommandReceiver, IConstrainedCombatReceiver, IOrchestrationActor, IRoleAssetProvider
+public sealed class UnitCombatCommandExecutor : MonoBehaviour, ICombatCommandReceiver, IConstrainedCombatReceiver, IOrchestrationActor, IRoleAssetProvider, IEntityIdProvider
 {
     // ──────────────────────────────────────────────────────────────────
     //  Serialized
@@ -53,7 +52,7 @@ public sealed class UnitCombatCommandExecutor : MonoBehaviour, ICombatCommandRec
     // ──────────────────────────────────────────────────────────────────
 
     CombatMoveConstraintsAsset _constraints;
-    OrchestrationWorldCache _world;
+    IWorldQuery _world;
 
     // ──────────────────────────────────────────────────────────────────
     //  Runtime — Constrained movement state (persistent across ticks)
@@ -142,6 +141,27 @@ public sealed class UnitCombatCommandExecutor : MonoBehaviour, ICombatCommandRec
     void OnEnable() => OrchestrationRegistry.Register((ICombatCommandReceiver)this);
     void OnDisable() => OrchestrationRegistry.Unregister((ICombatCommandReceiver)this);
 
+    bool _warnedMissingIdentity;
+
+    // ──────────────────────────────────────────────────────────────────
+    //  IEntityIdProvider
+    // ──────────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Returns the stable EntityId from the sibling identity component.
+    /// IMPORTANT: Missing identity is fatal — warns once and returns EntityId.None.
+    /// </summary>
+    public EntityId GetEntityId()
+    {
+        if (_identity != null) return _identity.GetEntityId();
+        if (!_warnedMissingIdentity)
+        {
+            _warnedMissingIdentity = true;
+            Debug.LogWarning("[UnitCombatCommandExecutor] Missing UnitOrchestrationIdentity; EntityId is None.", this);
+        }
+        return EntityId.None;
+    }
+
     // ──────────────────────────────────────────────────────────────────
     //  IRoleAssetProvider
     // ──────────────────────────────────────────────────────────────────
@@ -184,7 +204,7 @@ public sealed class UnitCombatCommandExecutor : MonoBehaviour, ICombatCommandRec
     /// IMPORTANT: Called by arbiter BEFORE <see cref="ApplyCombatCommand"/> each tick.
     /// Null constraints = unconstrained movement (default behavior).
     /// </summary>
-    public void SetRuntimeContext(CombatMoveConstraintsAsset constraints, OrchestrationWorldCache world)
+    public void SetRuntimeContext(CombatMoveConstraintsAsset constraints, IWorldQuery world)
     {
         // Detect constrained → unconstrained transition: reset mode so re-entry starts fresh
         if (_constraints != null && constraints == null)
@@ -465,8 +485,8 @@ public sealed class UnitCombatCommandExecutor : MonoBehaviour, ICombatCommandRec
     /// with lowest crowd penalty + anchor distance. Only "outside leash" is hard-rejected;
     /// personal space is a soft penalty so a position is always found.
     /// <para>
-    /// PERF: Uses <see cref="CrowdScoringUtility"/> with <c>_world.FriendlyCrowdTransforms</c>.
-    /// No allocations, no <c>UnityEngine.Random</c>.
+    /// PERF: Uses <see cref="CrowdScoringUtility"/> with <see cref="ICrowdQuery"/>.
+    /// Self-skip via <see cref="EntityId"/>. No allocations, no <c>UnityEngine.Random</c>.
     /// </para>
     /// </summary>
     Vector2 ComputeSpreadPoint(Vector2 boundaryPoint, Vector2 anchor)
@@ -482,14 +502,14 @@ public sealed class UnitCombatCommandExecutor : MonoBehaviour, ICombatCommandRec
         // Deterministic seed: entitySeed ^ quantized boundary position
         // RATIONALE: Stable while boundary stays in the same quantization cell, changes when
         // boundary moves significantly. No float time in seed prevents drift.
-        int entitySeed = GetInstanceID();
+        EntityId selfId = GetEntityId();
+        int entitySeed = selfId.ToStableInt();
         int qx = Mathf.RoundToInt(boundaryPoint.x * BOUNDARY_QUANT);
         int qy = Mathf.RoundToInt(boundaryPoint.y * BOUNDARY_QUANT);
         int baseSeed = entitySeed ^ CrowdScoringUtility.Hash01ToInt(qx ^ (qy * 0x6C62272E));
 
         Vector2 bestPoint = boundaryPoint;
         float bestScore = float.MaxValue;
-        IReadOnlyList<Transform> friendlies = _world.FriendlyCrowdTransforms;
 
         for (int i = 0; i < sampleCount; i++)
         {
@@ -504,9 +524,9 @@ public sealed class UnitCombatCommandExecutor : MonoBehaviour, ICombatCommandRec
             if ((candidate - anchor).sqrMagnitude > leashSqr)
                 continue;
 
-            // Score: crowd penalty (soft — never rejects)
+            // Score: crowd penalty via IWorldQuery (soft — never rejects, self-skip via EntityId)
             float score = CrowdScoringUtility.ScoreCrowdPenalty(
-                friendlies, transform, candidate,
+                _world, selfId, candidate,
                 personalSpaceSqr, crowdRadiusSqr);
 
             // Score: anchor distance preference

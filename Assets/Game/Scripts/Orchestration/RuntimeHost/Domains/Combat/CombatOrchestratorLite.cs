@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -19,7 +18,7 @@ public enum TargetSearchMode
 }
 
 /// <summary>
-/// Combat domain evaluator. Scans <see cref="OrchestrationWorldCache.Actors"/> for
+/// Combat domain evaluator. Scans actors via <see cref="IWorldQuery"/> for
 /// hostile entities and writes a <see cref="CombatCommand"/> proposal.
 /// Owns the <see cref="CombatRolePolicyMapAsset"/> reference and exposes it via
 /// <see cref="ICombatRolePolicyMapSource"/> so the arbiter can pull it each tick.
@@ -34,7 +33,12 @@ public enum TargetSearchMode
 /// </para>
 /// <para>
 /// IMPORTANT — Does NOT scan <see cref="OrchestrationRegistry"/> directly.
-/// Uses the per-tick <see cref="OrchestrationWorldCache"/> built by the arbiter.
+/// Uses the per-tick <see cref="IWorldQuery"/> built by the arbiter.
+/// </para>
+/// <para>
+/// IMPORTANT — Phase 2B dependency: Uses <see cref="OrchestrationWorldCache.GetActorTransformInternal"/>
+/// to obtain Transforms for <see cref="CombatCommand"/>. When CombatCommand migrates to
+/// EntityId targets (Phase 2B), this cast will be removed.
 /// </para>
 /// </summary>
 public sealed class CombatOrchestratorLite : DomainOrchestrator, ICombatRolePolicyMapSource, ICombatRoleConstraintsMapSource
@@ -81,6 +85,7 @@ public sealed class CombatOrchestratorLite : DomainOrchestrator, ICombatRolePoli
     int _topKCount;
 
     bool _warnedNoCamera;
+    bool _warnedWorldCacheCast;
 
     // One-shot guard for auto-resolve target set.
     bool _triedResolveTargetSet;
@@ -117,10 +122,26 @@ public sealed class CombatOrchestratorLite : DomainOrchestrator, ICombatRolePoli
     /// </summary>
     public override void Evaluate(OrchestrationArbiterContext ctx, OrchestrationArbiterProposals proposals)
     {
-        Vector2 anchor = ctx.Anchor;
+        IWorldQuery world = ctx.World;
 
-        // ── Find closest hostile from cached actors ──────────────
-        Transform closestHostile = FindClosestHostile(ctx);
+        // IMPORTANT: Phase 2B removes this cast when CombatCommand uses EntityId.
+        OrchestrationWorldCache worldCache = world as OrchestrationWorldCache;
+        if (worldCache == null)
+        {
+            if (!_warnedWorldCacheCast)
+            {
+                _warnedWorldCacheCast = true;
+                Debug.LogWarning("[CombatOrchestratorLite] ctx.World is not OrchestrationWorldCache; " +
+                    "cannot resolve Transforms for CombatCommand. Phase 2B removes this dependency.", this);
+            }
+            proposals.SetCombat(CombatCommand.Create(CombatCommandType.Hold,
+                debugLabel: "Orchestrator=CombatOrchestratorLite"), false);
+            return;
+        }
+
+        // ── Find closest hostile from IWorldQuery ────────────────
+        int bestIndex = FindClosestHostileIndex(world, ctx);
+        Transform closestHostile = bestIndex >= 0 ? worldCache.GetActorTransformInternal(bestIndex) : null;
 
         // Unity-null coalesce for destroyed objects
         if (closestHostile == null)
@@ -134,15 +155,15 @@ public sealed class CombatOrchestratorLite : DomainOrchestrator, ICombatRolePoli
                 debugLabel: "Orchestrator=CombatOrchestratorLite");
 
         // ── Fill Top-K target set (optional) ─────────────────────
-        // IMPORTANT: One-shot resolve from ctx.World. If null, stays null (no retry, no registry fallback).
+        // IMPORTANT: One-shot resolve from IWorldQuery. If null, stays null (no retry, no registry fallback).
         if (targetSet == null && autoResolveTargetSet && !_triedResolveTargetSet)
         {
             _triedResolveTargetSet = true;
-            targetSet = ctx.World.ResolvedCombatTargetSet;  // may be null — that's ok
+            targetSet = world.GetCombatTargetSet();  // may be null — that's ok
         }
 
         if (targetSet != null)
-            FillTargetSet(ctx);
+            FillTargetSet(world, worldCache, ctx);
 
         // ── Write proposal ───────────────────────────────────────
         bool threatPresent = closestHostile != null;
@@ -160,16 +181,16 @@ public sealed class CombatOrchestratorLite : DomainOrchestrator, ICombatRolePoli
     }
 
     // ──────────────────────────────────────────────────────────────────
-    //  Hostile search — iterates ctx.World.Actors
+    //  Hostile search — uses IWorldQuery index-based API
+    //  Returns actor index or -1 if no hostile found.
     // ──────────────────────────────────────────────────────────────────
 
     /// <summary>
-    /// Scans <see cref="OrchestrationWorldCache.Actors"/> for the closest alive hostile
-    /// entity. Candidate filtering depends on <see cref="searchMode"/>.
-    /// Scoring is always by sqrMagnitude to anchor (closest wins).
+    /// Scans actors via <see cref="IWorldQuery"/> for the closest alive hostile entity.
+    /// Returns the actor index, or -1 if none found.
     /// PERF: Index-based iteration, no LINQ, no per-tick allocations.
     /// </summary>
-    Transform FindClosestHostile(OrchestrationArbiterContext ctx)
+    int FindClosestHostileIndex(IWorldQuery world, OrchestrationArbiterContext ctx)
     {
         Camera cam = null;
         if (searchMode == TargetSearchMode.ScreenViewport)
@@ -183,33 +204,25 @@ public sealed class CombatOrchestratorLite : DomainOrchestrator, ICombatRolePoli
                         "Assign searchCamera or ensure Camera.main exists.", this);
                     _warnedNoCamera = true;
                 }
-                return null;
+                return -1;
             }
         }
 
         Vector2 anchor = ctx.Anchor;
         float aggroSqr = aggroRadius * aggroRadius;
         float bestDistSqr = float.MaxValue;
-        Transform bestTransform = null;
+        int bestIndex = -1;
 
-        List<IOrchestrationActor> actors = ctx.World.Actors;
-        for (int i = 0; i < actors.Count; i++)
+        int actorCount = world.ActorCount;
+        for (int i = 0; i < actorCount; i++)
         {
-            IOrchestrationActor actor = actors[i];
-            if (actor == null) continue;
-            if (actor is Object uo && uo == null) continue;
-
-            // Hostile check — typed-only
-            if (!(actor is IFactionAssetProvider fap)) continue;
-            FactionAsset actorFaction = fap.GetFactionAsset();
+            // Hostile check — typed-only via IWorldQuery
+            FactionAsset actorFaction = world.GetActorFaction(i);
             if (actorFaction == null) continue;
             if (ctx.Relations.GetRelation(ctx.OrchestratorFaction, actorFaction) != FactionRelation.Hostile)
                 continue;
 
-            Transform actorTransform = actor.GetTransform();
-            if (actorTransform == null) continue;
-
-            Vector2 actorPos = (Vector2)actorTransform.position;
+            Vector2 actorPos = world.GetActorPosition(i);
 
             bool qualifies;
             switch (searchMode)
@@ -230,20 +243,21 @@ public sealed class CombatOrchestratorLite : DomainOrchestrator, ICombatRolePoli
             if (distSqr < bestDistSqr)
             {
                 bestDistSqr = distSqr;
-                bestTransform = actorTransform;
+                bestIndex = i;
             }
         }
 
-        return bestTransform;
+        return bestIndex;
     }
 
     // ──────────────────────────────────────────────────────────────────
-    //  Top-K target set — iterates ctx.World.Actors
-    //  IMPORTANT: Applies the exact same hostile filters as FindClosestHostile
-    //  (faction Hostile, alive, Radius/ScreenViewport). No LINQ, no allocations.
+    //  Top-K target set — uses IWorldQuery for filtering, worldCache for Transforms
+    //  IMPORTANT: Applies the exact same hostile filters as FindClosestHostileIndex
+    //  (faction Hostile, Radius/ScreenViewport). No LINQ, no allocations.
+    //  IMPORTANT: Phase 2B removes OrchestrationWorldCache dependency.
     // ──────────────────────────────────────────────────────────────────
 
-    void FillTargetSet(OrchestrationArbiterContext ctx)
+    void FillTargetSet(IWorldQuery world, OrchestrationWorldCache worldCache, OrchestrationArbiterContext ctx)
     {
         int k = targetSetSize > 0 ? targetSetSize : 1;
         if (k > targetSet.Capacity) k = targetSet.Capacity;
@@ -260,25 +274,21 @@ public sealed class CombatOrchestratorLite : DomainOrchestrator, ICombatRolePoli
         Vector2 anchor = ctx.Anchor;
         float aggroSqr = aggroRadius * aggroRadius;
 
-        List<IOrchestrationActor> actors = ctx.World.Actors;
-        for (int i = 0; i < actors.Count; i++)
+        int actorCount = world.ActorCount;
+        for (int i = 0; i < actorCount; i++)
         {
-            IOrchestrationActor actor = actors[i];
-            if (actor == null) continue;
-            if (actor is Object uo && uo == null) continue;
-
-            // Hostile check — typed-only
-            if (!(actor is IFactionAssetProvider fap)) continue;
-            FactionAsset actorFaction = fap.GetFactionAsset();
+            // Hostile check — typed-only via IWorldQuery
+            FactionAsset actorFaction = world.GetActorFaction(i);
             if (actorFaction == null) continue;
             if (ctx.Relations.GetRelation(ctx.OrchestratorFaction, actorFaction) != FactionRelation.Hostile)
                 continue;
 
-            Transform actorTransform = actor.GetTransform();
+            // IMPORTANT: Phase 2B removes Transform access. For now, need it for targetSet.
+            Transform actorTransform = worldCache.GetActorTransformInternal(i);
             if (actorTransform == null) continue;
             if (!actorTransform.gameObject.activeInHierarchy) continue;
 
-            Vector2 actorPos = (Vector2)actorTransform.position;
+            Vector2 actorPos = world.GetActorPosition(i);
 
             bool qualifies;
             switch (searchMode)

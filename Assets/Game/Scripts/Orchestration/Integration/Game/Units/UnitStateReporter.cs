@@ -5,7 +5,7 @@ using UnityEngine;
 /// IMPORTANT: Read-only reporter. No gameplay control, no Update loop.
 /// Called on demand by the orchestration layer.
 /// </summary>
-public sealed class UnitStateReporter : MonoBehaviour, IStateReporter, IOrchestrationActor
+public sealed class UnitStateReporter : MonoBehaviour, IStateReporter, IOrchestrationActor, IEntityIdProvider
 {
     [SerializeField] Unit _unit;
     [SerializeField] UnitOrchestrationIdentity _identity;
@@ -17,8 +17,25 @@ public sealed class UnitStateReporter : MonoBehaviour, IStateReporter, IOrchestr
     /// </summary>
     ParamSet _cachedMetrics;
 
+    bool _warnedMissingIdentity;
+
     void OnEnable() => OrchestrationRegistry.Register((IStateReporter)this);
     void OnDisable() => OrchestrationRegistry.Unregister((IStateReporter)this);
+
+    // ──────────────────────────────────────────────────────────────────
+    //  IEntityIdProvider
+    // ──────────────────────────────────────────────────────────────────
+
+    public EntityId GetEntityId()
+    {
+        if (_identity != null) return _identity.GetEntityId();
+        if (!_warnedMissingIdentity)
+        {
+            _warnedMissingIdentity = true;
+            Debug.LogWarning("[UnitStateReporter] Missing UnitOrchestrationIdentity; EntityId is None.", this);
+        }
+        return EntityId.None;
+    }
 
     // ──────────────────────────────────────────────────────────────────
     //  IOrchestrationActor
@@ -85,7 +102,7 @@ public sealed class UnitStateReporter : MonoBehaviour, IStateReporter, IOrchestr
 
         return StateSnapshot.Create(
             faction,
-            GetInstanceID(),
+            GetEntityId(),
             (Vector2)transform.position,
             isAlive,
             roleTag,

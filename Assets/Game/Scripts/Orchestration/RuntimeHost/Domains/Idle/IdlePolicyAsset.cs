@@ -51,7 +51,7 @@ public abstract class IdlePolicyAsset : ScriptableObject
     /// <param name="roleSeed">Stable seed for the role (typically <c>RoleAsset.GetInstanceID()</c>).
     /// Session-stable only. If cross-session determinism is needed, use a serialized
     /// seed on RoleAsset or hash RoleAsset.Id.</param>
-    /// <param name="entitySeed">Stable per-entity seed (from <see cref="IRoleContextProvider.GetEntitySeed"/>).</param>
+    /// <param name="entitySeed">Stable per-entity seed (from <see cref="IEntityIdProvider.GetEntityId"/> via ToStableInt).</param>
     /// <param name="debugInfo">Short debug string (null is fine; avoid allocations).</param>
     public virtual IdleCommand ChooseCommand(
         Transform self, Vector2 anchor, float now,
@@ -62,21 +62,30 @@ public abstract class IdlePolicyAsset : ScriptableObject
     }
 
     /// <summary>
-    /// Context-aware overload that receives the arbiter's per-tick context.
-    /// Policies that need world state (e.g. crowd avoidance) should override this.
+    /// IWorldQuery-based overload. Policies that need world state (e.g. crowd avoidance)
+    /// should override this. Receives position and EntityId instead of Transform.
     /// <para>
-    /// RATIONALE: Passing <see cref="OrchestrationArbiterContext"/> is an intentional
-    /// dependency — domain policies can use the arbiter's world cache for scoring.
+    /// IMPORTANT — This is the preferred overload for new policies. The arbiter calls
+    /// this when dispatching per-unit idle commands.
     /// </para>
     /// </summary>
-    // TODO: If layering becomes an issue, extract a minimal IWorldQuery interface
-    // to decouple policies from arbiter context.
+    /// <param name="selfPosition">The unit's current position.</param>
+    /// <param name="selfId">The unit's stable <see cref="EntityId"/>.</param>
+    /// <param name="anchor">Orchestrator-defined anchor point.</param>
+    /// <param name="now"><see cref="Time.time"/> at tick start.</param>
+    /// <param name="roleSeed">Stable seed for the role.</param>
+    /// <param name="entitySeed">Stable per-entity seed (from EntityId.ToStableInt).</param>
+    /// <param name="world">Read-only world snapshot for crowd scoring and role lookups.</param>
+    /// <param name="debugInfo">Short debug string (null is fine; avoid allocations).</param>
     public virtual IdleCommand ChooseCommand(
-        Transform self, Vector2 anchor, float now,
+        Vector2 selfPosition, EntityId selfId,
+        Vector2 anchor, float now,
         int roleSeed, int entitySeed,
-        OrchestrationArbiterContext ctx,
+        IWorldQuery world,
         out string debugInfo)
     {
-        return ChooseCommand(self, anchor, now, roleSeed, entitySeed, out debugInfo);
+        // Default: delegate to seed-based overload (ignores world).
+        // Policies that need crowd data override this directly.
+        return ChooseCommand(null, anchor, now, roleSeed, entitySeed, out debugInfo);
     }
 }

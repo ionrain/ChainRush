@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -11,6 +10,10 @@ using UnityEngine;
 /// <para>
 /// IMPORTANT: Does not use <c>UnityEngine.Random</c>. Does not touch global random state.
 /// All randomness is deterministic via FNV-1a hashing.
+/// </para>
+/// <para>
+/// IMPORTANT: All scoring operates on <see cref="ICrowdQuery"/> + <see cref="EntityId"/>.
+/// No Transform references.
 /// </para>
 /// </summary>
 public static class CrowdScoringUtility
@@ -73,26 +76,63 @@ public static class CrowdScoringUtility
     }
 
     // ──────────────────────────────────────────────────────────────────
-    //  Crowd scoring
+    //  Crowd scoring — Primary (IWorldQuery-based, EntityId self-skip)
+    //  IMPORTANT: Single source of truth. All scoring logic lives here.
     // ──────────────────────────────────────────────────────────────────
 
     /// <summary>
-    /// Counts transforms within <paramref name="radiusSqr"/> of <paramref name="position"/>,
-    /// skipping <paramref name="selfTransform"/>.
+    /// Returns a crowd penalty score for a candidate position using <see cref="ICrowdQuery"/>.
+    /// Self-skip via <paramref name="selfId"/> (skips EntityId.None entries and self).
+    /// <para>
+    /// IMPORTANT: This is the primary scoring function. Transform-based overloads delegate here
+    /// after gathering positions.
+    /// </para>
+    /// </summary>
+    public static float ScoreCrowdPenalty(
+        ICrowdQuery crowd,
+        EntityId selfId,
+        Vector2 candidatePosition,
+        float personalSpaceSqr,
+        float crowdRadiusSqr,
+        float personalSpacePenalty = 1000f)
+    {
+        float score = 0f;
+        int len = crowd.CrowdCount;
+        for (int i = 0; i < len; i++)
+        {
+            EntityId eid = crowd.GetCrowdEntityId(i);
+            if (!selfId.IsNone && eid == selfId) continue;
+
+            Vector2 crowdPos = crowd.GetCrowdPosition(i);
+            float sqrDist = (crowdPos - candidatePosition).sqrMagnitude;
+
+            if (sqrDist < personalSpaceSqr)
+                score += personalSpacePenalty;
+
+            if (sqrDist < crowdRadiusSqr)
+                score += 1f;
+        }
+        return score;
+    }
+
+    /// <summary>
+    /// Counts crowd members within <paramref name="radiusSqr"/> of <paramref name="position"/>,
+    /// skipping self via <paramref name="selfId"/>.
     /// </summary>
     public static int CountNear(
-        IReadOnlyList<Transform> transforms,
-        Transform selfTransform,
+        ICrowdQuery crowd,
+        EntityId selfId,
         Vector2 position,
         float radiusSqr)
     {
         int count = 0;
-        int len = transforms.Count;
+        int len = crowd.CrowdCount;
         for (int i = 0; i < len; i++)
         {
-            Transform t = transforms[i];
-            if (t == null || t == selfTransform) continue;
-            float sqr = ((Vector2)t.position - position).sqrMagnitude;
+            EntityId eid = crowd.GetCrowdEntityId(i);
+            if (!selfId.IsNone && eid == selfId) continue;
+
+            float sqr = (crowd.GetCrowdPosition(i) - position).sqrMagnitude;
             if (sqr <= radiusSqr)
                 count++;
         }
@@ -100,23 +140,24 @@ public static class CrowdScoringUtility
     }
 
     /// <summary>
-    /// Returns true if <paramref name="minNeighbors"/>+ transforms are within
+    /// Returns true if <paramref name="minNeighbors"/>+ crowd members are within
     /// <paramref name="personalSpaceSqr"/> of <paramref name="position"/>.
     /// </summary>
     public static bool IsCrowded(
-        IReadOnlyList<Transform> transforms,
-        Transform selfTransform,
+        ICrowdQuery crowd,
+        EntityId selfId,
         Vector2 position,
         float personalSpaceSqr,
         int minNeighbors = 2)
     {
         int count = 0;
-        int len = transforms.Count;
+        int len = crowd.CrowdCount;
         for (int i = 0; i < len; i++)
         {
-            Transform t = transforms[i];
-            if (t == null || t == selfTransform) continue;
-            float sqr = ((Vector2)t.position - position).sqrMagnitude;
+            EntityId eid = crowd.GetCrowdEntityId(i);
+            if (!selfId.IsNone && eid == selfId) continue;
+
+            float sqr = (crowd.GetCrowdPosition(i) - position).sqrMagnitude;
             if (sqr <= personalSpaceSqr)
             {
                 count++;
@@ -127,40 +168,4 @@ public static class CrowdScoringUtility
         return false;
     }
 
-    /// <summary>
-    /// Returns a crowd penalty score for a candidate position.
-    /// Applies hard penalty (<paramref name="personalSpacePenalty"/>) for personal-space
-    /// violations, soft +1 for each transform within <paramref name="crowdRadiusSqr"/>.
-    /// <para>
-    /// IMPORTANT: This is a penalty score, not a reject. Even in extreme crowding
-    /// the position remains valid — just penalized. Only "outside leash" is a hard reject.
-    /// </para>
-    /// </summary>
-    public static float ScoreCrowdPenalty(
-        IReadOnlyList<Transform> transforms,
-        Transform selfTransform,
-        Vector2 candidatePosition,
-        float personalSpaceSqr,
-        float crowdRadiusSqr,
-        float personalSpacePenalty = 1000f)
-    {
-        float score = 0f;
-        int len = transforms.Count;
-        for (int i = 0; i < len; i++)
-        {
-            Transform t = transforms[i];
-            if (t == null || t == selfTransform) continue;
-
-            float sqrDist = ((Vector2)t.position - candidatePosition).sqrMagnitude;
-
-            // Hard penalty: personal space violation
-            if (sqrDist < personalSpaceSqr)
-                score += personalSpacePenalty;
-
-            // Soft penalty: crowding
-            if (sqrDist < crowdRadiusSqr)
-                score += 1f;
-        }
-        return score;
-    }
 }

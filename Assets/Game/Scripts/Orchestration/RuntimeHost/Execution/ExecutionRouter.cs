@@ -223,7 +223,7 @@ public sealed class ExecutionRouter
 
                 // Get receiver position and EntityId for the IWorldQuery-based policy overload
                 EntityId selfEntityId = rcp.GetEntityId();
-                Vector2 selfPos = (r is Component c) ? (Vector2)c.transform.position : ctx.Anchor;
+                Float2 selfPos = (r is Component c) ? ((Vector2)c.transform.position).ToFloat2() : ctx.Anchor;
 
                 string dbg;
                 cmd = effectivePolicy.ChooseCommand(selfPos, selfEntityId, ctx.Anchor, ctx.Now, roleSeed, entitySeed, world, out dbg);

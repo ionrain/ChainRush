@@ -277,7 +277,7 @@ public sealed class UnitCombatCommandExecutor : MonoBehaviour, ICombatCommandRec
     void ApplyMoveToPoint(CombatCommand command)
     {
         EnsureWaypoint();
-        _waypoint.position = new Vector3(command.TargetPoint.x, command.TargetPoint.y, 0f);
+        _waypoint.position = new Vector3(command.TargetPoint.X, command.TargetPoint.Y, 0f);
         _unit.SetTarget(_waypoint);
     }
 
@@ -288,9 +288,10 @@ public sealed class UnitCombatCommandExecutor : MonoBehaviour, ICombatCommandRec
     /// </summary>
     void ApplyTargetOrHold(CombatCommand command)
     {
+        // IMPORTANT: EntityId→Transform resolution at Integration boundary
         Transform chosen = _selector != null
             ? _selector.SelectTarget(command)
-            : command.TargetTransform;
+            : (command.HasEntityTarget ? EntityTransformResolver.Resolve(command.TargetEntityId) : null);
 
         if (chosen != null)
             _unit.SetTarget(chosen);
@@ -306,7 +307,7 @@ public sealed class UnitCombatCommandExecutor : MonoBehaviour, ICombatCommandRec
     {
         Transform chosen = _selector != null
             ? _selector.SelectTarget(command)
-            : command.TargetTransform;
+            : (command.HasEntityTarget ? EntityTransformResolver.Resolve(command.TargetEntityId) : null);
 
         if (chosen != null)
             _unit.SetTarget(chosen);
@@ -329,7 +330,7 @@ public sealed class UnitCombatCommandExecutor : MonoBehaviour, ICombatCommandRec
             return;
         }
 
-        Vector2 targetPoint = command.TargetPoint;
+        Vector2 targetPoint = command.TargetPoint.ToVector2();
         Vector2 clamped = ClampToLeash(targetPoint, out bool wasClamped);
 
         if (!wasClamped)
@@ -352,9 +353,10 @@ public sealed class UnitCombatCommandExecutor : MonoBehaviour, ICombatCommandRec
         }
 
         // Resolve target via selector (policy already injected by arbiter)
+        // IMPORTANT: EntityId→Transform resolution at Integration boundary
         Transform chosen = _selector != null
             ? _selector.SelectTarget(command)
-            : command.TargetTransform;
+            : (command.HasEntityTarget ? EntityTransformResolver.Resolve(command.TargetEntityId) : null);
 
         if (chosen == null)
         {
@@ -387,7 +389,7 @@ public sealed class UnitCombatCommandExecutor : MonoBehaviour, ICombatCommandRec
                 break;
 
             case OutOfBoundsMode.SpreadNearBoundary:
-                Vector2 spread = ComputeSpreadPoint(clamped, _world.Anchor);
+                Vector2 spread = ComputeSpreadPoint(clamped, _world.Anchor.ToVector2());
                 ApplyConstrainedWaypoint(spread);
                 break;
         }
@@ -463,7 +465,7 @@ public sealed class UnitCombatCommandExecutor : MonoBehaviour, ICombatCommandRec
     /// </summary>
     Vector2 ClampToLeash(Vector2 target, out bool clamped)
     {
-        Vector2 anchor = _world.Anchor;
+        Vector2 anchor = _world.Anchor.ToVector2();
         Vector2 toTarget = target - anchor;
         float distSqr = toTarget.sqrMagnitude;
         float leashSqr = _constraints.leashRadius * _constraints.leashRadius;
@@ -526,7 +528,7 @@ public sealed class UnitCombatCommandExecutor : MonoBehaviour, ICombatCommandRec
 
             // Score: crowd penalty via IWorldQuery (soft — never rejects, self-skip via EntityId)
             float score = CrowdScoringUtility.ScoreCrowdPenalty(
-                _world, selfId, candidate,
+                _world, selfId, candidate.ToFloat2(),
                 personalSpaceSqr, crowdRadiusSqr);
 
             // Score: anchor distance preference
@@ -588,9 +590,16 @@ public sealed class UnitCombatCommandExecutor : MonoBehaviour, ICombatCommandRec
 
     void LogCommand(CombatCommand command)
     {
-        string target = command.HasTarget
-            ? command.TargetTransform.name
-            : command.TargetPoint.ToString();
+        string target;
+        if (command.HasEntityTarget)
+        {
+            Transform resolved = EntityTransformResolver.Resolve(command.TargetEntityId);
+            target = resolved != null ? resolved.name : command.TargetEntityId.ToStableInt().ToString();
+        }
+        else
+        {
+            target = command.TargetPoint.ToString();
+        }
         Debug.Log($"[UnitCombatCommandExecutor] {command.Type} → {target}" +
                   (string.IsNullOrEmpty(command.DebugLabel) ? "" : $" ({command.DebugLabel})"),
                   this);

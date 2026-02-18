@@ -214,8 +214,55 @@ public sealed class ArchitectureLayeringTests
             $"{FrameworkAssemblyName} references Orchestration assemblies:\n" + string.Join("\n", violations));
     }
 
-    // Framework_SourceHasNoForbiddenTokens and Framework_Assembly_DoesNotReferenceUnityEngine
-    // will be added in Commit 0B after IWorldQuery/WorldSnapshot are migrated to Float2/AABB2D.
+    [Test]
+    public void FrameworkAsmdef_HasNoEngineReferences()
+    {
+        Assert.That(File.Exists(FrameworkAsmdefPath), Is.True, $"Missing asmdef: {FrameworkAsmdefPath}");
+        AsmdefData asmdef = ReadAsmdef(FrameworkAsmdefPath);
+        Assert.That(asmdef.noEngineReferences, Is.True,
+            $"{asmdef.name} must have noEngineReferences: true");
+    }
+
+    [Test]
+    public void Framework_SourceHasNoForbiddenTokens()
+    {
+        Assert.That(Directory.Exists(FrameworkSourceRoot), Is.True,
+            $"Framework source root not found: {FrameworkSourceRoot}");
+
+        var violations = new List<string>();
+        foreach (string file in Directory.GetFiles(FrameworkSourceRoot, "*.cs", SearchOption.AllDirectories))
+        {
+            string source = File.ReadAllText(file);
+            string stripped = StripCommentsAndStrings(source);
+
+            Match tokenMatch = ForbiddenFrameworkSourceTokens.Match(stripped);
+            if (tokenMatch.Success)
+                violations.Add($"{file}: forbidden token '{tokenMatch.Value}'");
+
+            Match usingMatch = ForbiddenFrameworkUsingDirective.Match(stripped);
+            if (usingMatch.Success)
+                violations.Add($"{file}: forbidden 'using UnityEngine'");
+        }
+
+        Assert.That(violations, Is.Empty,
+            "Framework source contains forbidden tokens:\n" + string.Join("\n", violations));
+    }
+
+    [Test]
+    public void Framework_Assembly_DoesNotReferenceUnityEngine()
+    {
+        Assembly framework = FindLoadedAssembly(FrameworkAssemblyName);
+        Assert.That(framework, Is.Not.Null, $"Assembly {FrameworkAssemblyName} is not loaded.");
+
+        var referenced = framework.GetReferencedAssemblies();
+        var violations = referenced
+            .Where(r => r.Name.StartsWith("UnityEngine", StringComparison.Ordinal))
+            .Select(r => r.Name)
+            .ToArray();
+
+        Assert.That(violations, Is.Empty,
+            $"{FrameworkAssemblyName} references UnityEngine assemblies:\n" + string.Join("\n", violations));
+    }
 
     // ── Helpers ──────────────────────────────────────────────────────
 

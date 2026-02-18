@@ -26,6 +26,9 @@ public sealed class UnitOrchestrationIdentity : MonoBehaviour, IEntityIdProvider
         _entityId = EntityIdAllocator.Create();
     }
 
+    void OnEnable() => EntityTransformResolver.Register(_entityId, transform);
+    void OnDisable() => EntityTransformResolver.Unregister(_entityId);
+
     /// <summary>
     /// Returns the stable EntityId assigned in Awake. Pool-safe.
     /// </summary>

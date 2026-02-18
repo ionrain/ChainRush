@@ -1,5 +1,11 @@
 {
   "dependencies": {
+    "com.chainrush.framework": {
+      "version": "file:com.chainrush.framework",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
     "com.coffee.softmask-for-ugui": {
       "version": "https://github.com/mob-sakai/SoftMaskForUGUI.git?path=Packages/src",
       "depth": 0,

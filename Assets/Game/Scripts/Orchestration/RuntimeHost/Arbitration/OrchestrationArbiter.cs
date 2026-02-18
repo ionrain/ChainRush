@@ -394,8 +394,8 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
         _ctx.OrchestratorFaction = orchestratorFaction;
         _ctx.Relations = typedRelations;
         _ctx.Anchor = anchorOverride != null
-            ? (Vector2)anchorOverride.position
-            : (Vector2)transform.position;
+            ? anchorOverride.position.ToFloat2()
+            : ((Vector2)transform.position).ToFloat2();
         _ctx.Now = now;
         _ctx.DebugLog = debugLog;
         _ctx.World = _world;

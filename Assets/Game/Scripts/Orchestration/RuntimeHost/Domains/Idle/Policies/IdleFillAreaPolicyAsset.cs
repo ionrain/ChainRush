@@ -60,7 +60,7 @@ public sealed class IdleFillAreaPolicyAsset : IdlePolicyAsset
     /// <summary>
     /// Fallback bounds size when no bounds provider is available.
     /// </summary>
-    static readonly Vector3 FallbackBoundsSize = new Vector3(6f, 3f, 1f);
+    static readonly Float2 FallbackBoundsSize = new Float2(6f, 3f);
 
     // ──────────────────────────────────────────────────────────────────
     //  Base overload — Hold (requires world context to function)
@@ -79,8 +79,8 @@ public sealed class IdleFillAreaPolicyAsset : IdlePolicyAsset
     // ──────────────────────────────────────────────────────────────────
 
     public override IdleCommand ChooseCommand(
-        Vector2 selfPosition, EntityId selfId,
-        Vector2 anchor, float now,
+        Float2 selfPosition, EntityId selfId,
+        Float2 anchor, float now,
         int roleSeed, int entitySeed,
         IWorldQuery world,
         out string debugInfo)
@@ -88,30 +88,32 @@ public sealed class IdleFillAreaPolicyAsset : IdlePolicyAsset
         debugInfo = null;
 
         // ── Determine bounds ──────────────────────────────────────────
-        Bounds bounds = default;
+        AABB2D bounds;
         bool hasBounds = false;
 
         // IMPORTANT: Policy reads world only via IWorldQuery. No GetComponent.
         int roleKey;
         if (world.TryGetRoleKey(selfId, out roleKey))
             hasBounds = world.TryGetIdleBounds(roleKey, out bounds);
+        else
+            bounds = default;
 
         if (!hasBounds)
-            bounds = new Bounds(new Vector3(anchor.x, anchor.y, 0f), FallbackBoundsSize);
+            bounds = AABB2D.FromCenterSize(anchor, FallbackBoundsSize);
 
         // ── Pre-compute squared thresholds ──────────────────────────────
         float personalSpaceSqr = personalSpace * personalSpace;
         float crowdRadiusSqr = crowdPenaltyRadius * crowdPenaltyRadius;
 
         // ── Sample and score candidates ───────────────────────────────
-        Vector2 bestPoint = anchor;
+        Float2 bestPoint = anchor;
         float bestScore = float.MaxValue;
         int sampleCount = samples > 0 ? samples : 10;
 
         for (int i = 0; i < sampleCount; i++)
         {
             int seed = roleSeed ^ entitySeed ^ (i * SAMPLE_SEED_PRIME);
-            Vector2 candidate = CrowdScoringUtility.RandomPointInBounds(bounds, seed);
+            Float2 candidate = CrowdScoringUtility.RandomPointInBounds(bounds, seed);
 
             // Crowd penalty via shared utility (soft penalty, never rejects)
             float score = CrowdScoringUtility.ScoreCrowdPenalty(
@@ -119,7 +121,7 @@ public sealed class IdleFillAreaPolicyAsset : IdlePolicyAsset
                 personalSpaceSqr, crowdRadiusSqr, PERSONAL_SPACE_PENALTY);
 
             // Penalty for distance from anchor (keeps units generally around anchor)
-            float anchorSqrDist = (candidate - anchor).sqrMagnitude;
+            float anchorSqrDist = Float2.DistanceSqr(candidate, anchor);
             score += anchorSqrDist * ANCHOR_DISTANCE_WEIGHT;
 
             if (score < bestScore)

@@ -1,15 +1,14 @@
-using UnityEngine;
-
 /// <summary>
 /// Immutable world frame metadata.
+/// IMPORTANT: Framework type — no UnityEngine dependency.
 /// </summary>
 public readonly struct WorldSnapshot
 {
-    public readonly Vector2 Anchor;
+    public readonly Float2 Anchor;
     public readonly float Now;
     public readonly int ActorCount;
 
-    public WorldSnapshot(Vector2 anchor, float now, int actorCount)
+    public WorldSnapshot(Float2 anchor, float now, int actorCount)
     {
         Anchor = anchor;
         Now = now;

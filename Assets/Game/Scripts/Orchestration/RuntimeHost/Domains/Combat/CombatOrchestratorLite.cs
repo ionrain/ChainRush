@@ -36,9 +36,9 @@ public enum TargetSearchMode
 /// Uses the per-tick <see cref="IWorldQuery"/> built by the arbiter.
 /// </para>
 /// <para>
-/// IMPORTANT — Phase 2B dependency: Uses <see cref="OrchestrationWorldCache.GetActorTransformInternal"/>
-/// to obtain Transforms for <see cref="CombatCommand"/>. When CombatCommand migrates to
-/// EntityId targets (Phase 2B), this cast will be removed.
+/// IMPORTANT — CombatCommand uses EntityId for targets (no Transform).
+/// Residual OrchestrationWorldCache dependency exists only for FillTargetSet
+/// (CombatTargetSet still stores Transform[] until Commit 2).
 /// </para>
 /// </summary>
 public sealed class CombatOrchestratorLite : DomainOrchestrator, ICombatRolePolicyMapSource, ICombatRoleConstraintsMapSource
@@ -85,7 +85,7 @@ public sealed class CombatOrchestratorLite : DomainOrchestrator, ICombatRolePoli
     int _topKCount;
 
     bool _warnedNoCamera;
-    bool _warnedWorldCacheCast;
+    bool _warnedWorldCacheCastFill;
 
     // One-shot guard for auto-resolve target set.
     bool _triedResolveTargetSet;
@@ -124,57 +124,50 @@ public sealed class CombatOrchestratorLite : DomainOrchestrator, ICombatRolePoli
     {
         IWorldQuery world = ctx.World;
 
-        // IMPORTANT: Phase 2B removes this cast when CombatCommand uses EntityId.
-        OrchestrationWorldCache worldCache = world as OrchestrationWorldCache;
-        if (worldCache == null)
-        {
-            if (!_warnedWorldCacheCast)
-            {
-                _warnedWorldCacheCast = true;
-                Debug.LogWarning("[CombatOrchestratorLite] ctx.World is not OrchestrationWorldCache; " +
-                    "cannot resolve Transforms for CombatCommand. Phase 2B removes this dependency.", this);
-            }
-            proposals.SetCombat(CombatCommand.Create(CombatCommandType.Hold,
-                debugLabel: "Orchestrator=CombatOrchestratorLite"), false);
-            return;
-        }
-
         // ── Find closest hostile from IWorldQuery ────────────────
         int bestIndex = FindClosestHostileIndex(world, ctx);
-        Transform closestHostile = bestIndex >= 0 ? worldCache.GetActorTransformInternal(bestIndex) : null;
+        EntityId bestEntityId = bestIndex >= 0 ? world.GetActorEntityId(bestIndex) : EntityId.None;
 
-        // Unity-null coalesce for destroyed objects
-        if (closestHostile == null)
-            closestHostile = null;
-
-        // ── Build command ────────────────────────────────────────
-        CombatCommand cmd = closestHostile != null
-            ? CombatCommand.Create(CombatCommandType.AttackTarget, targetTransform: closestHostile,
+        // ── Build command (engine-agnostic: EntityId, no Transform) ──
+        CombatCommand cmd = !bestEntityId.IsNone
+            ? CombatCommand.Create(CombatCommandType.AttackTarget, targetEntityId: bestEntityId,
                 debugLabel: "Orchestrator=CombatOrchestratorLite")
             : CombatCommand.Create(CombatCommandType.Hold,
                 debugLabel: "Orchestrator=CombatOrchestratorLite");
 
         // ── Fill Top-K target set (optional) ─────────────────────
-        // IMPORTANT: One-shot resolve from IWorldQuery. If null, stays null (no retry, no registry fallback).
+        // IMPORTANT: FillTargetSet still needs OrchestrationWorldCache for Transform[] (Commit 2 removes this).
+        OrchestrationWorldCache worldCache = world as OrchestrationWorldCache;
+
         if (targetSet == null && autoResolveTargetSet && !_triedResolveTargetSet)
         {
             _triedResolveTargetSet = true;
-            targetSet = worldCache.GetCombatTargetSetInternal(); // may be null — that's ok
+            if (worldCache != null)
+                targetSet = worldCache.GetCombatTargetSetInternal(); // may be null — that's ok
         }
 
         if (targetSet != null)
-            FillTargetSet(world, worldCache, ctx);
+        {
+            if (worldCache != null)
+                FillTargetSet(world, worldCache, ctx);
+            else if (!_warnedWorldCacheCastFill)
+            {
+                _warnedWorldCacheCastFill = true;
+                Debug.LogWarning("[CombatOrchestratorLite] ctx.World is not OrchestrationWorldCache; " +
+                    "cannot fill Top-K target set. Commit 2 removes this dependency.", this);
+            }
+        }
 
         // ── Write proposal ───────────────────────────────────────
-        bool threatPresent = closestHostile != null;
+        bool threatPresent = !bestEntityId.IsNone;
         proposals.SetCombat(cmd, threatPresent);
 
         if (ctx.DebugLog || debugLog)
         {
-            string targetName = closestHostile != null ? closestHostile.name : "none";
+            string targetName = !bestEntityId.IsNone ? bestEntityId.ToStableInt().ToString() : "none";
             int topK = targetSet != null ? _topKCount : 0;
             Debug.Log(string.Concat(
-                "[CombatOrchestratorLite] Target=", targetName,
+                "[CombatOrchestratorLite] TargetEid=", targetName,
                 ", TopK=", topK.ToString(),
                 ", Mode=", searchMode.ToString()), this);
         }
@@ -208,7 +201,7 @@ public sealed class CombatOrchestratorLite : DomainOrchestrator, ICombatRolePoli
             }
         }
 
-        Vector2 anchor = ctx.Anchor;
+        Float2 anchor = ctx.Anchor;
         float aggroSqr = aggroRadius * aggroRadius;
         float bestDistSqr = float.MaxValue;
         int bestIndex = -1;
@@ -220,7 +213,7 @@ public sealed class CombatOrchestratorLite : DomainOrchestrator, ICombatRolePoli
             if (!world.GetActorIsHostile(i))
                 continue;
 
-            Vector2 actorPos = world.GetActorPosition(i);
+            Float2 actorPos = world.GetActorPosition(i);
 
             bool qualifies;
             switch (searchMode)
@@ -230,14 +223,14 @@ public sealed class CombatOrchestratorLite : DomainOrchestrator, ICombatRolePoli
                     break;
 
                 default: // Radius
-                    float distToAnchor = (actorPos - anchor).sqrMagnitude;
+                    float distToAnchor = Float2.DistanceSqr(actorPos, anchor);
                     qualifies = distToAnchor <= aggroSqr;
                     break;
             }
 
             if (!qualifies) continue;
 
-            float distSqr = (actorPos - anchor).sqrMagnitude;
+            float distSqr = Float2.DistanceSqr(actorPos, anchor);
             if (distSqr < bestDistSqr)
             {
                 bestDistSqr = distSqr;
@@ -269,7 +262,7 @@ public sealed class CombatOrchestratorLite : DomainOrchestrator, ICombatRolePoli
             if (cam == null) return;
         }
 
-        Vector2 anchor = ctx.Anchor;
+        Float2 anchor = ctx.Anchor;
         float aggroSqr = aggroRadius * aggroRadius;
 
         int actorCount = world.ActorCount;
@@ -284,7 +277,7 @@ public sealed class CombatOrchestratorLite : DomainOrchestrator, ICombatRolePoli
             if (actorTransform == null) continue;
             if (!actorTransform.gameObject.activeInHierarchy) continue;
 
-            Vector2 actorPos = world.GetActorPosition(i);
+            Float2 actorPos = world.GetActorPosition(i);
 
             bool qualifies;
             switch (searchMode)
@@ -293,13 +286,13 @@ public sealed class CombatOrchestratorLite : DomainOrchestrator, ICombatRolePoli
                     qualifies = IsOnScreen(actorPos, cam);
                     break;
                 default:
-                    qualifies = (actorPos - anchor).sqrMagnitude <= aggroSqr;
+                    qualifies = Float2.DistanceSqr(actorPos, anchor) <= aggroSqr;
                     break;
             }
 
             if (!qualifies) continue;
 
-            float distSqr = (actorPos - anchor).sqrMagnitude;
+            float distSqr = Float2.DistanceSqr(actorPos, anchor);
             InsertTopK(actorTransform, distSqr, k);
         }
 
@@ -347,9 +340,9 @@ public sealed class CombatOrchestratorLite : DomainOrchestrator, ICombatRolePoli
     //  Screen visibility helper
     // ──────────────────────────────────────────────────────────────────
 
-    bool IsOnScreen(Vector2 worldPos, Camera cam)
+    bool IsOnScreen(Float2 worldPos, Camera cam)
     {
-        Vector3 vp = cam.WorldToViewportPoint(new Vector3(worldPos.x, worldPos.y, 0f));
+        Vector3 vp = cam.WorldToViewportPoint(new Vector3(worldPos.X, worldPos.Y, 0f));
         if (vp.z <= 0f) return false;
         float m = Mathf.Max(0f, viewportMargin);
         return vp.x >= -m && vp.x <= 1f + m && vp.y >= -m && vp.y <= 1f + m;

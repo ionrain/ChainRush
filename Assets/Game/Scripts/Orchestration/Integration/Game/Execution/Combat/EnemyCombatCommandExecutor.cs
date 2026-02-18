@@ -166,21 +166,30 @@ public sealed class EnemyCombatCommandExecutor : MonoBehaviour, ICombatCommandRe
                 break;
 
             case CombatCommandType.MoveToPoint:
-                SetExternalPoint(command.TargetPoint);
+                SetExternalPoint(command.TargetPoint.ToVector2());
                 break;
 
             case CombatCommandType.MoveToTarget:
             case CombatCommandType.AttackTarget:
-                if (command.TargetTransform != null)
-                    SetExternalTarget(command.TargetTransform);
+            {
+                // IMPORTANT: EntityId→Transform resolution at Integration boundary
+                Transform resolved = command.HasEntityTarget
+                    ? EntityTransformResolver.Resolve(command.TargetEntityId) : null;
+                if (resolved != null)
+                    SetExternalTarget(resolved);
                 break;
+            }
 
             case CombatCommandType.KeepDistance:
             case CombatCommandType.HideBehind:
             case CombatCommandType.Assist:
-                if (command.TargetTransform != null)
-                    SetExternalTarget(command.TargetTransform);
+            {
+                Transform resolved = command.HasEntityTarget
+                    ? EntityTransformResolver.Resolve(command.TargetEntityId) : null;
+                if (resolved != null)
+                    SetExternalTarget(resolved);
                 break;
+            }
         }
 
         if (debugLog)
@@ -261,9 +270,16 @@ public sealed class EnemyCombatCommandExecutor : MonoBehaviour, ICombatCommandRe
 
     void LogCommand(CombatCommand command)
     {
-        string target = command.HasTarget
-            ? command.TargetTransform.name
-            : command.TargetPoint.ToString();
+        string target;
+        if (command.HasEntityTarget)
+        {
+            Transform resolved = EntityTransformResolver.Resolve(command.TargetEntityId);
+            target = resolved != null ? resolved.name : command.TargetEntityId.ToStableInt().ToString();
+        }
+        else
+        {
+            target = command.TargetPoint.ToString();
+        }
         Debug.Log($"[EnemyCombatCommandExecutor] {command.Type} → {target}" +
                   (string.IsNullOrEmpty(command.DebugLabel) ? "" : $" ({command.DebugLabel})"),
                   this);

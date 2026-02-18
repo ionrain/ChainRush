@@ -1,5 +1,3 @@
-using UnityEngine;
-
 /// <summary>
 /// Shared static utility for crowd-aware scoring and deterministic hashing.
 /// Consumed by idle policies (<see cref="IdleFillAreaPolicyAsset"/>) and combat
@@ -13,7 +11,7 @@ using UnityEngine;
 /// </para>
 /// <para>
 /// IMPORTANT: All scoring operates on <see cref="ICrowdQuery"/> + <see cref="EntityId"/>.
-/// No Transform references.
+/// No Transform references. All positions are <see cref="Float2"/>.
 /// </para>
 /// </summary>
 public static class CrowdScoringUtility
@@ -64,15 +62,18 @@ public static class CrowdScoringUtility
 
     /// <summary>
     /// Returns a deterministic random point within the XY extents of the bounds.
-    /// Z is ignored. Handles zero-size axes safely (clamps to center on that axis).
+    /// Handles zero-size axes safely (clamps to center on that axis).
     /// </summary>
-    public static Vector2 RandomPointInBounds(Bounds b, int seed)
+    public static Float2 RandomPointInBounds(AABB2D b, int seed)
     {
         float tx = Hash01(seed);
         float ty = Hash01(seed ^ 0x6C62272E);
-        float x = b.size.x > 0f ? b.min.x + tx * b.size.x : b.center.x;
-        float y = b.size.y > 0f ? b.min.y + ty * b.size.y : b.center.y;
-        return new Vector2(x, y);
+        Float2 size = b.Size;
+        Float2 min = b.Min;
+        Float2 center = b.Center;
+        float x = size.X > 0f ? min.X + tx * size.X : center.X;
+        float y = size.Y > 0f ? min.Y + ty * size.Y : center.Y;
+        return new Float2(x, y);
     }
 
     // ──────────────────────────────────────────────────────────────────
@@ -84,14 +85,13 @@ public static class CrowdScoringUtility
     /// Returns a crowd penalty score for a candidate position using <see cref="ICrowdQuery"/>.
     /// Self-skip via <paramref name="selfId"/> (skips EntityId.None entries and self).
     /// <para>
-    /// IMPORTANT: This is the primary scoring function. Transform-based overloads delegate here
-    /// after gathering positions.
+    /// IMPORTANT: This is the primary scoring function.
     /// </para>
     /// </summary>
     public static float ScoreCrowdPenalty(
         ICrowdQuery crowd,
         EntityId selfId,
-        Vector2 candidatePosition,
+        Float2 candidatePosition,
         float personalSpaceSqr,
         float crowdRadiusSqr,
         float personalSpacePenalty = 1000f)
@@ -103,8 +103,8 @@ public static class CrowdScoringUtility
             EntityId eid = crowd.GetCrowdEntityId(i);
             if (!selfId.IsNone && eid == selfId) continue;
 
-            Vector2 crowdPos = crowd.GetCrowdPosition(i);
-            float sqrDist = (crowdPos - candidatePosition).sqrMagnitude;
+            Float2 crowdPos = crowd.GetCrowdPosition(i);
+            float sqrDist = Float2.DistanceSqr(crowdPos, candidatePosition);
 
             if (sqrDist < personalSpaceSqr)
                 score += personalSpacePenalty;
@@ -122,7 +122,7 @@ public static class CrowdScoringUtility
     public static int CountNear(
         ICrowdQuery crowd,
         EntityId selfId,
-        Vector2 position,
+        Float2 position,
         float radiusSqr)
     {
         int count = 0;
@@ -132,7 +132,7 @@ public static class CrowdScoringUtility
             EntityId eid = crowd.GetCrowdEntityId(i);
             if (!selfId.IsNone && eid == selfId) continue;
 
-            float sqr = (crowd.GetCrowdPosition(i) - position).sqrMagnitude;
+            float sqr = Float2.DistanceSqr(crowd.GetCrowdPosition(i), position);
             if (sqr <= radiusSqr)
                 count++;
         }
@@ -146,7 +146,7 @@ public static class CrowdScoringUtility
     public static bool IsCrowded(
         ICrowdQuery crowd,
         EntityId selfId,
-        Vector2 position,
+        Float2 position,
         float personalSpaceSqr,
         int minNeighbors = 2)
     {
@@ -157,7 +157,7 @@ public static class CrowdScoringUtility
             EntityId eid = crowd.GetCrowdEntityId(i);
             if (!selfId.IsNone && eid == selfId) continue;
 
-            float sqr = (crowd.GetCrowdPosition(i) - position).sqrMagnitude;
+            float sqr = Float2.DistanceSqr(crowd.GetCrowdPosition(i), position);
             if (sqr <= personalSpaceSqr)
             {
                 count++;

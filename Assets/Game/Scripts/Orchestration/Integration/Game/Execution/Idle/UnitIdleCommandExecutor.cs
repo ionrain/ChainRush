@@ -99,7 +99,7 @@ public sealed class UnitIdleCommandExecutor : MonoBehaviour, IIdleCommandReceive
 
             case IdleCommandType.MoveToPoint:
                 EnsureWaypoint();
-                _waypoint.position = new Vector3(command.TargetPoint.x, command.TargetPoint.y, 0f);
+                _waypoint.position = new Vector3(command.TargetPoint.X, command.TargetPoint.Y, 0f);
                 _unit.SetTarget(_waypoint);
                 break;
 

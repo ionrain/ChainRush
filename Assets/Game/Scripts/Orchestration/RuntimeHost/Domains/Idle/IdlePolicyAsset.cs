@@ -45,14 +45,6 @@ public abstract class IdlePolicyAsset : ScriptableObject
     /// (e.g. <see cref="IdleRingSlotPolicyAsset"/>).
     /// </para>
     /// </summary>
-    /// <param name="self">The unit's own transform.</param>
-    /// <param name="anchor">Orchestrator-defined anchor point.</param>
-    /// <param name="now"><see cref="Time.time"/> at tick start.</param>
-    /// <param name="roleSeed">Stable seed for the role (typically <c>RoleAsset.GetInstanceID()</c>).
-    /// Session-stable only. If cross-session determinism is needed, use a serialized
-    /// seed on RoleAsset or hash RoleAsset.Id.</param>
-    /// <param name="entitySeed">Stable per-entity seed (from <see cref="IEntityIdProvider.GetEntityId"/> via ToStableInt).</param>
-    /// <param name="debugInfo">Short debug string (null is fine; avoid allocations).</param>
     public virtual IdleCommand ChooseCommand(
         Transform self, Vector2 anchor, float now,
         int roleSeed, int entitySeed,
@@ -69,23 +61,23 @@ public abstract class IdlePolicyAsset : ScriptableObject
     /// this when dispatching per-unit idle commands.
     /// </para>
     /// </summary>
-    /// <param name="selfPosition">The unit's current position.</param>
+    /// <param name="selfPosition">The unit's current position (Float2).</param>
     /// <param name="selfId">The unit's stable <see cref="EntityId"/>.</param>
-    /// <param name="anchor">Orchestrator-defined anchor point.</param>
-    /// <param name="now"><see cref="Time.time"/> at tick start.</param>
+    /// <param name="anchor">Orchestrator-defined anchor point (Float2).</param>
+    /// <param name="now">Tick time.</param>
     /// <param name="roleSeed">Stable seed for the role.</param>
     /// <param name="entitySeed">Stable per-entity seed (from EntityId.ToStableInt).</param>
     /// <param name="world">Read-only world snapshot for crowd scoring and role lookups.</param>
     /// <param name="debugInfo">Short debug string (null is fine; avoid allocations).</param>
     public virtual IdleCommand ChooseCommand(
-        Vector2 selfPosition, EntityId selfId,
-        Vector2 anchor, float now,
+        Float2 selfPosition, EntityId selfId,
+        Float2 anchor, float now,
         int roleSeed, int entitySeed,
         IWorldQuery world,
         out string debugInfo)
     {
         // Default: delegate to seed-based overload (ignores world).
         // Policies that need crowd data override this directly.
-        return ChooseCommand(null, anchor, now, roleSeed, entitySeed, out debugInfo);
+        return ChooseCommand(null, anchor.ToVector2(), now, roleSeed, entitySeed, out debugInfo);
     }
 }

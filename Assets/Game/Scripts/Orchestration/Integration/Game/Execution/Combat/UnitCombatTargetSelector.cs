@@ -6,10 +6,9 @@ using UnityEngine.Serialization;
 /// via typed <see cref="CombatTargetingPolicyAsset"/> ScriptableObjects.
 /// <para>
 /// IMPORTANT — Without a policy asset assigned (both <see cref="overridePolicy"/> and
-/// <see cref="defaultPolicy"/> null), this component is a passthrough: it returns
-/// the orchestrator-chosen primary target unchanged (<c>command.TargetTransform</c>).
-/// This component is optional; if absent, the executor uses
-/// <see cref="CombatCommand.TargetTransform"/> directly.
+/// <see cref="defaultPolicy"/> null), this component is a passthrough: it resolves
+/// the orchestrator-chosen primary target via <see cref="EntityTransformResolver"/>.
+/// This component is optional; if absent, the executor resolves EntityId→Transform directly.
 /// </para>
 /// <para>
 /// Variant B binding: If <see cref="autoResolveTargetSet"/> is true and no
@@ -40,7 +39,7 @@ public sealed class UnitCombatTargetSelector : MonoBehaviour, ICombatTargetPolic
     [SerializeField] CombatTargetingPolicyAsset overridePolicy;
 
     [Tooltip("Scene/prefab default policy. If both policy and defaultPolicy are null, " +
-             "returns command.TargetTransform (PrimaryTarget equivalent).")]
+             "resolves command.TargetEntityId via EntityTransformResolver (PrimaryTarget equivalent).")]
     [SerializeField] CombatTargetingPolicyAsset defaultPolicy;
 
     [SerializeField] bool debugLog;
@@ -125,6 +124,8 @@ public sealed class UnitCombatTargetSelector : MonoBehaviour, ICombatTargetPolic
 
     /// <summary>
     /// Selects the target transform this unit should pursue for the given command.
+    /// IMPORTANT: Resolves <see cref="CombatCommand.TargetEntityId"/> → Transform via
+    /// <see cref="EntityTransformResolver"/> at this Integration boundary.
     /// Returns null to indicate "no target" (executor will fall back to Hold).
     /// </summary>
     public Transform SelectTarget(in CombatCommand command)
@@ -136,7 +137,11 @@ public sealed class UnitCombatTargetSelector : MonoBehaviour, ICombatTargetPolic
         if (targetSet == null && autoResolveTargetSet && !_triedResolveTargetSet)
             TryResolveTargetSet();
 
-        Transform primary = command.TargetTransform;
+        // Resolve EntityId → Transform at Integration boundary
+        Transform primary = command.HasEntityTarget
+            ? EntityTransformResolver.Resolve(command.TargetEntityId)
+            : null;
+
         CombatTargetingPolicyAsset active = ResolvePolicy();
 
         if (active != null)

@@ -67,22 +67,22 @@ public sealed class OrchestrationWorldCache : IWorldQuery
     //  IWorldQuery snapshot data — snapshotted during build, frozen for domains
     // ──────────────────────────────────────────────────────────────────
 
-    Vector2 _anchor;
+    Float2 _anchor;
     float _now;
 
     // Actor snapshots (parallel lists, same indices as Actors)
-    readonly List<Vector2> _actorPositions = new List<Vector2>(256);
+    readonly List<Float2> _actorPositions = new List<Float2>(256);
     readonly List<EntityId> _actorEntityIds = new List<EntityId>(256);
     readonly List<bool> _actorHostile = new List<bool>(256);
     readonly List<bool> _actorAlive = new List<bool>(256);
 
     // Crowd snapshots (IWorldQuery-visible, parallel to FriendlyCrowdTransforms)
-    readonly List<Vector2> _crowdPositions = new List<Vector2>(128);
+    readonly List<Float2> _crowdPositions = new List<Float2>(128);
     readonly List<EntityId> _crowdEntityIds = new List<EntityId>(128);
 
     // Per-entity role lookup (EntityId → role key)
     readonly Dictionary<EntityId, int> _roleKeyByEntityId = new Dictionary<EntityId, int>(128);
-    readonly Dictionary<int, Bounds> _idleBoundsByRoleKey = new Dictionary<int, Bounds>(16);
+    readonly Dictionary<int, AABB2D> _idleBoundsByRoleKey = new Dictionary<int, AABB2D>(16);
 
     // ──────────────────────────────────────────────────────────────────
     //  Freeze lifecycle — #if DEBUG mutation assertions
@@ -109,7 +109,7 @@ public sealed class OrchestrationWorldCache : IWorldQuery
     //  Anchor / Now — set during build, before freeze
     // ──────────────────────────────────────────────────────────────────
 
-    public Vector2 Anchor
+    public Float2 Anchor
     {
         get => _anchor;
         set
@@ -156,7 +156,7 @@ public sealed class OrchestrationWorldCache : IWorldQuery
             IOrchestrationActor actor = Actors[i];
             Transform t = actor.GetTransform();
 
-            _actorPositions.Add((Vector2)t.position);
+            _actorPositions.Add(((Vector2)t.position).ToFloat2());
             _actorAlive.Add(actor.IsAlive());
 
             bool isHostile = false;
@@ -192,7 +192,7 @@ public sealed class OrchestrationWorldCache : IWorldQuery
         for (int i = 0; i < FriendlyCrowdTransforms.Count; i++)
         {
             Transform t = FriendlyCrowdTransforms[i];
-            _crowdPositions.Add((Vector2)t.position);
+            _crowdPositions.Add(((Vector2)t.position).ToFloat2());
 
             IEntityIdProvider idp = t.GetComponent<IEntityIdProvider>();
             _crowdEntityIds.Add(idp != null ? idp.GetEntityId() : EntityId.None);
@@ -229,7 +229,7 @@ public sealed class OrchestrationWorldCache : IWorldQuery
         {
             RoleAsset role = kvp.Key;
             if (role == null) continue;
-            _idleBoundsByRoleKey[role.GetInstanceID()] = kvp.Value;
+            _idleBoundsByRoleKey[role.GetInstanceID()] = kvp.Value.ToAABB2D();
         }
     }
 
@@ -251,12 +251,12 @@ public sealed class OrchestrationWorldCache : IWorldQuery
     //  IWorldQueryBase
     // ──────────────────────────────────────────────────────────────────
 
-    Vector2 IWorldQueryBase.Anchor => _anchor;
+    Float2 IWorldQueryBase.Anchor => _anchor;
     float IWorldQueryBase.Now => _now;
 
     public int ActorCount => _actorPositions.Count;
     public EntityId GetActorEntityId(int index) => _actorEntityIds[index];
-    public Vector2 GetActorPosition(int index) => _actorPositions[index];
+    public Float2 GetActorPosition(int index) => _actorPositions[index];
     public bool GetActorIsAlive(int index) => _actorAlive[index];
     public bool GetActorIsHostile(int index) => _actorHostile[index];
 
@@ -265,7 +265,7 @@ public sealed class OrchestrationWorldCache : IWorldQuery
     // ──────────────────────────────────────────────────────────────────
 
     public int CrowdCount => _crowdPositions.Count;
-    public Vector2 GetCrowdPosition(int index) => _crowdPositions[index];
+    public Float2 GetCrowdPosition(int index) => _crowdPositions[index];
     public EntityId GetCrowdEntityId(int index) => _crowdEntityIds[index];
 
     // ──────────────────────────────────────────────────────────────────
@@ -281,7 +281,7 @@ public sealed class OrchestrationWorldCache : IWorldQuery
     //  IIdleBoundsQuery
     // ──────────────────────────────────────────────────────────────────
 
-    public bool TryGetIdleBounds(int roleKey, out Bounds bounds)
+    public bool TryGetIdleBounds(int roleKey, out AABB2D bounds)
     {
         return _idleBoundsByRoleKey.TryGetValue(roleKey, out bounds);
     }

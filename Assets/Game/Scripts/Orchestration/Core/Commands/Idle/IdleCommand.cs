@@ -1,8 +1,6 @@
-using UnityEngine;
-
 /// <summary>
-/// Lightweight command struct for the Idle domain.
-/// Issued by <see cref="IdleOrchestratorLite"/> and consumed by <see cref="IIdleCommandReceiver"/>.
+/// Engine-agnostic idle command struct.
+/// IMPORTANT: Contains ONLY Float2, enums, primitives, string. Zero Unity types.
 /// </summary>
 /// <remarks>
 /// IMPORTANT: <see cref="StopDistance"/> is data-only in Step R1. The executor does NOT enforce
@@ -13,7 +11,7 @@ using UnityEngine;
 public struct IdleCommand
 {
     public IdleCommandType Type;
-    public Vector2 TargetPoint;
+    public Float2 TargetPoint;
     /// <summary>Data-only in Step R1. Not enforced by executor. See remarks.</summary>
     public float StopDistance;
     public string DebugLabel;
@@ -30,7 +28,7 @@ public struct IdleCommand
         };
     }
 
-    public static IdleCommand MoveToPoint(Vector2 point, float stopDistance = 0.2f, string debugLabel = null)
+    public static IdleCommand MoveToPoint(Float2 point, float stopDistance = 0.2f, string debugLabel = null)
     {
         return new IdleCommand
         {

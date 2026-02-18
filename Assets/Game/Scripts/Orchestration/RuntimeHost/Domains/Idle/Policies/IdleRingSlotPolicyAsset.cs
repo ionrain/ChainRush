@@ -56,8 +56,8 @@ public sealed class IdleRingSlotPolicyAsset : IdlePolicyAsset
         float jitter = (Hash01(seed * 48611) * 2f - 1f) * angleJitterDegrees;
         float angleRad = (baseAngle + jitter) * Mathf.Deg2Rad;
 
-        Vector2 dir = new Vector2(Mathf.Cos(angleRad), Mathf.Sin(angleRad));
-        Vector2 point = anchor + dir * radius;
+        Float2 dir = new Float2(Mathf.Cos(angleRad), Mathf.Sin(angleRad));
+        Float2 point = anchor.ToFloat2() + dir * radius;
 
         debugInfo = null;
         return IdleCommand.MoveToPoint(point, stopDistance);

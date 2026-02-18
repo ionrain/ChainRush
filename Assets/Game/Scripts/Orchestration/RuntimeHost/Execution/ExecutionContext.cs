@@ -1,5 +1,3 @@
-using UnityEngine;
-
 /// <summary>
 /// Read-only configuration snapshot passed to <see cref="ExecutionRouter.Execute"/>.
 /// Populated by the arbiter each tick from serialized fields and domain-sourced policy maps.
@@ -13,7 +11,7 @@ public struct ExecutionContext
     public CombatCommand CombatCommand;
     public FactionAsset OrchestratorFaction;
     public FactionRelationTableAsset Relations;
-    public Vector2 Anchor;
+    public Float2 Anchor;
     public float Now;
     public bool DebugLog;
 }

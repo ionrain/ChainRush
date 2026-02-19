@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: RangeRole
   m_EditorClassIdentifier: Assembly-CSharp::RoleAsset
   id: Range
+  contentId: 2

@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: WarriorRole
   m_EditorClassIdentifier: Assembly-CSharp::RoleAsset
   id: Warrior
+  contentId: 1

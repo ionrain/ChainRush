@@ -1245,11 +1245,11 @@ MonoBehaviour:
     SerializationNodes:
     - Name: heroPrefabs
       Entry: 7
-      Data: 0|System.Collections.Generic.Dictionary`2[[LevelGoalType, Assembly-CSharp],[Unit,
-        Assembly-CSharp]], mscorlib
+      Data: 0|System.Collections.Generic.Dictionary`2[[LevelGoalType, Game.Runtime],[Unit,
+        Game.Runtime]], mscorlib
     - Name: comparer
       Entry: 7
-      Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[LevelGoalType, Assembly-CSharp]],
+      Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[LevelGoalType, Game.Runtime]],
         mscorlib
     - Name: 
       Entry: 12
@@ -1295,11 +1295,11 @@ MonoBehaviour:
       Data: 
     - Name: spawnAreas
       Entry: 7
-      Data: 2|System.Collections.Generic.Dictionary`2[[UnitClass, Assembly-CSharp],[UnityEngine.BoxCollider2D,
+      Data: 2|System.Collections.Generic.Dictionary`2[[UnitClass, Game.Runtime],[UnityEngine.BoxCollider2D,
         UnityEngine.Physics2DModule]], mscorlib
     - Name: comparer
       Entry: 7
-      Data: 3|System.Collections.Generic.EnumEqualityComparer`1[[UnitClass, Assembly-CSharp]],
+      Data: 3|System.Collections.Generic.EnumEqualityComparer`1[[UnitClass, Game.Runtime]],
         mscorlib
     - Name: 
       Entry: 12
@@ -8714,6 +8714,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 258903835}
+  - component: {fileID: 258903845}
+  - component: {fileID: 258903844}
+  - component: {fileID: 258903843}
+  - component: {fileID: 258903842}
   - component: {fileID: 258903840}
   - component: {fileID: 258903836}
   - component: {fileID: 258903841}
@@ -8819,7 +8823,6 @@ MonoBehaviour:
   domainOrchestrators:
   - {fileID: 258903836}
   - {fileID: 258903841}
-  tickInterval: 0.8
   combatMinActiveTime: 0.8
   combatCooldownAfterThreat: 0.6
   debugLog: 1
@@ -8837,6 +8840,59 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::IdleOrchestratorLite
   rolePolicyMap: {fileID: 11400000, guid: be3df890ebcb24f3b8fe327265fc0914, type: 2}
   debugLog: 1
+--- !u!114 &258903842
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 258903834}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2525935fb2c864d619ad53fa93cbbb05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Morboo.Integration.StrategyCombat::CombatCommandAdapter
+  orchestrationLoopComponent: {fileID: 258903844}
+--- !u!114 &258903843
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 258903834}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61219c0a7d4054263baadd04228eb2f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Morboo.Integration.StrategyCombat::IdleCommandAdapter
+  orchestrationLoopComponent: {fileID: 258903844}
+--- !u!114 &258903844
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 258903834}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bea2bd02652a540c38e0bcb85d275f6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Morboo.Integration.StrategyCombat::OrchestrationLoop
+  tickSourceComponent: {fileID: 258903845}
+  arbiter: {fileID: 258903840}
+--- !u!114 &258903845
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 258903834}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99438466c81264d42853029c8993616a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Morboo.Systems::RealtimeScheduler
+  tickInterval: 0.8
 --- !u!1 &260744812
 GameObject:
   m_ObjectHideFlags: 0
@@ -12441,11 +12497,11 @@ MonoBehaviour:
       Data: 
     - Name: spawnSides
       Entry: 7
-      Data: 2|System.Collections.Generic.Dictionary`2[[SpawnSide, Assembly-CSharp],[UnityEngine.Collider2D,
+      Data: 2|System.Collections.Generic.Dictionary`2[[SpawnSide, Game.Runtime],[UnityEngine.Collider2D,
         UnityEngine.Physics2DModule]], mscorlib
     - Name: comparer
       Entry: 7
-      Data: 3|System.Collections.Generic.EnumEqualityComparer`1[[SpawnSide, Assembly-CSharp]],
+      Data: 3|System.Collections.Generic.EnumEqualityComparer`1[[SpawnSide, Game.Runtime]],
         mscorlib
     - Name: 
       Entry: 12
@@ -26055,7 +26111,7 @@ MonoBehaviour:
     - Name: dropList
       Entry: 7
       Data: 2|System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[DropData,
-        Assembly-CSharp]], mscorlib
+        Game.Runtime]], mscorlib
     - Name: comparer
       Entry: 7
       Data: 3|System.Collections.Generic.GenericEqualityComparer`1[[System.Int32,
@@ -26074,7 +26130,7 @@ MonoBehaviour:
       Data: 0
     - Name: $v
       Entry: 7
-      Data: 4|DropData, Assembly-CSharp
+      Data: 4|DropData, Game.Runtime
     - Name: emptyProbability
       Entry: 4
       Data: 0
@@ -26124,7 +26180,7 @@ MonoBehaviour:
       Data: 1
     - Name: $v
       Entry: 7
-      Data: 7|DropData, Assembly-CSharp
+      Data: 7|DropData, Game.Runtime
     - Name: emptyProbability
       Entry: 4
       Data: 0
@@ -26174,7 +26230,7 @@ MonoBehaviour:
       Data: 2
     - Name: $v
       Entry: 7
-      Data: 10|DropData, Assembly-CSharp
+      Data: 10|DropData, Game.Runtime
     - Name: emptyProbability
       Entry: 4
       Data: 0
@@ -26224,7 +26280,7 @@ MonoBehaviour:
       Data: 3
     - Name: $v
       Entry: 7
-      Data: 13|DropData, Assembly-CSharp
+      Data: 13|DropData, Game.Runtime
     - Name: emptyProbability
       Entry: 4
       Data: 0
@@ -26780,11 +26836,11 @@ MonoBehaviour:
       Data: 
     - Name: itemPrefabs
       Entry: 7
-      Data: 0|System.Collections.Generic.Dictionary`2[[RewardType, Assembly-CSharp],[IconTextItem,
-        Assembly-CSharp]], mscorlib
+      Data: 0|System.Collections.Generic.Dictionary`2[[RewardType, Game.Runtime],[IconTextItem,
+        Game.Runtime]], mscorlib
     - Name: comparer
       Entry: 7
-      Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[RewardType, Assembly-CSharp]],
+      Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[RewardType, Game.Runtime]],
         mscorlib
     - Name: 
       Entry: 12
@@ -27300,11 +27356,11 @@ MonoBehaviour:
     SerializationNodes:
     - Name: cellColors
       Entry: 7
-      Data: 0|System.Collections.Generic.Dictionary`2[[CellItemType, Assembly-CSharp],[UnityEngine.Color,
+      Data: 0|System.Collections.Generic.Dictionary`2[[CellItemType, Game.Runtime],[UnityEngine.Color,
         UnityEngine.CoreModule]], mscorlib
     - Name: comparer
       Entry: 7
-      Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[CellItemType, Assembly-CSharp]],
+      Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[CellItemType, Game.Runtime]],
         mscorlib
     - Name: 
       Entry: 12
@@ -35982,11 +36038,11 @@ MonoBehaviour:
     SerializationNodes:
     - Name: itemPrefabs
       Entry: 7
-      Data: 0|System.Collections.Generic.Dictionary`2[[CellItemType, Assembly-CSharp],[IconMultiTextItem,
-        Assembly-CSharp]], mscorlib
+      Data: 0|System.Collections.Generic.Dictionary`2[[CellItemType, Game.Runtime],[IconMultiTextItem,
+        Game.Runtime]], mscorlib
     - Name: comparer
       Entry: 7
-      Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[CellItemType, Assembly-CSharp]],
+      Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[CellItemType, Game.Runtime]],
         mscorlib
     - Name: 
       Entry: 12
@@ -45978,11 +46034,11 @@ MonoBehaviour:
     SerializationNodes:
     - Name: steps
       Entry: 7
-      Data: 0|System.Collections.Generic.Dictionary`2[[TutorialStep, Assembly-CSharp],[TutorialPanel,
-        Assembly-CSharp]], mscorlib
+      Data: 0|System.Collections.Generic.Dictionary`2[[TutorialStep, Game.Runtime],[TutorialPanel,
+        Game.Runtime]], mscorlib
     - Name: comparer
       Entry: 7
-      Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[TutorialStep, Assembly-CSharp]],
+      Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[TutorialStep, Game.Runtime]],
         mscorlib
     - Name: 
       Entry: 12
@@ -80063,11 +80119,11 @@ MonoBehaviour:
       Data: 
     - Name: itemPrefabs
       Entry: 7
-      Data: 0|System.Collections.Generic.Dictionary`2[[RewardType, Assembly-CSharp],[IconTextItem,
-        Assembly-CSharp]], mscorlib
+      Data: 0|System.Collections.Generic.Dictionary`2[[RewardType, Game.Runtime],[IconTextItem,
+        Game.Runtime]], mscorlib
     - Name: comparer
       Entry: 7
-      Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[RewardType, Assembly-CSharp]],
+      Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[RewardType, Game.Runtime]],
         mscorlib
     - Name: 
       Entry: 12
@@ -98030,11 +98086,11 @@ MonoBehaviour:
       Data: 
     - Name: itemPrefabs
       Entry: 7
-      Data: 0|System.Collections.Generic.Dictionary`2[[RewardType, Assembly-CSharp],[IconTextItem,
-        Assembly-CSharp]], mscorlib
+      Data: 0|System.Collections.Generic.Dictionary`2[[RewardType, Game.Runtime],[IconTextItem,
+        Game.Runtime]], mscorlib
     - Name: comparer
       Entry: 7
-      Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[RewardType, Assembly-CSharp]],
+      Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[RewardType, Game.Runtime]],
         mscorlib
     - Name: 
       Entry: 12
@@ -108537,7 +108593,7 @@ MonoBehaviour:
     - Name: dropList
       Entry: 7
       Data: 2|System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[DropData,
-        Assembly-CSharp]], mscorlib
+        Game.Runtime]], mscorlib
     - Name: comparer
       Entry: 7
       Data: 3|System.Collections.Generic.GenericEqualityComparer`1[[System.Int32,
@@ -108556,7 +108612,7 @@ MonoBehaviour:
       Data: 0
     - Name: $v
       Entry: 7
-      Data: 4|DropData, Assembly-CSharp
+      Data: 4|DropData, Game.Runtime
     - Name: emptyProbability
       Entry: 4
       Data: 0.5
@@ -108606,7 +108662,7 @@ MonoBehaviour:
       Data: 1
     - Name: $v
       Entry: 7
-      Data: 7|DropData, Assembly-CSharp
+      Data: 7|DropData, Game.Runtime
     - Name: emptyProbability
       Entry: 4
       Data: 0.5
@@ -108668,7 +108724,7 @@ MonoBehaviour:
       Data: 2
     - Name: $v
       Entry: 7
-      Data: 10|DropData, Assembly-CSharp
+      Data: 10|DropData, Game.Runtime
     - Name: emptyProbability
       Entry: 4
       Data: 0
@@ -108718,7 +108774,7 @@ MonoBehaviour:
       Data: 3
     - Name: $v
       Entry: 7
-      Data: 13|DropData, Assembly-CSharp
+      Data: 13|DropData, Game.Runtime
     - Name: emptyProbability
       Entry: 4
       Data: 0.5

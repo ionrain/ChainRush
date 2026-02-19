@@ -7,10 +7,13 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "PrimaryTargetPolicy", menuName = "Game/Orchestration/Combat/Targeting Policies/Primary Target")]
 public sealed class PrimaryTargetPolicyAsset : CombatTargetingPolicyAsset
 {
-    public override Transform ChooseTarget(
-        Transform self,
-        Transform primaryTarget,
+    public override EntityId ChooseTarget(
+        EntityId selfEntityId,
+        Float2 selfPosition,
+        EntityId primaryTarget,
         CombatTargetSet targetSet,
+        float now,
+        IWorldQueryBase world,
         out string debugInfo)
     {
         debugInfo = "PrimaryTarget";

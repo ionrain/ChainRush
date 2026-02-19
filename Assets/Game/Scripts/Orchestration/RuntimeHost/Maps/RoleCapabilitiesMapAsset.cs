@@ -48,9 +48,42 @@ public sealed class RoleCapabilitiesMapAsset : ScriptableObject
         return false;
     }
 
+    // ── Lazy RoleId-keyed cache for RuntimeHost consumption ──────────
+
+    Dictionary<RoleId, CapabilitiesProfile> _byRoleId;
+
+    /// <summary>
+    /// Lookup by <see cref="RoleId"/> for RuntimeHost code.
+    /// IMPORTANT: RuntimeHost must use this overload, never the RoleAsset one.
+    /// </summary>
+    public bool TryGet(RoleId roleId, out CapabilitiesProfile profile)
+    {
+        if (roleId.IsNone) { profile = null; return false; }
+
+        if (_byRoleId == null)
+            RebuildRoleIdCache();
+
+        return _byRoleId.TryGetValue(roleId, out profile);
+    }
+
+    void RebuildRoleIdCache()
+    {
+        _byRoleId = new Dictionary<RoleId, CapabilitiesProfile>(entries != null ? entries.Count : 0);
+        if (entries == null) return;
+        for (int i = 0; i < entries.Count; i++)
+        {
+            if (entries[i].Role == null || entries[i].Profile == null) continue;
+            RoleId rid = entries[i].Role.RoleId;
+            if (rid.IsNone) continue;
+            if (!_byRoleId.ContainsKey(rid))
+                _byRoleId[rid] = entries[i].Profile;
+        }
+    }
+
 #if UNITY_EDITOR
     void OnValidate()
     {
+        _byRoleId = null; // Invalidate lazy cache on inspector changes
         if (entries == null) return;
 
         for (int i = 0; i < entries.Count; i++)

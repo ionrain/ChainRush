@@ -11,6 +11,10 @@ using UnityEngine.Serialization;
 /// This component is optional; if absent, the executor resolves EntityId→Transform directly.
 /// </para>
 /// <para>
+/// IMPORTANT — Policies operate on EntityId + Float2 + IWorldQueryBase (no Transform).
+/// This component resolves the returned EntityId → Transform at the Integration boundary.
+/// </para>
+/// <para>
 /// Variant B binding: If <see cref="autoResolveTargetSet"/> is true and no
 /// <see cref="targetSet"/> is assigned, resolves from <see cref="OrchestrationRegistry"/>
 /// by faction. Supports HOT REBIND: if the set was not available at OnEnable
@@ -42,6 +46,11 @@ public sealed class UnitCombatTargetSelector : MonoBehaviour, ICombatTargetPolic
              "resolves command.TargetEntityId via EntityTransformResolver (PrimaryTarget equivalent).")]
     [SerializeField] CombatTargetingPolicyAsset defaultPolicy;
 
+    [Header("World Query")]
+    [Tooltip("Optional IWorldQuery provider for targeting policies. If null, policies " +
+             "that need world data will fall back to primary target.")]
+    [SerializeField] MonoBehaviour worldQueryProvider;
+
     [SerializeField] bool debugLog;
 
     // ──────────────────────────────────────────────────────────────────
@@ -60,6 +69,11 @@ public sealed class UnitCombatTargetSelector : MonoBehaviour, ICombatTargetPolic
     /// Cleared in OnEnable for pooling safety.
     /// </summary>
     CombatTargetingPolicyAsset _runtimeDefaultPolicy;
+
+    /// <summary>
+    /// Cached IWorldQueryBase from worldQueryProvider or arbiter injection.
+    /// </summary>
+    IWorldQueryBase _worldQuery;
 
     // ──────────────────────────────────────────────────────────────────
     //  Editor convenience
@@ -88,6 +102,7 @@ public sealed class UnitCombatTargetSelector : MonoBehaviour, ICombatTargetPolic
         // Reset for pooling: old refs may be stale after scene change / re-pool.
         _triedResolveTargetSet = false;
         _runtimeDefaultPolicy = null;
+        _worldQuery = null;
         TryResolveTargetSet();
     }
 
@@ -112,6 +127,15 @@ public sealed class UnitCombatTargetSelector : MonoBehaviour, ICombatTargetPolic
     }
 
     /// <summary>
+    /// Injects a world query reference for targeting policies.
+    /// Called by the arbiter/adapter each tick or on setup.
+    /// </summary>
+    public void SetWorldQuery(IWorldQueryBase world)
+    {
+        _worldQuery = world;
+    }
+
+    /// <summary>
     /// Resolves the active policy using strict precedence:
     /// overridePolicy → runtime default (arbiter-injected) → defaultPolicy → null (passthrough).
     /// </summary>
@@ -124,8 +148,8 @@ public sealed class UnitCombatTargetSelector : MonoBehaviour, ICombatTargetPolic
 
     /// <summary>
     /// Selects the target transform this unit should pursue for the given command.
-    /// IMPORTANT: Resolves <see cref="CombatCommand.TargetEntityId"/> → Transform via
-    /// <see cref="EntityTransformResolver"/> at this Integration boundary.
+    /// IMPORTANT: Policies return EntityId. This method resolves EntityId → Transform
+    /// via <see cref="EntityTransformResolver"/> at the Integration boundary.
     /// Returns null to indicate "no target" (executor will fall back to Hold).
     /// </summary>
     public Transform SelectTarget(in CombatCommand command)
@@ -137,17 +161,32 @@ public sealed class UnitCombatTargetSelector : MonoBehaviour, ICombatTargetPolic
         if (targetSet == null && autoResolveTargetSet && !_triedResolveTargetSet)
             TryResolveTargetSet();
 
-        // Resolve EntityId → Transform at Integration boundary
-        Transform primary = command.HasEntityTarget
-            ? EntityTransformResolver.Resolve(command.TargetEntityId)
-            : null;
-
         CombatTargetingPolicyAsset active = ResolvePolicy();
 
         if (active != null)
         {
+            // Build policy inputs at Integration boundary
+            EntityId selfId = _identity != null ? _identity.GetEntityId() : EntityId.None;
+            Float2 selfPos = ((Vector2)transform.position).ToFloat2();
+
+            // Resolve world query: injected > inspector provider
+            IWorldQueryBase world = _worldQuery;
+            if (world == null && worldQueryProvider != null)
+                world = worldQueryProvider as IWorldQueryBase;
+
             string debugInfo;
-            Transform result = active.ChooseTarget(transform, primary, targetSet, out debugInfo);
+            EntityId resultId = active.ChooseTarget(
+                selfId, selfPos,
+                command.TargetEntityId,
+                targetSet,
+                Time.time,
+                world,
+                out debugInfo);
+
+            // Resolve EntityId → Transform at Integration boundary
+            Transform result = !resultId.IsNone
+                ? EntityTransformResolver.Resolve(resultId)
+                : null;
 
             if (debugLog)
             {
@@ -158,8 +197,10 @@ public sealed class UnitCombatTargetSelector : MonoBehaviour, ICombatTargetPolic
             return result;
         }
 
-        // No policy assigned: passthrough (PrimaryTarget equivalent).
-        return primary;
+        // No policy assigned: passthrough — resolve EntityId → Transform directly.
+        return command.HasEntityTarget
+            ? EntityTransformResolver.Resolve(command.TargetEntityId)
+            : null;
     }
 
     // ──────────────────────────────────────────────────────────────────

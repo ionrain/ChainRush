@@ -46,22 +46,34 @@ public sealed class OrchestrationWorldCache : IWorldQuery
     internal readonly HashSet<Transform> CrowdDedup = new HashSet<Transform>(256);
 
     /// <summary>
-    /// Per-transform role lookup, resolved once per tick from friendly receivers (RuntimeHost-internal).
-    /// Public world contracts expose this as role keys, not ScriptableObject references.
+    /// Per-transform RoleId lookup, resolved once per tick from friendly receivers (RuntimeHost-internal).
+    /// IMPORTANT: Stores RoleId (Framework value type), not RoleAsset (ScriptableObject).
+    /// RoleAsset → RoleId conversion happens during BuildWorldCache at the Integration boundary.
     /// </summary>
-    public readonly Dictionary<Transform, RoleAsset> RoleByTransform = new Dictionary<Transform, RoleAsset>(128);
+    public readonly Dictionary<Transform, RoleId> RoleByTransform = new Dictionary<Transform, RoleId>(128);
 
     /// <summary>
     /// Per-role idle bounds, resolved from IdleBoundsRegistry once per tick.
-    /// Internal typed cache. Public world contracts expose int role keys only.
+    /// IMPORTANT: Keyed by RoleId, not RoleAsset. Stores AABB2D (Framework type).
     /// </summary>
-    public readonly Dictionary<RoleAsset, Bounds> ResolvedIdleBounds = new Dictionary<RoleAsset, Bounds>(4);
+    public readonly Dictionary<RoleId, AABB2D> ResolvedIdleBounds = new Dictionary<RoleId, AABB2D>(4);
 
     /// <summary>
     /// Combat target set resolved from OrchestrationRegistry once per tick.
     /// RuntimeHost-internal only.
     /// </summary>
     public CombatTargetSet ResolvedCombatTargetSet;
+
+    // ──────────────────────────────────────────────────────────────────
+    //  Receiver identity snapshots — parallel to receiver lists
+    //  IMPORTANT: Built by SnapshotReceivers() after RoleByTransform is populated.
+    //  The ExecutionRouter iterates these instead of touching MonoBehaviour receivers.
+    // ──────────────────────────────────────────────────────────────────
+
+    readonly List<EntityId> _combatReceiverEntityIds = new List<EntityId>(128);
+    readonly List<RoleId> _combatReceiverRoleIds = new List<RoleId>(128);
+    readonly List<EntityId> _idleReceiverEntityIds = new List<EntityId>(128);
+    readonly List<RoleId> _idleReceiverRoleIds = new List<RoleId>(128);
 
     // ──────────────────────────────────────────────────────────────────
     //  IWorldQuery snapshot data — snapshotted during build, frozen for domains
@@ -80,9 +92,12 @@ public sealed class OrchestrationWorldCache : IWorldQuery
     readonly List<Float2> _crowdPositions = new List<Float2>(128);
     readonly List<EntityId> _crowdEntityIds = new List<EntityId>(128);
 
-    // Per-entity role lookup (EntityId → role key)
-    readonly Dictionary<EntityId, int> _roleKeyByEntityId = new Dictionary<EntityId, int>(128);
-    readonly Dictionary<int, AABB2D> _idleBoundsByRoleKey = new Dictionary<int, AABB2D>(16);
+    // Per-entity actor index lookup (EntityId → index for O(1) position resolve)
+    readonly Dictionary<EntityId, int> _actorIndexByEntityId = new Dictionary<EntityId, int>(256);
+
+    // Per-entity role lookup (EntityId → RoleId)
+    readonly Dictionary<EntityId, RoleId> _roleIdByEntityId = new Dictionary<EntityId, RoleId>(128);
+    readonly Dictionary<RoleId, AABB2D> _idleBoundsByRoleId = new Dictionary<RoleId, AABB2D>(16);
 
     // ──────────────────────────────────────────────────────────────────
     //  Freeze lifecycle — #if DEBUG mutation assertions
@@ -150,6 +165,7 @@ public sealed class OrchestrationWorldCache : IWorldQuery
         _actorEntityIds.Clear();
         _actorHostile.Clear();
         _actorAlive.Clear();
+        _actorIndexByEntityId.Clear();
 
         for (int i = 0; i < Actors.Count; i++)
         {
@@ -172,7 +188,12 @@ public sealed class OrchestrationWorldCache : IWorldQuery
             _actorHostile.Add(isHostile);
 
             IEntityIdProvider idp = actor as IEntityIdProvider;
-            _actorEntityIds.Add(idp != null ? idp.GetEntityId() : EntityId.None);
+            EntityId eid = idp != null ? idp.GetEntityId() : EntityId.None;
+            _actorEntityIds.Add(eid);
+
+            // Build O(1) EntityId → index lookup for TryGetActorPosition
+            if (!eid.IsNone)
+                _actorIndexByEntityId[eid] = i;
         }
     }
 
@@ -202,14 +223,15 @@ public sealed class OrchestrationWorldCache : IWorldQuery
     /// <summary>
     /// Builds the per-entity role lookup from RoleByTransform.
     /// Only entities with <see cref="IEntityIdProvider"/> are included.
+    /// IMPORTANT: Uses RoleId (stable value type), not GetInstanceID().
     /// </summary>
     public void BuildRoleByEntityId()
     {
 #if DEBUG
         Debug.Assert(!_frozen, "[OrchestrationWorldCache] BuildRoleByEntityId called after Freeze.");
 #endif
-        _roleKeyByEntityId.Clear();
-        _idleBoundsByRoleKey.Clear();
+        _roleIdByEntityId.Clear();
+        _idleBoundsByRoleId.Clear();
 
         foreach (var kvp in RoleByTransform)
         {
@@ -219,32 +241,18 @@ public sealed class OrchestrationWorldCache : IWorldQuery
             if (idp == null) continue;
             EntityId eid = idp.GetEntityId();
             if (eid.IsNone) continue;
-            RoleAsset role = kvp.Value;
-            if (role == null) continue;
+            RoleId roleId = kvp.Value;
+            if (roleId.IsNone) continue;
 
-            _roleKeyByEntityId[eid] = role.GetInstanceID();
+            _roleIdByEntityId[eid] = roleId;
         }
 
         foreach (var kvp in ResolvedIdleBounds)
         {
-            RoleAsset role = kvp.Key;
-            if (role == null) continue;
-            _idleBoundsByRoleKey[role.GetInstanceID()] = kvp.Value.ToAABB2D();
+            RoleId roleId = kvp.Key;
+            if (roleId.IsNone) continue;
+            _idleBoundsByRoleId[roleId] = kvp.Value;
         }
-    }
-
-    // ──────────────────────────────────────────────────────────────────
-    //  RuntimeHost-internal — Transform access (NOT in IWorldQuery)
-    //  IMPORTANT: Phase 2B removes this when CombatCommand uses EntityId.
-    // ──────────────────────────────────────────────────────────────────
-
-    /// <summary>
-    /// Returns the actor's Transform at the given index. RuntimeHost-internal only.
-    /// NOT exposed via IWorldQuery (no scene objects in contracts).
-    /// </summary>
-    public Transform GetActorTransformInternal(int index)
-    {
-        return Actors[index].GetTransform();
     }
 
     // ──────────────────────────────────────────────────────────────────
@@ -260,6 +268,17 @@ public sealed class OrchestrationWorldCache : IWorldQuery
     public bool GetActorIsAlive(int index) => _actorAlive[index];
     public bool GetActorIsHostile(int index) => _actorHostile[index];
 
+    public bool TryGetActorPosition(EntityId entityId, out Float2 position)
+    {
+        if (!entityId.IsNone && _actorIndexByEntityId.TryGetValue(entityId, out int idx))
+        {
+            position = _actorPositions[idx];
+            return true;
+        }
+        position = Float2.Zero;
+        return false;
+    }
+
     // ──────────────────────────────────────────────────────────────────
     //  ICrowdQuery
     // ──────────────────────────────────────────────────────────────────
@@ -272,21 +291,88 @@ public sealed class OrchestrationWorldCache : IWorldQuery
     //  IRoleQuery
     // ──────────────────────────────────────────────────────────────────
 
-    public bool TryGetRoleKey(EntityId entityId, out int roleKey)
+    public bool TryGetRoleId(EntityId entityId, out RoleId roleId)
     {
-        return _roleKeyByEntityId.TryGetValue(entityId, out roleKey);
+        return _roleIdByEntityId.TryGetValue(entityId, out roleId);
     }
 
     // ──────────────────────────────────────────────────────────────────
     //  IIdleBoundsQuery
     // ──────────────────────────────────────────────────────────────────
 
-    public bool TryGetIdleBounds(int roleKey, out AABB2D bounds)
+    public bool TryGetIdleBounds(RoleId roleId, out AABB2D bounds)
     {
-        return _idleBoundsByRoleKey.TryGetValue(roleKey, out bounds);
+        return _idleBoundsByRoleId.TryGetValue(roleId, out bounds);
     }
 
     public CombatTargetSet GetCombatTargetSetInternal() => ResolvedCombatTargetSet;
+
+    // ──────────────────────────────────────────────────────────────────
+    //  Receiver identity snapshot — for ExecutionRouter command emission
+    //  IMPORTANT: Router iterates these instead of MonoBehaviour receiver lists.
+    // ──────────────────────────────────────────────────────────────────
+
+    public int CombatReceiverCount => _combatReceiverEntityIds.Count;
+    public EntityId GetCombatReceiverEntityId(int index) => _combatReceiverEntityIds[index];
+    public RoleId GetCombatReceiverRoleId(int index) => _combatReceiverRoleIds[index];
+
+    public int IdleReceiverCount => _idleReceiverEntityIds.Count;
+    public EntityId GetIdleReceiverEntityId(int index) => _idleReceiverEntityIds[index];
+    public RoleId GetIdleReceiverRoleId(int index) => _idleReceiverRoleIds[index];
+
+    /// <summary>
+    /// Snapshots receiver EntityIds and RoleIds into parallel lists.
+    /// Called after RoleByTransform is populated, before Freeze.
+    /// IMPORTANT: Must be called after BuildRoleByEntityId.
+    /// </summary>
+    public void SnapshotReceivers()
+    {
+#if DEBUG
+        Debug.Assert(!_frozen, "[OrchestrationWorldCache] SnapshotReceivers called after Freeze.");
+#endif
+        _combatReceiverEntityIds.Clear();
+        _combatReceiverRoleIds.Clear();
+        _idleReceiverEntityIds.Clear();
+        _idleReceiverRoleIds.Clear();
+
+        for (int i = 0; i < FriendlyCombatReceivers.Count; i++)
+        {
+            Component c = FriendlyCombatReceivers[i] as Component;
+            if (c == null)
+            {
+                _combatReceiverEntityIds.Add(EntityId.None);
+                _combatReceiverRoleIds.Add(RoleId.None);
+                continue;
+            }
+
+            IEntityIdProvider idp = c.GetComponent<IEntityIdProvider>();
+            EntityId eid = idp != null ? idp.GetEntityId() : EntityId.None;
+            _combatReceiverEntityIds.Add(eid);
+
+            RoleId rid;
+            if (!RoleByTransform.TryGetValue(c.transform, out rid)) rid = RoleId.None;
+            _combatReceiverRoleIds.Add(rid);
+        }
+
+        for (int i = 0; i < FriendlyIdleReceivers.Count; i++)
+        {
+            Component c = FriendlyIdleReceivers[i] as Component;
+            if (c == null)
+            {
+                _idleReceiverEntityIds.Add(EntityId.None);
+                _idleReceiverRoleIds.Add(RoleId.None);
+                continue;
+            }
+
+            IEntityIdProvider idp = c.GetComponent<IEntityIdProvider>();
+            EntityId eid = idp != null ? idp.GetEntityId() : EntityId.None;
+            _idleReceiverEntityIds.Add(eid);
+
+            RoleId rid;
+            if (!RoleByTransform.TryGetValue(c.transform, out rid)) rid = RoleId.None;
+            _idleReceiverRoleIds.Add(rid);
+        }
+    }
 
     // ──────────────────────────────────────────────────────────────────
     //  Clear — resets all state for next tick
@@ -313,9 +399,15 @@ public sealed class OrchestrationWorldCache : IWorldQuery
         _actorEntityIds.Clear();
         _actorHostile.Clear();
         _actorAlive.Clear();
+        _actorIndexByEntityId.Clear();
         _crowdPositions.Clear();
         _crowdEntityIds.Clear();
-        _roleKeyByEntityId.Clear();
-        _idleBoundsByRoleKey.Clear();
+        _roleIdByEntityId.Clear();
+        _idleBoundsByRoleId.Clear();
+
+        _combatReceiverEntityIds.Clear();
+        _combatReceiverRoleIds.Clear();
+        _idleReceiverEntityIds.Clear();
+        _idleReceiverRoleIds.Clear();
     }
 }

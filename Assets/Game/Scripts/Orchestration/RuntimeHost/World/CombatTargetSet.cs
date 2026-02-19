@@ -16,6 +16,10 @@ using UnityEngine;
 /// <see cref="OrchestrationRegistry.TryGetCombatTargetSet"/> without inspector wiring.
 /// </para>
 /// <para>
+/// IMPORTANT — Stores EntityId[], not Transform[]. Consumers resolve EntityId → Transform
+/// at the Integration boundary via <see cref="EntityTransformResolver"/>.
+/// </para>
+/// <para>
 /// No Update loop. TTL is checked lazily in <see cref="TryGetTargets"/>.
 /// No allocations after the first <see cref="SetTargets"/> call.
 /// </para>
@@ -39,7 +43,7 @@ public sealed class CombatTargetSet : MonoBehaviour, IFactionAssetProvider
     //  Runtime
     // ──────────────────────────────────────────────────────────────────
 
-    Transform[] _targets;
+    EntityId[] _targets;
     int _count;
     float _expiresAt;
 
@@ -71,12 +75,14 @@ public sealed class CombatTargetSet : MonoBehaviour, IFactionAssetProvider
     /// Called by <see cref="CombatOrchestratorLite"/> each tick.
     /// <paramref name="count"/> is the number of valid entries in <paramref name="src"/>
     /// (starting at index 0). Entries beyond <paramref name="count"/> are ignored.
+    /// <paramref name="now"/> is the current tick time from <see cref="IWorldQuery.Now"/> or
+    /// <see cref="TickContext.Now"/>.
     /// </summary>
-    public void SetTargets(Transform[] src, int count)
+    public void SetTargets(EntityId[] src, int count, float now)
     {
         int cap = Capacity;
         if (_targets == null || _targets.Length < cap)
-            _targets = new Transform[cap];
+            _targets = new EntityId[cap];
 
         int toCopy = count < cap ? count : cap;
         if (toCopy > src.Length) toCopy = src.Length;
@@ -86,23 +92,24 @@ public sealed class CombatTargetSet : MonoBehaviour, IFactionAssetProvider
 
         // Clear leftover slots to avoid stale refs
         for (int i = toCopy; i < _targets.Length; i++)
-            _targets[i] = null;
+            _targets[i] = EntityId.None;
 
         _count = toCopy;
-        _expiresAt = Time.time + TtlSeconds;
+        _expiresAt = now + TtlSeconds;
     }
 
     /// <summary>
     /// Tries to retrieve the current candidate set.
     /// Returns false if expired or empty. Callers should fall back to primary target.
+    /// <paramref name="now"/> is the current time for TTL check.
     /// <para>
     /// IMPORTANT: The returned array is internal storage — do not cache or mutate it.
     /// Only indices 0..<paramref name="count"/> are valid.
     /// </para>
     /// </summary>
-    public bool TryGetTargets(out Transform[] targets, out int count)
+    public bool TryGetTargets(out EntityId[] targets, out int count, float now)
     {
-        if (_count == 0 || Time.time > _expiresAt)
+        if (_count == 0 || now > _expiresAt)
         {
             targets = null;
             count = 0;

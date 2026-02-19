@@ -92,9 +92,9 @@ public sealed class IdleFillAreaPolicyAsset : IdlePolicyAsset
         bool hasBounds = false;
 
         // IMPORTANT: Policy reads world only via IWorldQuery. No GetComponent.
-        int roleKey;
-        if (world.TryGetRoleKey(selfId, out roleKey))
-            hasBounds = world.TryGetIdleBounds(roleKey, out bounds);
+        RoleId roleId;
+        if (world.TryGetRoleId(selfId, out roleId))
+            hasBounds = world.TryGetIdleBounds(roleId, out bounds);
         else
             bounds = default;
 

@@ -23,6 +23,8 @@
   <Project Path="Sirenix.OdinInspector.Modules.UnityMathematics.csproj" />
   <Project Path="Lofelt.NiceVibrations.Editor.csproj" />
   <Project Path="Sirenix.OdinInspector.Modules.UnityLocalization.csproj" />
+  <Project Path="ChainRush.Framework.Tests.csproj" />
+  <Project Path="Orchestration.RuntimeHost.Tests.csproj" />
   <Project Path="MoreMountains.Interface.Editor.csproj" />
   <Project Path="Game.Architecture.Tests.csproj" />
 </Solution>

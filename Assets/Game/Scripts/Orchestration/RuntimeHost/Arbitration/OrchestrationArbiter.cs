@@ -1,14 +1,14 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Single tick source and dispatcher that arbitrates between combat and idle domains.
-/// Domains extend <see cref="DomainOrchestrator"/> and are polled each tick via
-/// <see cref="DomainOrchestrator.Evaluate"/>. The arbiter decides which domain is active (using hysteresis
-/// to prevent thrash) and dispatches commands to registry receivers with faction filtering.
+/// Arbitrates between combat and idle domains each tick. Domains extend
+/// <see cref="DomainOrchestrator"/> and are polled via <see cref="DomainOrchestrator.Evaluate"/>.
+/// The arbiter decides which domain is active (using hysteresis to prevent thrash)
+/// and produces an <see cref="OrchestrationTickResult"/> — it does NOT execute commands.
 /// <para>
-/// IMPORTANT — Ownership: The arbiter owns the final dispatch to receivers.
+/// IMPORTANT — The arbiter produces decisions only. The <see cref="OrchestrationLoop"/>
+/// drives the tick lifecycle: arbiter.ProduceTick → router.Execute.
 /// Domains must NOT dispatch directly; they only write proposals.
 /// </para>
 /// <para>
@@ -16,12 +16,6 @@ using UnityEngine;
 /// <see cref="OrchestrationWorldCache"/> once per tick from
 /// <see cref="OrchestrationRegistry"/>. Domains and dispatch methods iterate
 /// cached lists instead of re-querying the registry.
-/// </para>
-/// <para>
-/// IMPORTANT — Per-role idle dispatch: When idle is active, the arbiter looks up
-/// the policy for each receiver's <see cref="IRoleContextProvider.GetRoleAsset"/>, then
-/// computes a unique command per unit using <see cref="IEntityIdProvider.GetEntityId"/>.
-/// This yields per-role policy assignment with per-unit command uniqueness (no clumping).
 /// </para>
 /// <para>
 /// IMPORTANT — Policy maps are owned by domains. The arbiter pulls map references
@@ -54,13 +48,6 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
     [Header("Domains")]
     [Tooltip("Domain orchestrators polled each tick in array order.")]
     [SerializeField] DomainOrchestrator[] domainOrchestrators;
-
-    // ──────────────────────────────────────────────────────────────────
-    //  Serialized — Timing
-    // ──────────────────────────────────────────────────────────────────
-
-    [Header("Timing")]
-    [SerializeField] float tickInterval = 0.25f;
 
     [Header("Hysteresis")]
     [Tooltip("Minimum time combat stays active after threat first appears.")]
@@ -117,19 +104,7 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
 
     int _lastDomain;
 
-    // ──────────────────────────────────────────────────────────────────
-    //  Runtime — Coroutine
-    // ──────────────────────────────────────────────────────────────────
-
-    Coroutine _loop;
-    WaitForSeconds _wait;
     bool _warnedMissingSetup;
-
-    // ──────────────────────────────────────────────────────────────────
-    //  Runtime — Execution router (single dispatch point)
-    // ──────────────────────────────────────────────────────────────────
-
-    readonly ExecutionRouter _router = new ExecutionRouter();
 
     // ──────────────────────────────────────────────────────────────────
     //  Runtime — One-shot warning flags (separate per category)
@@ -151,34 +126,19 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
 
     void OnEnable()
     {
-        _wait = new WaitForSeconds(tickInterval);
         _lastDomain = OrchestrationDomainKeys.None;
         _combatLockedUntil = 0f;
         _threatMemoryUntil = 0f;
 
         CacheDomains();
-
-        _loop = StartCoroutine(Loop());
     }
 
     void OnDisable()
     {
-        if (_loop != null) StopCoroutine(_loop);
-        _loop = null;
-
         // Clear stored maps to avoid stale refs on scene reload / domain toggles
         _idleRolePolicyMap = null;
         _combatRolePolicyMap = null;
         _combatRoleConstraintsMap = null;
-    }
-
-    IEnumerator Loop()
-    {
-        while (true)
-        {
-            yield return _wait;
-            Tick();
-        }
     }
 
     // ──────────────────────────────────────────────────────────────────
@@ -285,8 +245,6 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
         }
 
         // ── Build crowd transforms from receivers ────────────────────
-        // Crowd = any friendly that receives combat or idle commands (physically present units).
-        // IMPORTANT: Replaces GetComponent<Unit>() — no game-type dependency.
         for (int i = 0; i < _world.FriendlyCombatReceivers.Count; i++)
         {
             Component c = _world.FriendlyCombatReceivers[i] as Component;
@@ -301,16 +259,16 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
         }
 
         // ── Build role-by-transform lookup ──────────────────────────
-        // IMPORTANT: Policies read role via ctx.World, never via GetComponent.
+        // IMPORTANT: RoleAsset → RoleId conversion at this Integration boundary.
         for (int i = 0; i < _world.FriendlyIdleReceivers.Count; i++)
         {
             Component c = _world.FriendlyIdleReceivers[i] as Component;
             if (c == null) continue;
             IRoleAssetProvider rp = c.GetComponent<IRoleAssetProvider>();
             if (rp == null) continue;
-            RoleAsset role = rp.GetRoleAsset();
-            if (role != null)
-                _world.RoleByTransform[c.transform] = role;
+            RoleAsset roleAsset = rp.GetRoleAsset();
+            if (roleAsset != null && !roleAsset.RoleId.IsNone)
+                _world.RoleByTransform[c.transform] = roleAsset.RoleId;
         }
         for (int i = 0; i < _world.FriendlyCombatReceivers.Count; i++)
         {
@@ -319,17 +277,15 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
             if (_world.RoleByTransform.ContainsKey(c.transform)) continue;
             IRoleAssetProvider rp = c.GetComponent<IRoleAssetProvider>();
             if (rp == null) continue;
-            RoleAsset role = rp.GetRoleAsset();
-            if (role != null)
-                _world.RoleByTransform[c.transform] = role;
+            RoleAsset roleAsset = rp.GetRoleAsset();
+            if (roleAsset != null && !roleAsset.RoleId.IsNone)
+                _world.RoleByTransform[c.transform] = roleAsset.RoleId;
         }
 
         // ── Resolve idle bounds per role ────────────────────────────
-        // IMPORTANT: Single point of registry access for bounds. Domains read ctx.World only.
         IdleBoundsRegistry.FillResolvedBounds(_world.ResolvedIdleBounds);
 
         // ── Resolve combat target set ───────────────────────────────
-        // IMPORTANT: Single point of registry access for target set. Domain uses ctx.World only.
         CombatTargetSet resolvedTs;
         OrchestrationRegistry.TryGetCombatTargetSet(ctx.OrchestratorFaction, out resolvedTs);
         _world.ResolvedCombatTargetSet = resolvedTs;
@@ -338,6 +294,7 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
         _world.SnapshotActors(ctx.OrchestratorFaction, ctx.Relations);
         _world.SnapshotCrowd();
         _world.BuildRoleByEntityId();
+        _world.SnapshotReceivers();
         _world.Freeze();
     }
 
@@ -359,10 +316,17 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
     }
 
     // ──────────────────────────────────────────────────────────────────
-    //  Tick — Build cache + Poll domains + Arbitration + Dispatch
+    //  ProduceTick — Build cache + Poll domains + Arbitration
+    //  IMPORTANT: Does NOT execute commands. Returns result for
+    //  OrchestrationLoop to pass to ExecutionRouter.
     // ──────────────────────────────────────────────────────────────────
 
-    void Tick()
+    /// <summary>
+    /// Produces a tick result: builds world cache, polls domains, arbitrates.
+    /// Does NOT dispatch commands — the caller (<see cref="OrchestrationLoop"/>)
+    /// passes the result to <see cref="ExecutionRouter.Execute"/>.
+    /// </summary>
+    public OrchestrationTickResult ProduceTick(float now)
     {
         // ── Validate setup ──────────────────────────────────────────
         if (orchestratorFaction == null || typedRelations == null)
@@ -373,7 +337,7 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
                 Debug.LogWarning("[OrchestrationArbiter] Missing orchestratorFaction or typedRelations.", this);
             }
 
-            // Hold everything without polling domains
+            // Signal hold-all to the loop
             if (_lastDomain != OrchestrationDomainKeys.None)
             {
                 ArbiterDecision holdAll = new ArbiterDecision
@@ -382,13 +346,18 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
                     ProposalKey = OrchestrationProposalKeys.None,
                     ModeChanged = true
                 };
-                _router.Execute(holdAll, _world, default);
                 _lastDomain = OrchestrationDomainKeys.None;
+                return new OrchestrationTickResult
+                {
+                    Decision = holdAll,
+                    World = _world,
+                    ExecContext = default,
+                    Skipped = false
+                };
             }
-            return;
-        }
 
-        float now = Time.time;
+            return new OrchestrationTickResult { Skipped = true };
+        }
 
         // ── Fill context ────────────────────────────────────────────
         _ctx.OrchestratorFaction = orchestratorFaction;
@@ -409,7 +378,7 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
         for (int i = 0; i < _domainCount; i++)
             _cachedDomains[i].Evaluate(_ctx, _proposals);
 
-        // ── Pull policy maps from domains (after Evaluate, before dispatch) ──
+        // ── Pull policy maps from domains (after Evaluate, before result) ──
         RefreshPolicyMapsFromDomains();
 
         // ── Arbitrate: pure decision ─────────────────────────────────
@@ -432,8 +401,7 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
             DebugLog = debugLog
         };
 
-        // ── Execute: router dispatches commands to receivers ─────────
-        _router.Execute(decision, _world, execCtx);
+        // ── Update mode tracking ─────────────────────────────────────
         _lastDomain = decision.DomainKey;
 
         if (debugLog)
@@ -448,6 +416,14 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
                 " lock=", (_combatLockedUntil - now).ToString("F1"),
                 "s mem=", (_threatMemoryUntil - now).ToString("F1"), "s"), this);
         }
+
+        return new OrchestrationTickResult
+        {
+            Decision = decision,
+            ExecContext = execCtx,
+            World = _world,
+            Skipped = false
+        };
     }
 
     // ──────────────────────────────────────────────────────────────────

@@ -137,12 +137,22 @@ public sealed class UnitIdleCommandExecutor : MonoBehaviour, IIdleCommandReceive
     // ──────────────────────────────────────────────────────────────────
 
     /// <summary>
-    /// Returns the typed role asset for per-role idle dispatch.
+    /// Returns the typed role asset for per-role idle dispatch (Integration boundary).
     /// Delegates to <see cref="UnitOrchestrationIdentity.GetRoleAsset"/>.
     /// </summary>
     public RoleAsset GetRoleAsset()
     {
         return _identity != null ? _identity.GetRoleAsset() : null;
+    }
+
+    /// <summary>
+    /// Returns stable RoleId for RuntimeHost routing.
+    /// </summary>
+    public RoleId GetRoleId()
+    {
+        if (_identity == null) return RoleId.None;
+        RoleAsset ra = _identity.GetRoleAsset();
+        return ra != null ? ra.RoleId : RoleId.None;
     }
 
     /// <summary>
@@ -215,7 +225,7 @@ public sealed class UnitIdleCommandExecutor : MonoBehaviour, IIdleCommandReceive
         }
 
         IIdleBoundsProvider p;
-        if (IdleBoundsRegistry.TryGet(role, out p))
+        if (IdleBoundsRegistry.TryGet(role.RoleId, out p))
         {
             _resolvedProvider = p;
             return;

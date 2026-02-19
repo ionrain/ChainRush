@@ -264,6 +264,151 @@ public sealed class ArchitectureLayeringTests
             $"{FrameworkAssemblyName} references UnityEngine assemblies:\n" + string.Join("\n", violations));
     }
 
+    // ── RoleId migration gates ─────────────────────────────────────
+
+    static readonly Regex RoleAssetTokenRegex =
+        new Regex(@"\bRoleAsset\b", RegexOptions.Compiled);
+
+    /// <summary>
+    /// RuntimeHost Domains (policies, orchestrators) must use RoleId, never RoleAsset.
+    /// IMPORTANT: Map assets (which live in Domains) keep RoleAsset in serialized Entry
+    /// structs and OnValidate for inspector binding; those files are excluded.
+    /// </summary>
+    [Test]
+    public void RuntimeHostDomains_PoliciesHaveNoRoleAsset()
+    {
+        string domainsRoot = "Assets/Game/Scripts/Orchestration/RuntimeHost/Domains";
+        if (!Directory.Exists(domainsRoot))
+            Assert.Fail($"Missing directory: {domainsRoot}");
+
+        // Exclude map asset files — they legitimately keep RoleAsset in serialized Entry for inspector
+        var excludedFiles = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "IdleRolePolicyMapAsset.cs",
+            "CombatRolePolicyMapAsset.cs",
+            "CombatRoleConstraintsMapAsset.cs"
+        };
+
+        var violations = new List<string>();
+        foreach (string file in Directory.GetFiles(domainsRoot, "*.cs", SearchOption.AllDirectories))
+        {
+            string fileName = Path.GetFileName(file);
+            if (excludedFiles.Contains(fileName)) continue;
+
+            string stripped = StripCommentsAndStrings(File.ReadAllText(file));
+            Match m = RoleAssetTokenRegex.Match(stripped);
+            if (m.Success)
+                violations.Add($"{file}: token '{m.Value}'");
+        }
+
+        Assert.That(violations, Is.Empty,
+            "RuntimeHost Domains/Policies reference RoleAsset (should use RoleId):\n" + string.Join("\n", violations));
+    }
+
+    /// <summary>
+    /// RuntimeHost must not use GetInstanceID() for role keys or seeds.
+    /// All role identification uses RoleId.ToStableInt() instead.
+    /// IMPORTANT: GetInstanceID on Transform (legacy entity seed) is acceptable in
+    /// non-role contexts; this test specifically checks files that deal with role keys.
+    /// </summary>
+    [Test]
+    public void RuntimeHost_NoGetInstanceIDForRoleKeys()
+    {
+        string runtimeHostRoot = "Assets/Game/Scripts/Orchestration/RuntimeHost";
+        if (!Directory.Exists(runtimeHostRoot))
+            Assert.Fail($"Missing directory: {runtimeHostRoot}");
+
+        // Files that historically used GetInstanceID for role keys
+        var targetFiles = new[]
+        {
+            "Arbitration/OrchestrationWorldCache.cs",
+            "Execution/ExecutionRouter.cs"
+        };
+
+        var violations = new List<string>();
+        foreach (string rel in targetFiles)
+        {
+            string path = Path.Combine(runtimeHostRoot, rel);
+            if (!File.Exists(path)) continue;
+
+            string stripped = StripCommentsAndStrings(File.ReadAllText(path));
+            if (Regex.IsMatch(stripped, @"\bGetInstanceID\s*\("))
+                violations.Add($"{path}: contains GetInstanceID() call");
+        }
+
+        Assert.That(violations, Is.Empty,
+            "RuntimeHost uses GetInstanceID for role keys (should use RoleId):\n" + string.Join("\n", violations));
+    }
+
+    // ── Scheduler abstraction gates ───────────────────────────────────
+
+    static readonly Regex TimeTimeRegex =
+        new Regex(@"\bTime\.time\b", RegexOptions.Compiled);
+
+    /// <summary>
+    /// RuntimeHost must not use Time.time directly. All time comes from
+    /// TickContext.Now or IWorldQuery.Now. The only exception is
+    /// RealtimeScheduler which bridges to Time.time by design.
+    /// </summary>
+    [Test]
+    public void RuntimeHost_NoTimeTimeDirect()
+    {
+        string runtimeHostRoot = "Assets/Game/Scripts/Orchestration/RuntimeHost";
+        if (!Directory.Exists(runtimeHostRoot))
+            Assert.Fail($"Missing directory: {runtimeHostRoot}");
+
+        // RealtimeScheduler is the bridge to Time.time — that's its job
+        var excludedFiles = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "RealtimeScheduler.cs"
+        };
+
+        var violations = new List<string>();
+        foreach (string file in Directory.GetFiles(runtimeHostRoot, "*.cs", SearchOption.AllDirectories))
+        {
+            string fileName = Path.GetFileName(file);
+            if (excludedFiles.Contains(fileName)) continue;
+
+            string stripped = StripCommentsAndStrings(File.ReadAllText(file));
+            Match m = TimeTimeRegex.Match(stripped);
+            if (m.Success)
+                violations.Add($"{file}: contains Time.time");
+        }
+
+        Assert.That(violations, Is.Empty,
+            "RuntimeHost uses Time.time directly (should use TickContext.Now):\n" + string.Join("\n", violations));
+    }
+
+    // ── Command bus gates ─────────────────────────────────────────────
+
+    static readonly Regex ApplyCommandRegex =
+        new Regex(@"\b(ApplyCombatCommand|ApplyIdleCommand)\b", RegexOptions.Compiled);
+
+    /// <summary>
+    /// RuntimeHost must not call ApplyCombatCommand / ApplyIdleCommand directly.
+    /// IMPORTANT: Commands are emitted via ICommandBus. Integration adapters
+    /// subscribe and call Apply. This test catches accidental direct dispatch.
+    /// </summary>
+    [Test]
+    public void RuntimeHost_DoesNotCallApplyCommandDirectly()
+    {
+        string runtimeHostRoot = "Assets/Game/Scripts/Orchestration/RuntimeHost";
+        if (!Directory.Exists(runtimeHostRoot))
+            Assert.Fail($"Missing directory: {runtimeHostRoot}");
+
+        var violations = new List<string>();
+        foreach (string file in Directory.GetFiles(runtimeHostRoot, "*.cs", SearchOption.AllDirectories))
+        {
+            string stripped = StripCommentsAndStrings(File.ReadAllText(file));
+            Match m = ApplyCommandRegex.Match(stripped);
+            if (m.Success)
+                violations.Add($"{file}: contains {m.Value}");
+        }
+
+        Assert.That(violations, Is.Empty,
+            "RuntimeHost calls Apply*Command directly (should emit via ICommandBus):\n" + string.Join("\n", violations));
+    }
+
     // ── Helpers ──────────────────────────────────────────────────────
 
     static void AssertAsmdefHasNoForbiddenReferences(string asmdefPath, IReadOnlyList<string> forbiddenPrefixes)

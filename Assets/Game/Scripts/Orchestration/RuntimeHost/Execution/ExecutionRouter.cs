@@ -1,38 +1,46 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Single dispatch point for orchestration commands.
-/// Consumes <see cref="ArbiterDecision"/> and routes commands to receivers
-/// via the concrete <see cref="OrchestrationWorldCache"/> (needs receiver lists).
+/// Command emitter for orchestration decisions.
+/// Consumes <see cref="ArbiterDecision"/> and emits <see cref="DispatchCombatCommand"/>
+/// / <see cref="DispatchIdleCommand"/> into the <see cref="InProcessCommandBus"/>.
 /// <para>
-/// IMPORTANT — Ownership: The router is the ONLY code that calls
-/// <c>ApplyCombatCommand</c> / <c>ApplyIdleCommand</c> on receivers.
-/// The arbiter produces decisions; the router executes them.
+/// IMPORTANT — The router does NOT call ApplyCombatCommand / ApplyIdleCommand.
+/// Integration adapters (<see cref="CombatCommandAdapter"/>, <see cref="IdleCommandAdapter"/>)
+/// subscribe to the bus, resolve EntityId → receiver, inject policies, and call Apply.
 /// </para>
 /// <para>
-/// IMPORTANT — Phase 2A: Iterates receiver lists directly (no EntityId→receiver
-/// dictionaries). Queries EntityId per receiver for policy/role lookups only.
+/// IMPORTANT — Iterates receiver identity snapshots from <see cref="OrchestrationWorldCache"/>
+/// (EntityId + RoleId), not MonoBehaviour receiver lists. Zero direct receiver access.
 /// </para>
 /// </summary>
 public sealed class ExecutionRouter
 {
+    readonly InProcessCommandBus _bus;
+
     // ──────────────────────────────────────────────────────────────────
-    //  One-shot warning flags (separate per category)
+    //  One-shot warning flags
     // ──────────────────────────────────────────────────────────────────
 
-    bool _warnedMissingProviderIdle;
     bool _warnedMissingRoleIdle;
-    bool _warnedMissingRoleCombat;
     bool _warnedNoIdleMap;
+
+    // ──────────────────────────────────────────────────────────────────
+    //  Constructor
+    // ──────────────────────────────────────────────────────────────────
+
+    public ExecutionRouter(InProcessCommandBus bus)
+    {
+        _bus = bus;
+    }
 
     // ──────────────────────────────────────────────────────────────────
     //  Public API
     // ──────────────────────────────────────────────────────────────────
 
     /// <summary>
-    /// Dispatches commands to receivers based on the arbiter's decision.
-    /// Returns <see cref="ExecutionResult"/> (Phase 2B seam — EventCount always 0 for now).
+    /// Emits dispatch commands into the bus based on the arbiter's decision.
+    /// IMPORTANT: Does NOT call Apply on receivers. Bus subscribers handle that.
     /// </summary>
     public ExecutionResult Execute(
         ArbiterDecision decision,
@@ -42,36 +50,35 @@ public sealed class ExecutionRouter
         switch (decision.DomainKey)
         {
             case OrchestrationDomainKeys.Combat:
-                DispatchCombat(ctx.CombatCommand, world, ctx);
+                EmitCombat(ctx.CombatCommand, world);
                 if (decision.ModeChanged)
-                    DispatchIdleHoldAll(world);
+                    EmitIdleHoldAll(world);
                 break;
 
             case OrchestrationDomainKeys.Idle:
-                DispatchIdlePerUnit(world, ctx);
+                EmitIdlePerUnit(world, ctx);
                 if (decision.ModeChanged)
-                    DispatchCombatHoldAll(world, ctx);
+                    EmitCombatHoldAll(world);
                 break;
 
             default: // None
                 if (decision.ModeChanged)
                 {
-                    DispatchCombatHoldAll(world, ctx);
-                    DispatchIdleHoldAll(world);
+                    EmitCombatHoldAll(world);
+                    EmitIdleHoldAll(world);
                 }
                 break;
         }
 
         if (ctx.DebugLog)
         {
-            // Golden test debug output: detect accidental list ordering, filtering, or
-            // crowd membership changes across commits.
-            string firstRxIds = BuildFirstIds(world.FriendlyCombatReceivers, 3);
+            // Golden test debug output
+            string firstRxIds = BuildFirstReceiverIds(world, 3);
             string firstCrowdIds = BuildFirstCrowdIds(world, 3);
             Debug.Log(string.Concat(
                 "[Router] domain=", decision.DomainKey.ToString(),
-                " combatRx=", world.FriendlyCombatReceivers.Count.ToString(),
-                " idleRx=", world.FriendlyIdleReceivers.Count.ToString(),
+                " combatRx=", world.CombatReceiverCount.ToString(),
+                " idleRx=", world.IdleReceiverCount.ToString(),
                 " firstRxIds=", firstRxIds,
                 " firstCrowdIds=", firstCrowdIds));
         }
@@ -80,82 +87,43 @@ public sealed class ExecutionRouter
     }
 
     // ──────────────────────────────────────────────────────────────────
-    //  Combat dispatch — iterates cached friendly receivers
+    //  Combat emission — iterates receiver identity snapshots
     // ──────────────────────────────────────────────────────────────────
 
-    void DispatchCombat(CombatCommand cmd, OrchestrationWorldCache world, ExecutionContext ctx)
+    void EmitCombat(CombatCommand cmd, OrchestrationWorldCache world)
     {
-        List<ICombatCommandReceiver> receivers = world.FriendlyCombatReceivers;
-        for (int i = 0; i < receivers.Count; i++)
+        int count = world.CombatReceiverCount;
+        for (int i = 0; i < count; i++)
         {
-            ICombatCommandReceiver r = receivers[i];
-            // Unity-null guard: object can be destroyed mid-tick
-            if (r is Object uo && uo == null) continue;
+            EntityId eid = world.GetCombatReceiverEntityId(i);
+            if (eid.IsNone) continue;
 
-            // Per-role targeting policy injection via typed RoleAsset
-            if (ctx.CombatRolePolicyMap != null && r is IRoleAssetProvider rap)
+            _bus.PublishCombat(new DispatchCombatCommand
             {
-                RoleAsset role = rap.GetRoleAsset();
-                if (role != null)
-                {
-                    CombatTargetingPolicyAsset policyAsset;
-                    if (ctx.CombatRolePolicyMap.TryGet(role, out policyAsset))
-                    {
-                        if (r is Component c)
-                        {
-                            // PERF: GetComponentInParent — selector may be on parent GO
-                            ICombatTargetPolicySelector selector = c.GetComponentInParent<ICombatTargetPolicySelector>();
-                            if (selector != null)
-                                selector.SetRuntimeDefaultPolicy(policyAsset);
-                        }
-                    }
-                }
-                else if (!_warnedMissingRoleCombat)
-                {
-                    _warnedMissingRoleCombat = true;
-                    Debug.LogWarning("[ExecutionRouter] Combat receiver missing RoleAsset; " +
-                                     "combatRolePolicyMap will not inject policy.");
-                }
-            }
-
-            // Per-role constraints injection (after policy injection, before ApplyCombatCommand).
-            // IMPORTANT: Always call SetRuntimeContext when receiver implements
-            // IConstrainedCombatReceiver — pass null constraints when no map/role match
-            // so executor transitions cleanly to unconstrained mode.
-            if (r is IConstrainedCombatReceiver ccr)
-            {
-                CombatMoveConstraintsAsset resolved = null;
-                if (ctx.CombatRoleConstraintsMap != null && r is IRoleAssetProvider rap2)
-                {
-                    RoleAsset cRole = rap2.GetRoleAsset();
-                    if (cRole != null)
-                        ctx.CombatRoleConstraintsMap.TryGet(cRole, out resolved);
-                }
-                ccr.SetRuntimeContext(resolved, world);
-            }
-
-            r.ApplyCombatCommand(cmd);
+                ReceiverEntityId = eid,
+                Payload = cmd,
+                ReceiverRoleId = world.GetCombatReceiverRoleId(i)
+            });
         }
     }
 
-    void DispatchCombatHoldAll(OrchestrationWorldCache world, ExecutionContext ctx)
+    void EmitCombatHoldAll(OrchestrationWorldCache world)
     {
         CombatCommand hold = CombatCommand.Create(CombatCommandType.Hold,
             debugLabel: "Router=IdleActive");
-        DispatchCombat(hold, world, ctx);
+        EmitCombat(hold, world);
     }
 
     // ──────────────────────────────────────────────────────────────────
-    //  Idle dispatch — Per-role policy, per-unit command
-    //  IMPORTANT: Policy is looked up by RoleAsset from ctx.IdleRolePolicyMap
-    //  (pulled from domain via IIdleRolePolicyMapSource each tick).
+    //  Idle emission — Per-role policy, per-unit command
+    //  IMPORTANT: Policy is looked up by RoleId from ctx.IdleRolePolicyMap.
     //  Commands are computed per-unit using entitySeed so units of the
-    //  same role don't clump. Iterates cached friendly idle receivers.
+    //  same role don't clump. Selector override is handled by Integration adapter.
     // ──────────────────────────────────────────────────────────────────
 
-    void DispatchIdlePerUnit(OrchestrationWorldCache world, ExecutionContext ctx)
+    void EmitIdlePerUnit(OrchestrationWorldCache world, ExecutionContext ctx)
     {
-        List<IIdleCommandReceiver> receivers = world.FriendlyIdleReceivers;
+        int count = world.IdleReceiverCount;
 
         // Guard: no idle map bound → Hold all with warning
         if (ctx.IdleRolePolicyMap == null)
@@ -168,72 +136,51 @@ public sealed class ExecutionRouter
             }
 
             IdleCommand holdCmd = IdleCommand.Hold();
-            for (int i = 0; i < receivers.Count; i++)
+            for (int i = 0; i < count; i++)
             {
-                IIdleCommandReceiver r = receivers[i];
-                if (r is Object obj && obj == null) continue;
-                r.ApplyIdleCommand(holdCmd);
+                EntityId eid = world.GetIdleReceiverEntityId(i);
+                if (eid.IsNone) continue;
+
+                _bus.PublishIdle(new DispatchIdleCommand
+                {
+                    ReceiverEntityId = eid,
+                    Payload = holdCmd,
+                    ReceiverRoleId = world.GetIdleReceiverRoleId(i)
+                });
             }
             return;
         }
 
-        for (int i = 0; i < receivers.Count; i++)
+        for (int i = 0; i < count; i++)
         {
-            IIdleCommandReceiver r = receivers[i];
-            // Unity-null guard: object can be destroyed mid-tick
-            if (r is Object obj && obj == null) continue;
+            EntityId eid = world.GetIdleReceiverEntityId(i);
+            if (eid.IsNone) continue;
 
-            // Resolve typed role and entity seed
-            IRoleContextProvider rcp = r as IRoleContextProvider;
-            if (rcp == null)
-            {
-                if (!_warnedMissingProviderIdle)
-                {
-                    _warnedMissingProviderIdle = true;
-                    Debug.LogWarning("[ExecutionRouter] Idle receiver does not implement " +
-                                     "IRoleContextProvider; idle will Hold.");
-                }
-                r.ApplyIdleCommand(IdleCommand.Hold());
-                continue;
-            }
-
-            RoleAsset role = rcp.GetRoleAsset();
-            int entitySeed = rcp.GetEntityId().ToStableInt();
+            RoleId roleId = world.GetIdleReceiverRoleId(i);
+            int entitySeed = eid.ToStableInt();
 
             IdlePolicyAsset policy;
             IdleCommand cmd;
 
-            if (role != null && ctx.IdleRolePolicyMap.TryGet(role, out policy) && policy != null)
+            if (!roleId.IsNone && ctx.IdleRolePolicyMap.TryGet(roleId, out policy) && policy != null)
             {
-                // Inject runtime default on selector; resolve effective policy
-                // IMPORTANT: per-unit override on selector wins over role-map
-                IdlePolicyAsset effectivePolicy = policy;
-                if (r is Component comp)
-                {
-                    IIdlePolicySelector sel = comp.GetComponent<IIdlePolicySelector>();
-                    if (sel != null)
-                    {
-                        sel.SetRuntimeDefaultPolicy(policy);
-                        effectivePolicy = sel.ResolvePolicy() ?? policy;
-                    }
-                }
+                // Compute command from role-map policy.
+                // IMPORTANT: Selector override is handled by IdleCommandAdapter (Integration).
+                int roleSeed = roleId.ToStableInt();
 
-                // Stable role seed from asset instance ID
-                int roleSeed = role.GetInstanceID();
-
-                // Get receiver position and EntityId for the IWorldQuery-based policy overload
-                EntityId selfEntityId = rcp.GetEntityId();
-                Float2 selfPos = (r is Component c) ? ((Vector2)c.transform.position).ToFloat2() : ctx.Anchor;
+                Float2 selfPos;
+                if (!world.TryGetActorPosition(eid, out selfPos))
+                    selfPos = ctx.Anchor;
 
                 string dbg;
-                cmd = effectivePolicy.ChooseCommand(selfPos, selfEntityId, ctx.Anchor, ctx.Now, roleSeed, entitySeed, world, out dbg);
+                cmd = policy.ChooseCommand(selfPos, eid, ctx.Anchor, ctx.Now, roleSeed, entitySeed, world, out dbg);
 
                 // PERF: Only allocate DebugLabel string when logging is on
                 if (ctx.DebugLog)
                 {
-                    cmd.DebugLabel = string.Concat("Idle=", effectivePolicy.Id, ":", role.Id);
+                    cmd.DebugLabel = string.Concat("Idle=", policy.Id, ":", roleId.ToString());
                     if (dbg != null)
-                        Debug.Log(string.Concat("[Router] role=", role.Id, " policy=", effectivePolicy.Id, " dbg=", dbg));
+                        Debug.Log(string.Concat("[Router] role=", roleId.ToString(), " policy=", policy.Id, " dbg=", dbg));
                 }
             }
             else
@@ -243,30 +190,40 @@ public sealed class ExecutionRouter
                 if (ctx.DebugLog)
                     cmd.DebugLabel = "Router=NoRoleMatch";
 
-                if (role == null && !_warnedMissingRoleIdle)
+                if (roleId.IsNone && !_warnedMissingRoleIdle)
                 {
                     _warnedMissingRoleIdle = true;
-                    Debug.LogWarning("[ExecutionRouter] Unit missing RoleAsset; idle will Hold.");
+                    Debug.LogWarning("[ExecutionRouter] Unit missing RoleId; idle will Hold.");
                 }
 
                 if (ctx.DebugLog)
-                    Debug.Log(string.Concat("[Router] No role match for '",
-                        role != null ? role.Id : "null", "'"));
+                    Debug.Log(string.Concat("[Router] No role match for '", roleId.ToString(), "'"));
             }
 
-            r.ApplyIdleCommand(cmd);
+            _bus.PublishIdle(new DispatchIdleCommand
+            {
+                ReceiverEntityId = eid,
+                Payload = cmd,
+                ReceiverRoleId = roleId
+            });
         }
     }
 
-    void DispatchIdleHoldAll(OrchestrationWorldCache world)
+    void EmitIdleHoldAll(OrchestrationWorldCache world)
     {
         IdleCommand hold = IdleCommand.Hold();
-        List<IIdleCommandReceiver> receivers = world.FriendlyIdleReceivers;
-        for (int i = 0; i < receivers.Count; i++)
+        int count = world.IdleReceiverCount;
+        for (int i = 0; i < count; i++)
         {
-            IIdleCommandReceiver r = receivers[i];
-            if (r is Object obj && obj == null) continue;
-            r.ApplyIdleCommand(hold);
+            EntityId eid = world.GetIdleReceiverEntityId(i);
+            if (eid.IsNone) continue;
+
+            _bus.PublishIdle(new DispatchIdleCommand
+            {
+                ReceiverEntityId = eid,
+                Payload = hold,
+                ReceiverRoleId = world.GetIdleReceiverRoleId(i)
+            });
         }
     }
 
@@ -274,16 +231,16 @@ public sealed class ExecutionRouter
     //  Debug helpers — golden test output
     // ──────────────────────────────────────────────────────────────────
 
-    static string BuildFirstIds(List<ICombatCommandReceiver> receivers, int max)
+    static string BuildFirstReceiverIds(OrchestrationWorldCache world, int max)
     {
-        if (receivers.Count == 0) return "-";
+        int total = world.CombatReceiverCount;
+        if (total == 0) return "-";
         System.Text.StringBuilder sb = new System.Text.StringBuilder(32);
-        int count = receivers.Count < max ? receivers.Count : max;
+        int count = total < max ? total : max;
         for (int i = 0; i < count; i++)
         {
             if (i > 0) sb.Append(',');
-            IEntityIdProvider idp = receivers[i] as IEntityIdProvider;
-            sb.Append(idp != null ? idp.GetEntityId().ToStableInt().ToString() : "?");
+            sb.Append(world.GetCombatReceiverEntityId(i).ToStableInt().ToString());
         }
         return sb.ToString();
     }

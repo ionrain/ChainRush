@@ -3,48 +3,54 @@ using UnityEngine;
 /// <summary>
 /// Picks the closest alive candidate from <see cref="CombatTargetSet"/> to the unit's
 /// own position. Falls back to <paramref name="primaryTarget"/> if the set is
-/// null, expired, empty, or all candidates are null/inactive.
+/// null, expired, empty, or all candidates are dead/missing.
 /// <para>
-/// PERF: Index loop, no LINQ, no allocations.
+/// PERF: Index loop, no LINQ, no allocations. Uses IWorldQueryBase.TryGetActorPosition
+/// for O(1) position lookups per candidate.
 /// </para>
 /// </summary>
 [CreateAssetMenu(fileName = "NearestToSelfPolicy", menuName = "Game/Orchestration/Combat/Targeting Policies/Nearest To Self")]
 public sealed class NearestToSelfPolicyAsset : CombatTargetingPolicyAsset
 {
-    public override Transform ChooseTarget(
-        Transform self,
-        Transform primaryTarget,
+    public override EntityId ChooseTarget(
+        EntityId selfEntityId,
+        Float2 selfPosition,
+        EntityId primaryTarget,
         CombatTargetSet targetSet,
+        float now,
+        IWorldQueryBase world,
         out string debugInfo)
     {
         debugInfo = "NearestToSelf";
 
-        if (self == null || targetSet == null)
+        if (targetSet == null || world == null)
             return primaryTarget;
 
-        Transform[] candidates;
+        EntityId[] candidates;
         int count;
-        if (!targetSet.TryGetTargets(out candidates, out count) || candidates == null || count <= 0)
+        if (!targetSet.TryGetTargets(out candidates, out count, now) || candidates == null || count <= 0)
             return primaryTarget;
 
-        Vector2 selfPos = (Vector2)self.position;
-        Transform best = null;
+        EntityId best = EntityId.None;
         float bestSqr = float.MaxValue;
 
         for (int i = 0; i < count; i++)
         {
-            Transform t = candidates[i];
-            if (t == null) continue;
-            if (!t.gameObject.activeInHierarchy) continue;
+            EntityId eid = candidates[i];
+            if (eid.IsNone) continue;
 
-            float sqr = ((Vector2)t.position - selfPos).sqrMagnitude;
+            Float2 pos;
+            if (!world.TryGetActorPosition(eid, out pos))
+                continue;
+
+            float sqr = Float2.DistanceSqr(pos, selfPosition);
             if (sqr < bestSqr)
             {
                 bestSqr = sqr;
-                best = t;
+                best = eid;
             }
         }
 
-        return best != null ? best : primaryTarget;
+        return !best.IsNone ? best : primaryTarget;
     }
 }

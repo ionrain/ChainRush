@@ -32,7 +32,7 @@ public sealed class IdleRolePolicyMapAsset : ScriptableObject
     public Entry GetEntry(int index) => entries[index];
 
     /// <summary>
-    /// First-match linear scan for the given role asset.
+    /// First-match linear scan for the given role asset (Integration boundary only).
     /// PERF: O(N) where N = number of roles (typically 3-6).
     /// </summary>
     public bool TryGet(RoleAsset role, out IdlePolicyAsset policy)
@@ -59,9 +59,43 @@ public sealed class IdleRolePolicyMapAsset : ScriptableObject
         return false;
     }
 
+    // ── Lazy RoleId-keyed cache for RuntimeHost consumption ──────────
+
+    Dictionary<RoleId, IdlePolicyAsset> _byRoleId;
+
+    /// <summary>
+    /// Lookup by <see cref="RoleId"/> for RuntimeHost code.
+    /// IMPORTANT: RuntimeHost must use this overload, never the RoleAsset one.
+    /// Builds a lazy cache on first access; invalidated in OnValidate.
+    /// </summary>
+    public bool TryGet(RoleId roleId, out IdlePolicyAsset policy)
+    {
+        if (roleId.IsNone) { policy = null; return false; }
+
+        if (_byRoleId == null)
+            RebuildRoleIdCache();
+
+        return _byRoleId.TryGetValue(roleId, out policy);
+    }
+
+    void RebuildRoleIdCache()
+    {
+        _byRoleId = new Dictionary<RoleId, IdlePolicyAsset>(entries != null ? entries.Count : 0);
+        if (entries == null) return;
+        for (int i = 0; i < entries.Count; i++)
+        {
+            if (entries[i].role == null) continue;
+            RoleId rid = entries[i].role.RoleId;
+            if (rid.IsNone) continue;
+            if (!_byRoleId.ContainsKey(rid))
+                _byRoleId[rid] = entries[i].policy;
+        }
+    }
+
 #if UNITY_EDITOR
     void OnValidate()
     {
+        _byRoleId = null; // Invalidate lazy cache on inspector changes
         if (entries == null) return;
 
         for (int i = 0; i < entries.Count; i++)

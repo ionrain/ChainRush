@@ -2,12 +2,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Static registry mapping <see cref="RoleAsset"/> → <see cref="IIdleBoundsProvider"/>.
+/// Static registry mapping <see cref="RoleId"/> → <see cref="IIdleBoundsProvider"/>.
 /// One zone per role (MVP). Duplicate registrations warn and "last wins" deterministically.
 /// <para>
 /// IMPORTANT — Role is resolved generically via <see cref="IRoleAssetProvider"/> at registration
-/// time, not by casting to a concrete type. Any <see cref="IIdleBoundsProvider"/> that also
-/// implements <see cref="IRoleAssetProvider"/> (or has one on the same GameObject) can register.
+/// time, converted to <see cref="RoleId"/>, and stored as a value type.
+/// RuntimeHost code sees only RoleId, never RoleAsset.
 /// </para>
 /// <para>
 /// PERF: No LINQ, no per-call allocations. Dead-entry pruning only in Register/Unregister,
@@ -18,7 +18,7 @@ public static class IdleBoundsRegistry
 {
     private struct Entry
     {
-        public RoleAsset Role;
+        public RoleId RoleId;
         public IIdleBoundsProvider Provider;
     }
 
@@ -29,32 +29,45 @@ public static class IdleBoundsRegistry
     // ──────────────────────────────────────────────────────────────────
 
     /// <summary>
-    /// Registers a bounds provider keyed by its <see cref="RoleAsset"/>.
-    /// Role is resolved via <see cref="IRoleAssetProvider"/> interface, then
-    /// via <c>GetComponent&lt;IRoleAssetProvider&gt;</c> as fallback.
-    /// If role is null, registration is skipped with a warning.
+    /// Registers a bounds provider keyed by its <see cref="RoleId"/>.
+    /// Role is resolved via <see cref="IRoleAssetProvider"/> interface (Integration boundary),
+    /// then converted to RoleId for storage.
+    /// If role is null or RoleId is None, registration is skipped with a warning.
     /// </summary>
     public static void Register(IIdleBoundsProvider provider)
     {
         if (provider == null) return;
 
-        // ── Resolve role generically ──────────────────────────────────
-        RoleAsset role = null;
+        // ── Resolve role generically at Integration boundary ─────────
+        RoleId roleId = RoleId.None;
+        string debugName = null;
 
         if (provider is IRoleAssetProvider rp)
         {
-            role = rp.GetRoleAsset();
+            var role = rp.GetRoleAsset();
+            if (role != null)
+            {
+                roleId = role.RoleId;
+                debugName = role.Id;
+            }
         }
         else if (provider is Component c)
         {
             IRoleAssetProvider comp = c.GetComponent<IRoleAssetProvider>();
             if (comp != null)
-                role = comp.GetRoleAsset();
+            {
+                var role = comp.GetRoleAsset();
+                if (role != null)
+                {
+                    roleId = role.RoleId;
+                    debugName = role.Id;
+                }
+            }
         }
 
-        if (role == null)
+        if (roleId.IsNone)
         {
-            Debug.LogWarning("[IdleBoundsRegistry] Provider has no RoleAsset; skipping registration.",
+            Debug.LogWarning("[IdleBoundsRegistry] Provider has no valid RoleId; skipping registration.",
                              provider as Object);
             return;
         }
@@ -72,12 +85,13 @@ public static class IdleBoundsRegistry
             }
 
             // Duplicate role: last wins
-            if (ReferenceEquals(e.Role, role))
+            if (e.RoleId == roleId)
             {
                 if (!ReferenceEquals(e.Provider, provider))
                 {
                     Debug.LogWarning(string.Concat(
-                        "[IdleBoundsRegistry] Duplicate provider for role '", role.Id,
+                        "[IdleBoundsRegistry] Duplicate provider for role '",
+                        debugName ?? roleId.ToString(),
                         "'; replacing previous (last wins)."), provider as Object);
                 }
 
@@ -88,7 +102,7 @@ public static class IdleBoundsRegistry
         }
 
         // ── New entry ─────────────────────────────────────────────────
-        _entries.Add(new Entry { Role = role, Provider = provider });
+        _entries.Add(new Entry { RoleId = roleId, Provider = provider });
     }
 
     // ──────────────────────────────────────────────────────────────────
@@ -128,20 +142,20 @@ public static class IdleBoundsRegistry
     // ──────────────────────────────────────────────────────────────────
 
     /// <summary>
-    /// Looks up the <see cref="IIdleBoundsProvider"/> for a given <see cref="RoleAsset"/>.
+    /// Looks up the <see cref="IIdleBoundsProvider"/> for a given <see cref="RoleId"/>.
     /// Skips Unity-null (destroyed) providers but does NOT prune them (keeps TryGet cheap).
     /// Dead entries are cleaned on next Register/Unregister call.
     /// </summary>
-    public static bool TryGet(RoleAsset role, out IIdleBoundsProvider provider)
+    public static bool TryGet(RoleId roleId, out IIdleBoundsProvider provider)
     {
         provider = null;
-        if (role == null) return false;
+        if (roleId.IsNone) return false;
 
         for (int i = 0; i < _entries.Count; i++)
         {
             Entry e = _entries[i];
 
-            if (!ReferenceEquals(e.Role, role)) continue;
+            if (e.RoleId != roleId) continue;
 
             // Skip destroyed providers
             if (e.Provider is Component comp && comp == null) continue;
@@ -160,10 +174,11 @@ public static class IdleBoundsRegistry
     /// <summary>
     /// Fills the target dictionary with resolved bounds for all registered roles.
     /// Called by arbiter during BuildWorldCache. Domains MUST NOT call this directly.
+    /// IMPORTANT: Output keyed by RoleId, values converted to AABB2D at this boundary.
     /// PERF: One pass over _entries (typically 1-4). Skips destroyed providers.
     /// Last wins on duplicate roles; warns once per duplicate.
     /// </summary>
-    public static void FillResolvedBounds(Dictionary<RoleAsset, Bounds> target)
+    public static void FillResolvedBounds(Dictionary<RoleId, AABB2D> target)
     {
         target.Clear();
         for (int i = 0; i < _entries.Count; i++)
@@ -173,13 +188,13 @@ public static class IdleBoundsRegistry
             Bounds b;
             if (e.Provider != null && e.Provider.TryGetIdleBounds(out b))
             {
-                if (target.ContainsKey(e.Role))
+                if (target.ContainsKey(e.RoleId))
                 {
                     Debug.LogWarning(string.Concat(
-                        "[IdleBoundsRegistry] Duplicate bounds for role '", e.Role.Id,
+                        "[IdleBoundsRegistry] Duplicate bounds for role '", e.RoleId.ToString(),
                         "'; last wins. Check scene for conflicting providers."));
                 }
-                target[e.Role] = b;
+                target[e.RoleId] = b.ToAABB2D();
             }
         }
     }

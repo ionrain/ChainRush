@@ -37,8 +37,8 @@ public enum TargetSearchMode
 /// </para>
 /// <para>
 /// IMPORTANT — CombatCommand uses EntityId for targets (no Transform).
-/// Residual OrchestrationWorldCache dependency exists only for FillTargetSet
-/// (CombatTargetSet still stores Transform[] until Commit 2).
+/// CombatTargetSet stores EntityId[]. No OrchestrationWorldCache dependency
+/// in FillTargetSet (uses IWorldQuery only).
 /// </para>
 /// </summary>
 public sealed class CombatOrchestratorLite : DomainOrchestrator, ICombatRolePolicyMapSource, ICombatRoleConstraintsMapSource
@@ -80,12 +80,11 @@ public sealed class CombatOrchestratorLite : DomainOrchestrator, ICombatRolePoli
     //  Runtime — Top-K working arrays (allocated once, reused)
     // ──────────────────────────────────────────────────────────────────
 
-    Transform[] _topKTransforms;
+    EntityId[] _topKEntityIds;
     float[] _topKScores;
     int _topKCount;
 
     bool _warnedNoCamera;
-    bool _warnedWorldCacheCastFill;
 
     // One-shot guard for auto-resolve target set.
     bool _triedResolveTargetSet;
@@ -136,27 +135,16 @@ public sealed class CombatOrchestratorLite : DomainOrchestrator, ICombatRolePoli
                 debugLabel: "Orchestrator=CombatOrchestratorLite");
 
         // ── Fill Top-K target set (optional) ─────────────────────
-        // IMPORTANT: FillTargetSet still needs OrchestrationWorldCache for Transform[] (Commit 2 removes this).
-        OrchestrationWorldCache worldCache = world as OrchestrationWorldCache;
-
         if (targetSet == null && autoResolveTargetSet && !_triedResolveTargetSet)
         {
             _triedResolveTargetSet = true;
+            OrchestrationWorldCache worldCache = world as OrchestrationWorldCache;
             if (worldCache != null)
                 targetSet = worldCache.GetCombatTargetSetInternal(); // may be null — that's ok
         }
 
         if (targetSet != null)
-        {
-            if (worldCache != null)
-                FillTargetSet(world, worldCache, ctx);
-            else if (!_warnedWorldCacheCastFill)
-            {
-                _warnedWorldCacheCastFill = true;
-                Debug.LogWarning("[CombatOrchestratorLite] ctx.World is not OrchestrationWorldCache; " +
-                    "cannot fill Top-K target set. Commit 2 removes this dependency.", this);
-            }
-        }
+            FillTargetSet(world, ctx);
 
         // ── Write proposal ───────────────────────────────────────
         bool threatPresent = !bestEntityId.IsNone;
@@ -242,13 +230,12 @@ public sealed class CombatOrchestratorLite : DomainOrchestrator, ICombatRolePoli
     }
 
     // ──────────────────────────────────────────────────────────────────
-    //  Top-K target set — uses IWorldQuery for filtering, worldCache for Transforms
+    //  Top-K target set — uses IWorldQuery only (no worldCache/Transform)
     //  IMPORTANT: Applies the exact same hostile filters as FindClosestHostileIndex
     //  (faction Hostile, Radius/ScreenViewport). No LINQ, no allocations.
-    //  IMPORTANT: Phase 2B removes OrchestrationWorldCache dependency.
     // ──────────────────────────────────────────────────────────────────
 
-    void FillTargetSet(IWorldQuery world, OrchestrationWorldCache worldCache, OrchestrationArbiterContext ctx)
+    void FillTargetSet(IWorldQuery world, OrchestrationArbiterContext ctx)
     {
         int k = targetSetSize > 0 ? targetSetSize : 1;
         if (k > targetSet.Capacity) k = targetSet.Capacity;
@@ -268,14 +255,12 @@ public sealed class CombatOrchestratorLite : DomainOrchestrator, ICombatRolePoli
         int actorCount = world.ActorCount;
         for (int i = 0; i < actorCount; i++)
         {
-            // Hostile check — typed-only via IWorldQuery
             if (!world.GetActorIsHostile(i))
                 continue;
 
-            // IMPORTANT: Phase 2B removes Transform access. For now, need it for targetSet.
-            Transform actorTransform = worldCache.GetActorTransformInternal(i);
-            if (actorTransform == null) continue;
-            if (!actorTransform.gameObject.activeInHierarchy) continue;
+            // IMPORTANT: alive check via IWorldQuery — no Transform/gameObject needed
+            if (!world.GetActorIsAlive(i))
+                continue;
 
             Float2 actorPos = world.GetActorPosition(i);
 
@@ -292,33 +277,36 @@ public sealed class CombatOrchestratorLite : DomainOrchestrator, ICombatRolePoli
 
             if (!qualifies) continue;
 
+            EntityId eid = world.GetActorEntityId(i);
+            if (eid.IsNone) continue;
+
             float distSqr = Float2.DistanceSqr(actorPos, anchor);
-            InsertTopK(actorTransform, distSqr, k);
+            InsertTopK(eid, distSqr, k);
         }
 
-        targetSet.SetTargets(_topKTransforms, _topKCount);
+        targetSet.SetTargets(_topKEntityIds, _topKCount, ctx.Now);
     }
 
     void EnsureTopKArrays(int k)
     {
-        if (_topKTransforms != null && _topKTransforms.Length >= k)
+        if (_topKEntityIds != null && _topKEntityIds.Length >= k)
             return;
-        _topKTransforms = new Transform[k];
+        _topKEntityIds = new EntityId[k];
         _topKScores = new float[k];
     }
 
-    void InsertTopK(Transform t, float score, int k)
+    void InsertTopK(EntityId eid, float score, int k)
     {
         if (_topKCount < k)
         {
             int pos = _topKCount;
             while (pos > 0 && _topKScores[pos - 1] > score)
             {
-                _topKTransforms[pos] = _topKTransforms[pos - 1];
+                _topKEntityIds[pos] = _topKEntityIds[pos - 1];
                 _topKScores[pos] = _topKScores[pos - 1];
                 pos--;
             }
-            _topKTransforms[pos] = t;
+            _topKEntityIds[pos] = eid;
             _topKScores[pos] = score;
             _topKCount++;
         }
@@ -327,11 +315,11 @@ public sealed class CombatOrchestratorLite : DomainOrchestrator, ICombatRolePoli
             int pos = _topKCount - 1;
             while (pos > 0 && _topKScores[pos - 1] > score)
             {
-                _topKTransforms[pos] = _topKTransforms[pos - 1];
+                _topKEntityIds[pos] = _topKEntityIds[pos - 1];
                 _topKScores[pos] = _topKScores[pos - 1];
                 pos--;
             }
-            _topKTransforms[pos] = t;
+            _topKEntityIds[pos] = eid;
             _topKScores[pos] = score;
         }
     }

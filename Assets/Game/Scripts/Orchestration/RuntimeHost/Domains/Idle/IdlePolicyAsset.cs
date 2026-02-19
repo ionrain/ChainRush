@@ -30,7 +30,7 @@ public abstract class IdlePolicyAsset : ScriptableObject
     /// </summary>
     /// <param name="self">The unit's own transform.</param>
     /// <param name="anchor">Orchestrator-defined anchor point (e.g., hero position).</param>
-    /// <param name="now"><see cref="Time.time"/> at tick start.</param>
+    /// <param name="now">Current time from <see cref="TickContext.Now"/> or <see cref="IWorldQuery.Now"/>.</param>
     /// <param name="debugInfo">Short debug string for logging (null is fine; avoid allocations).</param>
     /// <returns>The idle command to apply.</returns>
     public abstract IdleCommand ChooseCommand(Transform self, Vector2 anchor, float now, out string debugInfo);

@@ -13,6 +13,13 @@ public interface IWorldQueryBase
     Float2 GetActorPosition(int index);
     bool GetActorIsAlive(int index);
     bool GetActorIsHostile(int index);
+
+    /// <summary>
+    /// Resolves an actor's position by <see cref="EntityId"/>. Returns false if not found.
+    /// IMPORTANT: O(1) lookup via internal index map. Used by targeting policies
+    /// to resolve candidate positions from the target set.
+    /// </summary>
+    bool TryGetActorPosition(EntityId entityId, out Float2 position);
 }
 
 public interface ICrowdQuery
@@ -24,12 +31,12 @@ public interface ICrowdQuery
 
 public interface IRoleQuery
 {
-    bool TryGetRoleKey(EntityId entityId, out int roleKey);
+    bool TryGetRoleId(EntityId entityId, out RoleId roleId);
 }
 
 public interface IIdleBoundsQuery
 {
-    bool TryGetIdleBounds(int roleKey, out AABB2D bounds);
+    bool TryGetIdleBounds(RoleId roleId, out AABB2D bounds);
 }
 
 public interface IWorldQuery : IWorldQueryBase, ICrowdQuery, IRoleQuery, IIdleBoundsQuery

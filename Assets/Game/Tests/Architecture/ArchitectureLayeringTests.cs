@@ -86,6 +86,14 @@ public sealed class ArchitectureLayeringTests
     static readonly Regex ProjectTypeProjectAssetsRegex =
         new Regex(@"\b(UnitClassRoleMapAsset|EnemyTypeCapabilitiesMap)\b", RegexOptions.Compiled);
 
+    static readonly Regex CoreCombatIdleContractsRegex =
+        new Regex(@"\b(CombatCommand|IdleCommand|DispatchCombatCommand|DispatchIdleCommand|ICombatCommandReceiver|IIdleCommandReceiver|IIdleBoundsProvider|CombatActionId|CombatGoalId|CombatState)\b",
+            RegexOptions.Compiled);
+
+    static readonly Regex RuntimeHostDomainSpecificTokensRegex =
+        new Regex(@"\b(CombatOrchestratorLite|IdleOrchestratorLite|CombatTargetingPolicyAsset|IdlePolicyAsset|CombatRolePolicyMapAsset|IdleRolePolicyMapAsset|CombatMoveConstraintsAsset|CombatRoleConstraintsMapAsset|CombatTargetSet|OrchestrationArbiter|OrchestrationLoop|ExecutionRouter|ExecutionContext|DispatchCombatCommand|DispatchIdleCommand)\b",
+            RegexOptions.Compiled);
+
     // ── Existing layering tests ──────────────────────────────────────
 
     [Test]
@@ -261,6 +269,25 @@ public sealed class ArchitectureLayeringTests
     }
 
     [Test]
+    public void Core_HasNoCombatIdleDomainContracts()
+    {
+        Assert.That(Directory.Exists(CoreSourceRoot), Is.True,
+            $"Core source root not found: {CoreSourceRoot}");
+
+        var violations = new List<string>();
+        foreach (string file in Directory.GetFiles(CoreSourceRoot, "*.cs", SearchOption.AllDirectories))
+        {
+            string stripped = StripCommentsAndStrings(File.ReadAllText(file));
+            Match m = CoreCombatIdleContractsRegex.Match(stripped);
+            if (m.Success)
+                violations.Add($"{file}: token '{m.Value}'");
+        }
+
+        Assert.That(violations, Is.Empty,
+            "Core still contains StrategyCombat domain contracts:\n" + string.Join("\n", violations));
+    }
+
+    [Test]
     public void RuntimeHost_HasNoProjectRefs()
     {
         Assert.That(Directory.Exists(RuntimeHostSourceRoot), Is.True,
@@ -277,6 +304,25 @@ public sealed class ArchitectureLayeringTests
 
         Assert.That(violations, Is.Empty,
             "RuntimeHost references project layer:\n" + string.Join("\n", violations));
+    }
+
+    [Test]
+    public void RuntimeHost_HasNoStrategyCombatTokens()
+    {
+        Assert.That(Directory.Exists(RuntimeHostSourceRoot), Is.True,
+            $"RuntimeHost source root not found: {RuntimeHostSourceRoot}");
+
+        var violations = new List<string>();
+        foreach (string file in Directory.GetFiles(RuntimeHostSourceRoot, "*.cs", SearchOption.AllDirectories))
+        {
+            string stripped = StripCommentsAndStrings(File.ReadAllText(file));
+            Match m = RuntimeHostDomainSpecificTokensRegex.Match(stripped);
+            if (m.Success)
+                violations.Add($"{file}: token '{m.Value}'");
+        }
+
+        Assert.That(violations, Is.Empty,
+            "RuntimeHost still contains StrategyCombat domain-specific tokens:\n" + string.Join("\n", violations));
     }
 
     [Test]
@@ -299,9 +345,9 @@ public sealed class ArchitectureLayeringTests
     }
 
     [Test]
-    public void RuntimeHostDomains_DoNotAccessRegistryStatics()
+    public void StrategyCombatDomains_DoNotAccessRegistryStatics()
     {
-        string domainsRoot = "Packages/com.morboo.runtimehost/Runtime/Orchestration/Domains";
+        string domainsRoot = "Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/Domains";
         if (!Directory.Exists(domainsRoot))
             Assert.Fail($"Missing directory: {domainsRoot}");
 
@@ -315,7 +361,7 @@ public sealed class ArchitectureLayeringTests
         }
 
         Assert.That(violations, Is.Empty,
-            "RuntimeHost Domains/Policies still access registry statics:\n" + string.Join("\n", violations));
+            "StrategyCombat Domains/Policies still access registry statics:\n" + string.Join("\n", violations));
     }
 
     // ── New architecture gate tests (Phase 2B) ──────────────────────
@@ -397,9 +443,9 @@ public sealed class ArchitectureLayeringTests
     /// structs and OnValidate for inspector binding; those files are excluded.
     /// </summary>
     [Test]
-    public void RuntimeHostDomains_PoliciesHaveNoRoleAsset()
+    public void StrategyCombatDomains_PoliciesHaveNoRoleAsset()
     {
-        string domainsRoot = "Packages/com.morboo.runtimehost/Runtime/Orchestration/Domains";
+        string domainsRoot = "Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/Domains";
         if (!Directory.Exists(domainsRoot))
             Assert.Fail($"Missing directory: {domainsRoot}");
 
@@ -424,19 +470,19 @@ public sealed class ArchitectureLayeringTests
         }
 
         Assert.That(violations, Is.Empty,
-            "RuntimeHost Domains/Policies reference RoleAsset (should use RoleId):\n" + string.Join("\n", violations));
+            "StrategyCombat Domains/Policies reference RoleAsset (should use RoleId):\n" + string.Join("\n", violations));
     }
 
     /// <summary>
-    /// RuntimeHost must not use GetInstanceID() for role keys or seeds.
+    /// StrategyCombat orchestration must not use GetInstanceID() for role keys or seeds.
     /// All role identification uses RoleId.ToStableInt() instead.
     /// IMPORTANT: GetInstanceID on Transform (legacy entity seed) is acceptable in
     /// non-role contexts; this test specifically checks files that deal with role keys.
     /// </summary>
     [Test]
-    public void RuntimeHost_NoGetInstanceIDForRoleKeys()
+    public void StrategyCombat_NoGetInstanceIDForRoleKeys()
     {
-        string runtimeHostRoot = "Packages/com.morboo.runtimehost/Runtime/Orchestration";
+        string runtimeHostRoot = "Packages/com.morboo.integration.strategycombat/Runtime/Orchestration";
         if (!Directory.Exists(runtimeHostRoot))
             Assert.Fail($"Missing directory: {runtimeHostRoot}");
 
@@ -459,7 +505,7 @@ public sealed class ArchitectureLayeringTests
         }
 
         Assert.That(violations, Is.Empty,
-            "RuntimeHost uses GetInstanceID for role keys (should use RoleId):\n" + string.Join("\n", violations));
+            "StrategyCombat uses GetInstanceID for role keys (should use RoleId):\n" + string.Join("\n", violations));
     }
 
     // ── Scheduler abstraction gates ───────────────────────────────────

@@ -1,7 +1,31 @@
 {
   "dependencies": {
+    "com.chainrush.core": {
+      "version": "file:com.chainrush.core",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
     "com.chainrush.framework": {
       "version": "file:com.chainrush.framework",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
+    "com.chainrush.integration.projecttype.strategycombat": {
+      "version": "file:com.chainrush.integration.projecttype.strategycombat",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
+    "com.chainrush.runtimehost": {
+      "version": "file:com.chainrush.runtimehost",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
+    "com.chainrush.systems.runtime": {
+      "version": "file:com.chainrush.systems.runtime",
       "depth": 0,
       "source": "embedded",
       "dependencies": {}

@@ -1,24 +1,22 @@
 {
-    "name": "Game.Architecture.Tests",
+    "name": "ChainRush.Integration.ProjectType.StrategyCombat",
     "rootNamespace": "",
     "references": [
         "ChainRush.Framework",
         "ChainRush.Core",
         "ChainRush.RuntimeHost",
-        "ChainRush.Systems.Runtime"
+        "ChainRush.Systems.Runtime",
+        "Game.Runtime",
+        "MoreMountains.TopDownEngine",
+        "MoreMountains.Tools"
     ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
-    "autoReferenced": false,
+    "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [],
-    "noEngineReferences": false,
-    "optionalUnityReferences": [
-        "TestAssemblies"
-    ]
+    "noEngineReferences": false
 }

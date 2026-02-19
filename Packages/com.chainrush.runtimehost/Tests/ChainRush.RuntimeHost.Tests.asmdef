@@ -1,5 +1,5 @@
 {
-    "name": "Game.Architecture.Tests",
+    "name": "ChainRush.RuntimeHost.Tests",
     "rootNamespace": "",
     "references": [
         "ChainRush.Framework",

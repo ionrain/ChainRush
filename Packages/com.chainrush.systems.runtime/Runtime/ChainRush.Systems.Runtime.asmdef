@@ -1,0 +1,16 @@
+{
+    "name": "ChainRush.Systems.Runtime",
+    "rootNamespace": "",
+    "references": [
+        "ChainRush.Framework"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

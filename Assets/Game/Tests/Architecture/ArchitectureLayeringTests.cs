@@ -11,9 +11,15 @@ using UnityEngine;
 public sealed class ArchitectureLayeringTests
 {
     const string FrameworkAsmdefPath = "Packages/com.chainrush.framework/Runtime/ChainRush.Framework.asmdef";
-    const string CoreAsmdefPath = "Assets/Game/Scripts/Orchestration/Core/Orchestration.Core.asmdef";
-    const string RuntimeHostAsmdefPath = "Assets/Game/Scripts/Orchestration/RuntimeHost/Orchestration.RuntimeHost.asmdef";
+    const string SystemsRuntimeAsmdefPath = "Packages/com.chainrush.systems.runtime/Runtime/ChainRush.Systems.Runtime.asmdef";
+    const string CoreAsmdefPath = "Packages/com.chainrush.core/Runtime/ChainRush.Core.asmdef";
+    const string RuntimeHostAsmdefPath = "Packages/com.chainrush.runtimehost/Runtime/ChainRush.RuntimeHost.asmdef";
+    const string ProjectTypeAsmdefPath = "Packages/com.chainrush.integration.projecttype.strategycombat/Runtime/ChainRush.Integration.ProjectType.StrategyCombat.asmdef";
     const string FrameworkSourceRoot = "Packages/com.chainrush.framework/Runtime";
+    const string SystemsRuntimeSourceRoot = "Packages/com.chainrush.systems.runtime/Runtime";
+    const string CoreSourceRoot = "Packages/com.chainrush.core/Runtime";
+    const string RuntimeHostSourceRoot = "Packages/com.chainrush.runtimehost/Runtime";
+    const string ProjectTypeSourceRoot = "Packages/com.chainrush.integration.projecttype.strategycombat/Runtime";
 
     const string FrameworkAssemblyName = "ChainRush.Framework";
 
@@ -21,6 +27,10 @@ public sealed class ArchitectureLayeringTests
     {
         "Orchestration.",
         "Orchestration.Integration.",
+        "ChainRush.Core",
+        "ChainRush.RuntimeHost",
+        "ChainRush.Systems.Runtime",
+        "ChainRush.Integration.",
         "Integration.",
         "Game.Runtime"
     };
@@ -28,6 +38,7 @@ public sealed class ArchitectureLayeringTests
     static readonly string[] ForbiddenForCoreAndRuntimeHostAsmdef =
     {
         "Orchestration.Integration.",
+        "ChainRush.Integration.",
         "Integration.",
         "Game.Runtime"
     };
@@ -36,6 +47,10 @@ public sealed class ArchitectureLayeringTests
     {
         "Orchestration.",
         "Orchestration.Integration.",
+        "ChainRush.Core",
+        "ChainRush.RuntimeHost",
+        "ChainRush.Systems.Runtime",
+        "ChainRush.Integration.",
         "Game.Runtime"
     };
 
@@ -56,6 +71,21 @@ public sealed class ArchitectureLayeringTests
     static readonly Regex ForbiddenFrameworkUsingDirective =
         new Regex(@"^\s*using\s+UnityEngine\b", RegexOptions.Compiled | RegexOptions.Multiline);
 
+    static readonly Regex ForbiddenSystemsRuntimeTokensRegex =
+        new Regex(@"\b(Orchestration|Economy|Goals|Generation)\b", RegexOptions.Compiled);
+
+    static readonly Regex CoreForbiddenUnityUsingRegex =
+        new Regex(@"^\s*using\s+UnityEngine\b", RegexOptions.Compiled | RegexOptions.Multiline);
+
+    static readonly Regex CoreForbiddenUnityTypesRegex =
+        new Regex(@"\b(UnityEngine\.Object|MonoBehaviour|Transform|Component|GameObject)\b", RegexOptions.Compiled);
+
+    static readonly Regex RuntimeHostProjectRefsRegex =
+        new Regex(@"Assets/_Project|Integration\.Project", RegexOptions.Compiled);
+
+    static readonly Regex ProjectTypeProjectAssetsRegex =
+        new Regex(@"\b(UnitClassRoleMapAsset|EnemyTypeCapabilitiesMap)\b", RegexOptions.Compiled);
+
     // ── Existing layering tests ──────────────────────────────────────
 
     [Test]
@@ -74,6 +104,18 @@ public sealed class ArchitectureLayeringTests
     public void OrchestrationRuntimeHostAsmdef_DoesNotReference_Integration_OrGameRuntime()
     {
         AssertAsmdefHasNoForbiddenReferences(RuntimeHostAsmdefPath, ForbiddenForCoreAndRuntimeHostAsmdef);
+    }
+
+    [Test]
+    public void SystemsRuntimeAsmdef_Exists()
+    {
+        Assert.That(File.Exists(SystemsRuntimeAsmdefPath), Is.True, $"Missing asmdef: {SystemsRuntimeAsmdefPath}");
+    }
+
+    [Test]
+    public void ProjectTypeAsmdef_Exists()
+    {
+        Assert.That(File.Exists(ProjectTypeAsmdefPath), Is.True, $"Missing asmdef: {ProjectTypeAsmdefPath}");
     }
 
     [Test]
@@ -152,8 +194,8 @@ public sealed class ArchitectureLayeringTests
     {
         var roots = new[]
         {
-            "Assets/Game/Scripts/Orchestration/Core",
-            "Assets/Game/Scripts/Orchestration/RuntimeHost"
+            CoreSourceRoot,
+            RuntimeHostSourceRoot
         };
 
         var violations = new List<string>();
@@ -177,9 +219,89 @@ public sealed class ArchitectureLayeringTests
     }
 
     [Test]
+    public void SystemsRuntime_HasNoSystemSpecificTokens()
+    {
+        Assert.That(Directory.Exists(SystemsRuntimeSourceRoot), Is.True,
+            $"Systems.Runtime source root not found: {SystemsRuntimeSourceRoot}");
+
+        var violations = new List<string>();
+        foreach (string file in Directory.GetFiles(SystemsRuntimeSourceRoot, "*.cs", SearchOption.AllDirectories))
+        {
+            string source = File.ReadAllText(file);
+            Match m = ForbiddenSystemsRuntimeTokensRegex.Match(source);
+            if (m.Success)
+                violations.Add($"{file}: token '{m.Value}'");
+        }
+
+        Assert.That(violations, Is.Empty,
+            "Systems.Runtime contains system-specific tokens:\n" + string.Join("\n", violations));
+    }
+
+    [Test]
+    public void Core_HasNoUnityEngineUsings()
+    {
+        Assert.That(Directory.Exists(CoreSourceRoot), Is.True,
+            $"Core source root not found: {CoreSourceRoot}");
+
+        var violations = new List<string>();
+        foreach (string file in Directory.GetFiles(CoreSourceRoot, "*.cs", SearchOption.AllDirectories))
+        {
+            string source = File.ReadAllText(file);
+            Match usingMatch = CoreForbiddenUnityUsingRegex.Match(source);
+            if (usingMatch.Success)
+                violations.Add($"{file}: using UnityEngine");
+
+            Match typeMatch = CoreForbiddenUnityTypesRegex.Match(source);
+            if (typeMatch.Success)
+                violations.Add($"{file}: token '{typeMatch.Value}'");
+        }
+
+        Assert.That(violations, Is.Empty,
+            "Core contains UnityEngine dependencies:\n" + string.Join("\n", violations));
+    }
+
+    [Test]
+    public void RuntimeHost_HasNoProjectRefs()
+    {
+        Assert.That(Directory.Exists(RuntimeHostSourceRoot), Is.True,
+            $"RuntimeHost source root not found: {RuntimeHostSourceRoot}");
+
+        var violations = new List<string>();
+        foreach (string file in Directory.GetFiles(RuntimeHostSourceRoot, "*.cs", SearchOption.AllDirectories))
+        {
+            string source = File.ReadAllText(file);
+            Match m = RuntimeHostProjectRefsRegex.Match(source);
+            if (m.Success)
+                violations.Add($"{file}: token '{m.Value}'");
+        }
+
+        Assert.That(violations, Is.Empty,
+            "RuntimeHost references project layer:\n" + string.Join("\n", violations));
+    }
+
+    [Test]
+    public void ProjectType_HasNoProjectAssets()
+    {
+        Assert.That(Directory.Exists(ProjectTypeSourceRoot), Is.True,
+            $"ProjectType source root not found: {ProjectTypeSourceRoot}");
+
+        var violations = new List<string>();
+        foreach (string file in Directory.GetFiles(ProjectTypeSourceRoot, "*.cs", SearchOption.AllDirectories))
+        {
+            string source = File.ReadAllText(file);
+            Match m = ProjectTypeProjectAssetsRegex.Match(source);
+            if (m.Success)
+                violations.Add($"{file}: token '{m.Value}'");
+        }
+
+        Assert.That(violations, Is.Empty,
+            "ProjectType references project asset types:\n" + string.Join("\n", violations));
+    }
+
+    [Test]
     public void RuntimeHostDomains_DoNotAccessRegistryStatics()
     {
-        string domainsRoot = "Assets/Game/Scripts/Orchestration/RuntimeHost/Domains";
+        string domainsRoot = "Packages/com.chainrush.runtimehost/Runtime/Orchestration/Domains";
         if (!Directory.Exists(domainsRoot))
             Assert.Fail($"Missing directory: {domainsRoot}");
 
@@ -277,7 +399,7 @@ public sealed class ArchitectureLayeringTests
     [Test]
     public void RuntimeHostDomains_PoliciesHaveNoRoleAsset()
     {
-        string domainsRoot = "Assets/Game/Scripts/Orchestration/RuntimeHost/Domains";
+        string domainsRoot = "Packages/com.chainrush.runtimehost/Runtime/Orchestration/Domains";
         if (!Directory.Exists(domainsRoot))
             Assert.Fail($"Missing directory: {domainsRoot}");
 
@@ -314,7 +436,7 @@ public sealed class ArchitectureLayeringTests
     [Test]
     public void RuntimeHost_NoGetInstanceIDForRoleKeys()
     {
-        string runtimeHostRoot = "Assets/Game/Scripts/Orchestration/RuntimeHost";
+        string runtimeHostRoot = "Packages/com.chainrush.runtimehost/Runtime/Orchestration";
         if (!Directory.Exists(runtimeHostRoot))
             Assert.Fail($"Missing directory: {runtimeHostRoot}");
 
@@ -353,7 +475,7 @@ public sealed class ArchitectureLayeringTests
     [Test]
     public void RuntimeHost_NoTimeTimeDirect()
     {
-        string runtimeHostRoot = "Assets/Game/Scripts/Orchestration/RuntimeHost";
+        string runtimeHostRoot = "Packages/com.chainrush.runtimehost/Runtime/Orchestration";
         if (!Directory.Exists(runtimeHostRoot))
             Assert.Fail($"Missing directory: {runtimeHostRoot}");
 
@@ -392,7 +514,7 @@ public sealed class ArchitectureLayeringTests
     [Test]
     public void RuntimeHost_DoesNotCallApplyCommandDirectly()
     {
-        string runtimeHostRoot = "Assets/Game/Scripts/Orchestration/RuntimeHost";
+        string runtimeHostRoot = "Packages/com.chainrush.runtimehost/Runtime/Orchestration";
         if (!Directory.Exists(runtimeHostRoot))
             Assert.Fail($"Missing directory: {runtimeHostRoot}");
 

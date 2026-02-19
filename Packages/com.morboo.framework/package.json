@@ -1,7 +1,7 @@
 {
-    "name": "com.chainrush.framework",
+    "name": "com.morboo.framework",
     "version": "0.1.0",
-    "displayName": "ChainRush Framework",
+    "displayName": "Morboo Framework",
     "description": "Engine-agnostic orchestration framework: math types, identity, scheduling contracts, command/event abstractions.",
     "unity": "6000.0"
 }

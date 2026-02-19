@@ -1,7 +1,7 @@
 {
-    "name": "com.chainrush.core",
+    "name": "com.morboo.core",
     "version": "0.1.0",
-    "displayName": "ChainRush Core",
+    "displayName": "Morboo Core",
     "description": "Core orchestration domain contracts and data shared across systems.",
     "unity": "6000.0"
 }

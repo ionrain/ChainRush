@@ -1,10 +1,10 @@
 {
-    "name": "ChainRush.RuntimeHost",
+    "name": "Morboo.RuntimeHost",
     "rootNamespace": "",
     "references": [
-        "ChainRush.Framework",
-        "ChainRush.Core",
-        "ChainRush.Systems.Runtime"
+        "Morboo.Framework",
+        "Morboo.Core",
+        "Morboo.Systems"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

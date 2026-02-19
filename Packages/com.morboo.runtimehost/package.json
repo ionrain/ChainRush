@@ -1,7 +1,7 @@
 {
-    "name": "com.chainrush.runtimehost",
+    "name": "com.morboo.runtimehost",
     "version": "0.1.0",
-    "displayName": "ChainRush Runtime Host",
+    "displayName": "Morboo Runtime Host",
     "description": "Host/runtime orchestration loop, arbitration, execution, domains, world and formations runtime.",
     "unity": "6000.0"
 }

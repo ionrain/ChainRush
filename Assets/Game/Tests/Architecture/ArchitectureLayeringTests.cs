@@ -10,27 +10,27 @@ using UnityEngine;
 
 public sealed class ArchitectureLayeringTests
 {
-    const string FrameworkAsmdefPath = "Packages/com.chainrush.framework/Runtime/ChainRush.Framework.asmdef";
-    const string SystemsRuntimeAsmdefPath = "Packages/com.chainrush.systems.runtime/Runtime/ChainRush.Systems.Runtime.asmdef";
-    const string CoreAsmdefPath = "Packages/com.chainrush.core/Runtime/ChainRush.Core.asmdef";
-    const string RuntimeHostAsmdefPath = "Packages/com.chainrush.runtimehost/Runtime/ChainRush.RuntimeHost.asmdef";
-    const string ProjectTypeAsmdefPath = "Packages/com.chainrush.integration.projecttype.strategycombat/Runtime/ChainRush.Integration.ProjectType.StrategyCombat.asmdef";
-    const string FrameworkSourceRoot = "Packages/com.chainrush.framework/Runtime";
-    const string SystemsRuntimeSourceRoot = "Packages/com.chainrush.systems.runtime/Runtime";
-    const string CoreSourceRoot = "Packages/com.chainrush.core/Runtime";
-    const string RuntimeHostSourceRoot = "Packages/com.chainrush.runtimehost/Runtime";
-    const string ProjectTypeSourceRoot = "Packages/com.chainrush.integration.projecttype.strategycombat/Runtime";
+    const string FrameworkAsmdefPath = "Packages/com.morboo.framework/Runtime/Morboo.Framework.asmdef";
+    const string SystemsRuntimeAsmdefPath = "Packages/com.morboo.systems/Runtime/Morboo.Systems.asmdef";
+    const string CoreAsmdefPath = "Packages/com.morboo.core/Runtime/Morboo.Core.asmdef";
+    const string RuntimeHostAsmdefPath = "Packages/com.morboo.runtimehost/Runtime/Morboo.RuntimeHost.asmdef";
+    const string ProjectTypeAsmdefPath = "Packages/com.morboo.integration.strategycombat/Runtime/Morboo.Integration.StrategyCombat.asmdef";
+    const string FrameworkSourceRoot = "Packages/com.morboo.framework/Runtime";
+    const string SystemsRuntimeSourceRoot = "Packages/com.morboo.systems/Runtime";
+    const string CoreSourceRoot = "Packages/com.morboo.core/Runtime";
+    const string RuntimeHostSourceRoot = "Packages/com.morboo.runtimehost/Runtime";
+    const string ProjectTypeSourceRoot = "Packages/com.morboo.integration.strategycombat/Runtime";
 
-    const string FrameworkAssemblyName = "ChainRush.Framework";
+    const string FrameworkAssemblyName = "Morboo.Framework";
 
     static readonly string[] ForbiddenForFrameworkAsmdef =
     {
         "Orchestration.",
         "Orchestration.Integration.",
-        "ChainRush.Core",
-        "ChainRush.RuntimeHost",
-        "ChainRush.Systems.Runtime",
-        "ChainRush.Integration.",
+        "Morboo.Core",
+        "Morboo.RuntimeHost",
+        "Morboo.Systems",
+        "Morboo.Integration.",
         "Integration.",
         "Game.Runtime"
     };
@@ -38,7 +38,7 @@ public sealed class ArchitectureLayeringTests
     static readonly string[] ForbiddenForCoreAndRuntimeHostAsmdef =
     {
         "Orchestration.Integration.",
-        "ChainRush.Integration.",
+        "Morboo.Integration.",
         "Integration.",
         "Game.Runtime"
     };
@@ -47,10 +47,10 @@ public sealed class ArchitectureLayeringTests
     {
         "Orchestration.",
         "Orchestration.Integration.",
-        "ChainRush.Core",
-        "ChainRush.RuntimeHost",
-        "ChainRush.Systems.Runtime",
-        "ChainRush.Integration.",
+        "Morboo.Core",
+        "Morboo.RuntimeHost",
+        "Morboo.Systems",
+        "Morboo.Integration.",
         "Game.Runtime"
     };
 
@@ -301,7 +301,7 @@ public sealed class ArchitectureLayeringTests
     [Test]
     public void RuntimeHostDomains_DoNotAccessRegistryStatics()
     {
-        string domainsRoot = "Packages/com.chainrush.runtimehost/Runtime/Orchestration/Domains";
+        string domainsRoot = "Packages/com.morboo.runtimehost/Runtime/Orchestration/Domains";
         if (!Directory.Exists(domainsRoot))
             Assert.Fail($"Missing directory: {domainsRoot}");
 
@@ -399,7 +399,7 @@ public sealed class ArchitectureLayeringTests
     [Test]
     public void RuntimeHostDomains_PoliciesHaveNoRoleAsset()
     {
-        string domainsRoot = "Packages/com.chainrush.runtimehost/Runtime/Orchestration/Domains";
+        string domainsRoot = "Packages/com.morboo.runtimehost/Runtime/Orchestration/Domains";
         if (!Directory.Exists(domainsRoot))
             Assert.Fail($"Missing directory: {domainsRoot}");
 
@@ -436,7 +436,7 @@ public sealed class ArchitectureLayeringTests
     [Test]
     public void RuntimeHost_NoGetInstanceIDForRoleKeys()
     {
-        string runtimeHostRoot = "Packages/com.chainrush.runtimehost/Runtime/Orchestration";
+        string runtimeHostRoot = "Packages/com.morboo.runtimehost/Runtime/Orchestration";
         if (!Directory.Exists(runtimeHostRoot))
             Assert.Fail($"Missing directory: {runtimeHostRoot}");
 
@@ -475,7 +475,7 @@ public sealed class ArchitectureLayeringTests
     [Test]
     public void RuntimeHost_NoTimeTimeDirect()
     {
-        string runtimeHostRoot = "Packages/com.chainrush.runtimehost/Runtime/Orchestration";
+        string runtimeHostRoot = "Packages/com.morboo.runtimehost/Runtime/Orchestration";
         if (!Directory.Exists(runtimeHostRoot))
             Assert.Fail($"Missing directory: {runtimeHostRoot}");
 
@@ -514,7 +514,7 @@ public sealed class ArchitectureLayeringTests
     [Test]
     public void RuntimeHost_DoesNotCallApplyCommandDirectly()
     {
-        string runtimeHostRoot = "Packages/com.chainrush.runtimehost/Runtime/Orchestration";
+        string runtimeHostRoot = "Packages/com.morboo.runtimehost/Runtime/Orchestration";
         if (!Directory.Exists(runtimeHostRoot))
             Assert.Fail($"Missing directory: {runtimeHostRoot}");
 

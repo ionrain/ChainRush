@@ -1,8 +1,8 @@
 {
-    "name": "ChainRush.Core",
+    "name": "Morboo.Core",
     "rootNamespace": "",
     "references": [
-        "ChainRush.Framework"
+        "Morboo.Framework"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

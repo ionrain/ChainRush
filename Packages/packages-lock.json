@@ -1,31 +1,7 @@
 {
   "dependencies": {
-    "com.chainrush.core": {
-      "version": "file:com.chainrush.core",
-      "depth": 0,
-      "source": "embedded",
-      "dependencies": {}
-    },
-    "com.chainrush.framework": {
-      "version": "file:com.chainrush.framework",
-      "depth": 0,
-      "source": "embedded",
-      "dependencies": {}
-    },
-    "com.chainrush.integration.projecttype.strategycombat": {
-      "version": "file:com.chainrush.integration.projecttype.strategycombat",
-      "depth": 0,
-      "source": "embedded",
-      "dependencies": {}
-    },
-    "com.chainrush.runtimehost": {
-      "version": "file:com.chainrush.runtimehost",
-      "depth": 0,
-      "source": "embedded",
-      "dependencies": {}
-    },
-    "com.chainrush.systems.runtime": {
-      "version": "file:com.chainrush.systems.runtime",
+    "com.morboo.framework": {
+      "version": "file:com.morboo.framework",
       "depth": 0,
       "source": "embedded",
       "dependencies": {}
@@ -144,6 +120,30 @@
         "com.google.play.core": "1.8.6"
       },
       "url": "https://package.openupm.com"
+    },
+    "com.morboo.core": {
+      "version": "file:com.morboo.core",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
+    "com.morboo.integration.strategycombat": {
+      "version": "file:com.morboo.integration.strategycombat",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
+    "com.morboo.runtimehost": {
+      "version": "file:com.morboo.runtimehost",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
+    "com.morboo.systems": {
+      "version": "file:com.morboo.systems",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
     },
     "com.unity.2d.sprite": {
       "version": "1.0.0",

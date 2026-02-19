@@ -1,8 +1,11 @@
 {
-    "name": "ChainRush.Framework.Tests",
+    "name": "Morboo.RuntimeHost.Tests",
     "rootNamespace": "",
     "references": [
-        "ChainRush.Framework"
+        "Morboo.Framework",
+        "Morboo.Core",
+        "Morboo.RuntimeHost",
+        "Morboo.Systems"
     ],
     "includePlatforms": [
         "Editor"

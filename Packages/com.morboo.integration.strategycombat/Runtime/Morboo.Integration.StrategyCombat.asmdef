@@ -1,8 +1,14 @@
 {
-    "name": "ChainRush.Systems.Runtime",
+    "name": "Morboo.Integration.StrategyCombat",
     "rootNamespace": "",
     "references": [
-        "ChainRush.Framework"
+        "Morboo.Framework",
+        "Morboo.Core",
+        "Morboo.RuntimeHost",
+        "Morboo.Systems",
+        "Game.Runtime",
+        "MoreMountains.TopDownEngine",
+        "MoreMountains.Tools"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

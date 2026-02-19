@@ -2,11 +2,11 @@
     "name": "ChainRush.Integration.Project",
     "rootNamespace": "",
     "references": [
-        "ChainRush.Framework",
-        "ChainRush.Core",
-        "ChainRush.RuntimeHost",
-        "ChainRush.Systems.Runtime",
-        "ChainRush.Integration.ProjectType.StrategyCombat",
+        "Morboo.Framework",
+        "Morboo.Core",
+        "Morboo.RuntimeHost",
+        "Morboo.Systems",
+        "Morboo.Integration.StrategyCombat",
         "Game.Runtime"
     ],
     "includePlatforms": [],

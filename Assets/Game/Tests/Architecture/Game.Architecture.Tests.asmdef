@@ -2,10 +2,10 @@
     "name": "Game.Architecture.Tests",
     "rootNamespace": "",
     "references": [
-        "ChainRush.Framework",
-        "ChainRush.Core",
-        "ChainRush.RuntimeHost",
-        "ChainRush.Systems.Runtime"
+        "Morboo.Framework",
+        "Morboo.Core",
+        "Morboo.RuntimeHost",
+        "Morboo.Systems"
     ],
     "includePlatforms": [
         "Editor"

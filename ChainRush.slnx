@@ -1,8 +1,8 @@
 ﻿<Solution>
-  <Project Path="Game.Runtime.csproj" />
   <Project Path="MoreMountains.Tools.csproj" />
   <Project Path="Lofelt.NiceVibrations.Demo.csproj" />
   <Project Path="Morboo.Framework.csproj" />
+  <Project Path="Game.Runtime.csproj" />
   <Project Path="MoreMountains.Tools.Editor.csproj" />
   <Project Path="MoreMountains.TopDownEngine.csproj" />
   <Project Path="Morboo.Core.csproj" />
@@ -10,11 +10,11 @@
   <Project Path="Sirenix.OdinInspector.Modules.UnityLocalization.Editor.csproj" />
   <Project Path="MoreMountains.InventoryEngine.csproj" />
   <Project Path="MoreMountains.Interface.csproj" />
-  <Project Path="ChainRush.Integration.Project.csproj" />
   <Project Path="Morboo.Systems.csproj" />
   <Project Path="Morboo.Integration.StrategyCombat.csproj" />
   <Project Path="Morboo.RuntimeHost.csproj" />
   <Project Path="Assembly-CSharp-firstpass.csproj" />
+  <Project Path="Morboo.Bridge.csproj" />
   <Project Path="Lofelt.NiceVibrations.csproj" />
   <Project Path="MoreMountains.InventoryEngine.Editor.csproj" />
   <Project Path="Sirenix.OdinInspector.Modules.Unity.Addressables.csproj" />

@@ -1,13 +1,12 @@
 {
-    "name": "ChainRush.Integration.Project",
+    "name": "Morboo.Bridge",
     "rootNamespace": "",
     "references": [
+        "Game.Runtime",
         "Morboo.Framework",
         "Morboo.Core",
         "Morboo.RuntimeHost",
-        "Morboo.Systems",
-        "Morboo.Integration.StrategyCombat",
-        "Game.Runtime"
+        "Morboo.Integration.StrategyCombat"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

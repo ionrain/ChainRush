@@ -81,7 +81,7 @@ public sealed class ArchitectureLayeringTests
         new Regex(@"\b(UnityEngine\.Object|MonoBehaviour|Transform|Component|GameObject)\b", RegexOptions.Compiled);
 
     static readonly Regex RuntimeHostProjectRefsRegex =
-        new Regex(@"Assets/_Project|Integration\.Project", RegexOptions.Compiled);
+        new Regex(@"Assets/_Project|Assets/Scripts/MorbooBridge|Integration\.Project|Morboo\.Bridge", RegexOptions.Compiled);
 
     static readonly Regex ProjectTypeProjectAssetsRegex =
         new Regex(@"\b(UnitClassRoleMapAsset|EnemyTypeCapabilitiesMap)\b", RegexOptions.Compiled);

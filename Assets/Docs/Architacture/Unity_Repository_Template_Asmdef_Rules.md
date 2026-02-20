@@ -238,7 +238,7 @@ MUST NOT зависеть от UnityEngine (по возможности).
 
 ------------------------------------------------------------------------
 
-## 7.2 Tests.asmdef (Assets/Game/Tests)
+## 7.2 Architecture Tests Package (`Packages/com.morboo.architecture.tests/Tests/Editor`)
 
 -   EditMode тесты (архитектурные, контракты, asmdef граф)
 -   PlayMode тесты (runtime инварианты, deterministic replay при

@@ -12,6 +12,9 @@ public sealed class OrchestrationImplementationFitnessTests
     const string StrategyCombatArbiterPath = "Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/Arbitration/OrchestrationArbiter.cs";
     const string StrategyCombatRouterPath = "Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/Execution/ExecutionRouter.cs";
     const string StrategyCombatLoopPath = "Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/OrchestrationLoop.cs";
+    const string RuntimeHostArbiterPath = "Packages/com.morboo.runtimehost/Runtime/Orchestration/Arbitration/OrchestrationArbiter.cs";
+    const string RuntimeHostRouterPath = "Packages/com.morboo.runtimehost/Runtime/Orchestration/Execution/ExecutionRouter.cs";
+    const string RuntimeHostLoopPath = "Packages/com.morboo.runtimehost/Runtime/Orchestration/OrchestrationLoop.cs";
 
     static readonly Regex PublishCallRegex = new Regex(@"\bPublish\s*\(", RegexOptions.Compiled);
     static readonly Regex EntityTransformResolverRegex = new Regex(@"\bEntityTransformResolver\b", RegexOptions.Compiled);
@@ -19,6 +22,15 @@ public sealed class OrchestrationImplementationFitnessTests
     static readonly Regex ITickSourceRegex = new Regex(@"\bITickSource\b", RegexOptions.Compiled);
     static readonly Regex RealtimeSchedulerRegex = new Regex(@"\bRealtimeScheduler\b", RegexOptions.Compiled);
     static readonly Regex WorldCacheDowncastRegex = new Regex(@"\bas\s+OrchestrationWorldCache\b", RegexOptions.Compiled);
+    static readonly Regex SerializedUntypedDependencyHolderRegex =
+        new Regex(@"\[SerializeField\]\s*(?:\[[^\]]+\]\s*)*(?:private|public|protected|internal)?\s*(GameObject|MonoBehaviour|Component)\b",
+            RegexOptions.Compiled);
+    static readonly Regex DomainOnboardingDescriptorRegex =
+        new Regex(@"\b(IDomainModule|DomainModule|IDomainRegistration|DomainRegistration|DomainDescriptor|DomainOnboardingDescriptor)\b",
+            RegexOptions.Compiled);
+    static readonly Regex HardcodedDomainBranchingRegex =
+        new Regex(@"\b(OrchestrationDomainKeys\.(Combat|Idle)|DispatchCombatCommand|DispatchIdleCommand|CombatCommand|IdleCommand|ICombatRolePolicyMapSource|IIdleRolePolicyMapSource|ICombatRoleConstraintsMapSource)\b",
+            RegexOptions.Compiled);
 
     [Test]
     public void StrategyCombat_Domains_DoNotPublishCommandsDirectly()
@@ -167,6 +179,54 @@ public sealed class OrchestrationImplementationFitnessTests
             "Domains downcast IWorldQuery to concrete cache:\n" + string.Join("\n", violations));
     }
 
+    [Test, Ignore("Enable after typed-reference migration (commit C04A).")]
+    public void FutureGate_Orchestration_HasNoUntypedSerializedDependencyHolders()
+    {
+        Assert.That(Directory.Exists(StrategyCombatOrchestrationRoot), Is.True,
+            $"Missing directory: {StrategyCombatOrchestrationRoot}");
+
+        var violations = new List<string>();
+        foreach (string file in Directory.GetFiles(StrategyCombatOrchestrationRoot, "*.cs", SearchOption.AllDirectories))
+        {
+            string stripped = StripCommentsAndStrings(File.ReadAllText(file));
+            Match m = SerializedUntypedDependencyHolderRegex.Match(stripped);
+            if (m.Success)
+                violations.Add($"{file}: token '{m.Value}'");
+        }
+
+        Assert.That(violations, Is.Empty,
+            "Orchestration still uses untyped serialized dependency holders:\n" + string.Join("\n", violations));
+    }
+
+    [Test, Ignore("Enable after data-driven domain onboarding migration (commit C04A).")]
+    public void FutureGate_Orchestration_DomainVariation_PrefersDataDrivenOnboarding()
+    {
+        var hostPipelineFiles = ResolveExistingFiles(
+            RuntimeHostArbiterPath,
+            RuntimeHostRouterPath,
+            RuntimeHostLoopPath,
+            StrategyCombatArbiterPath,
+            StrategyCombatRouterPath,
+            StrategyCombatLoopPath);
+
+        Assert.That(hostPipelineFiles.Count, Is.GreaterThan(0),
+            "Could not locate orchestration host pipeline files (arbiter/router/loop).");
+
+        int descriptorCount = CountMatchesInRoots(
+            new[] { StrategyCombatOrchestrationRoot },
+            DomainOnboardingDescriptorRegex);
+
+        int hardcodedBranchCount = CountTokenOccurrencesInFiles(
+            hostPipelineFiles,
+            HardcodedDomainBranchingRegex);
+
+        Assert.That(descriptorCount, Is.GreaterThan(0),
+            "Expected data-driven onboarding descriptors/contracts (DomainModule/DomainRegistration/DomainDescriptor).");
+
+        Assert.That(hardcodedBranchCount, Is.EqualTo(0),
+            $"Host pipeline still contains hardcoded Combat/Idle branching tokens. Count={hardcodedBranchCount}.");
+    }
+
     static int CountMatchesInRoots(IEnumerable<string> roots, Regex regex)
     {
         int count = 0;
@@ -185,6 +245,35 @@ public sealed class OrchestrationImplementationFitnessTests
         }
 
         return count;
+    }
+
+    static int CountTokenOccurrencesInFiles(IEnumerable<string> files, Regex regex)
+    {
+        int count = 0;
+
+        foreach (string file in files)
+        {
+            if (!File.Exists(file))
+                continue;
+
+            string stripped = StripCommentsAndStrings(File.ReadAllText(file));
+            count += regex.Matches(stripped).Count;
+        }
+
+        return count;
+    }
+
+    static List<string> ResolveExistingFiles(params string[] candidatePaths)
+    {
+        var files = new List<string>();
+        for (int i = 0; i < candidatePaths.Length; i++)
+        {
+            string path = candidatePaths[i];
+            if (File.Exists(path))
+                files.Add(path);
+        }
+
+        return files;
     }
 
     static string StripCommentsAndStrings(string code)

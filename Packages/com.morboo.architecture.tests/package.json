@@ -1,0 +1,7 @@
+{
+    "name": "com.morboo.architecture.tests",
+    "version": "0.1.0",
+    "displayName": "Morboo Architecture Tests",
+    "description": "Cross-layer architecture fitness tests for Morboo packages and layering contracts.",
+    "unity": "6000.0"
+}

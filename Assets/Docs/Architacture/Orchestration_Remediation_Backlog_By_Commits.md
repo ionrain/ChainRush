@@ -2,6 +2,7 @@
 
 Date: 2026-02-19  
 Base: `Assets/Docs/Architacture/Orchestration_Implementation_Audit_2026-02-19.md`
+Blueprint: `Assets/Docs/Architacture/System_Blueprint_Orchestration.md`
 
 ## Goal
 
@@ -13,6 +14,9 @@ Base: `Assets/Docs/Architacture/Orchestration_Implementation_Audit_2026-02-19.md
 2. Без изменения поведения, если commit явно не помечен как behavior-affecting.
 3. Сначала фиксируем швы/границы, затем переносим ответственность между слоями.
 4. Архитектурные тесты добавляются вместе с каждым ключевым шагом.
+5. Добавление нового домена не должно требовать правки host-core файлов по цепочке (anti file-sprawl).
+6. Новые нетипизированные dependency refs (`GameObject`/`MonoBehaviour`/`Component` как service locator) не допускаются.
+7. Различия доменов приоритетно выражаются данными/политиками, а не форком runtime-кода.
 
 ## Commit Plan
 
@@ -23,7 +27,7 @@ Goal: Зафиксировать работающие инварианты те�
 
 Changes:
 
-1. Добавить `Assets/Game/Tests/Architecture/OrchestrationImplementationFitnessTests.cs`.
+1. Добавить `Packages/com.morboo.architecture.tests/Tests/Editor/OrchestrationImplementationFitnessTests.cs`.
 2. Добавить активные тесты:
    - Domains не вызывают `Publish(...)` напрямую.
    - Domains не используют `EntityTransformResolver`.
@@ -95,6 +99,37 @@ Acceptance:
 1. `IProposalSource`/`Proposal` используются в runtime-пайплайне.
 2. Добавление нового домена не требует менять arbiter switch по конкретным доменам.
 3. Включить future-gate тест ProposalSource (из C01).
+
+## C04A — Domain Onboarding Simplification (No File Explosion)
+
+Type: refactor-seam  
+Goal: Сделать подключение нового домена “низкофрикционным”, без каскадной правки десятков файлов.
+
+Changes:
+
+1. Ввести единый `DomainModule`/`DomainRegistration` контракт (или эквивалент) для подключения домена через регистрацию, а не через ручные edits в loop/router/arbiter.
+2. Сконцентрировать wiring домена в одном composition-entrypoint домена (в integration-слое), вместо распределения по множеству host-файлов.
+3. Вынести повторяющиеся элементы доменного пайплайна (default policies, adapters, selection plumbing) в shared `Common` blocks.
+4. Добавить в архитектурные тесты/future-gates проверку, что host-runtime не содержит domain-name specific branching.
+5. Зафиксировать onboarding-budget для нового домена:
+   - `0` правок в `Morboo.RuntimeHost` для стандартного подключения домена,
+   - максимум `1` registration touchpoint вне папки нового домена,
+   - остальные изменения находятся внутри пакета/папки самого нового домена.
+6. Зафиксировать baseline fan-out перед рефактором (на дату этого плана):
+   - `Packages/com.morboo.integration.strategycombat/Runtime/Orchestration`: `72` `.cs` файлов,
+   - `.../Domains`: `14` `.cs` файлов (`Combat`: `7`, `Idle`: `6`, `Common`: `1`).
+7. Убрать нетипизированные provider refs в orchestration wiring:
+   - заменить `[SerializeField] MonoBehaviour ...` + cast на типизированные зависимости/typed providers,
+   - убрать fallback `GetComponent<...>()` как основной способ разрешения critical runtime dependencies.
+8. Ввести data-driven onboarding-дескриптор домена (policy/config driven), чтобы различия нового домена задавались данными, а не изменением host-пайплайна.
+
+Acceptance:
+
+1. Пробный “dummy domain onboarding” выполняется без правок `Arbiter/Loop/Router` host-уровня.
+2. Domain wiring fan-out зафиксирован и снижен относительно текущего baseline.
+3. Правило onboarding-budget оформлено как test/checklist gate для следующих PR.
+4. Runtime orchestration wiring не использует нетипизированные dependency holder refs.
+5. Пробный новый домен подключается через data/config изменения с минимальным новым кодом вне domain папки.
 
 ## C05 — Event Pipeline Activation
 
@@ -197,10 +232,11 @@ Acceptance:
 
 1. После C02 можно параллелить C06 (Capabilities) и C07 (WorldQuery cleanup), если proposal seam уже стабилен.
 2. C08 (Core cleanup) лучше делать после C04/C07, чтобы не делать двойную миграцию контрактов.
+3. C04A желательно завершить до массового добавления новых доменов, иначе file-sprawl закрепится как дефолт.
 
 ## Suggested PR Grouping
 
 1. PR-A: C01-C02 (границы + тесты).
-2. PR-B: C03-C04 (proposal model migration).
+2. PR-B: C03-C04-C04A (proposal model + onboarding simplification).
 3. PR-C: C05-C07 (events/capabilities/query purity).
 4. PR-D: C08-C10 (core cleanup + final locks).

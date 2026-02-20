@@ -15,6 +15,7 @@ This roadmap orchestrates existing docs, not replacing them:
 5. `Assets/Docs/Architacture/Orchestration_Remediation_Backlog_By_Commits.md`
 6. `Assets/Docs/Architacture/TopDownEngine_Exit_Migration_Backlog.md`
 7. `Assets/Docs/Architacture/Morboo_Gameplay_Modularization_Backlog.md`
+8. `Assets/Docs/Architacture/New_System_Requirements_Template.md`
 
 ## 2) Program Goal
 
@@ -36,6 +37,11 @@ Build a top-down, reusable architecture where:
 5. `Packages/com.morboo.*` do not depend on project layer (`Assets/Scripts/...`).
 6. TDE usage is allowed only behind adapter seams until cutover phase.
 7. Changes are sliced to compile-green checkpoints.
+8. Systems do not communicate via direct concrete-to-concrete runtime calls; only via contracts/events/queries.
+9. New cross-system shared code is extracted deliberately (`Common`/lower layer) only after proving multi-system reuse.
+10. Sirenix Odin is allowed for Unity editor/data authoring workflows, but must not become a required runtime dependency of kernel/runtime packages.
+11. Untyped dependency holders (`GameObject`/`MonoBehaviour`/`Component` used as service locator inputs) are forbidden in new runtime architecture code.
+12. For new domain/feature variability, `data-driven` solutions are preferred over new code branches.
 
 ## 4) Dependency Order (Critical Path)
 
@@ -50,6 +56,23 @@ Do not reorder:
 7. `Final architecture locks`
 
 Reason: if gameplay migration starts before seams/contracts are stable, refactor loops become unbounded.
+
+## 4.1) Package Placement Policy (Normative)
+
+Every migrated contract/entity must be placed by reuse level:
+
+1. `Any game` (pure abstractions/contracts) -> `Packages/com.morboo.framework`
+2. `Any game runtime infra` (generic scheduler/bus/identity runtime services) -> `Packages/com.morboo.systems`
+3. `Cross-genre kernel` (flow/objective/outcome/rulebook/session contracts and domain-agnostic kernel models) -> `Packages/com.morboo.core`
+4. `Cross-genre host execution` (runtime host orchestration infra, no genre payloads) -> `Packages/com.morboo.runtimehost`
+5. `Genre layer` (StrategyCombat-specific domain contracts/implementations/content policies) -> `Packages/com.morboo.integration.strategycombat`
+6. `Concrete game` (project wiring, scene bindings, content maps, UI glue) -> `Assets/Scripts/MorbooBridge` + `Assets/Scripts/Game`
+
+Hard rules:
+
+1. `Kernel contracts` must live only in `com.morboo.framework` / `com.morboo.core` (host seams in `com.morboo.runtimehost`).
+2. `com.morboo.*` packages must not depend on project-layer assemblies.
+3. Any new package family must be introduced only via ADR.
 
 ## 5) Phased Plan
 
@@ -66,6 +89,14 @@ Includes:
    - invariants touched,
    - tests added/updated,
    - rollback plan.
+4. Approve folder topology convention per layer:
+   - `<Layer>/<SystemName>/...` for system-local code,
+   - `<Layer>/Common/...` only for proven multi-system reuse.
+5. Approve `system interaction contract` template:
+   - allowed inbound/outbound commands/events/queries,
+   - forbidden direct concrete dependencies.
+6. Require a filled system blueprint for each new system:
+   - `System_Blueprint_<SystemName>.md` based on `New_System_Requirements_Template.md`.
 
 Entry Gate:
 
@@ -76,6 +107,7 @@ Exit Gate:
 
 1. Every active backlog item references a target system owner.
 2. PR template includes architecture checklist.
+3. Blueprint template adoption is enforced for new systems.
 
 ## Phase 1 — Guardrails Baseline
 
@@ -83,12 +115,17 @@ Goal: enforce current boundaries before structural moves.
 
 Includes:
 
-1. Existing layering tests in `Assets/Game/Tests/Architecture/ArchitectureLayeringTests.cs`.
-2. Orchestration fitness tests in `Assets/Game/Tests/Architecture/OrchestrationImplementationFitnessTests.cs`.
+1. Existing layering tests in `Packages/com.morboo.architecture.tests/Tests/Editor/ArchitectureLayeringTests.cs`.
+2. Orchestration fitness tests in `Packages/com.morboo.architecture.tests/Tests/Editor/OrchestrationImplementationFitnessTests.cs`.
 3. Expand tests for:
    - forbidden direct TDE dependency in package layer,
    - forbidden project refs in package layer,
-   - no new reverse dependencies.
+   - no new reverse dependencies,
+   - no direct system-to-system concrete coupling in package runtime code,
+   - Odin usage policy for package runtime layers,
+   - no new untyped dependency holder refs in package runtime code,
+   - data-driven-first checks for new domain/feature variation (PR checklist at minimum),
+   - file-sprawl budget checks for new entity/domain onboarding (at least as PR checklist, automated where feasible).
 
 Backlog links:
 
@@ -103,6 +140,10 @@ Exit Gate:
 
 1. Architecture tests green in CI/editor.
 2. Baseline playtest checklist recorded.
+3. Complexity baseline recorded:
+   - entity onboarding touchpoints count,
+   - domain wiring fan-out count,
+   - data-vs-code variation baseline (what is config-driven vs code-driven).
 
 ## Phase 2 — Kernel Contracts First
 
@@ -130,8 +171,12 @@ Entity contracts (mandatory in this phase):
 
 Placement target:
 
-1. contracts in reusable gameplay/module layer (`Morboo.Gameplay.*` contracts package/asmdef).
-2. project glue in `Assets/Scripts/MorbooBridge`.
+1. universal abstractions -> `com.morboo.framework`.
+2. cross-genre kernel contracts/models -> `com.morboo.core`.
+3. host-runtime orchestration seams -> `com.morboo.runtimehost`.
+4. generic runtime infra implementations -> `com.morboo.systems`.
+5. strategycombat-specific contracts/payloads -> `com.morboo.integration.strategycombat`.
+6. project glue only in `Assets/Scripts/MorbooBridge`.
 
 Entry Gate:
 
@@ -175,7 +220,7 @@ Goal: make orchestration a reusable platform seam.
 
 Backlog links:
 
-1. `Orchestration_Remediation_Backlog_By_Commits.md` -> `C02..C07` mandatory.
+1. `Orchestration_Remediation_Backlog_By_Commits.md` -> `C02..C07` + `C04A` mandatory.
 2. `C08..C10` continue in later hardening phase.
 
 Execution order inside phase:
@@ -183,9 +228,10 @@ Execution order inside phase:
 1. `C02` move host responsibilities to `Morboo.RuntimeHost`.
 2. `C03` introduce proposal collection seam.
 3. `C04` move arbiter to proposal-list input.
-4. `C05` activate domain event pipeline.
-5. `C06` connect capabilities to runtime decisions.
-6. `C07` remove domain downcasts to concrete world cache.
+4. `C04A` add low-friction domain onboarding seam (no file explosion on new domain add).
+5. `C05` activate domain event pipeline.
+6. `C06` connect capabilities to runtime decisions.
+7. `C07` remove domain downcasts to concrete world cache.
 
 Entry Gate:
 
@@ -247,6 +293,7 @@ For each slice:
 2. move code,
 3. add tests,
 4. remove legacy duplicate path.
+5. enforce folder placement rule (`System` vs `Common`) with explicit rationale in PR.
 
 Entry Gate:
 
@@ -315,7 +362,7 @@ Exit Gate:
 ## 6.1 Orchestration Backlog
 
 1. `C01` -> Phase 1
-2. `C02..C07` -> Phase 4
+2. `C02..C07` + `C04A` -> Phase 4
 3. `C08..C10` -> Phase 8
 
 ## 6.2 TDE Exit Backlog
@@ -354,6 +401,19 @@ Each PR must include:
 2. Exact invariant changed/added.
 3. Test evidence (new or updated).
 4. Rollback-safe checkpoint.
+5. Link to filled system blueprint (`System_Blueprint_<SystemName>.md`) for new systems/major refactors.
+6. Reuse audit:
+   - what was reused from existing systems,
+   - what was extracted to shared level and why.
+7. Fan-out note for new entity/domain wiring:
+   - touched files count,
+   - justification if above team budget.
+8. Typed-reference note:
+   - any `GameObject`/`MonoBehaviour`/`Component` dependency refs introduced,
+   - justification + removal plan or ADR link.
+9. Data-driven note:
+   - what variation is expressed via data/policies/maps,
+   - what required new code branches and why.
 
 PR must not include:
 

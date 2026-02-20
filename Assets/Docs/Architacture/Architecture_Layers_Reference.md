@@ -1,6 +1,7 @@
 # Morboo Architecture Layers Reference
 _Версия: 1.0 (reference)_  
 _Цель: единый “север” для ИИ/разработчиков при добавлении новых систем и миграциях. Документ описывает **слои**, их **ответственности**, **границы зависимостей**, **запреты**, и **шаблон раскладки файлов** для любой Game System (Orchestration/Economy/Goals/Generation и т.п.)._
+_Нормативный шаблон требований к новой системе: `Assets/Docs/Architacture/New_System_Requirements_Template.md`._
 
 ---
 
@@ -280,6 +281,11 @@ PrefabGlue/               # компоненты на префабах, кото
 - [ ] содержит все project-specific glue
 - [ ] единственное место, где есть EntityId→Transform/Component resolution
 - [ ] asmdef: `Morboo.Bridge.asmdef` и зависимости направлены вниз по цепочке
+
+### 5.6 Typed References
+- [ ] нет нетипизированных dependency-holder ссылок (`GameObject`/`MonoBehaviour`/`Component`) для runtime service resolution
+- [ ] dependency wiring делается через типизированные поля/интерфейсы/registration contracts
+- [ ] любые исключения зафиксированы в ADR и имеют план удаления
 
 ---
 

@@ -94,6 +94,34 @@ public sealed class ArchitectureLayeringTests
         new Regex(@"\b(CombatOrchestratorLite|IdleOrchestratorLite|CombatTargetingPolicyAsset|IdlePolicyAsset|CombatRolePolicyMapAsset|IdleRolePolicyMapAsset|CombatMoveConstraintsAsset|CombatRoleConstraintsMapAsset|CombatTargetSet|OrchestrationArbiter|OrchestrationLoop|ExecutionRouter|ExecutionContext|DispatchCombatCommand|DispatchIdleCommand)\b",
             RegexOptions.Compiled);
 
+    static readonly Regex ForbiddenSirenixUsingRegex =
+        new Regex(@"^\s*using\s+Sirenix\.", RegexOptions.Compiled | RegexOptions.Multiline);
+
+    static readonly Regex ForbiddenSirenixTokenRegex =
+        new Regex(@"\bSirenix\.", RegexOptions.Compiled);
+
+    static readonly Regex SerializedGameObjectDependencyHolderRegex =
+        new Regex(@"\[SerializeField\]\s*(?:\[[^\]]+\]\s*)*(?:private|public|protected|internal)?\s*GameObject\b",
+            RegexOptions.Compiled);
+
+    static readonly string[] ForbiddenProjectAssemblyReferences =
+    {
+        "Game.Runtime",
+        "Morboo.Bridge",
+        "Integration.Project"
+    };
+
+    static readonly Regex KernelContractDeclarationRegex =
+        new Regex(@"\b(interface|class|struct)\s+(IGameFlowService|IScenarioService|IObjectiveService|IOutcomeService|IRulebookProvider|ISessionStateStore|IProfileStateStore|ISaveLoadService|IEconomyLedger|IRewardService|IEntityRegistry|IEntityFactory|IEntityLifecycleService|IEntitySnapshotStore|IEntityViewBinder)\b",
+            RegexOptions.Compiled);
+
+    static readonly Regex EntityKernelContractDeclarationRegex =
+        new Regex(@"\binterface\s+(IEntityRegistry|IEntityFactory|IEntityLifecycleService|IEntitySnapshotStore|IEntityViewBinder)\b",
+            RegexOptions.Compiled);
+
+    static readonly Regex EntityIdDeclarationRegex =
+        new Regex(@"\b(struct|class)\s+EntityId\b", RegexOptions.Compiled);
+
     // ── Existing layering tests ──────────────────────────────────────
 
     [Test]
@@ -577,7 +605,238 @@ public sealed class ArchitectureLayeringTests
             "RuntimeHost calls Apply*Command directly (should emit via ICommandBus):\n" + string.Join("\n", violations));
     }
 
+    // ── Package placement policy gates ───────────────────────────────
+
+    [Test]
+    public void BaseMorbooPackageAsmdefs_RespectLayerReferencePolicy()
+    {
+        AssertAsmdefReferencesWithinAllowedSet(FrameworkAsmdefPath, Array.Empty<string>());
+        AssertAsmdefReferencesWithinAllowedSet(SystemsRuntimeAsmdefPath, new[] { "Morboo.Framework" });
+        AssertAsmdefReferencesWithinAllowedSet(CoreAsmdefPath, new[] { "Morboo.Framework" });
+        AssertAsmdefReferencesWithinAllowedSet(RuntimeHostAsmdefPath, new[] { "Morboo.Framework", "Morboo.Core", "Morboo.Systems" });
+    }
+
+    [Test]
+    public void StrategyCombatAsmdef_ReferencesRequiredMorbooLayers()
+    {
+        string[] requiredRefs =
+        {
+            "Morboo.Framework",
+            "Morboo.Core",
+            "Morboo.RuntimeHost",
+            "Morboo.Systems"
+        };
+
+        string[] refs = GetResolvedAsmdefReferences(ProjectTypeAsmdefPath);
+        var refSet = new HashSet<string>(refs, StringComparer.Ordinal);
+
+        var missing = requiredRefs.Where(r => !refSet.Contains(r)).ToArray();
+        Assert.That(missing, Is.Empty,
+            $"Morboo.Integration.StrategyCombat is missing required Morboo layer refs: {string.Join(", ", missing)}");
+    }
+
+    [Test]
+    public void BaseMorbooPackageAsmdefs_DoNotReferenceProjectAssemblies()
+    {
+        string[] protectedAsmdefs =
+        {
+            FrameworkAsmdefPath,
+            SystemsRuntimeAsmdefPath,
+            CoreAsmdefPath,
+            RuntimeHostAsmdefPath
+        };
+
+        foreach (string asmdefPath in protectedAsmdefs)
+            AssertAsmdefHasNoForbiddenReferences(asmdefPath, ForbiddenProjectAssemblyReferences);
+    }
+
+    [Test]
+    public void KernelRuntimePackages_DoNotUseSirenixOdin()
+    {
+        string[] roots =
+        {
+            FrameworkSourceRoot,
+            SystemsRuntimeSourceRoot,
+            CoreSourceRoot,
+            RuntimeHostSourceRoot
+        };
+
+        var violations = new List<string>();
+        foreach (string root in roots)
+        {
+            if (!Directory.Exists(root))
+                continue;
+
+            foreach (string file in Directory.GetFiles(root, "*.cs", SearchOption.AllDirectories))
+            {
+                string source = File.ReadAllText(file);
+                if (ForbiddenSirenixUsingRegex.IsMatch(source))
+                    violations.Add($"{file}: using Sirenix.*");
+
+                string stripped = StripCommentsAndStrings(source);
+                Match token = ForbiddenSirenixTokenRegex.Match(stripped);
+                if (token.Success)
+                    violations.Add($"{file}: token '{token.Value}'");
+            }
+        }
+
+        Assert.That(violations, Is.Empty,
+            "Kernel/runtime packages must not use Sirenix Odin runtime dependencies:\n" + string.Join("\n", violations));
+    }
+
+    [Test]
+    public void PackageRuntime_DoesNotUseSerializedGameObjectDependencyHolders()
+    {
+        string[] roots =
+        {
+            FrameworkSourceRoot,
+            SystemsRuntimeSourceRoot,
+            CoreSourceRoot,
+            RuntimeHostSourceRoot,
+            ProjectTypeSourceRoot
+        };
+
+        var violations = new List<string>();
+        foreach (string root in roots)
+        {
+            if (!Directory.Exists(root))
+                continue;
+
+            foreach (string file in Directory.GetFiles(root, "*.cs", SearchOption.AllDirectories))
+            {
+                string stripped = StripCommentsAndStrings(File.ReadAllText(file));
+                Match m = SerializedGameObjectDependencyHolderRegex.Match(stripped);
+                if (m.Success)
+                    violations.Add($"{file}: token '{m.Value}'");
+            }
+        }
+
+        Assert.That(violations, Is.Empty,
+            "Package runtime code uses serialized GameObject dependency holders:\n" + string.Join("\n", violations));
+    }
+
+    [Test, Ignore("Enable when StrategyCombat package is decoupled from Game.Runtime bridge refs.")]
+    public void FutureGate_StrategyCombatAsmdef_DoesNotReferenceProjectAssemblies()
+    {
+        AssertAsmdefHasNoForbiddenReferences(ProjectTypeAsmdefPath, ForbiddenProjectAssemblyReferences);
+    }
+
+    [Test]
+    public void KernelContracts_AreDeclaredOnlyInApprovedKernelPackages()
+    {
+        const string packagesRoot = "Packages";
+        if (!Directory.Exists(packagesRoot))
+            Assert.Fail($"Missing directory: {packagesRoot}");
+
+        string[] allowedRoots =
+        {
+            FrameworkSourceRoot,
+            CoreSourceRoot,
+            RuntimeHostSourceRoot
+        };
+
+        var violations = new List<string>();
+        foreach (string file in Directory.GetFiles(packagesRoot, "*.cs", SearchOption.AllDirectories))
+        {
+            string stripped = StripCommentsAndStrings(File.ReadAllText(file));
+            foreach (Match match in KernelContractDeclarationRegex.Matches(stripped))
+            {
+                bool isAllowed = allowedRoots.Any(root => IsPathUnder(file, root));
+                if (!isAllowed)
+                    violations.Add($"{file}: declaration '{match.Value}'");
+            }
+        }
+
+        Assert.That(violations, Is.Empty,
+            "Kernel contracts are declared outside approved kernel packages:\n" + string.Join("\n", violations));
+    }
+
+    [Test]
+    public void EntityKernelContracts_AreDeclaredOnlyInFrameworkOrCore()
+    {
+        var roots = new[] { "Packages", "Assets/Scripts" };
+        var violations = new List<string>();
+
+        foreach (string root in roots)
+        {
+            if (!Directory.Exists(root))
+                continue;
+
+            foreach (string file in Directory.GetFiles(root, "*.cs", SearchOption.AllDirectories))
+            {
+                string stripped = StripCommentsAndStrings(File.ReadAllText(file));
+                foreach (Match match in EntityKernelContractDeclarationRegex.Matches(stripped))
+                {
+                    if (!IsPathUnder(file, FrameworkSourceRoot) && !IsPathUnder(file, CoreSourceRoot))
+                        violations.Add($"{file}: declaration '{match.Value}'");
+                }
+            }
+        }
+
+        Assert.That(violations, Is.Empty,
+            "Entity kernel contracts are declared outside Framework/Core:\n" + string.Join("\n", violations));
+    }
+
+    [Test]
+    public void EntityId_DeclaredOnlyInFramework()
+    {
+        var roots = new[] { "Packages", "Assets/Scripts" };
+        var violations = new List<string>();
+
+        foreach (string root in roots)
+        {
+            if (!Directory.Exists(root))
+                continue;
+
+            foreach (string file in Directory.GetFiles(root, "*.cs", SearchOption.AllDirectories))
+            {
+                string stripped = StripCommentsAndStrings(File.ReadAllText(file));
+                foreach (Match match in EntityIdDeclarationRegex.Matches(stripped))
+                {
+                    if (!IsPathUnder(file, FrameworkSourceRoot))
+                        violations.Add($"{file}: declaration '{match.Value}'");
+                }
+            }
+        }
+
+        Assert.That(violations, Is.Empty,
+            "EntityId must be declared only in Framework:\n" + string.Join("\n", violations));
+    }
+
     // ── Helpers ──────────────────────────────────────────────────────
+
+    static void AssertAsmdefReferencesWithinAllowedSet(string asmdefPath, IReadOnlyCollection<string> allowedReferences)
+    {
+        Assert.That(File.Exists(asmdefPath), Is.True, $"Missing asmdef: {asmdefPath}");
+
+        string[] resolved = GetResolvedAsmdefReferences(asmdefPath);
+        var allowed = new HashSet<string>(allowedReferences ?? Array.Empty<string>(), StringComparer.Ordinal);
+        var violations = resolved.Where(r => !allowed.Contains(r)).ToArray();
+
+        Assert.That(violations, Is.Empty,
+            $"{asmdefPath} has references outside allowed set: {string.Join(", ", violations)}");
+    }
+
+    static string[] GetResolvedAsmdefReferences(string asmdefPath)
+    {
+        AsmdefData asmdef = ReadAsmdef(asmdefPath);
+        var guidToAsmName = BuildGuidToAssemblyNameMap();
+
+        return (asmdef.references ?? Array.Empty<string>())
+            .Select(r => ResolveReferenceName(r, guidToAsmName))
+            .Where(r => !string.IsNullOrWhiteSpace(r))
+            .ToArray();
+    }
+
+    static bool IsPathUnder(string path, string root)
+    {
+        if (string.IsNullOrEmpty(path) || string.IsNullOrEmpty(root))
+            return false;
+
+        string normalizedPath = path.Replace('\\', '/');
+        string normalizedRoot = root.Replace('\\', '/').TrimEnd('/');
+        return normalizedPath.StartsWith(normalizedRoot + "/", StringComparison.OrdinalIgnoreCase);
+    }
 
     static void AssertAsmdefHasNoForbiddenReferences(string asmdefPath, IReadOnlyList<string> forbiddenPrefixes)
     {

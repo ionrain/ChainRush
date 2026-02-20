@@ -1,5 +1,5 @@
 {
-    "name": "Game.Architecture.Tests",
+    "name": "Morboo.Architecture.Tests",
     "rootNamespace": "",
     "references": [
         "Morboo.Framework",

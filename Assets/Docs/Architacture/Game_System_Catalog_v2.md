@@ -11,6 +11,7 @@ Related:
 4. `Assets/Docs/Architacture/Orchestration_Remediation_Backlog_By_Commits.md`
 5. `Assets/Docs/Architacture/TopDownEngine_Exit_Migration_Backlog.md`
 6. `Assets/Docs/Architacture/Morboo_Gameplay_Modularization_Backlog.md`
+7. `Assets/Docs/Architacture/New_System_Requirements_Template.md`
 
 ## 1) Purpose
 
@@ -240,13 +241,116 @@ Evidence: `Assets/Scripts/Game/TopDownEngineExt/*`, `Packages/com.morboo.integra
 3. `Rulebook packs` — контентно-жанровые наборы без смены kernel.
 4. `Experience adapters` — UI/engine/platform-specific wrappers.
 
+## 8.1 Package Placement By Reuse Level
+
+Фиксируем целевой маппинг по уровням абстракции:
+
+1. `Любая игра (универсальные контракты/типы)` -> `Packages/com.morboo.framework`
+2. `Любая игра (универсальная runtime-инфра)` -> `Packages/com.morboo.systems`
+3. `Кросс-жанровый game kernel и доменно-независимые контракты` -> `Packages/com.morboo.core`
+4. `Кросс-жанровый host/runtime execution` -> `Packages/com.morboo.runtimehost`
+5. `Жанровый слой (StrategyCombat family)` -> `Packages/com.morboo.integration.strategycombat`
+6. `Конкретная игра (wiring, контентные мапы, сцены, UI glue)` -> `Assets/Scripts/MorbooBridge` и `Assets/Scripts/Game`
+
+Нормативные запреты:
+
+1. `Kernel contracts` размещаются только в `com.morboo.framework` / `com.morboo.core` (host seams в `com.morboo.runtimehost`).
+2. Истиной по `game flow/objective/outcome` владеют только `Kernel systems` (Tier A), не feature-код проектного слоя.
+3. `com.morboo.*` packages не зависят от project-слоя.
+4. Новые семейства пакетов вводятся только через ADR.
+
+## 8.2 Entity Placement Rules (Migration-Time)
+
+Чтобы не расползалась ownership-модель сущностей, при добавлении новых entity-related типов использовать только этот маппинг:
+
+1. `EntityId`, базовые readonly-query контракты, event/command base contracts -> `com.morboo.framework`.
+2. Универсальные runtime-сервисы (`allocator`, generic `registry` infra helpers, scheduler-safe lifecycle helpers) -> `com.morboo.systems`.
+3. Кросс-жанровые entity kernel contracts/models (`IEntityRegistry`, `IEntityFactory`, `IEntityLifecycleService`, базовый `EntityState`) -> `com.morboo.core`.
+4. Host-side execution seams для entity pipeline (tick-time orchestration hooks, routing contracts) -> `com.morboo.runtimehost`.
+5. Жанровые расширения (`combat/idle` capabilities, strategycombat payloads, targeting-specific entity policies) -> `com.morboo.integration.strategycombat`.
+6. Project-only binding/config/content maps (scene binders, concrete prefab maps, bootstrap glue) -> `Assets/Scripts/MorbooBridge` + `Assets/Scripts/Game`.
+
+Запрет:
+
+1. Entity kernel contracts не объявляются вне `com.morboo.framework` / `com.morboo.core`.
+
+## 8.3 System Communication Rule (No Direct Coupling)
+
+Системы не общаются напрямую concrete-to-concrete. Разрешённые каналы:
+
+1. Команды/события через bus/dispatcher контракты.
+2. Query через интерфейсные порты (`I*Query`/`I*Provider`), без знания concrete реализации другой системы.
+3. Публичные API систем допускаются только как контракты владельца системы, а не как прямые вызовы внутрь чужой реализации.
+
+Запрет:
+
+1. `SystemA` импортирует/создаёт concrete классы `SystemB` и вызывает их runtime-методы напрямую.
+2. Общение через shared mutable state между системами вне owner-контракта.
+
+## 8.4 Odin Policy (Data Authoring Only)
+
+Допустимость `Sirenix.Odin`:
+
+1. Разрешено для authoring/data файлов (`SerializedScriptableObject`, editor drawers, tooling) в `UnityEditor` контексте.
+2. Разрешено в project/integration data слое, если это не создаёт обязательную runtime-зависимость для нижних пакетов.
+3. В `com.morboo.framework`, `com.morboo.systems`, `com.morboo.core`, `com.morboo.runtimehost` runtime-коде использование Odin запрещено.
+
+Правило:
+
+1. Odin не должен быть required-dependency для kernel/runtime слоёв.
+
+## 8.5 Folder Placement Rules Inside A Layer
+
+Внутри каждого слоя используется единая схема:
+
+1. Код, используемый только одной системой, лежит в папке этой системы (`<Layer>/<SystemName>/...`).
+2. Код, используемый как минимум двумя системами одного слоя, переносится в `<Layer>/Common/...`.
+3. Перенос в `Common` допускается только при наличии стабильного контракта и двух реальных потребителей.
+4. `Common` не используется как свалка “на будущее”; если второй потребитель исчез, код возвращается в owning-system папку.
+
+## 8.6 Anti-File-Sprawl Rule (Complexity Budget)
+
+Если для подключения новой сущности/домена требуется “куча файлов”, это считается архитектурным запахом.
+
+Обязательные проверки при каждом PR с новой системой/доменом:
+
+1. `Entity onboarding touchpoints`: сколько файлов нужно изменить, чтобы добавить новый archetype/entity type.
+2. `Domain wiring fan-out`: сколько обязательных orchestrator/policy/adapter/map файлов требуется для минимального сценария.
+3. Если fan-out выше согласованного бюджета команды, PR обязан включать план упрощения (consolidation/extraction) или ADR-обоснование.
+4. Различия по доменам/сценариям сначала пытаемся выразить `data-driven` (policies/maps/config), а не добавлением новых веток кода.
+
+Практическая цель:
+
+1. Добавление новой сущности должно быть конфигурационно-ориентированным, а не требовать каскада новых классов и интерфейсов.
+2. Разделение на файлы делается по ответственности, а не по “один класс = один микро-файл” без пользы.
+3. Новый кодовый путь вводится только после явного обоснования, почему вариацию нельзя выразить данными.
+
+## 8.7 Typed Reference Rule (No Untyped Dependency Holders)
+
+Для межсистемных runtime-зависимостей запрещены нетипизированные ссылки:
+
+1. Не использовать `GameObject`/`MonoBehaviour`/`Component` поле как универсальный контейнер, из которого потом ищется нужный интерфейс через `GetComponent`.
+2. Для dependency wiring использовать типизированные ссылки:
+   - required concrete type,
+   - typed provider interface,
+   - explicit registration/composition.
+3. Допустимы `GameObject`/`Transform` ссылки только как view/content references (UI/prefab anchors), не как service locator.
+
+Проверка:
+
+1. Любая нетипизированная ссылка, сохранённая в системе, требует явного обоснования в blueprint/PR + план удаления.
+
 ## 9) Governance Rules (Anti-Emergent)
 
 1. Новая фича не стартует без назначения `System Owner` из каталога.
-2. Если подходящей системы нет, сначала создаётся контракт системы (интерфейс + asmdef boundary), потом код фичи.
-3. Один PR = одна системная цель + один архитектурный тест, который это правило фиксирует.
-4. Запрещено добавлять новый runtime-код с прямой зависимостью на TDE вне adapter-слоя.
-5. Запрещено хранить flow/objective/outcome rules в UI/MonoBehaviour glue.
+2. Для новой системы/крупного рефактора сначала заполняется blueprint по `New_System_Requirements_Template.md`.
+3. Если подходящей системы нет, сначала создаётся контракт системы (интерфейс + asmdef boundary), потом код фичи.
+4. Один PR = одна системная цель + один архитектурный тест, который это правило фиксирует.
+5. Запрещено добавлять новый runtime-код с прямой зависимостью на TDE вне adapter-слоя.
+6. Запрещено хранить flow/objective/outcome rules в UI/MonoBehaviour glue.
+7. При создании новой системы сначала проверяется переиспользование существующих контрактов и `Common`-компонентов.
+8. Если общий фрагмент нужен нескольким системам, он выносится на общий уровень (`Common`/lower package) до дублирования.
+9. Нетипизированные dependency refs (`GameObject`/`MonoBehaviour`/`Component` как service locator) не добавляются без approved ADR.
 
 ## 10) Immediate Next Step
 

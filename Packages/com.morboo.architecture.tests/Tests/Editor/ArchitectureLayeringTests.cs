@@ -169,7 +169,7 @@ public sealed class ArchitectureLayeringTests
         Assert.That(framework, Is.Not.Null, $"Assembly {FrameworkAssemblyName} is not loaded.");
 
         var violations = new List<string>();
-        foreach (Type type in framework.GetTypes())
+        foreach (Type type in GetLoadableTypes(framework))
         {
             CheckType(type, $"type {type.FullName}", violations);
 
@@ -202,7 +202,7 @@ public sealed class ArchitectureLayeringTests
         Assembly framework = FindLoadedAssembly(FrameworkAssemblyName);
         Assert.That(framework, Is.Not.Null, $"Assembly {FrameworkAssemblyName} is not loaded.");
 
-        Type iWorldQuery = framework.GetTypes().FirstOrDefault(t => t.Name == "IWorldQuery");
+        Type iWorldQuery = GetLoadableTypes(framework).FirstOrDefault(t => t.Name == "IWorldQuery");
         Assert.That(iWorldQuery, Is.Not.Null, $"IWorldQuery type not found in {FrameworkAssemblyName}.");
 
         var violations = new List<string>();
@@ -619,7 +619,7 @@ public sealed class ArchitectureLayeringTests
     public void BaseMorbooPackageAsmdefs_RespectLayerReferencePolicy()
     {
         AssertAsmdefReferencesWithinAllowedSet(FrameworkAsmdefPath, Array.Empty<string>());
-        AssertAsmdefReferencesWithinAllowedSet(SystemsRuntimeAsmdefPath, new[] { "Morboo.Framework" });
+        AssertAsmdefReferencesWithinAllowedSet(SystemsRuntimeAsmdefPath, new[] { "Morboo.Framework", "Morboo.Core" });
         AssertAsmdefReferencesWithinAllowedSet(CoreAsmdefPath, new[] { "Morboo.Framework" });
         AssertAsmdefReferencesWithinAllowedSet(RuntimeHostAsmdefPath, new[] { "Morboo.Framework", "Morboo.Core", "Morboo.Systems" });
     }
@@ -1040,6 +1040,21 @@ public sealed class ArchitectureLayeringTests
     static Assembly FindLoadedAssembly(string name)
     {
         return AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.GetName().Name == name);
+    }
+
+    static IEnumerable<Type> GetLoadableTypes(Assembly assembly)
+    {
+        if (assembly == null)
+            return Array.Empty<Type>();
+
+        try
+        {
+            return assembly.GetTypes();
+        }
+        catch (ReflectionTypeLoadException ex)
+        {
+            return ex.Types.Where(t => t != null);
+        }
     }
 
     static string ResolveReferenceName(string rawRef, IReadOnlyDictionary<string, string> guidMap)

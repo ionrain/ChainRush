@@ -6,6 +6,7 @@
         "Morboo.Framework",
         "Morboo.Core",
         "Morboo.RuntimeHost",
+        "Morboo.Systems",
         "Morboo.Integration.StrategyCombat"
     ],
     "includePlatforms": [],

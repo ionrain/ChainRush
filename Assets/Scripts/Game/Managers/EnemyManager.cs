@@ -54,6 +54,10 @@ public class EnemyManager : SimplePoolUser, MMEventListener<EnemySpawnTriggerEve
     [SerializeField] LayerMask targetLayers;
     [SerializeField] int maxSpawnAttempts = 100;
 
+    public IReadOnlyList<Enemy> Enemies => _enemies;
+    public event System.Action<Enemy> EnemySpawned;
+    public event System.Action<Enemy> EnemyDespawned;
+
     int EnemiesCount => _enemies.Count;
     public int MaxFillCount { get; set; }
     public int MaxSimulteneousCount { get; set; }
@@ -142,6 +146,15 @@ public class EnemyManager : SimplePoolUser, MMEventListener<EnemySpawnTriggerEve
 
     public void Initialize(Dictionary<Attribute, float> multipliers, Dictionary<GameObject, int> poolData) {
         _multipliersFromSkills.Clear();
+        if (_enemies.Count > 0)
+        {
+            for (int i = 0; i < _enemies.Count; i++)
+            {
+                Enemy enemy = _enemies[i];
+                if (enemy != null)
+                    EnemyDespawned?.Invoke(enemy);
+            }
+        }
         _enemies.Clear();
         _scanLayers = targetLayers | spawnBlock;
 
@@ -398,13 +411,15 @@ public class EnemyManager : SimplePoolUser, MMEventListener<EnemySpawnTriggerEve
             enemy.Setup(combined, defaultTarget, _showHealthBars);
             enemy.OnDead += OnEnemyDead;
             _enemies.Add(enemy);
+            EnemySpawned?.Invoke(enemy);
         } else
             Debug.LogWarning("EnemyManager SetupEnemy: enemy gameobject or player is NULL.");
     }
 
     public void OnEnemyDead(Enemy enemy) {
         enemy.OnDead -= OnEnemyDead;
-        _enemies.Remove(enemy);
+        if (_enemies.Remove(enemy))
+            EnemyDespawned?.Invoke(enemy);
         if ((_progress >= 1 || !_spawning) && _enemies.Count == 0)
             StartCoroutine(LevelClearedCo());
     }

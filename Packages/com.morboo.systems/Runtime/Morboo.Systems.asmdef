@@ -2,7 +2,8 @@
     "name": "Morboo.Systems",
     "rootNamespace": "",
     "references": [
-        "Morboo.Framework"
+        "Morboo.Framework",
+        "Morboo.Core"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

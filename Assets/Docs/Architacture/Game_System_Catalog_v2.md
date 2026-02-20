@@ -279,6 +279,12 @@ Evidence: `Assets/Scripts/Game/TopDownEngineExt/*`, `Packages/com.morboo.integra
 3. `com.morboo.*` packages не зависят от project-слоя.
 4. Новые семейства пакетов вводятся только через ADR.
 
+Alignment note:
+
+1. `Framework/Core` split is kept for current migration program.
+2. Possible merge is explicitly deferred and governed by the decision gate in `Assets/Docs/Architacture/Master_Migration_Roadmap.md` (`4.2 Deferred Framework + Core Merge Decision Gate`).
+3. Until that gate is passed, boundaries and tests for `framework/core` stay mandatory.
+
 ## 8.2 Entity Placement Rules (Migration-Time)
 
 Чтобы не расползалась ownership-модель сущностей, при добавлении новых entity-related типов использовать только этот маппинг:

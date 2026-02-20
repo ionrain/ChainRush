@@ -1,7 +1,7 @@
 # Master Migration Roadmap
 
 Date: 2026-02-19  
-Status: Active draft (execution plan)  
+Status: Active plan (`Phase 1 closed`, `Phase 2 closed`, `Phase 3 in progress (C3.1 foundation + C3.2 manager bridge)`)  
 Scope: migration from current mixed codebase to kernel-first architecture with reusable systems and no TopDownEngine runtime dependency.
 
 ## 1) Sources Of Truth
@@ -77,6 +77,36 @@ Hard rules:
 1. `Kernel contracts` must live only in `com.morboo.framework` / `com.morboo.core` (host seams in `com.morboo.runtimehost`).
 2. `com.morboo.*` packages must not depend on project-layer assemblies.
 3. Any new package family must be introduced only via ADR.
+
+## 4.2) Deferred `Framework + Core` Merge Decision Gate
+
+Current migration keeps `com.morboo.framework` and `com.morboo.core` split.  
+Merge is explicitly deferred until boundary risks are lower.
+
+Guardrails while deferred:
+
+1. `com.morboo.framework` must not depend on `com.morboo.core`.
+2. `com.morboo.core` must depend only on `com.morboo.framework`.
+3. No shim/duplicate types across `framework/core`.
+4. Boundary tests for `framework/core` remain mandatory.
+
+Decision checkpoint:
+
+1. Primary checkpoint: after `Phase 4` exit gate (`orchestration platform remediation`).
+2. Optional safer checkpoint: after `Phase 5` exit gate (`engine anti-corruption seam`).
+
+Merge preconditions:
+
+1. `Phase 1` architecture tests are green.
+2. `Phase 2` kernel/entity contracts are stable and accepted by owners.
+3. No cyclic dependencies in package graph.
+4. Merge can be done as mechanical move (`git mv` + asmdef refs/tests update) without behavior change.
+
+If merge is approved:
+
+1. Create ADR for package boundary change.
+2. Execute in dedicated structural PR (no behavior changes).
+3. Update all affected architecture tests and docs in same PR.
 
 ## 5) Phased Plan
 
@@ -215,6 +245,21 @@ Exit Gate:
 3. At least smoke tests for contract wiring exist.
 4. Entity contracts are present and reviewed as ownership baseline.
 
+## Phase 2 Execution Slices (C2.1-C2.3)
+
+1. `C2.1 Kernel + Entity Contracts`
+   - declare required kernel contracts in `com.morboo.core`,
+   - declare required entity contracts in `com.morboo.core`,
+   - add architecture smoke tests for contract presence and signatures.
+2. `C2.2 Minimal Runtime Store Implementations`
+   - add in-memory runtime implementations for `ISessionStateStore`, `IProfileStateStore`, `IEntitySnapshotStore` in `com.morboo.systems`,
+   - add smoke tests for basic store wiring behavior,
+   - keep behavior-neutral (no gameplay flow rewrites in this slice).
+3. `C2.3 Minimal Kernel Runtime Service Implementations`
+   - add in-memory/no-op runtime implementations for remaining kernel service contracts (`IGameFlowService`, `IScenarioService`, `IObjectiveService`, `IOutcomeService`, `IRulebookProvider`, `ISaveLoadService`, `IEconomyLedger`, `IRewardService`) in `com.morboo.systems`,
+   - add smoke tests for basic service wiring behavior,
+   - keep behavior-neutral (no gameplay flow rewrites in this slice).
+
 ## Phase 3 — Entity Backbone Foundation
 
 Goal: establish single source of truth for gameplay entities before deep domain migration.
@@ -238,6 +283,19 @@ Exit Gate:
 2. Domain logic can address entities by `EntityId`.
 3. New features no longer use `Transform` as source of truth.
 4. No double-source HP/state between model and view for migrated entities.
+
+## Phase 3 Execution Slices (C3.1-C3.3)
+
+1. `C3.1 Entity Backbone Foundation (in-memory)`
+   - add minimal `EntityState` model in `com.morboo.core`,
+   - add `InMemoryEntityRegistry`, `InMemoryEntityFactory`, `InMemoryEntityLifecycleService`, `InMemoryEntityViewBinder` in `com.morboo.systems`,
+   - add smoke tests for `create/destroy/get/events` and `entity -> view` binding.
+2. `C3.2 Manager Bridge To Registry Facade`
+   - bridge existing `Unit/Enemy` lifecycle managers to registry/factory facade,
+   - keep runtime behavior unchanged (adapter-only migration).
+3. `C3.3 Entity Source-Of-Truth Hardening`
+   - align migrated features to model-first ownership (state reads by `EntityId`),
+   - remove double-source state in migrated paths.
 
 ## Phase 4 — Orchestration Platform Remediation
 

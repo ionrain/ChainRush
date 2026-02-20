@@ -9,12 +9,12 @@
   <Project Path="Sirenix.OdinInspector.Modules.UnityLocalization.Editor.csproj" />
   <Project Path="MoreMountains.InventoryEngine.csproj" />
   <Project Path="Morboo.Framework.csproj" />
+  <Project Path="Morboo.Architecture.Tests.csproj" />
   <Project Path="MoreMountains.Interface.csproj" />
   <Project Path="Morboo.Systems.csproj" />
   <Project Path="Assembly-CSharp-firstpass.csproj" />
   <Project Path="Morboo.Bridge.csproj" />
   <Project Path="Lofelt.NiceVibrations.csproj" />
-  <Project Path="Morboo.Architecture.Tests.csproj" />
   <Project Path="MoreMountains.InventoryEngine.Editor.csproj" />
   <Project Path="Sirenix.OdinInspector.Modules.Unity.Addressables.csproj" />
   <Project Path="MoreMountains.TopDownEngine.InputSystem.csproj" />

@@ -41,6 +41,10 @@ public class UnitManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEve
 
     public bool Valid => _units.Count > 0;
     public Unit Hero { get; private set; }
+    public IReadOnlyList<Unit> Units => _units;
+
+    public event System.Action<Unit> UnitSpawned;
+    public event System.Action<Unit> UnitDespawned;
 
     Dictionary<Attribute, float> _buffs = new();
     List<Unit> _units = new List<Unit>();
@@ -101,7 +105,12 @@ public class UnitManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEve
     }
 
     public void Clear() {
-        _units.ForEach(t => Destroy(t.gameObject));
+        _units.ForEach(t => {
+            if (t != null)
+                UnitDespawned?.Invoke(t);
+            if (t != null)
+                Destroy(t.gameObject);
+        });
         _units.Clear();
     }
 
@@ -113,6 +122,16 @@ public class UnitManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEve
     }
 
     public void Setup(List<UnitData> selected = null) {
+        if (_units.Count > 0)
+        {
+            for (int i = 0; i < _units.Count; i++)
+            {
+                Unit unit = _units[i];
+                if (unit != null)
+                    UnitDespawned?.Invoke(unit);
+            }
+        }
+
         _units.Clear();
         _slotCounters.Clear();
         _enemyAssignedCount.Clear();
@@ -195,6 +214,7 @@ public class UnitManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEve
             unit.OnDeath += OnUnitDeath;
             unit.OnHit += (u) => UnitActionEvent.Trigger(u, UnitActionType.Hit);
             _units.Add(unit);
+            UnitSpawned?.Invoke(unit);
             ApplySupportMultipliers(unit);
 
             if (data.type == UnitType.Hero) {
@@ -238,7 +258,8 @@ public class UnitManager : SerializedMonoBehaviour, MMEventListener<LevelLoadEve
     }
 
     void OnUnitDeath(Unit unit) {
-        _units.Remove(unit);
+        if (_units.Remove(unit))
+            UnitDespawned?.Invoke(unit);
     }
 
     void OnHeroDeath(Unit unit) {

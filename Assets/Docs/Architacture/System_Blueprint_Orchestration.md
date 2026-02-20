@@ -17,7 +17,7 @@ Related:
 
 ## 2) Problem / Outcome
 
-1. `Problem Statement`: текущая оркестрация работает как vertical slice для `Combat/Idle`, но расширение на новый домен требует invasive правок host-пайплайна и создаёт file-sprawl.
+1. `Problem Statement`: текущая оркестрация работает как vertical slice для `Combat/Idle`, но проблема не ограничивается только domain-coupling; есть несколько системных разрывов, которые блокируют reusable platform-модель.
 2. `Business/Game Outcome`: быстрый onboarding новых доменов без регрессий базовой боевой логики.
 3. `In Scope`:
    - proposal-driven arbitration seam,
@@ -29,6 +29,29 @@ Related:
    - полный геймдизайн новых доменов,
    - полная замена боевых/idle правил,
    - TDE exit (это отдельный backlog).
+
+## 2.1) Known Gaps (System-Level)
+
+1. Runtime pipeline жёстко привязан к `Combat/Idle` моделям и их payload-типам.
+2. Proposal/event seams частично задекларированы, но неполноценно используются как canonical runtime path.
+3. `Capabilities` в основном registered-only: мало реальных decision/execution consumers.
+4. Domain logic местами downcast-ит query boundary до concrete cache.
+5. Есть нетипизированные serialized dependency holders в критических orchestration wiring точках.
+6. Domain onboarding даёт file-sprawl (много host touchpoints вне папки домена).
+7. В коде присутствуют переходные/legacy ветки (`Intent/Instruction`) без чёткой роли в целевом потоке.
+8. Границы ответственности между `RuntimeHost` и `Integration.StrategyCombat` исторически размыты (часть host-инфры мигрировала в genre-layer).
+
+## 2.2) Backlog Traceability (Gap -> Commits)
+
+1. Domain-coupling + host branching -> `C03`, `C04`, `C04A`.
+2. Proposal seam activation -> `C03`, `C04`.
+3. Event pipeline activation -> `C05`.
+4. Capabilities runtime usage -> `C06`.
+5. Query downcast cleanup -> `C07`.
+6. Typed dependency cleanup -> `C04A`.
+7. RuntimeHost/integration responsibility normalization -> `C02`.
+8. Legacy branch finalization (`Intent/Instruction`) -> `C09`.
+9. Final architecture locks and all future-gates on -> `C10`.
 
 ## 3) Architecture Archetype (Analogy)
 

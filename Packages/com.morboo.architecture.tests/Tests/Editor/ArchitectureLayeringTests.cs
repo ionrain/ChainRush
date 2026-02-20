@@ -111,6 +111,14 @@ public sealed class ArchitectureLayeringTests
         "Integration.Project"
     };
 
+    static readonly string[] ForbiddenTopDownEngineAssemblyReferences =
+    {
+        "MoreMountains.TopDownEngine"
+    };
+
+    static readonly Regex ForbiddenTopDownEngineNamespaceRegex =
+        new Regex(@"\bMoreMountains\.TopDownEngine\b", RegexOptions.Compiled);
+
     static readonly Regex KernelContractDeclarationRegex =
         new Regex(@"\b(interface|class|struct)\s+(IGameFlowService|IScenarioService|IObjectiveService|IOutcomeService|IRulebookProvider|ISessionStateStore|IProfileStateStore|ISaveLoadService|IEconomyLedger|IRewardService|IEntityRegistry|IEntityFactory|IEntityLifecycleService|IEntitySnapshotStore|IEntityViewBinder)\b",
             RegexOptions.Compiled);
@@ -651,6 +659,84 @@ public sealed class ArchitectureLayeringTests
     }
 
     [Test]
+    public void BaseMorbooPackageAsmdefs_DoNotReferenceTopDownEngineAssemblies()
+    {
+        string[] protectedAsmdefs =
+        {
+            FrameworkAsmdefPath,
+            SystemsRuntimeAsmdefPath,
+            CoreAsmdefPath,
+            RuntimeHostAsmdefPath
+        };
+
+        foreach (string asmdefPath in protectedAsmdefs)
+            AssertAsmdefHasNoForbiddenReferences(asmdefPath, ForbiddenTopDownEngineAssemblyReferences);
+    }
+
+    [Test]
+    public void KernelRuntimePackages_DoNotUseTopDownEngineNamespace()
+    {
+        string[] roots =
+        {
+            FrameworkSourceRoot,
+            SystemsRuntimeSourceRoot,
+            CoreSourceRoot,
+            RuntimeHostSourceRoot
+        };
+
+        var violations = new List<string>();
+        foreach (string root in roots)
+        {
+            if (!Directory.Exists(root))
+                continue;
+
+            foreach (string file in Directory.GetFiles(root, "*.cs", SearchOption.AllDirectories))
+            {
+                string stripped = StripCommentsAndStrings(File.ReadAllText(file));
+                Match token = ForbiddenTopDownEngineNamespaceRegex.Match(stripped);
+                if (token.Success)
+                    violations.Add($"{file}: token '{token.Value}'");
+            }
+        }
+
+        Assert.That(violations, Is.Empty,
+            "Kernel/runtime packages must not use TopDownEngine namespace:\n" + string.Join("\n", violations));
+    }
+
+    [Test]
+    public void MorbooPackageRuntimeAsmdefGraph_HasNoCycles()
+    {
+        Dictionary<string, AsmdefData> runtimeAsmdefs = CollectMorbooRuntimeAsmdefs();
+        Assert.That(runtimeAsmdefs.Count, Is.GreaterThan(0), "No Morboo runtime asmdefs found.");
+
+        var nodes = new HashSet<string>(runtimeAsmdefs.Keys, StringComparer.Ordinal);
+        var guidToAsmName = BuildGuidToAssemblyNameMap();
+        var adjacency = new Dictionary<string, IReadOnlyList<string>>(StringComparer.Ordinal);
+
+        foreach (KeyValuePair<string, AsmdefData> pair in runtimeAsmdefs)
+        {
+            string[] resolvedRefs = (pair.Value.references ?? Array.Empty<string>())
+                .Select(r => ResolveReferenceName(r, guidToAsmName))
+                .Where(r => !string.IsNullOrWhiteSpace(r))
+                .Where(nodes.Contains)
+                .Distinct(StringComparer.Ordinal)
+                .ToArray();
+
+            adjacency[pair.Key] = resolvedRefs;
+        }
+
+        var state = new Dictionary<string, int>(StringComparer.Ordinal);
+        var stack = new List<string>();
+        var cycles = new HashSet<string>(StringComparer.Ordinal);
+
+        foreach (string node in adjacency.Keys)
+            VisitAsmdefNode(node, adjacency, state, stack, cycles);
+
+        Assert.That(cycles, Is.Empty,
+            "Detected cycles in Morboo runtime asmdef graph:\n" + string.Join("\n", cycles));
+    }
+
+    [Test]
     public void KernelRuntimePackages_DoNotUseSirenixOdin()
     {
         string[] roots =
@@ -719,6 +805,12 @@ public sealed class ArchitectureLayeringTests
     public void FutureGate_StrategyCombatAsmdef_DoesNotReferenceProjectAssemblies()
     {
         AssertAsmdefHasNoForbiddenReferences(ProjectTypeAsmdefPath, ForbiddenProjectAssemblyReferences);
+    }
+
+    [Test, Ignore("Enable in Phase 7 when TopDownEngine runtime dependency is fully removed.")]
+    public void FutureGate_StrategyCombatAsmdef_DoesNotReferenceTopDownEngineAssemblies()
+    {
+        AssertAsmdefHasNoForbiddenReferences(ProjectTypeAsmdefPath, ForbiddenTopDownEngineAssemblyReferences);
     }
 
     [Test]
@@ -873,11 +965,19 @@ public sealed class ArchitectureLayeringTests
 
     static void CheckType(Type type, string owner, ICollection<string> violations)
     {
+        var visited = new HashSet<Type>();
+        CheckType(type, owner, violations, visited);
+    }
+
+    static void CheckType(Type type, string owner, ICollection<string> violations, ISet<Type> visited)
+    {
         if (type == null)
             return;
 
         Type root = UnwrapType(type);
         if (root == null)
+            return;
+        if (!visited.Add(root))
             return;
 
         string asmName = root.Assembly.GetName().Name;
@@ -887,20 +987,28 @@ public sealed class ArchitectureLayeringTests
         if (root.IsGenericType)
         {
             foreach (Type arg in root.GetGenericArguments())
-                CheckType(arg, owner, violations);
+                CheckType(arg, owner, violations, visited);
         }
 
         if (root.BaseType != null)
-            CheckType(root.BaseType, owner, violations);
+            CheckType(root.BaseType, owner, violations, visited);
 
         foreach (Type iface in root.GetInterfaces())
-            CheckType(iface, owner, violations);
+            CheckType(iface, owner, violations, visited);
     }
 
     static bool ReferencesUnityObject(Type type)
     {
+        var visited = new HashSet<Type>();
+        return ReferencesUnityObject(type, visited);
+    }
+
+    static bool ReferencesUnityObject(Type type, ISet<Type> visited)
+    {
         Type root = UnwrapType(type);
         if (root == null)
+            return false;
+        if (!visited.Add(root))
             return false;
 
         if (typeof(UnityEngine.Object).IsAssignableFrom(root))
@@ -910,7 +1018,7 @@ public sealed class ArchitectureLayeringTests
         {
             foreach (Type arg in root.GetGenericArguments())
             {
-                if (ReferencesUnityObject(arg))
+                if (ReferencesUnityObject(arg, visited))
                     return true;
             }
         }
@@ -971,6 +1079,66 @@ public sealed class ArchitectureLayeringTests
         }
 
         return map;
+    }
+
+    static Dictionary<string, AsmdefData> CollectMorbooRuntimeAsmdefs()
+    {
+        const string packagesRoot = "Packages";
+        var map = new Dictionary<string, AsmdefData>(StringComparer.Ordinal);
+
+        if (!Directory.Exists(packagesRoot))
+            return map;
+
+        foreach (string packageDir in Directory.GetDirectories(packagesRoot, "com.morboo.*", SearchOption.TopDirectoryOnly))
+        {
+            foreach (string asmdefPath in Directory.GetFiles(packageDir, "*.asmdef", SearchOption.AllDirectories))
+            {
+                string normalized = asmdefPath.Replace('\\', '/');
+                if (!normalized.Contains("/Runtime/", StringComparison.Ordinal))
+                    continue;
+
+                AsmdefData asmdef = ReadAsmdef(asmdefPath);
+                if (!string.IsNullOrWhiteSpace(asmdef.name))
+                    map[asmdef.name] = asmdef;
+            }
+        }
+
+        return map;
+    }
+
+    static void VisitAsmdefNode(
+        string node,
+        IReadOnlyDictionary<string, IReadOnlyList<string>> adjacency,
+        IDictionary<string, int> state,
+        IList<string> stack,
+        ISet<string> cycles)
+    {
+        if (state.TryGetValue(node, out int visitState))
+        {
+            if (visitState == 1)
+            {
+                int cycleStart = stack.IndexOf(node);
+                if (cycleStart >= 0)
+                {
+                    string cycle = string.Join(" -> ", stack.Skip(cycleStart).Concat(new[] { node }));
+                    cycles.Add(cycle);
+                }
+            }
+
+            return;
+        }
+
+        state[node] = 1;
+        stack.Add(node);
+
+        if (adjacency.TryGetValue(node, out IReadOnlyList<string> deps))
+        {
+            foreach (string dep in deps)
+                VisitAsmdefNode(dep, adjacency, state, stack, cycles);
+        }
+
+        stack.RemoveAt(stack.Count - 1);
+        state[node] = 2;
     }
 
     static string ExtractGuidFromMeta(string metaPath)

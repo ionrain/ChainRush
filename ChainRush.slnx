@@ -10,7 +10,6 @@
   <Project Path="MoreMountains.InventoryEngine.csproj" />
   <Project Path="Morboo.Framework.csproj" />
   <Project Path="MoreMountains.Interface.csproj" />
-  <Project Path="Morboo.Core.csproj" />
   <Project Path="Morboo.Systems.csproj" />
   <Project Path="Assembly-CSharp-firstpass.csproj" />
   <Project Path="Morboo.Bridge.csproj" />
@@ -21,6 +20,7 @@
   <Project Path="MoreMountains.TopDownEngine.InputSystem.csproj" />
   <Project Path="Assembly-CSharp-Editor.csproj" />
   <Project Path="MoreMountains.TopDownEngine.Editor.csproj" />
+  <Project Path="Morboo.Core.csproj" />
   <Project Path="Assembly-CSharp-Editor-firstpass.csproj" />
   <Project Path="Morboo.RuntimeHost.Tests.csproj" />
   <Project Path="Sirenix.OdinInspector.Modules.UnityMathematics.csproj" />

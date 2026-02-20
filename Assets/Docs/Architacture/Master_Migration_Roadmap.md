@@ -16,6 +16,9 @@ This roadmap orchestrates existing docs, not replacing them:
 6. `Assets/Docs/Architacture/TopDownEngine_Exit_Migration_Backlog.md`
 7. `Assets/Docs/Architacture/Morboo_Gameplay_Modularization_Backlog.md`
 8. `Assets/Docs/Architacture/New_System_Requirements_Template.md`
+9. `Assets/Docs/Architacture/System_Interaction_Contract_Template.md`
+10. `Assets/Docs/Architacture/System_Blueprint_Index.md`
+11. `Assets/Docs/Architacture/ADR/README.md`
 
 ## 2) Program Goal
 
@@ -42,6 +45,7 @@ Build a top-down, reusable architecture where:
 10. Sirenix Odin is allowed for Unity editor/data authoring workflows, but must not become a required runtime dependency of kernel/runtime packages.
 11. Untyped dependency holders (`GameObject`/`MonoBehaviour`/`Component` used as service locator inputs) are forbidden in new runtime architecture code.
 12. For new domain/feature variability, `data-driven` solutions are preferred over new code branches.
+13. `Architecture-first` is mandatory for any feature work: reuse existing contracts/patterns/extension points first; direct bypass solutions require ADR + cleanup plan with due phase.
 
 ## 4) Dependency Order (Critical Path)
 
@@ -97,6 +101,8 @@ Includes:
    - forbidden direct concrete dependencies.
 6. Require a filled system blueprint for each new system:
    - `System_Blueprint_<SystemName>.md` based on `New_System_Requirements_Template.md`.
+7. Maintain `System_Blueprint_Index.md` as a mandatory registry for blueprint readiness.
+8. Enforce PR gate via `.github/pull_request_template.md`.
 
 Entry Gate:
 
@@ -108,6 +114,22 @@ Exit Gate:
 1. Every active backlog item references a target system owner.
 2. PR template includes architecture checklist.
 3. Blueprint template adoption is enforced for new systems.
+
+## Phase 0 Execution Slices (C0.1-C0.5)
+
+1. `C0.1 Owner Matrix Lock`
+   - define owner roles in `Game_System_Catalog_v2.md`,
+   - map active backlog items to owner + target phase.
+2. `C0.2 ADR Infrastructure`
+   - create `Assets/Docs/Architacture/ADR/`,
+   - add `ADR_Template.md` and baseline `ADR-0001`.
+3. `C0.3 PR Policy Enforcement`
+   - add `.github/pull_request_template.md` with architecture gates.
+4. `C0.4 Interaction Contract Template`
+   - add `System_Interaction_Contract_Template.md`.
+5. `C0.5 Blueprint Registry Gate`
+   - add `System_Blueprint_Index.md`,
+   - require blueprint reference in PR for new systems/major refactor.
 
 ## Phase 1 — Guardrails Baseline
 
@@ -144,6 +166,9 @@ Exit Gate:
    - entity onboarding touchpoints count,
    - domain wiring fan-out count,
    - data-vs-code variation baseline (what is config-driven vs code-driven).
+4. Baseline artifacts:
+   - `Assets/Docs/Architacture/Phase1_Baseline_Playtest_Checklist_2026-02-20.md`
+   - `Assets/Docs/Architacture/Phase1_Complexity_Baseline_2026-02-20.md`
 
 ## Phase 2 — Kernel Contracts First
 
@@ -414,6 +439,9 @@ Each PR must include:
 9. Data-driven note:
    - what variation is expressed via data/policies/maps,
    - what required new code branches and why.
+10. Architecture-first note:
+   - which existing contracts/patterns/extension points were considered/reused,
+   - if bypassed, ADR link + temporary debt removal phase.
 
 PR must not include:
 

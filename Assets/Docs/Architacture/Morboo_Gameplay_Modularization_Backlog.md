@@ -342,6 +342,18 @@ Merge:
 
 ## 6) Пошаговый план миграции (без параллельной структуры)
 
+## 6.1 Ownership & Phase Mapping (Phase 0 baseline)
+
+1. `Slice G0` -> Owner: `Gameplay Domains Owner` -> Target phase: `Phase 2`
+2. `Slice G1` -> Owner: `Gameplay Domains Owner` -> Target phase: `Phase 2`
+3. `Slice G2` -> Owner: `Entity Backbone Owner` + `Gameplay Domains Owner` -> Target phase: `Phase 3`
+4. `Slice G3` -> Owner: `Gameplay Domains Owner` -> Target phase: `Phase 6`
+5. `Slice G4` -> Owner: `Gameplay Domains Owner` + `Kernel Systems Owner` -> Target phase: `Phase 6`
+6. `Slice G5` -> Owner: `Gameplay Domains Owner` -> Target phase: `Phase 6`
+7. `Slice G6` -> Owner: `Gameplay Domains Owner` -> Target phase: `Phase 6`
+8. `Slice G7` -> Owner: `Experience & Bridge Owner` + `Gameplay Domains Owner` -> Target phase: `Phase 6`
+9. `Slice G8` -> Owner: `Experience & Bridge Owner` -> Target phase: `Phase 8`
+
 ## Slice G0 — Package/asmdef scaffolding
 
 1. Создать `Packages/com.morboo.gameplay/` + asmdef по модулям (пустые).
@@ -473,4 +485,3 @@ Small, safe, compile-first:
 3. Добавить архитектурные тесты из раздела 7.
 
 Это даст каркас для дальнейшего переноса Units/Economy/UI без хаотичных пересечений.
-

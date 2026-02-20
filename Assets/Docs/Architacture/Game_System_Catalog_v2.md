@@ -131,6 +131,26 @@ Related:
 4. `Forbidden deps` (что запрещено импортировать).
 5. `SLA invariants` (например: outcome не зависит от UI, objectives не пишут world напрямую).
 
+## 6.1 Phase 0 Owner Matrix Baseline
+
+Owner roles (нормативно для текущей программы миграции):
+
+1. `Kernel Systems Owner` — game lifecycle/control-plane systems.
+2. `Entity Backbone Owner` — entity model/registry/factory/view-binding contracts.
+3. `Orchestration Platform Owner` — orchestration runtime platform and fitness gates.
+4. `Gameplay Domains Owner` — gameplay simulation modules (actors/combat/goals/economy/etc).
+5. `Engine Adapter Owner` — engine anti-corruption seams and TDE exit slices.
+6. `Experience & Bridge Owner` — project bridge/wiring, UI integration, composition glue.
+
+Baseline assignment (Phase 0, can be refined by ADR/owner decision):
+
+1. `GameFlow`, `Scenario`, `Objective`, `Outcome`, `Rulebook`, `Session/Profile`, `Save/Load` -> `Kernel Systems Owner`.
+2. `Entity Backbone` -> `Entity Backbone Owner`.
+3. `Orchestration Domain` -> `Orchestration Platform Owner`.
+4. `Actors`, `Identity/Faction/Role/Capabilities`, `Movement/Formations`, `Combat`, `Abilities`, `Spawn/Encounter`, `Board`, `Inventory`, `Merge`, `Progression`, `Economy`, `Rewards`, `Telemetry/LiveOps` -> `Gameplay Domains Owner`.
+5. `Engine Adapter Layer` -> `Engine Adapter Owner`.
+6. `UI Presentation`, `Feedback/VFX/SFX`, `Input Mapping`, `Project Bridge`, project composition/wiring in `MorbooBridge` -> `Experience & Bridge Owner`.
+
 ## 7) Current Repository Mapping Snapshot
 
 Status legend:
@@ -282,6 +302,10 @@ Evidence: `Assets/Scripts/Game/TopDownEngineExt/*`, `Packages/com.morboo.integra
 2. Query через интерфейсные порты (`I*Query`/`I*Provider`), без знания concrete реализации другой системы.
 3. Публичные API систем допускаются только как контракты владельца системы, а не как прямые вызовы внутрь чужой реализации.
 
+Правило приоритета:
+
+1. Перед добавлением новой межсистемной связки сначала использовать существующие контракты/порты/паттерны интеграции; новый обходной канал допускается только с ADR и планом удаления.
+
 Запрет:
 
 1. `SystemA` импортирует/создаёт concrete классы `SystemB` и вызывает их runtime-методы напрямую.
@@ -351,6 +375,7 @@ Evidence: `Assets/Scripts/Game/TopDownEngineExt/*`, `Packages/com.morboo.integra
 7. При создании новой системы сначала проверяется переиспользование существующих контрактов и `Common`-компонентов.
 8. Если общий фрагмент нужен нескольким системам, он выносится на общий уровень (`Common`/lower package) до дублирования.
 9. Нетипизированные dependency refs (`GameObject`/`MonoBehaviour`/`Component` как service locator) не добавляются без approved ADR.
+10. Для любой фичи действует `architecture-first`: сначала reuse существующих контрактов/паттернов/extension points, и только потом новый локальный путь.
 
 ## 10) Immediate Next Step
 

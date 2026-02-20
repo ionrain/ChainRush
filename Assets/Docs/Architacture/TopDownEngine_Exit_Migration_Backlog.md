@@ -18,6 +18,17 @@ Remove runtime dependency on `MoreMountains.TopDownEngine` while keeping:
    One active gameplay path, old path removed immediately after slice validation.
 4. All prefab/script moves via `git mv` with `.meta` preserved.
 
+## Ownership & Phase Mapping (Phase 0 baseline)
+
+1. `Slice 0` -> Owner: `Engine Adapter Owner` -> Target phase: `Phase 1`
+2. `Slice 1` -> Owner: `Engine Adapter Owner` -> Target phase: `Phase 1`
+3. `Slice 2` -> Owner: `Engine Adapter Owner` -> Target phase: `Phase 5`
+4. `Slice 3` -> Owner: `Engine Adapter Owner` -> Target phase: `Phase 5`
+5. `Slice 4` -> Owner: `Engine Adapter Owner` -> Target phase: `Phase 7`
+6. `Slice 5` -> Owner: `Experience & Bridge Owner` -> Target phase: `Phase 7`
+7. `Slice 6` -> Owner: `Engine Adapter Owner` -> Target phase: `Phase 7`
+8. `Slice 7` -> Owner: `Engine Adapter Owner` -> Target phase: `Phase 8` (optional)
+
 ## Current State Snapshot (measured)
 
 ### Direct `TopDownEngine` code usage
@@ -271,4 +282,3 @@ Small PR, low risk:
 1. Slice 1 only (unused imports + asmdef cleanup).
 2. Add this backlog file.
 3. Add/adjust architecture test for package-level TDE dependency ban.
-

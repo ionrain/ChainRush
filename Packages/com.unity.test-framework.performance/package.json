@@ -1,0 +1,8 @@
+{
+  "name": "com.unity.test-framework.performance",
+  "version": "3.0.3-morboo-stub",
+  "displayName": "Unity Performance Testing (Stub)",
+  "unity": "6000.0",
+  "description": "Local stub package to disable Performance Testing prebuild hooks that crash the Unity editor during Test Runner startup.",
+  "dependencies": {}
+}

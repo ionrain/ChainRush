@@ -125,12 +125,14 @@ Status: Normative template (must be filled before implementation)
 1. что можно переиспользовать из текущих систем
 2. что нужно вынести в общий уровень до дублирования
 3. что останется system-local и почему
+4. какие существующие contracts/patterns/extension points были рассмотрены до добавления нового локального решения
 
 Заполнить:
 
 1. `Reused existing contracts/components`:
 2. `New shared extraction candidates`:
 3. `Deferred extractions + rationale`:
+4. `Architecture-first decision record` (reuse path vs new path + why):
 
 ## 3.8 File-Sprawl Control (Onboarding/Fan-Out)
 
@@ -236,4 +238,5 @@ ADR обязателен, если:
 5. Нет новых нетипизированных dependency refs (`GameObject`/`MonoBehaviour`/`Component` как service locator).
 6. Добавлены/обновлены fitness tests.
 7. Показано, какие различия реализованы data-driven и какие потребовали новый код.
-8. Если нужны исключения, приложен ADR.
+8. Добавлен architecture-first note: что переиспользовано из существующих контрактов/паттернов, что не подошло и почему.
+9. Если нужны исключения, приложен ADR.

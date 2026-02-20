@@ -18,6 +18,20 @@ Blueprint: `Assets/Docs/Architacture/System_Blueprint_Orchestration.md`
 6. Новые нетипизированные dependency refs (`GameObject`/`MonoBehaviour`/`Component` как service locator) не допускаются.
 7. Различия доменов приоритетно выражаются данными/политиками, а не форком runtime-кода.
 
+## Ownership & Phase Mapping (Phase 0 baseline)
+
+1. `C01` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 1`
+2. `C02` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 4`
+3. `C03` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 4`
+4. `C04` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 4`
+5. `C04A` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 4`
+6. `C05` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 4`
+7. `C06` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 4`
+8. `C07` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 4`
+9. `C08` -> Owner: `Kernel Systems Owner` -> Target phase: `Phase 8`
+10. `C09` -> Owner: `Kernel Systems Owner` -> Target phase: `Phase 8`
+11. `C10` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 8`
+
 ## Commit Plan
 
 ## C01 — Add Fitness Tests For Current Runtime Boundaries

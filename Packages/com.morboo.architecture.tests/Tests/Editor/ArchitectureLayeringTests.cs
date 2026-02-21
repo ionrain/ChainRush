@@ -83,8 +83,38 @@ public sealed class ArchitectureLayeringTests
     static readonly Regex RuntimeHostProjectRefsRegex =
         new Regex(@"Assets/_Project|Assets/Scripts/MorbooBridge|Integration\.Project|Morboo\.Bridge", RegexOptions.Compiled);
 
+    static readonly Regex PackageRuntimeProjectRefsRegex =
+        new Regex(@"Assets/Scripts/MorbooBridge|Game\.Runtime|Morboo\.Bridge|Integration\.Project", RegexOptions.Compiled);
+
     static readonly Regex ProjectTypeProjectAssetsRegex =
         new Regex(@"\b(UnitClassRoleMapAsset|EnemyTypeCapabilitiesMap)\b", RegexOptions.Compiled);
+
+    static readonly Regex StateQueryUsageRegex =
+        new Regex(@"\bTryGetState\s*\(", RegexOptions.Compiled);
+
+    static readonly Regex StateWriteBackUsageRegex =
+        new Regex(@"\bSetAlive\s*\(", RegexOptions.Compiled);
+
+    static readonly Regex LegacyEntityTraitKeysTokenRegex =
+        new Regex(@"\b(EntityStateTraitKeys|BridgeEntityStateTraitKeys)\b", RegexOptions.Compiled);
+
+    static readonly Regex UnitReporterGuardedLegacyUnitFallbackRegex =
+        new Regex(@"else\s+if\s*\(\s*entityState\s*==\s*null\s*&&\s*_unit\s*!=\s*null\s*\)", RegexOptions.Compiled);
+
+    static readonly Regex UnitReporterUngardedLegacyUnitFallbackRegex =
+        new Regex(@"else\s+if\s*\(\s*_unit\s*!=\s*null\s*\)", RegexOptions.Compiled);
+
+    static readonly Regex UnitReporterGuardedLegacyHealthFallbackRegex =
+        new Regex(@"else\s+if\s*\(\s*entityState\s*==\s*null\s*&&\s*hasHealth\s*\)", RegexOptions.Compiled);
+
+    static readonly Regex EnemyReporterGuardedLegacyEnemyFallbackRegex =
+        new Regex(@"else\s+if\s*\(\s*entityState\s*==\s*null\s*&&\s*_enemy\s*!=\s*null\s*\)", RegexOptions.Compiled);
+
+    static readonly Regex EnemyReporterUngardedLegacyEnemyFallbackRegex =
+        new Regex(@"else\s+if\s*\(\s*_enemy\s*!=\s*null\s*\)", RegexOptions.Compiled);
+
+    static readonly Regex EnemyReporterGuardedLegacyHealthFallbackRegex =
+        new Regex(@"else\s+if\s*\(\s*entityState\s*==\s*null\s*&&\s*hasHealth\s*\)", RegexOptions.Compiled);
 
     static readonly Regex CoreCombatIdleContractsRegex =
         new Regex(@"\b(CombatCommand|IdleCommand|DispatchCombatCommand|DispatchIdleCommand|ICombatCommandReceiver|IIdleCommandReceiver|IIdleBoundsProvider|CombatActionId|CombatGoalId|CombatState)\b",
@@ -120,12 +150,15 @@ public sealed class ArchitectureLayeringTests
         new Regex(@"\bMoreMountains\.TopDownEngine\b", RegexOptions.Compiled);
 
     static readonly Regex KernelContractDeclarationRegex =
-        new Regex(@"\b(interface|class|struct)\s+(IGameFlowService|IScenarioService|IObjectiveService|IOutcomeService|IRulebookProvider|ISessionStateStore|IProfileStateStore|ISaveLoadService|IEconomyLedger|IRewardService|IEntityRegistry|IEntityFactory|IEntityLifecycleService|IEntitySnapshotStore|IEntityViewBinder)\b",
+        new Regex(@"\b(interface|class|struct)\s+(IGameFlowService|IScenarioService|IObjectiveService|IOutcomeService|IRulebookProvider|ISessionStateStore|IProfileStateStore|ISaveLoadService|IEconomyLedger|IRewardService|IEntityRegistry|IEntityFactory|IEntityLifecycleService|IEntitySnapshotStore|IEntityViewBinder|IEntityStateQuery|IEntityStateAccessor)\b",
             RegexOptions.Compiled);
 
     static readonly Regex EntityKernelContractDeclarationRegex =
-        new Regex(@"\binterface\s+(IEntityRegistry|IEntityFactory|IEntityLifecycleService|IEntitySnapshotStore|IEntityViewBinder)\b",
+        new Regex(@"\binterface\s+(IEntityRegistry|IEntityFactory|IEntityLifecycleService|IEntitySnapshotStore|IEntityViewBinder|IEntityStateQuery|IEntityStateAccessor)\b",
             RegexOptions.Compiled);
+
+    static readonly Regex BridgeEntityStateDowncastRegex =
+        new Regex(@"\b(is|as)\s+EntityState\b|TryGet\s*\([^)]*out\s+IEntityModel\b", RegexOptions.Compiled);
 
     static readonly Regex EntityIdDeclarationRegex =
         new Regex(@"\b(struct|class)\s+EntityId\b", RegexOptions.Compiled);
@@ -343,6 +376,37 @@ public sealed class ArchitectureLayeringTests
     }
 
     [Test]
+    public void PackageRuntimeSources_HaveNoProjectAssemblyRefs()
+    {
+        string[] roots =
+        {
+            FrameworkSourceRoot,
+            SystemsRuntimeSourceRoot,
+            CoreSourceRoot,
+            RuntimeHostSourceRoot,
+            ProjectTypeSourceRoot
+        };
+
+        var violations = new List<string>();
+        foreach (string root in roots)
+        {
+            if (!Directory.Exists(root))
+                continue;
+
+            foreach (string file in Directory.GetFiles(root, "*.cs", SearchOption.AllDirectories))
+            {
+                string stripped = StripCommentsAndStrings(File.ReadAllText(file));
+                Match m = PackageRuntimeProjectRefsRegex.Match(stripped);
+                if (m.Success)
+                    violations.Add($"{file}: token '{m.Value}'");
+            }
+        }
+
+        Assert.That(violations, Is.Empty,
+            "Package runtime sources reference project assemblies/layers:\n" + string.Join("\n", violations));
+    }
+
+    [Test]
     public void RuntimeHost_HasNoStrategyCombatTokens()
     {
         Assert.That(Directory.Exists(RuntimeHostSourceRoot), Is.True,
@@ -378,6 +442,118 @@ public sealed class ArchitectureLayeringTests
 
         Assert.That(violations, Is.Empty,
             "ProjectType references project asset types:\n" + string.Join("\n", violations));
+    }
+
+    [Test]
+    public void MorbooBridge_StateReporters_UseEntityBackboneStateQuery()
+    {
+        string[] reporterFiles =
+        {
+            "Assets/Scripts/MorbooBridge/Orchestration/Units/UnitStateReporter.cs",
+            "Assets/Scripts/MorbooBridge/Orchestration/Enemies/EnemyStateReporter.cs"
+        };
+
+        var violations = new List<string>();
+        foreach (string file in reporterFiles)
+        {
+            if (!File.Exists(file))
+            {
+                violations.Add($"{file}: missing file");
+                continue;
+            }
+
+            string stripped = StripCommentsAndStrings(File.ReadAllText(file));
+            if (!StateQueryUsageRegex.IsMatch(stripped))
+                violations.Add($"{file}: missing TryGetState usage");
+        }
+
+        Assert.That(violations, Is.Empty,
+            "State reporters must use entity backbone state query seam:\n" + string.Join("\n", violations));
+    }
+
+    [Test]
+    public void MorbooBridge_StateReporters_WriteBackToEntityState()
+    {
+        string[] reporterFiles =
+        {
+            "Assets/Scripts/MorbooBridge/Orchestration/Units/UnitStateReporter.cs",
+            "Assets/Scripts/MorbooBridge/Orchestration/Enemies/EnemyStateReporter.cs"
+        };
+
+        var violations = new List<string>();
+        foreach (string file in reporterFiles)
+        {
+            if (!File.Exists(file))
+            {
+                violations.Add($"{file}: missing file");
+                continue;
+            }
+
+            string stripped = StripCommentsAndStrings(File.ReadAllText(file));
+            if (!StateWriteBackUsageRegex.IsMatch(stripped))
+                violations.Add($"{file}: missing write-back to IEntityStateAccessor");
+        }
+
+        Assert.That(violations, Is.Empty,
+            "State reporters must sync migrated state into Entity Backbone:\n" + string.Join("\n", violations));
+    }
+
+    [Test]
+    public void PackageRuntime_DoesNotUseLegacyEntityTraitKeyConstants()
+    {
+        string[] roots =
+        {
+            FrameworkSourceRoot,
+            SystemsRuntimeSourceRoot,
+            CoreSourceRoot,
+            RuntimeHostSourceRoot,
+            ProjectTypeSourceRoot
+        };
+
+        var violations = new List<string>();
+        foreach (string root in roots)
+        {
+            if (!Directory.Exists(root))
+                continue;
+
+            foreach (string file in Directory.GetFiles(root, "*.cs", SearchOption.AllDirectories))
+            {
+                string stripped = StripCommentsAndStrings(File.ReadAllText(file));
+                Match m = LegacyEntityTraitKeysTokenRegex.Match(stripped);
+                if (m.Success)
+                    violations.Add($"{file}: token '{m.Value}'");
+            }
+        }
+
+        Assert.That(violations, Is.Empty,
+            "Legacy entity trait key constants are forbidden in package runtime layers:\n" + string.Join("\n", violations));
+    }
+
+    [Test]
+    public void MorbooBridge_StateReporters_DoNotUseEntityStateNullFallbackBranches()
+    {
+        const string unitFile = "Assets/Scripts/MorbooBridge/Orchestration/Units/UnitStateReporter.cs";
+        const string enemyFile = "Assets/Scripts/MorbooBridge/Orchestration/Enemies/EnemyStateReporter.cs";
+
+        Assert.That(File.Exists(unitFile), Is.True, $"Missing file: {unitFile}");
+        Assert.That(File.Exists(enemyFile), Is.True, $"Missing file: {enemyFile}");
+
+        string unitSource = StripCommentsAndStrings(File.ReadAllText(unitFile));
+        string enemySource = StripCommentsAndStrings(File.ReadAllText(enemyFile));
+
+        Assert.That(UnitReporterGuardedLegacyUnitFallbackRegex.IsMatch(unitSource), Is.False,
+            "UnitStateReporter must not use legacy entityState==null fallback branches.");
+        Assert.That(UnitReporterUngardedLegacyUnitFallbackRegex.IsMatch(unitSource), Is.False,
+            "UnitStateReporter contains unguarded legacy unit fallback.");
+        Assert.That(UnitReporterGuardedLegacyHealthFallbackRegex.IsMatch(unitSource), Is.False,
+            "UnitStateReporter must not use legacy entityState==null health fallback branches.");
+
+        Assert.That(EnemyReporterGuardedLegacyEnemyFallbackRegex.IsMatch(enemySource), Is.False,
+            "EnemyStateReporter must not use legacy entityState==null fallback branches.");
+        Assert.That(EnemyReporterUngardedLegacyEnemyFallbackRegex.IsMatch(enemySource), Is.False,
+            "EnemyStateReporter contains unguarded legacy enemy fallback.");
+        Assert.That(EnemyReporterGuardedLegacyHealthFallbackRegex.IsMatch(enemySource), Is.False,
+            "EnemyStateReporter must not use legacy entityState==null health fallback branches.");
     }
 
     [Test]
@@ -644,14 +820,15 @@ public sealed class ArchitectureLayeringTests
     }
 
     [Test]
-    public void BaseMorbooPackageAsmdefs_DoNotReferenceProjectAssemblies()
+    public void MorbooPackageRuntimeAsmdefs_DoNotReferenceProjectAssemblies()
     {
         string[] protectedAsmdefs =
         {
             FrameworkAsmdefPath,
             SystemsRuntimeAsmdefPath,
             CoreAsmdefPath,
-            RuntimeHostAsmdefPath
+            RuntimeHostAsmdefPath,
+            ProjectTypeAsmdefPath
         };
 
         foreach (string asmdefPath in protectedAsmdefs)
@@ -801,12 +978,6 @@ public sealed class ArchitectureLayeringTests
             "Package runtime code uses serialized GameObject dependency holders:\n" + string.Join("\n", violations));
     }
 
-    [Test, Ignore("Enable when StrategyCombat package is decoupled from Game.Runtime bridge refs.")]
-    public void FutureGate_StrategyCombatAsmdef_DoesNotReferenceProjectAssemblies()
-    {
-        AssertAsmdefHasNoForbiddenReferences(ProjectTypeAsmdefPath, ForbiddenProjectAssemblyReferences);
-    }
-
     [Test, Ignore("Enable in Phase 7 when TopDownEngine runtime dependency is fully removed.")]
     public void FutureGate_StrategyCombatAsmdef_DoesNotReferenceTopDownEngineAssemblies()
     {
@@ -893,6 +1064,27 @@ public sealed class ArchitectureLayeringTests
 
         Assert.That(violations, Is.Empty,
             "EntityId must be declared only in Framework:\n" + string.Join("\n", violations));
+    }
+
+    [Test]
+    public void MorbooBridge_EntityBackbone_DoesNotDowncastEntityModel()
+    {
+        const string bridgeRoot = "Assets/Scripts/MorbooBridge/EntityBackbone";
+        if (!Directory.Exists(bridgeRoot))
+            Assert.Fail($"Missing directory: {bridgeRoot}");
+
+        var violations = new List<string>();
+        foreach (string file in Directory.GetFiles(bridgeRoot, "*.cs", SearchOption.AllDirectories))
+        {
+            string stripped = StripCommentsAndStrings(File.ReadAllText(file));
+            Match m = BridgeEntityStateDowncastRegex.Match(stripped);
+            if (m.Success)
+                violations.Add($"{file}: token '{m.Value}'");
+        }
+
+        Assert.That(violations, Is.Empty,
+            "MorbooBridge entity backbone must use IEntityStateQuery/IEntityStateAccessor, not IEntityModel downcasts:\n"
+            + string.Join("\n", violations));
     }
 
     // ── Helpers ──────────────────────────────────────────────────────

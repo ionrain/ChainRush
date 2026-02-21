@@ -22,7 +22,7 @@ Status: Normative template (must be filled before implementation)
 
 1. `System Name`:
 2. `Owner`:
-3. `Target Phase` (from `Master_Migration_Roadmap.md`):
+3. `Target Phase` (from `Assets/Docs/Architacture/MasterMigration/00_Program/Master_Migration_Roadmap.md`):
 4. `Scope Type`:
    - `new system`
    - `major refactor`
@@ -117,6 +117,20 @@ Status: Normative template (must be filled before implementation)
 1. `Typed dependency references used`:
 2. `Untyped refs kept (if any) + justification`:
 3. `Plan to remove untyped refs`:
+
+## 3.6.2 Transitional Form Policy (Bridge-Only)
+
+Правило:
+
+1. Любые migration-only переходные формы (legacy key strings, compat enum values, временные shim/adapter DTO) допускаются только в `Assets/Scripts/MorbooBridge`.
+2. В `com.morboo.framework`, `com.morboo.core`, `com.morboo.systems`, `com.morboo.runtimehost`, `com.morboo.integration.strategycombat` такие формы запрещены.
+3. Если переходная форма временно необходима, для неё должен быть зафиксирован срок удаления (phase/commit gate).
+
+Заполнить:
+
+1. `Transitional forms introduced`:
+2. `Why Bridge-only placement is satisfied`:
+3. `Removal gate`:
 
 ## 3.7 Reuse & Common Extraction Audit
 
@@ -228,6 +242,7 @@ ADR обязателен, если:
 5. архитектурные и регрессионные тесты зелёные
 6. документация обновлена и соответствует коду
 7. различия между сценариями/доменами приоритетно заданы данными, а не дублированием кода
+8. выполнен semantic closure check: слой выбран по смыслу переиспользования, source-of-truth не раздвоен, переходные формы не вышли выше `MorbooBridge`
 
 ## 4) Quick PR Checklist
 
@@ -240,3 +255,4 @@ ADR обязателен, если:
 7. Показано, какие различия реализованы data-driven и какие потребовали новый код.
 8. Добавлен architecture-first note: что переиспользовано из существующих контрактов/паттернов, что не подошло и почему.
 9. Если нужны исключения, приложен ADR.
+10. Приложен semantic closure note (что проверено по смыслу, не только по компиляции/тестам).

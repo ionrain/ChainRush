@@ -7,7 +7,9 @@
         "Morboo.Core",
         "Morboo.RuntimeHost",
         "Morboo.Systems",
-        "Morboo.Integration.StrategyCombat"
+        "Morboo.Integration.StrategyCombat",
+        "MoreMountains.TopDownEngine",
+        "MoreMountains.Tools"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -2,8 +2,8 @@ using UnityEngine;
 
 /// <summary>
 /// Reports a <see cref="StateSnapshot"/> for an enemy to the orchestration layer.
-/// IMPORTANT: Read-only reporter. No gameplay control, no Update loop.
-/// Called on demand by the orchestration layer.
+/// IMPORTANT: No gameplay control, no Update loop. Called on demand by orchestration.
+/// C3.3: syncs authoritative entity model state before building snapshot metrics.
 /// </summary>
 public sealed class EnemyStateReporter : MonoBehaviour, IStateReporter, IOrchestrationActor, IEntityIdProvider
 {
@@ -74,17 +74,21 @@ public sealed class EnemyStateReporter : MonoBehaviour, IStateReporter, IOrchest
         if (_cachedMetrics.Items != null) _cachedMetrics.Items.Clear();
 
         FactionAsset faction = _identity != null ? _identity.GetFactionAsset() : null;
+        TryGetEntityState(out IEntityStateAccessor entityState);
 
         bool hasHealth = _enemy != null
             && _enemy.Health != null
             && _enemy.Health.MaximumHealth > 0;
 
-        bool isAlive = hasHealth ? _enemy.Health.CurrentHealth > 0 : true;
+        float legacyHp01 = hasHealth ? (_enemy.Health.CurrentHealth / _enemy.Health.MaximumHealth) : 0f;
+        bool legacyIsAlive = _enemy != null && (!hasHealth || _enemy.Health.CurrentHealth > 0);
+
+        SyncEntityState(entityState, legacyIsAlive);
+        bool isAlive = entityState != null ? entityState.IsAlive : legacyIsAlive;
 
         if (hasHealth)
         {
-            _cachedMetrics.SetFloat("Hp01",
-                _enemy.Health.CurrentHealth / _enemy.Health.MaximumHealth);
+            _cachedMetrics.SetFloat("Hp01", legacyHp01);
         }
 
         if (_enemy != null)
@@ -104,4 +108,28 @@ public sealed class EnemyStateReporter : MonoBehaviour, IStateReporter, IOrchest
             roleTag,
             _cachedMetrics);
     }
+
+    void SyncEntityState(IEntityStateAccessor entityState, bool isAlive)
+    {
+        if (entityState == null)
+            return;
+
+        entityState.SetAlive(isAlive);
+    }
+
+    bool TryGetEntityState(out IEntityStateAccessor entityState)
+    {
+        entityState = null;
+
+        EntityId entityId = GetEntityId();
+        if (entityId.IsNone)
+            return false;
+
+        IEntityStateQuery query = EntityBackboneRuntimeContext.StateQuery;
+        if (query == null)
+            return false;
+
+        return query.TryGetState(entityId, out entityState);
+    }
+
 }

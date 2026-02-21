@@ -6,7 +6,7 @@ using System.Collections.Generic;
 /// Keeps identity, archetype, liveness, tags/traits/capabilities seams.
 /// </summary>
 [Serializable]
-public sealed class EntityState : IEntityModel
+public sealed class EntityState : IEntityStateAccessor
 {
     readonly HashSet<string> _tags = new HashSet<string>(StringComparer.Ordinal);
     readonly HashSet<string> _capabilities = new HashSet<string>(StringComparer.Ordinal);

@@ -1,7 +1,7 @@
 # Master Migration Roadmap
 
 Date: 2026-02-19  
-Status: Active plan (`Phase 1 closed`, `Phase 2 closed`, `Phase 3 in progress (C3.1 foundation + C3.2 manager bridge)`)  
+Status: Active plan (`Phase 1 closed`, `Phase 2 closed`, `Phase 3 closed`)  
 Scope: migration from current mixed codebase to kernel-first architecture with reusable systems and no TopDownEngine runtime dependency.
 
 ## 1) Sources Of Truth
@@ -11,14 +11,17 @@ This roadmap orchestrates existing docs, not replacing them:
 1. `Assets/Docs/Architacture/Game_System_Catalog_v2.md`
 2. `Assets/Docs/Architacture/Architecture_Layers_Reference.md`
 3. `Assets/Docs/Architacture/Game_Systems_Architecture_Framework.md`
-4. `Assets/Docs/Architacture/Orchestration_Implementation_Audit_2026-02-19.md`
-5. `Assets/Docs/Architacture/Orchestration_Remediation_Backlog_By_Commits.md`
-6. `Assets/Docs/Architacture/TopDownEngine_Exit_Migration_Backlog.md`
-7. `Assets/Docs/Architacture/Morboo_Gameplay_Modularization_Backlog.md`
+4. `Assets/Docs/Architacture/MasterMigration/04_Phase4_Orchestration/Orchestration_Implementation_Audit_2026-02-19.md`
+5. `Assets/Docs/Architacture/MasterMigration/04_Phase4_Orchestration/Orchestration_Remediation_Backlog_By_Commits.md`
+6. `Assets/Docs/Architacture/MasterMigration/05_Phase5_EngineSeam_And_Phase7_TDECutover/TopDownEngine_Exit_Migration_Backlog.md`
+7. `Assets/Docs/Architacture/MasterMigration/06_Phase6_GameplayModularization/Morboo_Gameplay_Modularization_Backlog.md`
 8. `Assets/Docs/Architacture/New_System_Requirements_Template.md`
 9. `Assets/Docs/Architacture/System_Interaction_Contract_Template.md`
 10. `Assets/Docs/Architacture/System_Blueprint_Index.md`
 11. `Assets/Docs/Architacture/ADR/README.md`
+12. `Assets/Docs/Architacture/MasterMigration/00_Program/Game_Runtime_System_Decomposition_Layer_Mapping_2026-02-20.md`
+13. `Assets/Docs/Architacture/System_Blueprint_Actor.md`
+14. `Assets/Docs/Architacture/MasterMigration/04_Phase4_Orchestration/Orchestrator_PreRefactor_Minimum_Contract_Blocks_2026-02-20.md`
 
 ## 2) Program Goal
 
@@ -37,7 +40,7 @@ Build a top-down, reusable architecture where:
 2. Every phase has explicit `Entry Gate` and `Exit Gate`.
 3. Any new feature must declare `System Owner` before coding.
 4. Any architectural change must add/adjust a fitness test.
-5. `Packages/com.morboo.*` do not depend on project layer (`Assets/Scripts/...`).
+5. `Packages/com.morboo.*` do not depend on project layer (`Assets/Scripts/...`) and must not reference `Game.Runtime` or `Morboo.Bridge`.
 6. TDE usage is allowed only behind adapter seams until cutover phase.
 7. Changes are sliced to compile-green checkpoints.
 8. Systems do not communicate via direct concrete-to-concrete runtime calls; only via contracts/events/queries.
@@ -46,6 +49,8 @@ Build a top-down, reusable architecture where:
 11. Untyped dependency holders (`GameObject`/`MonoBehaviour`/`Component` used as service locator inputs) are forbidden in new runtime architecture code.
 12. For new domain/feature variability, `data-driven` solutions are preferred over new code branches.
 13. `Architecture-first` is mandatory for any feature work: reuse existing contracts/patterns/extension points first; direct bypass solutions require ADR + cleanup plan with due phase.
+14. Migration-only transitional forms (`legacy key strings`, `compat enums`, temporary adapter DTOs/shims) are allowed only in `Assets/Scripts/MorbooBridge`; they are forbidden in all `com.morboo.*` packages.
+15. Task/PR closure requires both formal gates (tests/build) and a semantic closure check (layer meaning, single source of truth, reusable abstraction scope).
 
 ## 4) Dependency Order (Critical Path)
 
@@ -75,8 +80,9 @@ Every migrated contract/entity must be placed by reuse level:
 Hard rules:
 
 1. `Kernel contracts` must live only in `com.morboo.framework` / `com.morboo.core` (host seams in `com.morboo.runtimehost`).
-2. `com.morboo.*` packages must not depend on project-layer assemblies.
+2. `com.morboo.*` packages must not depend on project-layer assemblies (`Game.Runtime`, `Morboo.Bridge`, `Integration.Project`).
 3. Any new package family must be introduced only via ADR.
+4. Migration-only transitional forms are forbidden in `com.morboo.*` packages and must be isolated in `Assets/Scripts/MorbooBridge`.
 
 ## 4.2) Deferred `Framework + Core` Merge Decision Gate
 
@@ -181,8 +187,8 @@ Includes:
 
 Backlog links:
 
-1. `Orchestration_Remediation_Backlog_By_Commits.md` -> `C01`.
-2. `TopDownEngine_Exit_Migration_Backlog.md` -> `Slice 0`/`Slice 1` test checks.
+1. `Assets/Docs/Architacture/MasterMigration/04_Phase4_Orchestration/Orchestration_Remediation_Backlog_By_Commits.md` -> `C01`.
+2. `Assets/Docs/Architacture/MasterMigration/05_Phase5_EngineSeam_And_Phase7_TDECutover/TopDownEngine_Exit_Migration_Backlog.md` -> `Slice 0`/`Slice 1` test checks.
 
 Entry Gate:
 
@@ -197,8 +203,8 @@ Exit Gate:
    - domain wiring fan-out count,
    - data-vs-code variation baseline (what is config-driven vs code-driven).
 4. Baseline artifacts:
-   - `Assets/Docs/Architacture/Phase1_Baseline_Playtest_Checklist_2026-02-20.md`
-   - `Assets/Docs/Architacture/Phase1_Complexity_Baseline_2026-02-20.md`
+   - `Assets/Docs/Architacture/MasterMigration/01_Phase1_Guardrails/Phase1_Baseline_Playtest_Checklist_2026-02-20.md`
+   - `Assets/Docs/Architacture/MasterMigration/01_Phase1_Guardrails/Phase1_Complexity_Baseline_2026-02-20.md`
 
 ## Phase 2 — Kernel Contracts First
 
@@ -287,15 +293,20 @@ Exit Gate:
 ## Phase 3 Execution Slices (C3.1-C3.3)
 
 1. `C3.1 Entity Backbone Foundation (in-memory)`
+   - status: `closed`,
    - add minimal `EntityState` model in `com.morboo.core`,
    - add `InMemoryEntityRegistry`, `InMemoryEntityFactory`, `InMemoryEntityLifecycleService`, `InMemoryEntityViewBinder` in `com.morboo.systems`,
    - add smoke tests for `create/destroy/get/events` and `entity -> view` binding.
 2. `C3.2 Manager Bridge To Registry Facade`
+   - status: `closed` (bridge wired in `Level.unity` + playtest checklist completed),
    - bridge existing `Unit/Enemy` lifecycle managers to registry/factory facade,
    - keep runtime behavior unchanged (adapter-only migration).
 3. `C3.3 Entity Source-Of-Truth Hardening`
+   - status: `closed` (`C3.3.1..C3.3.4 implemented; sign-off checklist closed`),
+   - execution plan: `Assets/Docs/Architacture/MasterMigration/03_Phase3_EntityBackbone/Phase3_C3.3_Entity_SourceOfTruth_Hardening_Plan_2026-02-20.md`,
    - align migrated features to model-first ownership (state reads by `EntityId`),
-   - remove double-source state in migrated paths.
+   - remove double-source state in migrated paths,
+   - transitional trait-key constants moved out of package layers (Bridge-only), with active architecture gate.
 
 ## Phase 4 — Orchestration Platform Remediation
 
@@ -303,8 +314,10 @@ Goal: make orchestration a reusable platform seam.
 
 Backlog links:
 
-1. `Orchestration_Remediation_Backlog_By_Commits.md` -> `C02..C07` + `C04A` mandatory.
+1. `Assets/Docs/Architacture/MasterMigration/04_Phase4_Orchestration/Orchestration_Remediation_Backlog_By_Commits.md` -> `C02..C07` + `C04A` mandatory.
 2. `C08..C10` continue in later hardening phase.
+3. `Assets/Docs/Architacture/MasterMigration/04_Phase4_Orchestration/Orchestrator_PreRefactor_Minimum_Contract_Blocks_2026-02-20.md` -> mandatory pre-refactor contract freeze gate.
+4. `System_Blueprint_Actor.md` -> actor-side boundary freeze for orchestration integration.
 
 Execution order inside phase:
 
@@ -315,11 +328,13 @@ Execution order inside phase:
 5. `C05` activate domain event pipeline.
 6. `C06` connect capabilities to runtime decisions.
 7. `C07` remove domain downcasts to concrete world cache.
+8. `C07A` post-refactor cleanup: remove Actor boundary hard links to Combat/Idle and compact domain onboarding structure.
 
 Entry Gate:
 
 1. Phase 3 entity backbone stable.
 2. Phase 1 tests green.
+3. Pre-refactor minimum contract blocks approved and baseline-implemented for orchestrator-coupled systems.
 
 Exit Gate:
 
@@ -327,7 +342,9 @@ Exit Gate:
 2. Proposal contracts (`IProposalSource`/`Proposal`) are used in runtime path.
 3. No fixed Combat/Idle-only arbitration input.
 4. Capabilities are consumed (not only registered).
-5. Relevant future-gate tests are un-ignored and green.
+5. Actor-orchestrator package boundary has no hard Combat/Idle coupling (StrategyCombat-only specialization remains below boundary).
+6. Domain onboarding seam is compact and data-driven-first (no file explosion beyond agreed fan-out budget).
+7. Relevant future-gate tests are un-ignored and green.
 
 ## Phase 5 — Engine Anti-Corruption Layer (TDE Containment)
 
@@ -335,7 +352,7 @@ Goal: isolate engine-specific behavior behind adapters before removal.
 
 Backlog links:
 
-1. `TopDownEngine_Exit_Migration_Backlog.md` -> `Slice 2` + `Slice 3`.
+1. `Assets/Docs/Architacture/MasterMigration/05_Phase5_EngineSeam_And_Phase7_TDECutover/TopDownEngine_Exit_Migration_Backlog.md` -> `Slice 2` + `Slice 3`.
 
 Includes:
 
@@ -359,7 +376,7 @@ Goal: move legacy game logic to reusable modules with stable boundaries.
 
 Backlog links:
 
-1. `Morboo_Gameplay_Modularization_Backlog.md` full scope.
+1. `Assets/Docs/Architacture/MasterMigration/06_Phase6_GameplayModularization/Morboo_Gameplay_Modularization_Backlog.md` full scope.
 
 Required sequence (vertical slices):
 
@@ -394,7 +411,7 @@ Goal: remove TDE runtime dependency from project/package assemblies.
 
 Backlog links:
 
-1. `TopDownEngine_Exit_Migration_Backlog.md` -> `Slice 4..Slice 6`.
+1. `Assets/Docs/Architacture/MasterMigration/05_Phase5_EngineSeam_And_Phase7_TDECutover/TopDownEngine_Exit_Migration_Backlog.md` -> `Slice 4..Slice 6`.
 
 Includes:
 
@@ -420,8 +437,8 @@ Goal: finalize architecture and eliminate transitional debt.
 
 Backlog links:
 
-1. `Orchestration_Remediation_Backlog_By_Commits.md` -> `C08..C10`.
-2. `TopDownEngine_Exit_Migration_Backlog.md` -> optional `Slice 7` (MMTools event migration).
+1. `Assets/Docs/Architacture/MasterMigration/04_Phase4_Orchestration/Orchestration_Remediation_Backlog_By_Commits.md` -> `C08..C10`.
+2. `Assets/Docs/Architacture/MasterMigration/05_Phase5_EngineSeam_And_Phase7_TDECutover/TopDownEngine_Exit_Migration_Backlog.md` -> optional `Slice 7` (MMTools event migration).
 
 Includes:
 

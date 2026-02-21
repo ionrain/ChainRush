@@ -1,7 +1,7 @@
 # Orchestration Remediation Backlog (By Commits)
 
 Date: 2026-02-19  
-Base: `Assets/Docs/Architacture/Orchestration_Implementation_Audit_2026-02-19.md`
+Base: `Assets/Docs/Architacture/MasterMigration/04_Phase4_Orchestration/Orchestration_Implementation_Audit_2026-02-19.md`
 Blueprint: `Assets/Docs/Architacture/System_Blueprint_Orchestration.md`
 
 ## Goal
@@ -17,6 +17,19 @@ Blueprint: `Assets/Docs/Architacture/System_Blueprint_Orchestration.md`
 5. Добавление нового домена не должно требовать правки host-core файлов по цепочке (anti file-sprawl).
 6. Новые нетипизированные dependency refs (`GameObject`/`MonoBehaviour`/`Component` как service locator) не допускаются.
 7. Различия доменов приоритетно выражаются данными/политиками, а не форком runtime-кода.
+
+## Precondition Gate (Before C03+)
+
+Before proposal/arbitration/runtimehost refactor commits (`C03` and later), the following must be frozen:
+
+1. `Assets/Docs/Architacture/MasterMigration/04_Phase4_Orchestration/Orchestrator_PreRefactor_Minimum_Contract_Blocks_2026-02-20.md`
+2. `Assets/Docs/Architacture/System_Blueprint_Actor.md`
+
+Minimum requirement:
+
+1. Actor-side read/write boundary for orchestration is fixed (query-read + command-write).
+2. Required bridge adapters for current `Unit/Enemy` integration are defined.
+3. Core taxonomy leaks (project/genre keys) are removed or explicitly deferred via ADR.
 
 ## Ownership & Phase Mapping (Phase 0 baseline)
 

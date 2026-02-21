@@ -2,8 +2,8 @@ using UnityEngine;
 
 /// <summary>
 /// Reports a <see cref="StateSnapshot"/> for a unit to the orchestration layer.
-/// IMPORTANT: Read-only reporter. No gameplay control, no Update loop.
-/// Called on demand by the orchestration layer.
+/// IMPORTANT: No gameplay control, no Update loop. Called on demand by orchestration.
+/// C3.3: syncs authoritative entity model state before building snapshot metrics.
 /// </summary>
 public sealed class UnitStateReporter : MonoBehaviour, IStateReporter, IOrchestrationActor, IEntityIdProvider
 {
@@ -74,20 +74,27 @@ public sealed class UnitStateReporter : MonoBehaviour, IStateReporter, IOrchestr
         if (_cachedMetrics.Items != null) _cachedMetrics.Items.Clear();
 
         FactionAsset faction = _identity != null ? _identity.GetFactionAsset() : null;
+        TryGetEntityState(out IEntityStateAccessor entityState);
 
-        bool isAlive = true;
         bool hasHealth = _unit != null && _unit.MaxHealth > 0;
+        float legacyHp01 = hasHealth ? _unit.CurrentHealth / _unit.MaxHealth : 0f;
+        bool legacyIsAlive = _unit != null && (!hasHealth || _unit.CurrentHealth > 0);
+
+        SyncEntityState(entityState, legacyIsAlive);
+        bool isAlive = entityState != null ? entityState.IsAlive : legacyIsAlive;
 
         if (hasHealth)
         {
-            isAlive = _unit.CurrentHealth > 0;
-            _cachedMetrics.SetFloat("Hp01", _unit.CurrentHealth / _unit.MaxHealth);
+            _cachedMetrics.SetFloat("Hp01", legacyHp01);
         }
 
         if (_unit != null)
         {
             _cachedMetrics.SetInt("MergeState", _unit.MergeState);
+        }
 
+        if (_unit != null)
+        {
             if (_unit.Data != null)
             {
                 UnitClass unitClass = _unit.Data.unitClass;
@@ -107,6 +114,29 @@ public sealed class UnitStateReporter : MonoBehaviour, IStateReporter, IOrchestr
             isAlive,
             roleTag,
             _cachedMetrics);
+    }
+
+    void SyncEntityState(IEntityStateAccessor entityState, bool isAlive)
+    {
+        if (entityState == null)
+            return;
+
+        entityState.SetAlive(isAlive);
+    }
+
+    bool TryGetEntityState(out IEntityStateAccessor entityState)
+    {
+        entityState = null;
+
+        EntityId entityId = GetEntityId();
+        if (entityId.IsNone)
+            return false;
+
+        IEntityStateQuery query = EntityBackboneRuntimeContext.StateQuery;
+        if (query == null)
+            return false;
+
+        return query.TryGetState(entityId, out entityState);
     }
 
     /// <summary>

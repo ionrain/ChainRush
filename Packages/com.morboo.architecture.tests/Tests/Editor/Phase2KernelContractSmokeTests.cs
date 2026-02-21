@@ -28,7 +28,9 @@ public sealed class Phase2KernelContractSmokeTests
         "IEntityFactory",
         "IEntityLifecycleService",
         "IEntitySnapshotStore",
-        "IEntityViewBinder"
+        "IEntityViewBinder",
+        "IEntityStateQuery",
+        "IEntityStateAccessor"
     };
 
     static readonly ObjectiveScope[] RequiredObjectiveScopes =

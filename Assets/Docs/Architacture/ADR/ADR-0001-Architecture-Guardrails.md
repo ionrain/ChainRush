@@ -44,6 +44,6 @@ Trade-offs:
 
 ## Links
 
-1. `Assets/Docs/Architacture/Master_Migration_Roadmap.md`
+1. `Assets/Docs/Architacture/MasterMigration/00_Program/Master_Migration_Roadmap.md`
 2. `Assets/Docs/Architacture/Game_System_Catalog_v2.md`
 3. `Assets/Docs/Architacture/New_System_Requirements_Template.md`

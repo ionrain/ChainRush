@@ -32,6 +32,15 @@
 2. `Behavior/regression tests updated`:
 3. `Manual smoke checks`:
 
+## Semantic Closure Check (Required)
+
+- [ ] Layer placement has semantic validity (not only compile-valid): no lower-level/transitional meaning leaked upward.
+- [ ] Data-vs-code decision is justified: new variability is data-driven unless documented otherwise.
+- [ ] No accidental parallel truth/source introduced (single source of truth preserved).
+- [ ] New/changed abstractions are reusable at declared layer scope (AnyGame / CrossGenre / Genre / Project).
+- [ ] Transitional compatibility forms (if any) are isolated in `Assets/Scripts/MorbooBridge` with explicit removal gate.
+- [ ] “Could this be solved by existing contracts/patterns?” check completed and result documented.
+
 ## Rollback
 
 1. `Rollback-safe checkpoint`:

@@ -62,9 +62,34 @@ public interface IEntityModel
 }
 
 /// <summary>
+/// Authoritative entity state contract for model-first runtime reads/writes.
+/// This is the canonical state surface for migrated C3.3 paths.
+/// </summary>
+public interface IEntityStateAccessor : IEntityModel
+{
+    IReadOnlyCollection<string> Capabilities { get; }
+    IReadOnlyDictionary<string, string> Traits { get; }
+    void SetAlive(bool isAlive);
+    bool AddTag(string tag);
+    bool RemoveTag(string tag);
+    bool AddCapability(string capabilityId);
+    bool RemoveCapability(string capabilityId);
+    void SetTrait(string traitKey, string traitValue);
+    bool TryGetTrait(string traitKey, out string traitValue);
+}
+
+/// <summary>
+/// Typed read seam for authoritative state lookup by EntityId.
+/// </summary>
+public interface IEntityStateQuery
+{
+    bool TryGetState(EntityId entityId, out IEntityStateAccessor entityState);
+}
+
+/// <summary>
 /// Central entity lookup ownership seam.
 /// </summary>
-public interface IEntityRegistry
+public interface IEntityRegistry : IEntityStateQuery
 {
     bool Contains(EntityId entityId);
     bool TryGet(EntityId entityId, out IEntityModel entity);

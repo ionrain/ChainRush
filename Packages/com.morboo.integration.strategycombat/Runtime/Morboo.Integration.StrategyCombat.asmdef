@@ -6,7 +6,6 @@
         "Morboo.Core",
         "Morboo.RuntimeHost",
         "Morboo.Systems",
-        "Game.Runtime",
         "MoreMountains.TopDownEngine",
         "MoreMountains.Tools"
     ],

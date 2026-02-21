@@ -139,6 +139,7 @@ _Нормативный шаблон требований к новой сист
 - конкретные `MonoBehaviour`-связки
 - конкретные SO/мапы проекта (например маппинг UnitClass → RoleAsset)
 - любые “glue” компоненты, которые знают про ассеты/данные/структуру проекта
+- migration-only переходные формы (compat keys/enums/temporary adapter DTOs), нужные только на этапе переноса legacy-кода
 
 **MUST:**
 - находиться в `Assets/Scripts/MorbooBridge` (как договорились)
@@ -168,6 +169,8 @@ _Нормативный шаблон требований к новой сист
 - обратные зависимости (например RuntimeHost → MorbooBridge)
 - Framework → любые Morboo.* системы
 - Core/RuntimeHost → project-specific типы/ассеты
+- любые `com.morboo.*` package-слои → `Game.Runtime` / `Morboo.Bridge` / `Integration.Project`
+- любые migration-only переходные формы выше `MorbooBridge` (все `com.morboo.*` слои)
 
 ---
 
@@ -192,6 +195,9 @@ _Нормативный шаблон требований к новой сист
 
 ### 3.6 Это glue к текущему проекту, его данным и типам
 → `Assets/Scripts/MorbooBridge` (+ `Morboo.Bridge.asmdef`)
+
+### 3.7 Это migration-only переходная форма совместимости (legacy ключи, compat enum, временный shim DTO)
+→ только `Assets/Scripts/MorbooBridge` (строго запрещено в `Morboo.*` packages)
 
 ---
 

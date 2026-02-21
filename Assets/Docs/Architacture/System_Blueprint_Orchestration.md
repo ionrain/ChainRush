@@ -3,9 +3,9 @@
 Date: 2026-02-20  
 Template: `Assets/Docs/Architacture/New_System_Requirements_Template.md`  
 Related:
-1. `Assets/Docs/Architacture/Orchestration_Implementation_Audit_2026-02-19.md`
-2. `Assets/Docs/Architacture/Orchestration_Remediation_Backlog_By_Commits.md`
-3. `Assets/Docs/Architacture/Master_Migration_Roadmap.md`
+1. `Assets/Docs/Architacture/MasterMigration/04_Phase4_Orchestration/Orchestration_Implementation_Audit_2026-02-19.md`
+2. `Assets/Docs/Architacture/MasterMigration/04_Phase4_Orchestration/Orchestration_Remediation_Backlog_By_Commits.md`
+3. `Assets/Docs/Architacture/MasterMigration/00_Program/Master_Migration_Roadmap.md`
 
 ## 1) System Passport
 

@@ -3,6 +3,12 @@ using NUnit.Framework;
 
 public sealed class Phase3EntityBackboneSmokeTests
 {
+    [TearDown]
+    public void TearDown()
+    {
+        EntityBackboneRuntimeContext.Clear();
+    }
+
     [Test]
     public void EntityState_TracksTagsTraitsAndCapabilities()
     {
@@ -17,6 +23,23 @@ public sealed class Phase3EntityBackboneSmokeTests
         entity.SetTrait("faction", "player");
         Assert.That(entity.TryGetTrait("faction", out string value), Is.True);
         Assert.That(value, Is.EqualTo("player"));
+    }
+
+    [Test]
+    public void EntityState_ImplementsAuthoritativeAccessorContract()
+    {
+        IEntityStateAccessor state = new EntityState(new EntityId(11), new EntityArchetypeId("unit.base"));
+
+        state.AddTag("unit");
+        state.AddCapability("attack.ranged");
+        state.SetTrait("faction", "player");
+
+        Assert.That(state.EntityId, Is.EqualTo(new EntityId(11)));
+        Assert.That(state.ArchetypeId.Value, Is.EqualTo("unit.base"));
+        Assert.That(state.Tags, Does.Contain("unit"));
+        Assert.That(state.Capabilities, Does.Contain("attack.ranged"));
+        Assert.That(state.TryGetTrait("faction", out string faction), Is.True);
+        Assert.That(faction, Is.EqualTo("player"));
     }
 
     [Test]
@@ -76,6 +99,23 @@ public sealed class Phase3EntityBackboneSmokeTests
     }
 
     [Test]
+    public void Registry_TryGetState_ReturnsTypedAuthoritativeState()
+    {
+        var registry = new InMemoryEntityRegistry();
+        var lifecycle = new InMemoryEntityLifecycleService();
+        var factory = new InMemoryEntityFactory(registry, lifecycle, () => new EntityId(404));
+
+        EntityId entityId = factory.Create(new EntityArchetypeId("enemy.base"));
+        bool found = registry.TryGetState(entityId, out IEntityStateAccessor state);
+
+        Assert.That(found, Is.True);
+        Assert.That(state, Is.Not.Null);
+        Assert.That(state.EntityId, Is.EqualTo(entityId));
+        Assert.That(state.ArchetypeId.Value, Is.EqualTo("enemy.base"));
+        Assert.That(state.IsAlive, Is.True);
+    }
+
+    [Test]
     public void ViewBinder_BindGetUnbind_Works()
     {
         var binder = new InMemoryEntityViewBinder();
@@ -90,5 +130,39 @@ public sealed class Phase3EntityBackboneSmokeTests
 
         binder.Unbind(entityId);
         Assert.That(binder.TryGetBoundView(entityId, out EntityViewId _), Is.False);
+    }
+
+    [Test]
+    public void RuntimeContext_Install_ExposesTypedStateQuery()
+    {
+        var registry = new InMemoryEntityRegistry();
+        var lifecycle = new InMemoryEntityLifecycleService();
+        var factory = new InMemoryEntityFactory(registry, lifecycle, () => new EntityId(505));
+        var binder = new InMemoryEntityViewBinder();
+
+        EntityBackboneRuntimeContext.Install(registry, factory, lifecycle, binder);
+        EntityId entityId = factory.Create(new EntityArchetypeId("unit.base"));
+
+        Assert.That(EntityBackboneRuntimeContext.IsInstalled, Is.True);
+        Assert.That(EntityBackboneRuntimeContext.StateQuery, Is.Not.Null);
+        Assert.That(EntityBackboneRuntimeContext.StateQuery.TryGetState(entityId, out IEntityStateAccessor state), Is.True);
+        Assert.That(state.ArchetypeId.Value, Is.EqualTo("unit.base"));
+    }
+
+    [Test]
+    public void RuntimeContext_Clear_WithNonOwnerRegistry_DoesNothing()
+    {
+        var registryOwner = new InMemoryEntityRegistry();
+        var lifecycleOwner = new InMemoryEntityLifecycleService();
+        var factoryOwner = new InMemoryEntityFactory(registryOwner, lifecycleOwner, () => new EntityId(601));
+        var binderOwner = new InMemoryEntityViewBinder();
+
+        var foreignRegistry = new InMemoryEntityRegistry();
+        EntityBackboneRuntimeContext.Install(registryOwner, factoryOwner, lifecycleOwner, binderOwner);
+
+        EntityBackboneRuntimeContext.Clear(foreignRegistry);
+
+        Assert.That(EntityBackboneRuntimeContext.IsInstalled, Is.True);
+        Assert.That(EntityBackboneRuntimeContext.Registry, Is.SameAs(registryOwner));
     }
 }

@@ -44,6 +44,18 @@ public sealed class InMemoryEntityRegistry : IEntityRegistry
         return false;
     }
 
+    public bool TryGetState(EntityId entityId, out IEntityStateAccessor entityState)
+    {
+        if (_entities.TryGetValue(entityId, out EntityState state))
+        {
+            entityState = state;
+            return true;
+        }
+
+        entityState = null;
+        return false;
+    }
+
     public IReadOnlyCollection<EntityId> GetAllIds()
     {
         return new List<EntityId>(_entities.Keys);

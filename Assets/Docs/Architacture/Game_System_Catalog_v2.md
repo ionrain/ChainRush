@@ -7,10 +7,10 @@ Related:
 
 1. `Assets/Docs/Architacture/Game_Systems_Architecture_Framework.md`
 2. `Assets/Docs/Architacture/Architecture_Layers_Reference.md`
-3. `Assets/Docs/Architacture/Orchestration_Implementation_Audit_2026-02-19.md`
-4. `Assets/Docs/Architacture/Orchestration_Remediation_Backlog_By_Commits.md`
-5. `Assets/Docs/Architacture/TopDownEngine_Exit_Migration_Backlog.md`
-6. `Assets/Docs/Architacture/Morboo_Gameplay_Modularization_Backlog.md`
+3. `Assets/Docs/Architacture/MasterMigration/04_Phase4_Orchestration/Orchestration_Implementation_Audit_2026-02-19.md`
+4. `Assets/Docs/Architacture/MasterMigration/04_Phase4_Orchestration/Orchestration_Remediation_Backlog_By_Commits.md`
+5. `Assets/Docs/Architacture/MasterMigration/05_Phase5_EngineSeam_And_Phase7_TDECutover/TopDownEngine_Exit_Migration_Backlog.md`
+6. `Assets/Docs/Architacture/MasterMigration/06_Phase6_GameplayModularization/Morboo_Gameplay_Modularization_Backlog.md`
 7. `Assets/Docs/Architacture/New_System_Requirements_Template.md`
 
 ## 1) Purpose
@@ -203,7 +203,7 @@ Gap: нет полноценного LiveOps config/experiment owner.
 ## 7.2 Simulation Domains
 
 1. `Orchestration Domain`: `Partial (advanced)`  
-Evidence: `Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/*` + audit gaps in `Orchestration_Implementation_Audit_2026-02-19.md`.
+Evidence: `Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/*` + audit gaps in `Assets/Docs/Architacture/MasterMigration/04_Phase4_Orchestration/Orchestration_Implementation_Audit_2026-02-19.md`.
 
 2. `Actors Domain`: `Partial`  
 Evidence: `Assets/Scripts/Game/Core/Characters/Unit.cs`, `Assets/Scripts/Game/Core/Characters/Enemy.cs`.  
@@ -282,7 +282,7 @@ Evidence: `Assets/Scripts/Game/TopDownEngineExt/*`, `Packages/com.morboo.integra
 Alignment note:
 
 1. `Framework/Core` split is kept for current migration program.
-2. Possible merge is explicitly deferred and governed by the decision gate in `Assets/Docs/Architacture/Master_Migration_Roadmap.md` (`4.2 Deferred Framework + Core Merge Decision Gate`).
+2. Possible merge is explicitly deferred and governed by the decision gate in `Assets/Docs/Architacture/MasterMigration/00_Program/Master_Migration_Roadmap.md` (`4.2 Deferred Framework + Core Merge Decision Gate`).
 3. Until that gate is passed, boundaries and tests for `framework/core` stay mandatory.
 
 ## 8.2 Entity Placement Rules (Migration-Time)
@@ -385,7 +385,7 @@ Alignment note:
 
 ## 10) Immediate Next Step
 
-Исполнять `Master_Migration_Roadmap.md` как программу миграции, начиная с:
+Исполнять `Assets/Docs/Architacture/MasterMigration/00_Program/Master_Migration_Roadmap.md` как программу миграции, начиная с:
 
 1. `Phase 1` (guardrails baseline),
 2. `Phase 2` (kernel + entity contracts),

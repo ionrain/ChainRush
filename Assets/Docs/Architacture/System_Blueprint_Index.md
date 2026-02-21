@@ -12,11 +12,15 @@ Purpose: единый реестр blueprint-документов, обязат�
 ## Blueprint Register
 
 1. `Orchestration` -> `Assets/Docs/Architacture/System_Blueprint_Orchestration.md` -> Owner: `Orchestration Platform Owner` -> Status: `Ready`
-2. `Kernel Services` -> `TBD` -> Owner: `Kernel Systems Owner` -> Status: `Missing`
-3. `Entity Backbone` -> `TBD` -> Owner: `Entity Backbone Owner` -> Status: `Missing`
+2. `Kernel Services` -> `Assets/Docs/Architacture/System_Blueprint_KernelServices.md` -> Owner: `Kernel Systems Owner` -> Status: `Ready`
+3. `Entity Backbone` -> `Assets/Docs/Architacture/System_Blueprint_EntityBackbone.md` -> Owner: `Entity Backbone Owner` -> Status: `Ready`
 4. `Engine Anti-Corruption (TDE exit)` -> `TBD` -> Owner: `Engine Adapter Owner` -> Status: `Missing`
 5. `Gameplay Modularization` -> `TBD` -> Owner: `Gameplay Domains Owner` -> Status: `Missing`
 6. `Project Bridge Composition` -> `TBD` -> Owner: `Experience & Bridge Owner` -> Status: `Missing`
+7. `Game Runtime System Decomposition (No UI/Board)` -> `Assets/Docs/Architacture/MasterMigration/00_Program/Game_Runtime_System_Decomposition_Layer_Mapping_2026-02-20.md` -> Owner: `Gameplay Domains Owner` -> Status: `Draft`
+8. `Actor System` -> `Assets/Docs/Architacture/System_Blueprint_Actor.md` -> Owner: `Gameplay Domains Owner` -> Status: `Draft`
+9. `Orchestrator Pre-Refactor Minimum Contract Blocks` -> `Assets/Docs/Architacture/MasterMigration/04_Phase4_Orchestration/Orchestrator_PreRefactor_Minimum_Contract_Blocks_2026-02-20.md` -> Owner: `Orchestration Platform Owner` -> Status: `Draft`
+10. `Actor-Orchestrator Interaction Contract` -> `Assets/Docs/Architacture/System_Interaction_Contract_Actor_Orchestrator.md` -> Owner: `Gameplay Domains Owner` -> Status: `Draft`
 
 ## Governance Rule
 

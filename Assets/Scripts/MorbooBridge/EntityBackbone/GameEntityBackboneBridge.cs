@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -47,6 +48,7 @@ public sealed class GameEntityBackboneBridge : MonoBehaviour
     void OnEnable()
     {
         InitializeBackbone();
+        EntityBackboneRuntimeContext.Install(Registry, Factory, Lifecycle, ViewBinder);
 
         if (unitManager != null)
         {
@@ -65,6 +67,8 @@ public sealed class GameEntityBackboneBridge : MonoBehaviour
 
     void OnDisable()
     {
+        EntityBackboneRuntimeContext.Clear(Registry);
+
         if (unitManager != null)
         {
             unitManager.UnitSpawned -= OnUnitSpawned;
@@ -140,7 +144,7 @@ public sealed class GameEntityBackboneBridge : MonoBehaviour
             return;
 
         string archetype = BuildUnitArchetype(unit);
-        RegisterObject(unit.gameObject, archetype, "unit");
+        RegisterObject(unit.gameObject, archetype, "unit", state => PopulateUnitTraits(state, unit));
     }
 
     void RegisterEnemy(Enemy enemy)
@@ -149,10 +153,10 @@ public sealed class GameEntityBackboneBridge : MonoBehaviour
             return;
 
         string archetype = BuildEnemyArchetype(enemy);
-        RegisterObject(enemy.gameObject, archetype, "enemy");
+        RegisterObject(enemy.gameObject, archetype, "enemy", state => PopulateEnemyTraits(state, enemy));
     }
 
-    void RegisterObject(GameObject gameObject, string archetype, string kind)
+    void RegisterObject(GameObject gameObject, string archetype, string kind, Action<IEntityStateAccessor> enrichState)
     {
         if (gameObject == null)
             return;
@@ -161,24 +165,81 @@ public sealed class GameEntityBackboneBridge : MonoBehaviour
         if (_entityByInstanceId.ContainsKey(instanceId))
             return;
 
-        EntityId entityId = Factory.Create(new EntityArchetypeId(archetype));
+        EntityId entityId = ResolveEntityId(gameObject, new EntityArchetypeId(archetype));
         if (entityId.IsNone)
             return;
 
         _entityByInstanceId[instanceId] = entityId;
         ViewBinder.Bind(entityId, new EntityViewId(instanceId));
 
-        if (Registry.TryGet(entityId, out IEntityModel model) && model is EntityState state)
+        if (Registry.TryGetState(entityId, out IEntityStateAccessor state))
         {
             state.AddTag(kind);
-            state.SetTrait("unity.instanceId", instanceId.ToString());
-            state.SetTrait("archetype", archetype);
+            state.SetTrait(BridgeEntityStateTraitKeys.Kind, kind);
+            state.SetTrait(BridgeEntityStateTraitKeys.UnityInstanceId, instanceId.ToString());
+            state.SetTrait(BridgeEntityStateTraitKeys.Archetype, archetype);
+            enrichState?.Invoke(state);
         }
 
         UpdateDebugState();
 
         if (logLifecycleEvents)
             Debug.Log($"[GameEntityBackboneBridge] Registered {kind} '{gameObject.name}' -> {entityId}");
+    }
+
+    EntityId ResolveEntityId(GameObject gameObject, EntityArchetypeId archetypeId)
+    {
+        if (TryGetIdentityEntityId(gameObject, out EntityId identityId))
+        {
+            if (_entityByInstanceId.ContainsValue(identityId))
+                return EntityId.None;
+
+            if (!Registry.Contains(identityId))
+            {
+                var state = new EntityState(identityId, archetypeId, isAlive: true);
+                if (!Registry.TryAdd(state))
+                    return EntityId.None;
+
+                Lifecycle.NotifyCreated(identityId);
+            }
+
+            return identityId;
+        }
+
+        return Factory.Create(archetypeId);
+    }
+
+    static bool TryGetIdentityEntityId(GameObject gameObject, out EntityId entityId)
+    {
+        entityId = EntityId.None;
+        if (gameObject == null)
+            return false;
+
+        IEntityIdProvider identity = gameObject.GetComponent<IEntityIdProvider>();
+        if (identity == null)
+            return false;
+
+        entityId = identity.GetEntityId();
+        return !entityId.IsNone;
+    }
+
+    static void PopulateUnitTraits(IEntityStateAccessor state, Unit unit)
+    {
+        if (state == null || unit == null || unit.Data == null)
+            return;
+
+        UnitData data = unit.Data;
+        state.SetTrait(BridgeEntityStateTraitKeys.UnitType, data.type.ToString());
+        state.SetTrait(BridgeEntityStateTraitKeys.UnitClass, data.unitClass.ToString());
+        state.SetTrait(BridgeEntityStateTraitKeys.UnitIsMelee, data.IsMelee ? "true" : "false");
+    }
+
+    static void PopulateEnemyTraits(IEntityStateAccessor state, Enemy enemy)
+    {
+        if (state == null || enemy == null)
+            return;
+
+        state.SetTrait(BridgeEntityStateTraitKeys.EnemyType, enemy.Type.ToString());
     }
 
     void UnregisterObject(GameObject gameObject)

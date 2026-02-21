@@ -51,6 +51,8 @@ Build a top-down, reusable architecture where:
 13. `Architecture-first` is mandatory for any feature work: reuse existing contracts/patterns/extension points first; direct bypass solutions require ADR + cleanup plan with due phase.
 14. Migration-only transitional forms (`legacy key strings`, `compat enums`, temporary adapter DTOs/shims) are allowed only in `Assets/Scripts/MorbooBridge`; they are forbidden in all `com.morboo.*` packages.
 15. Task/PR closure requires both formal gates (tests/build) and a semantic closure check (layer meaning, single source of truth, reusable abstraction scope).
+16. Lifecycle semantics are canonicalized as `EntityLifecycleState` in `com.morboo.core/Runtime/Entity`; package-layer actor/orchestrator contracts must use lifecycle state, while `IsAlive/SetAlive` are compatibility aliases only and must not be introduced as new package boundary contracts.
+17. Spatial seams are `3D-first` in package boundaries; planar logic is allowed only as explicit `2D` specialization behind projection adapters.
 
 ## 4) Dependency Order (Critical Path)
 
@@ -83,6 +85,7 @@ Hard rules:
 2. `com.morboo.*` packages must not depend on project-layer assemblies (`Game.Runtime`, `Morboo.Bridge`, `Integration.Project`).
 3. Any new package family must be introduced only via ADR.
 4. Migration-only transitional forms are forbidden in `com.morboo.*` packages and must be isolated in `Assets/Scripts/MorbooBridge`.
+5. `IsAlive/SetAlive` are treated as compatibility aliases; lifecycle ownership and primary API must remain `EntityLifecycleState`/`SetLifecycleState` in Entity contracts.
 
 ## 4.2) Deferred `Framework + Core` Merge Decision Gate
 
@@ -311,27 +314,31 @@ Exit Gate:
 ## Phase 4 — Orchestration Platform Remediation
 
 Goal: make orchestration a reusable platform seam.
-Current execution slice: `C01A` (Actor minimum boundary before host/proposal refactor).
+Current execution slice: `C02` (RuntimeHost responsibility normalization).
+C01A status: `closed` (2026-02-21, boundary and tests active).
 
 Backlog links:
 
-1. `Assets/Docs/Architacture/MasterMigration/04_Phase4_Orchestration/Orchestration_Remediation_Backlog_By_Commits.md` -> `C02..C07` + `C04A` mandatory.
+1. `Assets/Docs/Architacture/MasterMigration/04_Phase4_Orchestration/Orchestration_Remediation_Backlog_By_Commits.md` -> `C02`, `C02A`, `C03..C07` + `C04A` mandatory.
 2. `C08..C10` continue in later hardening phase.
 3. `Assets/Docs/Architacture/MasterMigration/04_Phase4_Orchestration/Orchestrator_PreRefactor_Minimum_Contract_Blocks_2026-02-20.md` -> mandatory pre-refactor contract freeze gate.
 4. `System_Blueprint_Actor.md` -> actor-side boundary freeze for orchestration integration.
 5. `System_Blueprint_Actor.md` section `11` (`Pre-Refactor Minimum For Actor`) -> mandatory implementation slice before C02.
+6. `Assets/Docs/Architacture/MasterMigration/04_Phase4_Orchestration/Orchestration_Spatial_Dimensionality_3DFirst_2026-02-21.md` -> mandatory spatial contract decision (`C02A`) before `C03`.
+7. `Assets/Docs/Architacture/MasterMigration/04_Phase4_Orchestration/C02_RuntimeHost_Move_Preflight_2026-02-21.md` -> C02 preflight dependency cut map.
 
 Execution order inside phase:
 
 1. `C01A` implement minimal Actor boundary for orchestration (contracts/projections/dispatch + bridge adapters) per `System_Blueprint_Actor.md` section `11`.
 2. `C02` move host responsibilities to `Morboo.RuntimeHost`.
-3. `C03` introduce proposal collection seam.
-4. `C04` move arbiter to proposal-list input.
-5. `C04A` add low-friction domain onboarding seam (no file explosion on new domain add).
-6. `C05` activate domain event pipeline.
-7. `C06` connect capabilities to runtime decisions.
-8. `C07` remove domain downcasts to concrete world cache.
-9. `C07A` post-refactor cleanup: remove Actor boundary hard links to Combat/Idle and compact domain onboarding structure.
+3. `C02A` freeze spatial dimensionality seam (`3D-first` contracts + `2D` strategy specializations + projection adapters).
+4. `C03` introduce proposal collection seam.
+5. `C04` move arbiter to proposal-list input.
+6. `C04A` add low-friction domain onboarding seam (no file explosion on new domain add).
+7. `C05` activate domain event pipeline.
+8. `C06` connect capabilities to runtime decisions.
+9. `C07` remove domain downcasts to concrete world cache.
+10. `C07A` post-refactor cleanup: remove Actor boundary hard links to Combat/Idle and compact domain onboarding structure.
 
 `C01A` scope (must be done before C02):
 
@@ -340,6 +347,16 @@ Execution order inside phase:
 3. dispatch write path is stabilized through actor handlers (no direct concrete writes from arbiter/router);
 4. `Unit/Enemy` orchestration coupling is isolated in `MorbooBridge` adapters;
 5. architecture tests for actor boundary are active.
+6. actor/orchestrator package boundary uses lifecycle-state contracts; legacy alive aliases are compatibility-only and not reintroduced as boundary surface.
+
+`C01A` closure evidence:
+
+1. actor contract surface in `Packages/com.morboo.core/Runtime/Actor/ActorContracts.cs`.
+2. actor read projection in `Packages/com.morboo.core/Runtime/Actor/ActorReadProjection.cs`.
+3. orchestration read-side adoption in `Packages/com.morboo.runtimehost/Runtime/Orchestration/Arbitration/OrchestrationWorldCache.cs` and `Packages/com.morboo.runtimehost/Runtime/Orchestration/Execution/ExecutionRouter.cs`.
+4. command dispatch write path via `DispatchCombatCommand` / `DispatchIdleCommand` in `Packages/com.morboo.runtimehost/Runtime/Orchestration/DomainContracts/Dispatch/` and adapters in `Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/Adapters/`.
+5. Unit/Enemy bridge adapters in `Assets/Scripts/MorbooBridge/Orchestration/`.
+6. architecture gates in `Packages/com.morboo.architecture.tests/Tests/Editor/ArchitectureLayeringTests.cs`.
 
 Entry Gate:
 
@@ -347,6 +364,7 @@ Entry Gate:
 2. Phase 1 tests green.
 3. Pre-refactor minimum contract blocks approved and baseline-implemented for orchestrator-coupled systems.
 4. `C01A` completed and verified green.
+5. `C02A` completed and verified green before starting `C03`.
 
 Exit Gate:
 
@@ -474,7 +492,7 @@ Exit Gate:
 ## 6.1 Orchestration Backlog
 
 1. `C01` -> Phase 1
-2. `C02..C07` + `C04A` -> Phase 4
+2. `C02`, `C02A`, `C03..C07` + `C04A` -> Phase 4
 3. `C08..C10` -> Phase 8
 
 ## 6.2 TDE Exit Backlog

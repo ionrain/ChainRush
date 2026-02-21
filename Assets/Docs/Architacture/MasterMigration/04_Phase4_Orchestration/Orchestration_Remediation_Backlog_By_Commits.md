@@ -17,6 +17,8 @@ Blueprint: `Assets/Docs/Architacture/System_Blueprint_Orchestration.md`
 5. Добавление нового домена не должно требовать правки host-core файлов по цепочке (anti file-sprawl).
 6. Новые нетипизированные dependency refs (`GameObject`/`MonoBehaviour`/`Component` как service locator) не допускаются.
 7. Различия доменов приоритетно выражаются данными/политиками, а не форком runtime-кода.
+8. Lifecycle boundary is state-first: package seams use `EntityLifecycleState`; `IsAlive/SetAlive` допускаются только как compatibility alias и не должны расширять package boundary contracts.
+9. Spatial boundary is `3D-first`; planar logic is allowed only as explicit `2D` specialization behind projection adapters.
 
 ## Precondition Gate (Before C03+)
 
@@ -24,26 +26,30 @@ Before proposal/arbitration/runtimehost refactor commits (`C03` and later), the 
 
 1. `Assets/Docs/Architacture/MasterMigration/04_Phase4_Orchestration/Orchestrator_PreRefactor_Minimum_Contract_Blocks_2026-02-20.md`
 2. `Assets/Docs/Architacture/System_Blueprint_Actor.md`
+3. `Assets/Docs/Architacture/MasterMigration/04_Phase4_Orchestration/Orchestration_Spatial_Dimensionality_3DFirst_2026-02-21.md`
 
 Minimum requirement:
 
 1. Actor-side read/write boundary for orchestration is fixed (query-read + command-write).
 2. Required bridge adapters for current `Unit/Enemy` integration are defined.
 3. Core taxonomy leaks (project/genre keys) are removed or explicitly deferred via ADR.
+4. Lifecycle semantics are frozen on `EntityLifecycleState` contracts (no new package-level `IsAlive` boundary APIs).
+5. Spatial dimensionality decision is frozen (`3D-first` package seam + explicit `2D` specializations).
 
 ## Ownership & Phase Mapping (Phase 0 baseline)
 
 1. `C01` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 1`
 2. `C02` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 4`
-3. `C03` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 4`
-4. `C04` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 4`
-5. `C04A` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 4`
-6. `C05` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 4`
-7. `C06` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 4`
-8. `C07` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 4`
-9. `C08` -> Owner: `Kernel Systems Owner` -> Target phase: `Phase 8`
-10. `C09` -> Owner: `Kernel Systems Owner` -> Target phase: `Phase 8`
-11. `C10` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 8`
+3. `C02A` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 4`
+4. `C03` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 4`
+5. `C04` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 4`
+6. `C04A` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 4`
+7. `C05` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 4`
+8. `C06` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 4`
+9. `C07` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 4`
+10. `C08` -> Owner: `Kernel Systems Owner` -> Target phase: `Phase 8`
+11. `C09` -> Owner: `Kernel Systems Owner` -> Target phase: `Phase 8`
+12. `C10` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 8`
 
 ## Commit Plan
 
@@ -76,6 +82,8 @@ Acceptance:
 
 Type: refactor (no behavior change expected)  
 Goal: Вернуть host-инфраструктуру из `Integration.StrategyCombat` в `RuntimeHost`.
+Status: `in progress` (started 2026-02-21 after C01A closure; `C02.2` mechanical move done, `C02.3` reference cut done, `C02.4` static checks done, Unity compile/test gate pending).
+Preflight doc: `Assets/Docs/Architacture/MasterMigration/04_Phase4_Orchestration/C02_RuntimeHost_Move_Preflight_2026-02-21.md`
 
 Changes:
 
@@ -84,7 +92,8 @@ Changes:
    - `OrchestrationArbiter`, `OrchestrationArbiterContext`, `OrchestrationArbiterProposals`, `OrchestrationTickResult`.
    - `OrchestrationWorldCache`, registry contracts/interfaces для host-runtime.
 2. В `Integration.StrategyCombat` оставить:
-   - домены, policy assets, executors, adapters, map assets.
+   - домены, executors, adapters и strategy-specific policy implementations.
+   - host-facing base contracts/assets, required by loop/arbiter/router no-cycle move, допускаются в `RuntimeHost` как transitional placement for `C02`.
 3. Обновить asmdef refs без циклов.
 
 Acceptance:
@@ -92,6 +101,59 @@ Acceptance:
 1. `Morboo.RuntimeHost` содержит host-runtime код.
 2. `Morboo.Integration.StrategyCombat` не содержит host-loop/arbitration infrastructure.
 3. Тесты C01 остаются зелёными.
+
+Execution slices (C02 detail):
+
+1. `C02.1` preflight inventory + dependency cut map (host file set, compile constraints, asmdef no-cycle plan).
+2. `C02.2` mechanical moves (`git mv`) of host files into RuntimeHost folders.
+3. `C02.3` reference fixup (using/asmdef), no behavior changes.
+4. `C02.4` boundary verification (architecture tests + grep checks for host infra placement).
+
+## C01A — Actor Minimum Boundary Before Host/Proposal Refactor
+
+Type: phase-4 precondition slice (contract freeze)  
+Status: `closed` (2026-02-21)
+
+Closure evidence:
+
+1. Core actor boundary contracts exist:
+   - `Packages/com.morboo.core/Runtime/Actor/ActorContracts.cs`
+   - `Packages/com.morboo.core/Runtime/Actor/ActorReadProjection.cs`
+2. Read-side projection is consumed in orchestration runtime:
+   - `Packages/com.morboo.runtimehost/Runtime/Orchestration/Arbitration/OrchestrationWorldCache.cs`
+   - `Packages/com.morboo.runtimehost/Runtime/Orchestration/Execution/ExecutionRouter.cs`
+3. Write-side dispatch path is stabilized via typed dispatch commands/adapters:
+   - `Packages/com.morboo.runtimehost/Runtime/Orchestration/DomainContracts/Dispatch/DispatchCombatCommand.cs`
+   - `Packages/com.morboo.runtimehost/Runtime/Orchestration/DomainContracts/Dispatch/DispatchIdleCommand.cs`
+   - `Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/Adapters/CombatCommandAdapter.cs`
+   - `Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/Adapters/IdleCommandAdapter.cs`
+4. Legacy Unit/Enemy coupling remains isolated in bridge layer:
+   - `Assets/Scripts/MorbooBridge/Orchestration/`
+5. Architecture fitness gates are active:
+   - `Packages/com.morboo.architecture.tests/Tests/Editor/ArchitectureLayeringTests.cs`
+
+## C02A — Spatial Dimensionality Freeze (3D-First Seam + 2D Strategy Specializations)
+
+Type: refactor-seam (contract hardening)  
+Goal: Зафиксировать пространственный seam так, чтобы orchestration platform была 3D-capable, а planar StrategyCombat-логика была явной и изолированной.
+
+Changes:
+
+1. Ввести/зафиксировать общий spatial контракт как `3D-first` на package boundary (Framework/Core/RuntimeHost).
+2. Для StrategyCombat:
+   - классы с hard planar логикой (`Float2`/`AABB2D`) переименовать с суффиксом `2D`,
+   - оставшиеся dimension-agnostic/3D-capable классы оставить без суффикса.
+3. Ввести явный projection adapter (`3D -> 2D`) для planar policy/runtime path (без ad-hoc axis cuts внутри доменных политик).
+4. Включить architecture gates:
+   - no new planar-only boundary contracts in package layers,
+   - planar class naming rule (`*2D`) for hard planar types.
+
+Acceptance:
+
+1. `C03` стартует только после закрытия `C02A`.
+2. Spatial boundary задокументирован и типизирован как 3D-first.
+3. Planar логика StrategyCombat изолирована в явные `2D` specialization paths.
+4. Поведение не меняется (seam-hardening only).
 
 ## C03 — Introduce Proposal Collection Seam (No Behavior Change)
 
@@ -109,6 +171,7 @@ Acceptance:
 1. Arbiter получает proposals через единый collector seam.
 2. Поведение в игре не изменилось.
 3. Добавить/включить тест: runtime pipeline реально использует collector.
+4. `C02A` spatial freeze completed before this commit starts.
 
 ## C04 — Move Arbitration To Proposal List
 
@@ -257,13 +320,13 @@ Acceptance:
 
 ## Optional Parallel Workstreams
 
-1. После C02 можно параллелить C06 (Capabilities) и C07 (WorldQuery cleanup), если proposal seam уже стабилен.
+1. После C02A можно параллелить C06 (Capabilities) и C07 (WorldQuery cleanup), если proposal seam уже стабилен.
 2. C08 (Core cleanup) лучше делать после C04/C07, чтобы не делать двойную миграцию контрактов.
 3. C04A желательно завершить до массового добавления новых доменов, иначе file-sprawl закрепится как дефолт.
 
 ## Suggested PR Grouping
 
-1. PR-A: C01-C02 (границы + тесты).
+1. PR-A: C01-C02-C02A (границы + spatial seam + тесты).
 2. PR-B: C03-C04-C04A (proposal model + onboarding simplification).
 3. PR-C: C05-C07 (events/capabilities/query purity).
 4. PR-D: C08-C10 (core cleanup + final locks).

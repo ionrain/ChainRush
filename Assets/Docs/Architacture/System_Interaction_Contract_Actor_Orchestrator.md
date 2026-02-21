@@ -26,6 +26,8 @@ Status: Draft (pre-refactor freeze target)
 4. `Forbidden write paths`:
    - Arbiter/Router direct mutation of actor stores.
    - Direct concrete calls into `Unit/Enemy` from host/runtime layers.
+5. `Compatibility rule`:
+   - `IsAlive/SetAlive` are compatibility aliases only and must not be introduced as new package boundary APIs.
 
 ## 3) Inbound Surface (Orchestrator consumes from Actor)
 
@@ -34,7 +36,8 @@ Status: Draft (pre-refactor freeze target)
 3. `Identity` -> `IEntityIdProvider.GetEntityId()` -> Actor identity provider -> stable id required.
 4. `Faction` -> `IFactionAssetProvider.GetFactionAsset()` -> Actor identity provider.
 5. `Role` -> `IRoleAssetProvider.GetRoleAsset()` (transition) / `RoleId` projection (target) -> Actor role provider.
-6. `World data` -> `IWorldQuery` snapshot projection -> RuntimeHost -> no concrete downcast in domains.
+6. `World data` -> `IWorldQuery` snapshot projection -> RuntimeHost -> no concrete downcast in domains (`3D-first` seam; `2D` specializations only via explicit projection adapters).
+7. `Lifecycle` -> `EntityLifecycleState` projection from entity/actor contracts (state-first).
 
 ## 4) Outbound Surface (Orchestrator emits to Actor)
 

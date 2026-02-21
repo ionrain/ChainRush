@@ -166,9 +166,9 @@ Read side (orchestrator consumes):
    - stable `EntityId`,
    - faction,
    - routing role id,
-   - alive state.
+   - lifecycle state (`EntityLifecycleState`).
 2. actor world snapshot projection:
-   - position,
+   - position (`3D-first` on package boundary; planar `2D` projections only via explicit specialization adapters),
    - role/group refs,
    - capability snapshot,
    - selected stat projections needed by policies.
@@ -209,6 +209,7 @@ Post-refactor normalization target:
 6. `No new Game.Runtime dependency` introduced into `RuntimeHost/Core`.
 7. Architecture tests for the above are added/updated.
 8. Temporary Actor-side coupling to `Combat/Idle` contracts (if still present) is explicitly tagged as migration debt with removal gate right after orchestration C07.
+9. `IsAlive/SetAlive` are treated as compatibility aliases only; canonical lifecycle boundary is `EntityLifecycleState`/`SetLifecycleState` from Entity contracts.
 
 ## 11.1) Post-Refactor Cleanup Gate (Immediately After Orchestrator C07)
 

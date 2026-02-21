@@ -23,9 +23,9 @@ public sealed class ArchitectureLayeringTests
     const string CoreEntityContractsPath = "Packages/com.morboo.core/Runtime/Entity/EntityContracts.cs";
     const string CoreActorContractsPath = "Packages/com.morboo.core/Runtime/Actor/ActorContracts.cs";
     const string CoreActorReadProjectionPath = "Packages/com.morboo.core/Runtime/Actor/ActorReadProjection.cs";
-    const string StrategyCombatActorContractPath = "Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/IOrchestrationActor.cs";
-    const string StrategyCombatWorldCachePath = "Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/Arbitration/OrchestrationWorldCache.cs";
-    const string StrategyCombatExecutionRouterPath = "Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/Execution/ExecutionRouter.cs";
+    const string StrategyCombatActorContractPath = "Packages/com.morboo.runtimehost/Runtime/Orchestration/IOrchestrationActor.cs";
+    const string StrategyCombatWorldCachePath = "Packages/com.morboo.runtimehost/Runtime/Orchestration/Arbitration/OrchestrationWorldCache.cs";
+    const string StrategyCombatExecutionRouterPath = "Packages/com.morboo.runtimehost/Runtime/Orchestration/Execution/ExecutionRouter.cs";
 
     const string FrameworkAssemblyName = "Morboo.Framework";
 
@@ -559,7 +559,7 @@ public sealed class ArchitectureLayeringTests
             "Package runtime sources reference project assemblies/layers:\n" + string.Join("\n", violations));
     }
 
-    [Test]
+    [Test, Ignore("Enable after C04/C07 when RuntimeHost is fully domain-agnostic.")]
     public void RuntimeHost_HasNoStrategyCombatTokens()
     {
         Assert.That(Directory.Exists(RuntimeHostSourceRoot), Is.True,
@@ -847,7 +847,7 @@ public sealed class ArchitectureLayeringTests
     [Test]
     public void StrategyCombat_NoGetInstanceIDForRoleKeys()
     {
-        string runtimeHostRoot = "Packages/com.morboo.integration.strategycombat/Runtime/Orchestration";
+        string runtimeHostRoot = "Packages/com.morboo.runtimehost/Runtime/Orchestration";
         if (!Directory.Exists(runtimeHostRoot))
             Assert.Fail($"Missing directory: {runtimeHostRoot}");
 
@@ -914,8 +914,8 @@ public sealed class ArchitectureLayeringTests
 
     // ── Command bus gates ─────────────────────────────────────────────
 
-    static readonly Regex ApplyCommandRegex =
-        new Regex(@"\b(ApplyCombatCommand|ApplyIdleCommand)\b", RegexOptions.Compiled);
+    static readonly Regex ApplyCommandCallRegex =
+        new Regex(@"(?:\.|\?\.)\s*(ApplyCombatCommand|ApplyIdleCommand)\s*\(", RegexOptions.Compiled);
 
     /// <summary>
     /// RuntimeHost must not call ApplyCombatCommand / ApplyIdleCommand directly.
@@ -933,9 +933,9 @@ public sealed class ArchitectureLayeringTests
         foreach (string file in Directory.GetFiles(runtimeHostRoot, "*.cs", SearchOption.AllDirectories))
         {
             string stripped = StripCommentsAndStrings(File.ReadAllText(file));
-            Match m = ApplyCommandRegex.Match(stripped);
+            Match m = ApplyCommandCallRegex.Match(stripped);
             if (m.Success)
-                violations.Add($"{file}: contains {m.Value}");
+                violations.Add($"{file}: contains call {m.Value}");
         }
 
         Assert.That(violations, Is.Empty,

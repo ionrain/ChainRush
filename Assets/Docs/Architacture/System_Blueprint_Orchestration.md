@@ -6,6 +6,7 @@ Related:
 1. `Assets/Docs/Architacture/MasterMigration/04_Phase4_Orchestration/Orchestration_Implementation_Audit_2026-02-19.md`
 2. `Assets/Docs/Architacture/MasterMigration/04_Phase4_Orchestration/Orchestration_Remediation_Backlog_By_Commits.md`
 3. `Assets/Docs/Architacture/MasterMigration/00_Program/Master_Migration_Roadmap.md`
+4. `Assets/Docs/Architacture/MasterMigration/04_Phase4_Orchestration/Orchestration_Spatial_Dimensionality_3DFirst_2026-02-21.md`
 
 ## 1) System Passport
 
@@ -170,14 +171,17 @@ Related:
    - arbiter не содержит fixed branching по именам доменов,
    - добавление домена не требует правок loop/router/arbiter host-кода,
    - capabilities реально влияют на decision path,
-   - нет concrete downcasts из domain logic.
+   - нет concrete downcasts из domain logic,
+   - package-level spatial seam is `3D-first`,
+   - hard planar policies/types are explicit `2D` specializations behind projection adapters.
 
 ## 11) Testing & Fitness Gates
 
 1. `New/updated architecture tests`:
    - `Packages/com.morboo.architecture.tests/Tests/Editor/OrchestrationImplementationFitnessTests.cs` (C01 gates + future gates),
    - onboarding/fan-out gate checklist (C04A),
-   - runtimehost no domain-name specific branching (future gate).
+   - runtimehost no domain-name specific branching (future gate),
+   - spatial dimensionality gates (`3D-first` boundary + `2D` specialization naming rule).
 2. `Behavior tests`:
    - regression smoke: combat/idle parity after C03/C04/C04A,
    - capability-driven variation tests after C06.
@@ -196,7 +200,7 @@ Related:
 ## 13) Rollout / Rollback
 
 1. `Commit slicing plan`:
-   - C01-C02,
+   - C01-C02-C02A,
    - C03-C04-C04A,
    - C05-C07,
    - C08-C10.

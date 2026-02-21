@@ -93,6 +93,8 @@ Related:
 5. `Critical invariants`:
    - no double-source state for migrated entity paths;
    - all migrated logic addresses entities by `EntityId`;
+   - canonical lifecycle API is `EntityLifecycleState`/`SetLifecycleState`;
+   - `IsAlive/SetAlive` are compatibility aliases only;
    - transitional compatibility forms remain Bridge-only.
 
 ## 8) Testing & Fitness Gates

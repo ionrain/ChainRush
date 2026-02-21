@@ -88,7 +88,7 @@ Status: `Closed (C3.3.1/C3.3.2/C3.3.3/C3.3.4 implemented; exit checklist/sign-of
    - заполняет bridge-layer compatibility traits (`BridgeEntityStateTraitKeys`).
 9. State-reporters в StrategyCombat читают migrated metadata из `EntityState` через `TryGetState`, с fallback на legacy source.
 10. 2026-02-20: `C3.3.3` выполнен для writer-path в `UnitStateReporter`/`EnemyStateReporter`.
-11. Репортеры синхронизируют authoritative liveness в `IEntityStateAccessor` через `SetAlive`; snapshot metrics (Hp01/MergeState/EnemyType/UnitClass) остаются behavior-neutral и читаются из текущих runtime owners.
+11. Репортеры синхронизируют authoritative lifecycle в `IEntityStateAccessor` через `SetLifecycleState`; snapshot metrics (Hp01/MergeState/EnemyType/UnitClass) остаются behavior-neutral и читаются из текущих runtime owners.
 12. Добавлен architecture guardrail: state-reporters обязаны иметь write-back в Entity Backbone.
 13. 2026-02-20: `C3.3.4` выполнен для migrated reporter scope.
 14. Legacy `entityState == null` fallback branches удалены из migrated state-reporter scope.
@@ -96,3 +96,4 @@ Status: `Closed (C3.3.1/C3.3.2/C3.3.3/C3.3.4 implemented; exit checklist/sign-of
 16. 2026-02-21: exit checklist закрыт, C3.3 переведен в `closed`.
 17. Transitional `EntityStateTraitKeys` удален из `com.morboo.core` и из package-runtime usages; оставлен только Bridge-layer compatibility key set.
 18. Добавлен active architecture gate на запрет trait-key compatibility constants в package runtime слоях.
+19. Lifecycle semantics unified: `EntityLifecycleState` in Entity contracts is canonical; `IsAlive/SetAlive` остаются только compatibility alias (не boundary owner API).

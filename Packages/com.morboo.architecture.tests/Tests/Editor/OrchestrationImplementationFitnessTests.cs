@@ -9,9 +9,9 @@ public sealed class OrchestrationImplementationFitnessTests
 {
     const string StrategyCombatOrchestrationRoot = "Packages/com.morboo.integration.strategycombat/Runtime/Orchestration";
     const string StrategyCombatDomainsRoot = "Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/Domains";
-    const string StrategyCombatArbiterPath = "Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/Arbitration/OrchestrationArbiter.cs";
-    const string StrategyCombatRouterPath = "Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/Execution/ExecutionRouter.cs";
-    const string StrategyCombatLoopPath = "Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/OrchestrationLoop.cs";
+    const string StrategyCombatArbiterPath = "Packages/com.morboo.runtimehost/Runtime/Orchestration/Arbitration/OrchestrationArbiter.cs";
+    const string StrategyCombatRouterPath = "Packages/com.morboo.runtimehost/Runtime/Orchestration/Execution/ExecutionRouter.cs";
+    const string StrategyCombatLoopPath = "Packages/com.morboo.runtimehost/Runtime/Orchestration/OrchestrationLoop.cs";
     const string RuntimeHostArbiterPath = "Packages/com.morboo.runtimehost/Runtime/Orchestration/Arbitration/OrchestrationArbiter.cs";
     const string RuntimeHostRouterPath = "Packages/com.morboo.runtimehost/Runtime/Orchestration/Execution/ExecutionRouter.cs";
     const string RuntimeHostLoopPath = "Packages/com.morboo.runtimehost/Runtime/Orchestration/OrchestrationLoop.cs";

@@ -10,6 +10,7 @@ Related:
 3. `Assets/Docs/Architacture/MasterMigration/04_Phase4_Orchestration/Orchestration_Remediation_Backlog_By_Commits.md`
 4. `Assets/Docs/Architacture/MasterMigration/00_Program/Master_Migration_Roadmap.md`
 5. `Assets/Docs/Architacture/System_Interaction_Contract_Actor_Orchestrator.md`
+6. `Assets/Docs/Architacture/MasterMigration/04_Phase4_Orchestration/Orchestration_Spatial_Dimensionality_3DFirst_2026-02-21.md`
 
 ## 1) Purpose
 
@@ -25,6 +26,8 @@ Related:
 2. Migration-only transitional forms (legacy keys/compat enums/temporary shim DTOs) разрешены только в `Assets/Scripts/MorbooBridge`, запрещены во всех `com.morboo.*` пакетах.
 3. Коммиты идут строго сверху вниз по иерархии слоёв. Пропуск слоя запрещён.
 4. Сразу после C07 обязателен post-refactor cleanup gate: убрать hard Actor↔Combat/Idle связи и зафиксировать компактный доменный onboarding.
+5. Lifecycle contract freeze: package-level actor/orchestrator boundaries используют `EntityLifecycleState`; `IsAlive/SetAlive` считаются compatibility alias и не расширяют boundary API.
+6. Spatial contract freeze before `C03`: package boundary is `3D-first`, planar behavior is explicit `2D` specialization via projection adapters.
 
 ## 3) Layer Hierarchy (Execution Order)
 
@@ -45,6 +48,9 @@ Related:
 6. `Tick/Loop/Bus Block`: typed loop dependencies, stable tick/context contracts.
 
 ## 5) Commit Plan By Layer
+
+Execution note:
+1. Spatial dimensionality freeze (`C02A`) is executed after host normalization (`C02`) and before proposal/arbitration refactor (`C03`).
 
 ### C4.P0 - Contract Freeze Baseline (Docs + Gates)
 Layer: `Program docs + architecture tests` (prep)
@@ -76,6 +82,8 @@ Changes:
 1. Freeze generic contracts for Actor/Faction/Role/Capabilities read/write boundaries.
 2. Удалить из Core strategy/project/transitional taxonomy (включая legacy key sets).
 3. Зафиксировать, что read-side оркестратора адресуется по `EntityId` и snapshot/query контрактам.
+4. Зафиксировать lifecycle ownership в Entity contracts (`EntityLifecycleState`/`SetLifecycleState`) и запретить новые package-level boundary контракты на `IsAlive`.
+5. Зафиксировать общие spatial value/query seams как `3D-first` на уровне package boundaries.
 
 Acceptance:
 1. Core содержит только cross-genre контракты/модели.
@@ -112,6 +120,7 @@ Layer: `L5` (`com.morboo.integration.strategycombat`)
 Changes:
 1. Stabilize strategy-specific payloads/adapters/policies against frozen host/core seams.
 2. Ensure role/capability/faction/spatial strategy policies resolved inside StrategyCombat layer.
+3. For hard planar logic, use explicit `2D` specialization types and projection adapters from common 3D seams.
 
 Acceptance:
 1. Вся strategycombat-специфика живет в этом слое.
@@ -123,6 +132,7 @@ Layer: `L6` (`Assets/Scripts/MorbooBridge`)
 Changes:
 1. Keep legacy Unit/Enemy mappings only as bridge adapters.
 2. All transitional compatibility forms are isolated here with explicit removal gate.
+3. Любая legacy интерпретация liveness (`IsAlive`-style) остается только в bridge adapters и не поднимается в package boundary surface.
 
 Acceptance:
 1. Legacy integration не поднимается выше Bridge.
@@ -148,7 +158,7 @@ Acceptance:
 1. `Actor Block`: Core contracts -> Systems projections -> RuntimeHost read/write seams -> StrategyCombat policy binding -> Bridge legacy adapters.
 2. `Faction/Relations Block`: Core relation contracts -> RuntimeHost relation queries -> StrategyCombat relation policies -> Bridge content mapping only.
 3. `Role/Capabilities Block`: Core role/capability contracts -> RuntimeHost consumption seam -> StrategyCombat policy/materialization -> Bridge legacy mapping.
-4. `Spatial/Targeting Block`: Framework/Core query primitives -> Systems projection runtime -> RuntimeHost orchestration reads -> StrategyCombat targeting policies.
+4. `Spatial/Targeting Block`: Framework/Core `3D-first` query primitives -> Systems projection runtime -> RuntimeHost orchestration reads -> StrategyCombat targeting policies (`2D` specializations where required).
 5. `Execution Block`: Framework command/event primitives -> RuntimeHost dispatch orchestration -> StrategyCombat handlers -> Bridge legacy receiver adapters.
 6. `Tick/Loop/Bus Block`: Systems runtime infra -> RuntimeHost loop orchestration.
 

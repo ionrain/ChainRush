@@ -128,7 +128,7 @@ public sealed class InMemoryEntityFactory : IEntityFactory
         if (!_registry.TryRemove(entityId, out EntityState removed))
             return false;
 
-        removed.SetAlive(false);
+        removed.SetLifecycleState(EntityLifecycleState.Inactive);
         _lifecycle.NotifyDestroyed(entityId);
         return true;
     }

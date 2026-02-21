@@ -198,7 +198,7 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
         _world.Anchor = ctx.Anchor;
         _world.Now = ctx.Now;
 
-        // ── Actors: alive entities with typed faction ────────────────
+        // ── Actors: active entities with typed faction ───────────────
         IReadOnlyList<IStateReporter> reporters = OrchestrationRegistry.StateReporters;
         for (int i = 0; i < reporters.Count; i++)
         {
@@ -208,7 +208,7 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
 
             IOrchestrationActor actor = r as IOrchestrationActor;
             if (actor == null) continue;
-            if (!actor.IsAlive()) continue;
+            if (actor.GetLifecycleState() != EntityLifecycleState.Active) continue;
 
             IFactionAssetProvider fap = actor as IFactionAssetProvider;
             if (fap == null) continue;

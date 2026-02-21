@@ -48,6 +48,11 @@ public sealed class EnemyStateReporter : MonoBehaviour, IStateReporter, IOrchest
 
     public Transform GetTransform() => transform;
 
+    public EntityLifecycleState GetLifecycleState()
+    {
+        return IsAlive() ? EntityLifecycleState.Active : EntityLifecycleState.Inactive;
+    }
+
     /// <summary>
     /// IMPORTANT: If Health is null or MaximumHealth &lt;= 0 (not yet initialized),
     /// the entity is treated as alive to avoid false negatives during early lifecycle.
@@ -114,7 +119,7 @@ public sealed class EnemyStateReporter : MonoBehaviour, IStateReporter, IOrchest
         if (entityState == null)
             return;
 
-        entityState.SetAlive(isAlive);
+        entityState.SetLifecycleState(isAlive ? EntityLifecycleState.Active : EntityLifecycleState.Inactive);
     }
 
     bool TryGetEntityState(out IEntityStateAccessor entityState)

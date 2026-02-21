@@ -20,6 +20,12 @@ public sealed class ArchitectureLayeringTests
     const string CoreSourceRoot = "Packages/com.morboo.core/Runtime";
     const string RuntimeHostSourceRoot = "Packages/com.morboo.runtimehost/Runtime";
     const string ProjectTypeSourceRoot = "Packages/com.morboo.integration.strategycombat/Runtime";
+    const string CoreEntityContractsPath = "Packages/com.morboo.core/Runtime/Entity/EntityContracts.cs";
+    const string CoreActorContractsPath = "Packages/com.morboo.core/Runtime/Actor/ActorContracts.cs";
+    const string CoreActorReadProjectionPath = "Packages/com.morboo.core/Runtime/Actor/ActorReadProjection.cs";
+    const string StrategyCombatActorContractPath = "Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/IOrchestrationActor.cs";
+    const string StrategyCombatWorldCachePath = "Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/Arbitration/OrchestrationWorldCache.cs";
+    const string StrategyCombatExecutionRouterPath = "Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/Execution/ExecutionRouter.cs";
 
     const string FrameworkAssemblyName = "Morboo.Framework";
 
@@ -93,7 +99,7 @@ public sealed class ArchitectureLayeringTests
         new Regex(@"\bTryGetState\s*\(", RegexOptions.Compiled);
 
     static readonly Regex StateWriteBackUsageRegex =
-        new Regex(@"\bSetAlive\s*\(", RegexOptions.Compiled);
+        new Regex(@"\b(SetLifecycleState|SetAlive)\s*\(", RegexOptions.Compiled);
 
     static readonly Regex LegacyEntityTraitKeysTokenRegex =
         new Regex(@"\b(EntityStateTraitKeys|BridgeEntityStateTraitKeys)\b", RegexOptions.Compiled);
@@ -115,6 +121,51 @@ public sealed class ArchitectureLayeringTests
 
     static readonly Regex EnemyReporterGuardedLegacyHealthFallbackRegex =
         new Regex(@"else\s+if\s*\(\s*entityState\s*==\s*null\s*&&\s*hasHealth\s*\)", RegexOptions.Compiled);
+
+    static readonly Regex CoreEntityLifecycleEnumRegex =
+        new Regex(@"\benum\s+EntityLifecycleState\b", RegexOptions.Compiled);
+
+    static readonly Regex CoreEntityModelLifecyclePropertyRegex =
+        new Regex(@"\bEntityLifecycleState\s+LifecycleState\s*\{\s*get\s*;\s*\}", RegexOptions.Compiled);
+
+    static readonly Regex CoreEntityAccessorSetLifecycleRegex =
+        new Regex(@"\bSetLifecycleState\s*\(\s*EntityLifecycleState\s+\w+\s*\)", RegexOptions.Compiled);
+
+    static readonly Regex CoreActorContractsLifecycleEnumRegex =
+        new Regex(@"\benum\s+EntityLifecycleState\b", RegexOptions.Compiled);
+
+    static readonly Regex CoreActorRuntimeHandleRegex =
+        new Regex(@"\binterface\s+IActorRuntimeHandle\s*:\s*IEntityIdProvider\b", RegexOptions.Compiled);
+
+    static readonly Regex CoreActorRuntimeLifecycleMethodRegex =
+        new Regex(@"\bEntityLifecycleState\s+GetLifecycleState\s*\(", RegexOptions.Compiled);
+
+    static readonly Regex CoreActorRuntimeLegacyAliveMethodRegex =
+        new Regex(@"\bIsAlive\s*\(", RegexOptions.Compiled);
+
+    static readonly Regex StrategyCombatActorExtendsCoreHandleRegex =
+        new Regex(@"\binterface\s+IOrchestrationActor\s*:\s*IFactionAssetProvider\s*,\s*IActorRuntimeHandle\b", RegexOptions.Compiled);
+
+    static readonly Regex StrategyCombatWorldCacheActorDowncastRegex =
+        new Regex(@"\bactor\s+as\s+IEntityIdProvider\b", RegexOptions.Compiled);
+
+    static readonly Regex CoreActorReadProjectionContractRegex =
+        new Regex(@"\binterface\s+IActorReadProjectionQuery\b", RegexOptions.Compiled);
+
+    static readonly Regex CoreActorReadProjectionHostilityTokenRegex =
+        new Regex(@"\bIsHostile\b", RegexOptions.Compiled);
+
+    static readonly Regex CoreActorReadProjectionLifecycleStateRegex =
+        new Regex(@"\bEntityLifecycleState\s+LifecycleState\b", RegexOptions.Compiled);
+
+    static readonly Regex CoreActorReadProjectionLegacyAliveTokenRegex =
+        new Regex(@"\bIsAlive\b", RegexOptions.Compiled);
+
+    static readonly Regex StrategyCombatWorldCacheProjectionContractRegex =
+        new Regex(@"\bclass\s+OrchestrationWorldCache\s*:\s*IWorldQuery\s*,\s*IActorReadProjectionQuery\b", RegexOptions.Compiled);
+
+    static readonly Regex StrategyCombatExecutionRouterProjectionUsageRegex =
+        new Regex(@"\bTryGetActorReadProjection\s*\(", RegexOptions.Compiled);
 
     static readonly Regex CoreCombatIdleContractsRegex =
         new Regex(@"\b(CombatCommand|IdleCommand|DispatchCombatCommand|DispatchIdleCommand|ICombatCommandReceiver|IIdleCommandReceiver|IIdleBoundsProvider|CombatActionId|CombatGoalId|CombatState)\b",
@@ -354,6 +405,108 @@ public sealed class ArchitectureLayeringTests
 
         Assert.That(violations, Is.Empty,
             "Core still contains StrategyCombat domain contracts:\n" + string.Join("\n", violations));
+    }
+
+    [Test]
+    public void Core_DeclaresActorRuntimeHandleContract()
+    {
+        Assert.That(File.Exists(CoreActorContractsPath), Is.True, $"Missing file: {CoreActorContractsPath}");
+
+        string stripped = StripCommentsAndStrings(File.ReadAllText(CoreActorContractsPath));
+        Assert.That(CoreActorRuntimeHandleRegex.IsMatch(stripped), Is.True,
+            "Core actor runtime boundary must declare IActorRuntimeHandle : IEntityIdProvider.");
+        Assert.That(CoreActorRuntimeLifecycleMethodRegex.IsMatch(stripped), Is.True,
+            "Core actor runtime boundary must expose lifecycle via GetLifecycleState().");
+        Assert.That(CoreActorRuntimeLegacyAliveMethodRegex.IsMatch(stripped), Is.False,
+            "Core actor runtime boundary must not expose legacy IsAlive().");
+    }
+
+    [Test]
+    public void Core_DeclaresEntityLifecycleStateInEntityContracts()
+    {
+        Assert.That(File.Exists(CoreEntityContractsPath), Is.True, $"Missing file: {CoreEntityContractsPath}");
+
+        string stripped = StripCommentsAndStrings(File.ReadAllText(CoreEntityContractsPath));
+        Assert.That(CoreEntityLifecycleEnumRegex.IsMatch(stripped), Is.True,
+            "EntityLifecycleState must be declared in Core Entity contracts.");
+        Assert.That(CoreEntityModelLifecyclePropertyRegex.IsMatch(stripped), Is.True,
+            "IEntityModel must expose LifecycleState.");
+        Assert.That(CoreEntityAccessorSetLifecycleRegex.IsMatch(stripped), Is.True,
+            "IEntityStateAccessor must expose SetLifecycleState(EntityLifecycleState).");
+    }
+
+    [Test]
+    public void CoreActorContracts_DoesNotDeclareLifecycleEnum()
+    {
+        Assert.That(File.Exists(CoreActorContractsPath), Is.True, $"Missing file: {CoreActorContractsPath}");
+
+        string stripped = StripCommentsAndStrings(File.ReadAllText(CoreActorContractsPath));
+        Assert.That(CoreActorContractsLifecycleEnumRegex.IsMatch(stripped), Is.False,
+            "Actor contracts must not declare EntityLifecycleState; lifecycle type ownership belongs to Entity contracts.");
+    }
+
+    [Test]
+    public void StrategyCombat_IOrchestrationActor_ExtendsCoreActorRuntimeHandle()
+    {
+        Assert.That(File.Exists(StrategyCombatActorContractPath), Is.True, $"Missing file: {StrategyCombatActorContractPath}");
+
+        string stripped = StripCommentsAndStrings(File.ReadAllText(StrategyCombatActorContractPath));
+        Assert.That(StrategyCombatActorExtendsCoreHandleRegex.IsMatch(stripped), Is.True,
+            "IOrchestrationActor must extend IActorRuntimeHandle to bind orchestration to Core actor boundary.");
+    }
+
+    [Test]
+    public void StrategyCombatWorldCache_DoesNotDowncastActorsToEntityIdProvider()
+    {
+        Assert.That(File.Exists(StrategyCombatWorldCachePath), Is.True, $"Missing file: {StrategyCombatWorldCachePath}");
+
+        string stripped = StripCommentsAndStrings(File.ReadAllText(StrategyCombatWorldCachePath));
+        Assert.That(StrategyCombatWorldCacheActorDowncastRegex.IsMatch(stripped), Is.False,
+            "OrchestrationWorldCache must use actor boundary contract (IActorRuntimeHandle), not actor as IEntityIdProvider downcasts.");
+    }
+
+    [Test]
+    public void Core_DeclaresActorReadProjectionQueryContract()
+    {
+        Assert.That(File.Exists(CoreActorReadProjectionPath), Is.True, $"Missing file: {CoreActorReadProjectionPath}");
+
+        string stripped = StripCommentsAndStrings(File.ReadAllText(CoreActorReadProjectionPath));
+        Assert.That(CoreActorReadProjectionContractRegex.IsMatch(stripped), Is.True,
+            "Core must declare IActorReadProjectionQuery contract for orchestration read-side projection.");
+    }
+
+    [Test]
+    public void Core_ActorReadProjection_DoesNotContainDomainHostilityFlag()
+    {
+        Assert.That(File.Exists(CoreActorReadProjectionPath), Is.True, $"Missing file: {CoreActorReadProjectionPath}");
+
+        string stripped = StripCommentsAndStrings(File.ReadAllText(CoreActorReadProjectionPath));
+        Assert.That(CoreActorReadProjectionHostilityTokenRegex.IsMatch(stripped), Is.False,
+            "Core actor read projection must not contain domain-specific hostility flags.");
+        Assert.That(CoreActorReadProjectionLifecycleStateRegex.IsMatch(stripped), Is.True,
+            "Core actor read projection must expose lifecycle via LifecycleState.");
+        Assert.That(CoreActorReadProjectionLegacyAliveTokenRegex.IsMatch(stripped), Is.False,
+            "Core actor read projection must not expose legacy IsAlive flag.");
+    }
+
+    [Test]
+    public void StrategyCombatWorldCache_ImplementsActorReadProjectionQuery()
+    {
+        Assert.That(File.Exists(StrategyCombatWorldCachePath), Is.True, $"Missing file: {StrategyCombatWorldCachePath}");
+
+        string stripped = StripCommentsAndStrings(File.ReadAllText(StrategyCombatWorldCachePath));
+        Assert.That(StrategyCombatWorldCacheProjectionContractRegex.IsMatch(stripped), Is.True,
+            "OrchestrationWorldCache must implement IActorReadProjectionQuery.");
+    }
+
+    [Test]
+    public void StrategyCombatExecutionRouter_UsesActorReadProjectionQuery()
+    {
+        Assert.That(File.Exists(StrategyCombatExecutionRouterPath), Is.True, $"Missing file: {StrategyCombatExecutionRouterPath}");
+
+        string stripped = StripCommentsAndStrings(File.ReadAllText(StrategyCombatExecutionRouterPath));
+        Assert.That(StrategyCombatExecutionRouterProjectionUsageRegex.IsMatch(stripped), Is.True,
+            "ExecutionRouter must use IActorReadProjectionQuery (TryGetActorReadProjection) for actor read-side projection.");
     }
 
     [Test]

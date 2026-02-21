@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 /// <summary>
 /// Minimal mutable entity model for kernel/runtime ownership.
-/// Keeps identity, archetype, liveness, tags/traits/capabilities seams.
+/// Keeps identity, archetype, lifecycle, tags/traits/capabilities seams.
 /// </summary>
 [Serializable]
 public sealed class EntityState : IEntityStateAccessor
@@ -16,7 +16,7 @@ public sealed class EntityState : IEntityStateAccessor
     {
         EntityId = entityId;
         ArchetypeId = archetypeId;
-        IsAlive = isAlive;
+        LifecycleState = isAlive ? EntityLifecycleState.Active : EntityLifecycleState.Inactive;
 
         if (tags != null)
         {
@@ -30,14 +30,20 @@ public sealed class EntityState : IEntityStateAccessor
 
     public EntityId EntityId { get; }
     public EntityArchetypeId ArchetypeId { get; }
-    public bool IsAlive { get; private set; }
+    public EntityLifecycleState LifecycleState { get; private set; }
+    public bool IsAlive => LifecycleState == EntityLifecycleState.Active;
     public IReadOnlyCollection<string> Tags => _tags;
     public IReadOnlyCollection<string> Capabilities => _capabilities;
     public IReadOnlyDictionary<string, string> Traits => _traits;
 
+    public void SetLifecycleState(EntityLifecycleState lifecycleState)
+    {
+        LifecycleState = lifecycleState;
+    }
+
     public void SetAlive(bool isAlive)
     {
-        IsAlive = isAlive;
+        LifecycleState = isAlive ? EntityLifecycleState.Active : EntityLifecycleState.Inactive;
     }
 
     public bool AddTag(string tag)

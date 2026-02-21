@@ -181,6 +181,11 @@ public sealed class UnitIdleCommandExecutor : MonoBehaviour, IIdleCommandReceive
 
     public Transform GetTransform() => transform;
 
+    public EntityLifecycleState GetLifecycleState()
+    {
+        return IsAlive() ? EntityLifecycleState.Active : EntityLifecycleState.Inactive;
+    }
+
     public bool IsAlive()
     {
         return _unit != null && (_unit.MaxHealth <= 0 || _unit.CurrentHealth > 0);

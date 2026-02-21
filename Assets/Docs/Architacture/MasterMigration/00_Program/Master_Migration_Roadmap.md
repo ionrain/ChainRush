@@ -311,6 +311,7 @@ Exit Gate:
 ## Phase 4 — Orchestration Platform Remediation
 
 Goal: make orchestration a reusable platform seam.
+Current execution slice: `C01A` (Actor minimum boundary before host/proposal refactor).
 
 Backlog links:
 
@@ -318,23 +319,34 @@ Backlog links:
 2. `C08..C10` continue in later hardening phase.
 3. `Assets/Docs/Architacture/MasterMigration/04_Phase4_Orchestration/Orchestrator_PreRefactor_Minimum_Contract_Blocks_2026-02-20.md` -> mandatory pre-refactor contract freeze gate.
 4. `System_Blueprint_Actor.md` -> actor-side boundary freeze for orchestration integration.
+5. `System_Blueprint_Actor.md` section `11` (`Pre-Refactor Minimum For Actor`) -> mandatory implementation slice before C02.
 
 Execution order inside phase:
 
-1. `C02` move host responsibilities to `Morboo.RuntimeHost`.
-2. `C03` introduce proposal collection seam.
-3. `C04` move arbiter to proposal-list input.
-4. `C04A` add low-friction domain onboarding seam (no file explosion on new domain add).
-5. `C05` activate domain event pipeline.
-6. `C06` connect capabilities to runtime decisions.
-7. `C07` remove domain downcasts to concrete world cache.
-8. `C07A` post-refactor cleanup: remove Actor boundary hard links to Combat/Idle and compact domain onboarding structure.
+1. `C01A` implement minimal Actor boundary for orchestration (contracts/projections/dispatch + bridge adapters) per `System_Blueprint_Actor.md` section `11`.
+2. `C02` move host responsibilities to `Morboo.RuntimeHost`.
+3. `C03` introduce proposal collection seam.
+4. `C04` move arbiter to proposal-list input.
+5. `C04A` add low-friction domain onboarding seam (no file explosion on new domain add).
+6. `C05` activate domain event pipeline.
+7. `C06` connect capabilities to runtime decisions.
+8. `C07` remove domain downcasts to concrete world cache.
+9. `C07A` post-refactor cleanup: remove Actor boundary hard links to Combat/Idle and compact domain onboarding structure.
+
+`C01A` scope (must be done before C02):
+
+1. actor contract package surface exists and is used by orchestration read/write paths;
+2. actor read projection is stabilized for orchestrator queries;
+3. dispatch write path is stabilized through actor handlers (no direct concrete writes from arbiter/router);
+4. `Unit/Enemy` orchestration coupling is isolated in `MorbooBridge` adapters;
+5. architecture tests for actor boundary are active.
 
 Entry Gate:
 
 1. Phase 3 entity backbone stable.
 2. Phase 1 tests green.
 3. Pre-refactor minimum contract blocks approved and baseline-implemented for orchestrator-coupled systems.
+4. `C01A` completed and verified green.
 
 Exit Gate:
 

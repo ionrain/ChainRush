@@ -3,14 +3,14 @@ using UnityEngine;
 
 /// <summary>
 /// Per-tick world snapshot built by <see cref="OrchestrationArbiter"/> before polling domains.
-/// Contains pre-filtered lists of alive actors and friendly receivers so that domains
+/// Contains pre-filtered lists of active actors and friendly receivers so that domains
 /// and dispatch methods can iterate without re-querying <see cref="OrchestrationRegistry"/>.
 /// <para>
 /// IMPORTANT — Single instance, reused each tick. Lists are <see cref="Clear"/>ed and
 /// refilled; no per-tick allocations.
 /// </para>
 /// <para>
-/// IMPORTANT — Actors list contains only alive <see cref="IOrchestrationActor"/>
+/// IMPORTANT — Actors list contains only active <see cref="IOrchestrationActor"/>
 /// entries that also implement <see cref="IFactionAssetProvider"/> with a non-null faction.
 /// Unity-null entries are pruned during build.
 /// </para>
@@ -20,7 +20,7 @@ using UnityEngine;
 /// RuntimeHost-internal fields (receiver lists, RoleByTransform) are NOT exposed via IWorldQuery.
 /// </para>
 /// </summary>
-public sealed class OrchestrationWorldCache : IWorldQuery
+public sealed class OrchestrationWorldCache : IWorldQuery, IActorReadProjectionQuery
 {
     // ──────────────────────────────────────────────────────────────────
     //  RuntimeHost-internal — Receiver and actor lists (NOT in IWorldQuery)
@@ -86,7 +86,7 @@ public sealed class OrchestrationWorldCache : IWorldQuery
     readonly List<Float2> _actorPositions = new List<Float2>(256);
     readonly List<EntityId> _actorEntityIds = new List<EntityId>(256);
     readonly List<bool> _actorHostile = new List<bool>(256);
-    readonly List<bool> _actorAlive = new List<bool>(256);
+    readonly List<EntityLifecycleState> _actorLifecycleStates = new List<EntityLifecycleState>(256);
 
     // Crowd snapshots (IWorldQuery-visible, parallel to FriendlyCrowdTransforms)
     readonly List<Float2> _crowdPositions = new List<Float2>(128);
@@ -164,7 +164,7 @@ public sealed class OrchestrationWorldCache : IWorldQuery
         _actorPositions.Clear();
         _actorEntityIds.Clear();
         _actorHostile.Clear();
-        _actorAlive.Clear();
+        _actorLifecycleStates.Clear();
         _actorIndexByEntityId.Clear();
 
         for (int i = 0; i < Actors.Count; i++)
@@ -173,7 +173,7 @@ public sealed class OrchestrationWorldCache : IWorldQuery
             Transform t = actor.GetTransform();
 
             _actorPositions.Add(((Vector2)t.position).ToFloat2());
-            _actorAlive.Add(actor.IsAlive());
+            _actorLifecycleStates.Add(actor.GetLifecycleState());
 
             bool isHostile = false;
             IFactionAssetProvider fap = actor as IFactionAssetProvider;
@@ -187,8 +187,7 @@ public sealed class OrchestrationWorldCache : IWorldQuery
             }
             _actorHostile.Add(isHostile);
 
-            IEntityIdProvider idp = actor as IEntityIdProvider;
-            EntityId eid = idp != null ? idp.GetEntityId() : EntityId.None;
+            EntityId eid = actor.GetEntityId();
             _actorEntityIds.Add(eid);
 
             // Build O(1) EntityId → index lookup for TryGetActorPosition
@@ -265,7 +264,7 @@ public sealed class OrchestrationWorldCache : IWorldQuery
     public int ActorCount => _actorPositions.Count;
     public EntityId GetActorEntityId(int index) => _actorEntityIds[index];
     public Float2 GetActorPosition(int index) => _actorPositions[index];
-    public bool GetActorIsAlive(int index) => _actorAlive[index];
+    public bool GetActorIsAlive(int index) => _actorLifecycleStates[index] == EntityLifecycleState.Active;
     public bool GetActorIsHostile(int index) => _actorHostile[index];
 
     public bool TryGetActorPosition(EntityId entityId, out Float2 position)
@@ -276,6 +275,26 @@ public sealed class OrchestrationWorldCache : IWorldQuery
             return true;
         }
         position = Float2.Zero;
+        return false;
+    }
+
+    public bool TryGetActorReadProjection(EntityId entityId, out ActorReadProjection projection)
+    {
+        if (!entityId.IsNone && _actorIndexByEntityId.TryGetValue(entityId, out int idx))
+        {
+            RoleId roleId;
+            if (!_roleIdByEntityId.TryGetValue(entityId, out roleId))
+                roleId = RoleId.None;
+
+            projection = new ActorReadProjection(
+                entityId,
+                _actorPositions[idx],
+                _actorLifecycleStates[idx],
+                roleId);
+            return true;
+        }
+
+        projection = default;
         return false;
     }
 
@@ -398,7 +417,7 @@ public sealed class OrchestrationWorldCache : IWorldQuery
         _actorPositions.Clear();
         _actorEntityIds.Clear();
         _actorHostile.Clear();
-        _actorAlive.Clear();
+        _actorLifecycleStates.Clear();
         _actorIndexByEntityId.Clear();
         _crowdPositions.Clear();
         _crowdEntityIds.Clear();

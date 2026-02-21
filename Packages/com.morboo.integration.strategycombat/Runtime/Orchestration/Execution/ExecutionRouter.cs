@@ -169,7 +169,10 @@ public sealed class ExecutionRouter
                 int roleSeed = roleId.ToStableInt();
 
                 Float2 selfPos;
-                if (!world.TryGetActorPosition(eid, out selfPos))
+                ActorReadProjection actorProjection;
+                if (world.TryGetActorReadProjection(eid, out actorProjection))
+                    selfPos = actorProjection.Position;
+                else
                     selfPos = ctx.Anchor;
 
                 string dbg;

@@ -51,12 +51,24 @@ public readonly struct EntityViewId : IEquatable<EntityViewId>
 }
 
 /// <summary>
+/// Universal lifecycle state for entities across all gameplay domains.
+/// </summary>
+public enum EntityLifecycleState
+{
+    Unknown = 0,
+    Active = 1,
+    Inactive = 2
+}
+
+/// <summary>
 /// Minimal entity model contract used by kernel/runtime services.
 /// </summary>
 public interface IEntityModel
 {
     EntityId EntityId { get; }
     EntityArchetypeId ArchetypeId { get; }
+    EntityLifecycleState LifecycleState { get; }
+    // Compatibility alias for existing integrations; derived from LifecycleState.
     bool IsAlive { get; }
     IReadOnlyCollection<string> Tags { get; }
 }
@@ -69,6 +81,8 @@ public interface IEntityStateAccessor : IEntityModel
 {
     IReadOnlyCollection<string> Capabilities { get; }
     IReadOnlyDictionary<string, string> Traits { get; }
+    void SetLifecycleState(EntityLifecycleState lifecycleState);
+    // Compatibility mutator for existing integrations; maps to LifecycleState.
     void SetAlive(bool isAlive);
     bool AddTag(string tag);
     bool RemoveTag(string tag);

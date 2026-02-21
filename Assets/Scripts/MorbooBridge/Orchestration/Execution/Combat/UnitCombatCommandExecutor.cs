@@ -186,6 +186,11 @@ public sealed class UnitCombatCommandExecutor : MonoBehaviour, ICombatCommandRec
 
     public Transform GetTransform() => transform;
 
+    public EntityLifecycleState GetLifecycleState()
+    {
+        return IsAlive() ? EntityLifecycleState.Active : EntityLifecycleState.Inactive;
+    }
+
     /// <summary>
     /// IMPORTANT: If MaxHealth &lt;= 0 (health not yet initialized), the entity is
     /// treated as alive to avoid false negatives during early lifecycle.

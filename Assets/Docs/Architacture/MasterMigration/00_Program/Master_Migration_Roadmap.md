@@ -314,7 +314,7 @@ Exit Gate:
 ## Phase 4 — Orchestration Platform Remediation
 
 Goal: make orchestration a reusable platform seam.
-Current execution slice: `C02` (final Unity gate pending) + `C02A.1` bootstrap, `C02A.2` compatibility slice started, `C02A.3` rename batch done (`Float2` kept unchanged).
+Current execution slice: `C02` (final Unity gate pending) + `C02A.1` bootstrap, `C02A.2` compatibility slice started, `C02A.3` rename batch done (`Float2` kept unchanged) + `C03` collector seam in runtime path + `C04` in progress (arbiter proposal-list path + `IArbiter` proposal-list overload; `RuntimeHostTests` moved to proposal-path coverage; legacy ArbitrationInput overload remains compatibility-only with dedicated compatibility test) + `C04A` bootstrap started (sticky classifier now reads domain arbitration metadata profiles via `IDomainArbitrationProfileSource`; host caches `DomainRegistration` records and reuses cached domain policy providers instead of per-tick host-side capability discovery; `ExecutionRouter` entrypoint dispatches via route registrations instead of hardcoded domain switch; `OrchestrationLoop` exposes optional `OrchestrationDomainModule` composition seam for centralized onboarding hooks; current single-scene source-of-truth for enabled domain orchestrators is `OrchestrationLoop.domainOrchestrators` (bridge composition module/asset scaffold removed for now; can be reintroduced later if multi-scene variants become necessary); `DomainRegistration` transitional policy provider slots collapsed into a single cached arbiter-binding contributor seam; base `DomainOrchestrator` no longer performs StrategyCombat-specific policy-source casts (domains provide contributors explicitly); legacy `IIdle/ICombat*Role*MapSource` discovery interfaces removed and `Combat/Idle` domains now contribute direct policy-map bindings; arbiter binding contribution payload moved from fixed fields to generic key+entry payload and `OrchestrationArbiter` now applies bindings through a local key->applier registry sourced from cached domain contributors (concrete binding keys and concrete binding appliers moved to `Morboo.Integration.StrategyCombat`; `RuntimeHost` keeps generic key/registry mechanism + generic `IDomainArbiterBindingApplyTarget.TryApplyArbiterBindingConsumer(...)` seam + RuntimeHost-owned consumer-slot keys; `DomainArbiterBindingTargetKind` switch removed from arbiter and consumer-key switch removed from apply-target method via local consumer registry); `OrchestrationArbiter` inspector domain list is hidden and runtime now fail-fasts until domains are applied via loop/composition seam to avoid dual source-of-truth debugging).
 C01A status: `closed` (2026-02-21, boundary and tests active).
 
 Backlog links:
@@ -337,6 +337,7 @@ Execution order inside phase:
 4. `C03` introduce proposal collection seam.
 5. `C04` move arbiter to proposal-list input.
 6. `C04A` add low-friction domain onboarding seam (no file explosion on new domain add).
+   - rule: host-runtime arbitration/wiring MUST NOT accumulate domain-name specific branching; temporary seams are explicit, allowlist-gated, and scheduled for replacement by registration/policy metadata.
 7. `C05` activate domain event pipeline.
 8. `C06` connect capabilities to runtime decisions.
 9. `C07` remove domain downcasts to concrete world cache.

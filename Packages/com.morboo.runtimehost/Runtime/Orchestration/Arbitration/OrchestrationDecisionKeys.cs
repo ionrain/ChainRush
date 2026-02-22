@@ -1,11 +1,13 @@
 /// <summary>
-/// RuntimeHost domain key constants used by payload-agnostic framework decisions.
+/// RuntimeHost compatibility wrapper over the canonical orchestration domain enum in Core.
+/// Framework decision contracts still use int DomainKey, so RuntimeHost exposes int constants
+/// at that boundary while the source-of-truth domain list lives in Core.
 /// </summary>
 public static class OrchestrationDomainKeys
 {
-    public const int None = 0;
-    public const int Combat = 1;
-    public const int Idle = 2;
+    public const int None = (int)OrchestrationDomainId.None;
+    public const int Combat = (int)OrchestrationDomainId.Combat;
+    public const int Idle = (int)OrchestrationDomainId.Idle;
 }
 
 /// <summary>

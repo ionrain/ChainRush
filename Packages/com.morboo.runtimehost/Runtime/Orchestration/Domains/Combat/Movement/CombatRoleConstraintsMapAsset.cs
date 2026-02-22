@@ -5,7 +5,7 @@ using UnityEngine;
 /// <summary>
 /// Data-driven mapping of <see cref="RoleAsset"/> to <see cref="CombatMoveConstraintsAsset"/>.
 /// Assigned to <see cref="CombatOrchestratorLite"/> and pulled by the arbiter each tick
-/// via <see cref="ICombatRoleConstraintsMapSource"/>.
+/// via domain arbiter bindings contributed by combat domains.
 /// <para>
 /// IMPORTANT: Routing uses <c>ReferenceEquals</c> on <see cref="RoleAsset"/>.
 /// First-match strategy on <see cref="TryGet"/>. Duplicate roles

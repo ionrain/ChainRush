@@ -30,6 +30,16 @@ public sealed class OrchestrationLoop : MonoBehaviour
     [Tooltip("The arbiter that produces decisions each tick.")]
     [SerializeField] OrchestrationArbiter arbiter;
 
+    [Header("Domains")]
+    [Tooltip("Ordered scene domain orchestrators (source-of-truth domain composition for the current scene). " +
+             "Applied to the arbiter during Awake via composition seam.")]
+    [SerializeField] DomainOrchestrator[] domainOrchestrators;
+
+    [Header("Domain Modules (Optional)")]
+    [Tooltip("Optional composition-entrypoint modules for domain onboarding. " +
+             "Used to configure Arbiter/Router from a single touchpoint without host code edits.")]
+    [SerializeField] OrchestrationDomainModule[] domainModules;
+
     // ──────────────────────────────────────────────────────────────────
     //  Runtime — Bus + Router
     //  IMPORTANT: Bus is created here. Integration adapters subscribe
@@ -39,6 +49,9 @@ public sealed class OrchestrationLoop : MonoBehaviour
     ITickSource _tickSource;
     readonly InProcessCommandBus _commandBus = new InProcessCommandBus();
     ExecutionRouter _router;
+    bool _warnedInvalidDomainModules;
+    bool _warnedInvalidConfiguredDomains;
+    bool _warnedDuplicateConfiguredDomainKeys;
 
     // ──────────────────────────────────────────────────────────────────
     //  Public — For Integration adapters to subscribe and read per-tick context
@@ -60,6 +73,8 @@ public sealed class OrchestrationLoop : MonoBehaviour
     void Awake()
     {
         _router = new ExecutionRouter(_commandBus);
+        ApplyConfiguredDomainsToArbiter();
+        ConfigureDomainModules();
     }
 
     void OnEnable()
@@ -111,5 +126,102 @@ public sealed class OrchestrationLoop : MonoBehaviour
 
         // Flush dispatches queued commands to Integration adapters
         _commandBus.Flush();
+    }
+
+    void ConfigureDomainModules()
+    {
+        if (domainModules == null || domainModules.Length == 0)
+            return;
+
+        for (int i = 0; i < domainModules.Length; i++)
+        {
+            OrchestrationDomainModule module = domainModules[i];
+
+            if (module is Object uo && uo == null)
+                module = null;
+
+            if (module == null)
+            {
+                if (!_warnedInvalidDomainModules)
+                {
+                    _warnedInvalidDomainModules = true;
+                    Debug.LogWarning(string.Concat(
+                        "[OrchestrationLoop] domainModules[", i.ToString(),
+                        "] is null. Skipping."), this);
+                }
+                continue;
+            }
+
+            module.ConfigureLoop(this);
+
+            if (arbiter != null)
+                module.ConfigureArbiter(arbiter);
+
+            module.ConfigureRouter(_router);
+        }
+    }
+
+    void ApplyConfiguredDomainsToArbiter()
+    {
+        if (arbiter == null)
+            return;
+
+        if (domainOrchestrators == null || domainOrchestrators.Length == 0)
+        {
+            arbiter.SetDomainOrchestratorsForComposition(System.Array.Empty<DomainOrchestrator>());
+            return;
+        }
+
+        var resolved = new System.Collections.Generic.List<DomainOrchestrator>(domainOrchestrators.Length);
+        var usedKeys = new System.Collections.Generic.HashSet<OrchestrationDomainId>();
+
+        for (int i = 0; i < domainOrchestrators.Length; i++)
+        {
+            DomainOrchestrator domain = domainOrchestrators[i];
+            if (domain is Object uo && uo == null)
+                domain = null;
+
+            if (domain == null)
+            {
+                if (!_warnedInvalidConfiguredDomains)
+                {
+                    _warnedInvalidConfiguredDomains = true;
+                    Debug.LogWarning(string.Concat(
+                        "[OrchestrationLoop] domainOrchestrators[", i.ToString(),
+                        "] is null. Skipping."), this);
+                }
+                continue;
+            }
+
+            OrchestrationDomainId key = domain.DomainId;
+            if (key == OrchestrationDomainId.None)
+            {
+                if (!_warnedInvalidConfiguredDomains)
+                {
+                    _warnedInvalidConfiguredDomains = true;
+                    Debug.LogWarning(string.Concat(
+                        "[OrchestrationLoop] domainOrchestrators[", i.ToString(),
+                        "] reports DomainId=None. Skipping."), this);
+                }
+                continue;
+            }
+
+            if (!usedKeys.Add(key))
+            {
+                if (!_warnedDuplicateConfiguredDomainKeys)
+                {
+                    _warnedDuplicateConfiguredDomainKeys = true;
+                    Debug.LogWarning(string.Concat(
+                        "[OrchestrationLoop] Duplicate DomainId in configured domainOrchestrators: ",
+                        key.ToString(),
+                        ". First entry wins."), this);
+                }
+                continue;
+            }
+
+            resolved.Add(domain);
+        }
+
+        arbiter.SetDomainOrchestratorsForComposition(resolved.ToArray());
     }
 }

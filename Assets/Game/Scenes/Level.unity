@@ -8722,7 +8722,6 @@ GameObject:
   - component: {fileID: 258903836}
   - component: {fileID: 258903841}
   - component: {fileID: 258903839}
-  - component: {fileID: 258903838}
   m_Layer: 0
   m_Name: Orchestration
   m_TagString: Untagged
@@ -8767,28 +8766,6 @@ MonoBehaviour:
   rolePolicyMap: {fileID: 11400000, guid: bbdd1192619974b96ae0c37c2a1af824, type: 2}
   roleConstraintsMap: {fileID: 11400000, guid: 36710e6c9d9294b01872a62bf549b82b, type: 2}
   debugLog: 1
---- !u!114 &258903838
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 258903834}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f27a0da450ea6407ebb3e9f427c86a63, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CombatOrchestratorLite
-  searchMode: 1
-  aggroRadius: 12
-  searchCamera: {fileID: 0}
-  viewportMargin: 0
-  targetSet: {fileID: 0}
-  autoResolveTargetSet: 1
-  targetSetSize: 4
-  rolePolicyMap: {fileID: 0}
-  roleConstraintsMap: {fileID: 0}
-  debugLog: 1
 --- !u!114 &258903839
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8820,6 +8797,7 @@ MonoBehaviour:
     type: 2}
   typedRelations: {fileID: 11400000, guid: 45bf0d83b9c4c414a9b621b1fb5a7b1a, type: 2}
   anchorOverride: {fileID: 172273282}
+  projectionPlane: 0
   domainOrchestrators:
   - {fileID: 258903836}
   - {fileID: 258903841}
@@ -8880,6 +8858,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Morboo.Integration.StrategyCombat::OrchestrationLoop
   tickSourceComponent: {fileID: 258903845}
   arbiter: {fileID: 258903840}
+  domainOrchestrators:
+  - {fileID: 258903836}
+  - {fileID: 258903841}
+  domainModules: []
 --- !u!114 &258903845
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12558,6 +12540,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   unitManager: {fileID: 115462961}
   enemyManager: {fileID: 448253310}
+  logLifecycleEvents: 0
+  registeredEntityCount: 0
+  createdEventsCount: 0
+  destroyedEventsCount: 0
 --- !u!1 &450259797
 GameObject:
   m_ObjectHideFlags: 0

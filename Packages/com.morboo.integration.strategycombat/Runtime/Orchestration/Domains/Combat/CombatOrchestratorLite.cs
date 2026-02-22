@@ -20,8 +20,8 @@ public enum TargetSearchMode
 /// <summary>
 /// Combat domain evaluator. Scans actors via <see cref="IWorldQuery"/> for
 /// hostile entities and writes a <see cref="CombatCommand"/> proposal.
-/// Owns the <see cref="CombatRolePolicyMapAsset"/> reference and exposes it via
-/// <see cref="ICombatRolePolicyMapSource"/> so the arbiter can pull it each tick.
+/// Owns <see cref="CombatRolePolicyMapAsset"/> / <see cref="CombatRoleConstraintsMapAsset"/>
+/// references and contributes them to the arbiter via cached domain registration bindings.
 /// <para>
 /// IMPORTANT — This class does NOT tick itself. It implements
 /// <see cref="IOrchestrationDomain"/> and is polled by
@@ -41,8 +41,10 @@ public enum TargetSearchMode
 /// in FillTargetSet (uses IWorldQuery only).
 /// </para>
 /// </summary>
-public sealed class CombatOrchestratorLite : DomainOrchestrator, ICombatRolePolicyMapSource, ICombatRoleConstraintsMapSource
+public sealed class CombatOrchestratorLite : DomainOrchestrator, IDomainArbitrationProfileSource
 {
+    public override OrchestrationDomainId DomainId => OrchestrationDomainId.Combat;
+
     // ──────────────────────────────────────────────────────────────────
     //  Serialized
     // ──────────────────────────────────────────────────────────────────
@@ -99,16 +101,27 @@ public sealed class CombatOrchestratorLite : DomainOrchestrator, ICombatRolePoli
     }
 
     // ──────────────────────────────────────────────────────────────────
-    //  ICombatRolePolicyMapSource
+    //  IDomainArbitrationProfileSource
     // ──────────────────────────────────────────────────────────────────
 
-    public CombatRolePolicyMapAsset GetCombatRolePolicyMap() => rolePolicyMap;
+    public DomainArbitrationProfile GetArbitrationProfile()
+    {
+        return new DomainArbitrationProfile(stickyPrimary: true);
+    }
 
-    // ──────────────────────────────────────────────────────────────────
-    //  ICombatRoleConstraintsMapSource
-    // ──────────────────────────────────────────────────────────────────
-
-    public CombatRoleConstraintsMapAsset GetCombatRoleConstraintsMap() => roleConstraintsMap;
+    protected override IDomainArbiterBindingContributor CreateArbiterBindingContributor()
+    {
+        return DomainArbiterBindingContributors.CreatePolicyMapContributor(
+            idleRolePolicyMapKey: default,
+            idleRolePolicyMapApply: null,
+            idleRolePolicyMap: null,
+            combatRolePolicyMapKey: StrategyCombatArbiterBindingKeys.CombatRolePolicyMap,
+            combatRolePolicyMapApply: StrategyCombatArbiterBindingAppliers.CombatRolePolicyMap,
+            combatRolePolicyMap: rolePolicyMap,
+            combatRoleConstraintsMapKey: StrategyCombatArbiterBindingKeys.CombatRoleConstraintsMap,
+            combatRoleConstraintsMapApply: StrategyCombatArbiterBindingAppliers.CombatRoleConstraintsMap,
+            combatRoleConstraintsMap: roleConstraintsMap);
+    }
 
     // ──────────────────────────────────────────────────────────────────
     //  IOrchestrationDomain

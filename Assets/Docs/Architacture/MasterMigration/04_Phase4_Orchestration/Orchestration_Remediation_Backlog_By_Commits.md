@@ -160,6 +160,7 @@ Acceptance:
 
 Type: refactor-seam  
 Goal: Подготовить migration к proposal-list модели, сохранив текущую логику выбора.
+Status: `in progress` (`C03.1/C03.2` started: host proposal collector seam + legacy import adapter in arbiter).
 
 Changes:
 
@@ -178,12 +179,14 @@ Acceptance:
 
 Type: refactor  
 Goal: Убрать fixed 2-domain input (`HasPrimary/HasSecondary/ThreatPresent`) и перейти на список proposals.
+Status: `in progress` (`C04` started: arbiter runtime path arbitrates from proposal collector entries; `IArbiter` proposal-list overload added; `RuntimeHostTests` arbitration suite migrated to proposal-path coverage; legacy ArbitrationInput overload kept as compatibility-only with dedicated compatibility test; combat-specific sticky classification isolated in explicit transitional seam inside arbiter).
 
 Changes:
 
 1. Расширить/заменить вход `IArbiter` на список proposal records.
 2. `ArbitrationInput` как legacy bridge убрать после перевода call-sites.
 3. Ввести policy выбора (priority/score/tie-break) в явном виде.
+4. Локализовать текущую combat-centric hysteresis-классификацию в одном transitional seam (`sticky primary` classifier), чтобы убрать domain-name ветвление из основной proposal loop логики до C04A.
 
 Acceptance:
 
@@ -195,6 +198,7 @@ Acceptance:
 
 Type: refactor-seam  
 Goal: Сделать подключение нового домена “низкофрикционным”, без каскадной правки десятков файлов.
+Status: `in progress` (`C04A` bootstrap started: arbiter sticky-domain classifier now reads domain arbitration metadata profiles (`IDomainArbitrationProfileSource`) instead of hardcoded `Combat` branch in classifier seam; host caches `DomainRegistration` records from domains and reuses cached policy providers in runtime loop; `ExecutionRouter` entrypoint dispatches through route registrations instead of hardcoded domain switch; `OrchestrationLoop` exposes optional `OrchestrationDomainModule` composition seam for centralized domain onboarding hooks; current single-scene source-of-truth for enabled domain orchestrators is `OrchestrationLoop.domainOrchestrators` (temporary bridge composition module/asset scaffold removed for now; can be reintroduced later if multi-scene variants become necessary); `DomainRegistration` transitional policy provider slots collapsed into a single cached arbiter-binding contributor seam; base `DomainOrchestrator` no longer performs StrategyCombat-specific policy-source casts (domains provide contributors explicitly); legacy `IIdle/ICombat*Role*MapSource` discovery interfaces removed and `Combat/Idle` domains now contribute direct policy-map bindings; arbiter binding contribution payload moved from fixed fields to generic key+entry payload and `OrchestrationArbiter` applies bindings through a local key->applier registry sourced from cached domain contributors (concrete binding keys and concrete binding appliers moved to `Morboo.Integration.StrategyCombat`; `RuntimeHost` keeps generic key/registry mechanism + generic `IDomainArbiterBindingApplyTarget.TryApplyArbiterBindingConsumer(...)` seam + RuntimeHost-owned consumer-slot keys; `DomainArbiterBindingTargetKind` switch removed from arbiter and consumer-key switch removed from apply-target method via local consumer registry); arbiter inspector domain list is hidden and `ProduceTick()` now fail-fasts until loop/composition seam applies domains, preventing dual source-of-truth fallback).
 
 Changes:
 
@@ -202,6 +206,7 @@ Changes:
 2. Сконцентрировать wiring домена в одном composition-entrypoint домена (в integration-слое), вместо распределения по множеству host-файлов.
 3. Вынести повторяющиеся элементы доменного пайплайна (default policies, adapters, selection plumbing) в shared `Common` blocks.
 4. Добавить в архитектурные тесты/future-gates проверку, что host-runtime не содержит domain-name specific branching.
+   - Transitional exception during `C04`: один локализованный classifier seam в arbiter (`sticky primary`) допустим до замены на metadata/policy-driven классификацию.
 5. Зафиксировать onboarding-budget для нового домена:
    - `0` правок в `Morboo.RuntimeHost` для стандартного подключения домена,
    - максимум `1` registration touchpoint вне папки нового домена,
@@ -213,6 +218,11 @@ Changes:
    - заменить `[SerializeField] MonoBehaviour ...` + cast на типизированные зависимости/typed providers,
    - убрать fallback `GetComponent<...>()` как основной способ разрешения critical runtime dependencies.
 8. Ввести data-driven onboarding-дескриптор домена (policy/config driven), чтобы различия нового домена задавались данными, а не изменением host-пайплайна.
+9. Заменить combat-centric sticky classifier в arbiter на registration/policy metadata (например `proposal traits` / `domain arbitration profile`) без правок proposal scan loop.
+10. Явно убрать transitional StrategyCombat-shaped provider slots из `DomainRegistration`
+    (`IIdleRolePolicyMapSource`, `ICombatRolePolicyMapSource`,
+    `ICombatRoleConstraintsMapSource`) после ввода `DomainModule`/generic bindings;
+    это bootstrap bridge, не целевой API `Morboo.RuntimeHost`.
 
 Acceptance:
 
@@ -221,6 +231,7 @@ Acceptance:
 3. Правило onboarding-budget оформлено как test/checklist gate для следующих PR.
 4. Runtime orchestration wiring не использует нетипизированные dependency holder refs.
 5. Пробный новый домен подключается через data/config изменения с минимальным новым кодом вне domain папки.
+6. Есть architecture test/future-gate на domain-name specific branching в `Morboo.RuntimeHost` arbitration/wiring с allowlist только для задокументированных transitional seams (на текущем этапе: sticky classifier seam в arbiter).
 
 ## C05 — Event Pipeline Activation
 

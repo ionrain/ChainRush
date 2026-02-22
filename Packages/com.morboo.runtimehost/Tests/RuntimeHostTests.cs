@@ -44,13 +44,17 @@ public sealed class RuntimeHostTests
     {
         var go = new GameObject("TestArbiter");
         var arbiter = go.AddComponent<OrchestrationArbiter>();
+        var combatDomain = go.AddComponent<TestCombatStickyDomain>();
+        var idleDomain = go.AddComponent<TestIdleDomain>();
 
         // Set serialized hysteresis fields via reflection
         SetField(arbiter, "combatMinActiveTime", combatMinActiveTime);
         SetField(arbiter, "combatCooldownAfterThreat", combatCooldownAfterThreat);
+        SetField(arbiter, "domainOrchestrators", new DomainOrchestrator[] { combatDomain, idleDomain });
+        InvokePrivateVoid(arbiter, "CacheDomains");
 
         // Reset internal state
-        SetField(arbiter, "_lastDomain", OrchestrationDomainKeys.None);
+        SetField(arbiter, "_lastDomain", OrchestrationDomainId.None);
         SetField(arbiter, "_combatLockedUntil", 0f);
         SetField(arbiter, "_threatMemoryUntil", 0f);
 
@@ -69,13 +73,13 @@ public sealed class RuntimeHostTests
         var arbiter = CreateArbiter();
         try
         {
-            var input = new ArbitrationInput(true, true, true);
-            ArbiterDecision d1 = arbiter.Arbitrate(input, 1f);
+            List<Proposal> proposals = CreateCombatAndIdleProposals();
+            ArbiterDecision d1 = arbiter.Arbitrate(proposals, true, 1f);
             // Reset timers so second call has identical state
             SetField(arbiter, "_combatLockedUntil", 0f);
             SetField(arbiter, "_threatMemoryUntil", 0f);
-            SetField(arbiter, "_lastDomain", OrchestrationDomainKeys.None);
-            ArbiterDecision d2 = arbiter.Arbitrate(input, 1f);
+            SetField(arbiter, "_lastDomain", OrchestrationDomainId.None);
+            ArbiterDecision d2 = arbiter.Arbitrate(proposals, true, 1f);
 
             Assert.That(d1.DomainKey, Is.EqualTo(d2.DomainKey));
             Assert.That(d1.ProposalKey, Is.EqualTo(d2.ProposalKey));
@@ -89,12 +93,9 @@ public sealed class RuntimeHostTests
         var arbiter = CreateArbiter();
         try
         {
-            var input = new ArbitrationInput(
-                hasPrimaryProposal: true,
-                hasSecondaryProposal: true,
-                threatPresent: true);
+            List<Proposal> proposals = CreateCombatAndIdleProposals();
 
-            ArbiterDecision d = arbiter.Arbitrate(input, 1f);
+            ArbiterDecision d = arbiter.Arbitrate(proposals, true, 1f);
 
             Assert.That(d.DomainKey, Is.EqualTo(OrchestrationDomainKeys.Combat));
             Assert.That(d.ProposalKey, Is.EqualTo(OrchestrationProposalKeys.CombatPrimary));
@@ -108,12 +109,9 @@ public sealed class RuntimeHostTests
         var arbiter = CreateArbiter();
         try
         {
-            var input = new ArbitrationInput(
-                hasPrimaryProposal: true,
-                hasSecondaryProposal: true,
-                threatPresent: false);
+            List<Proposal> proposals = CreateCombatAndIdleProposals();
 
-            ArbiterDecision d = arbiter.Arbitrate(input, 100f); // Far future, no lock
+            ArbiterDecision d = arbiter.Arbitrate(proposals, false, 100f); // Far future, no lock
 
             Assert.That(d.DomainKey, Is.EqualTo(OrchestrationDomainKeys.Idle));
             Assert.That(d.ProposalKey, Is.EqualTo(OrchestrationProposalKeys.IdleDefault));
@@ -127,25 +125,24 @@ public sealed class RuntimeHostTests
         var arbiter = CreateArbiter(combatMinActiveTime: 1.0f, combatCooldownAfterThreat: 0.5f);
         try
         {
+            List<Proposal> proposals = CreateCombatAndIdleProposals();
             // Tick 1: threat present → combat
-            var threatInput = new ArbitrationInput(true, true, true);
-            ArbiterDecision d1 = arbiter.Arbitrate(threatInput, 1f);
+            ArbiterDecision d1 = arbiter.Arbitrate(proposals, true, 1f);
             Assert.That(d1.DomainKey, Is.EqualTo(OrchestrationDomainKeys.Combat));
 
             // Update _lastDomain to reflect the decision
-            SetField(arbiter, "_lastDomain", d1.DomainKey);
+            SetField(arbiter, "_lastDomain", (OrchestrationDomainId)d1.DomainKey);
 
             // Tick 2: threat gone, but within hysteresis window → still combat
-            var noThreatInput = new ArbitrationInput(true, true, false);
-            ArbiterDecision d2 = arbiter.Arbitrate(noThreatInput, 1.3f);
+            ArbiterDecision d2 = arbiter.Arbitrate(proposals, false, 1.3f);
             Assert.That(d2.DomainKey, Is.EqualTo(OrchestrationDomainKeys.Combat),
                 "Should stick to combat within hysteresis window");
             Assert.That(d2.ModeChanged, Is.False);
 
-            SetField(arbiter, "_lastDomain", d2.DomainKey);
+            SetField(arbiter, "_lastDomain", (OrchestrationDomainId)d2.DomainKey);
 
             // Tick 3: well past hysteresis window → idle
-            ArbiterDecision d3 = arbiter.Arbitrate(noThreatInput, 10f);
+            ArbiterDecision d3 = arbiter.Arbitrate(proposals, false, 10f);
             Assert.That(d3.DomainKey, Is.EqualTo(OrchestrationDomainKeys.Idle));
             Assert.That(d3.ModeChanged, Is.True);
         }
@@ -158,8 +155,8 @@ public sealed class RuntimeHostTests
         var arbiter = CreateArbiter();
         try
         {
-            var input = new ArbitrationInput(false, false, false);
-            ArbiterDecision d = arbiter.Arbitrate(input, 1f);
+            var proposals = new List<Proposal>();
+            ArbiterDecision d = arbiter.Arbitrate(proposals, false, 1f);
 
             Assert.That(d.DomainKey, Is.EqualTo(OrchestrationDomainKeys.None));
             Assert.That(d.ProposalKey, Is.EqualTo(OrchestrationProposalKeys.None));
@@ -173,11 +170,68 @@ public sealed class RuntimeHostTests
         var arbiter = CreateArbiter();
         try
         {
-            var input = new ArbitrationInput(true, true, true);
-            ArbiterDecision d = arbiter.Arbitrate(input, 1f);
+            List<Proposal> proposals = CreateCombatAndIdleProposals();
+            ArbiterDecision d = arbiter.Arbitrate(proposals, true, 1f);
 
             // First tick with domain != None → ModeChanged (from default None)
             Assert.That(d.ModeChanged, Is.True);
+        }
+        finally { DestroyArbiter(arbiter); }
+    }
+
+    [Test]
+    public void Arbiter_LegacyArbitrationInput_CompatibilityMatchesProposalPath()
+    {
+        var arbiter = CreateArbiter();
+        try
+        {
+            var legacyInput = new ArbitrationInput(
+                hasPrimaryProposal: true,
+                hasSecondaryProposal: true,
+                threatPresent: true);
+            List<Proposal> proposals = CreateCombatAndIdleProposals();
+
+            ArbiterDecision legacy = arbiter.Arbitrate(legacyInput, 1f);
+
+            // Reset timers so proposal-path run sees the same internal state.
+            SetField(arbiter, "_combatLockedUntil", 0f);
+            SetField(arbiter, "_threatMemoryUntil", 0f);
+            SetField(arbiter, "_lastDomain", OrchestrationDomainId.None);
+
+            ArbiterDecision canonical = arbiter.Arbitrate(proposals, true, 1f);
+
+            Assert.That(legacy.DomainKey, Is.EqualTo(canonical.DomainKey));
+            Assert.That(legacy.ProposalKey, Is.EqualTo(canonical.ProposalKey));
+            Assert.That(legacy.ModeChanged, Is.EqualTo(canonical.ModeChanged));
+        }
+        finally { DestroyArbiter(arbiter); }
+    }
+
+    [Test]
+    public void Arbiter_ProposalTieBreak_SamePriorityAndScore_SelectsLowerProposalKey()
+    {
+        var arbiter = CreateArbiter();
+        try
+        {
+            var proposals = new List<Proposal>
+            {
+                new Proposal(
+                    OrchestrationDomainKeys.Idle,
+                    proposalKey: 42,
+                    priority: 10,
+                    score: 0f),
+                new Proposal(
+                    OrchestrationDomainKeys.Idle,
+                    proposalKey: 7,
+                    priority: 10,
+                    score: 0f),
+            };
+
+            ArbiterDecision d = arbiter.Arbitrate(proposals, false, 1f);
+
+            Assert.That(d.DomainKey, Is.EqualTo(OrchestrationDomainKeys.Idle));
+            Assert.That(d.ProposalKey, Is.EqualTo(7),
+                "Stable tie-break should pick lower proposal key when priority/score are equal.");
         }
         finally { DestroyArbiter(arbiter); }
     }
@@ -301,12 +355,65 @@ public sealed class RuntimeHostTests
         rids.Add(roleId);
     }
 
+    sealed class TestCombatStickyDomain : DomainOrchestrator, IDomainArbitrationProfileSource
+    {
+        public override OrchestrationDomainId DomainId => OrchestrationDomainId.Combat;
+
+        public override void Evaluate(OrchestrationArbiterContext ctx, OrchestrationArbiterProposals proposals)
+        {
+        }
+
+        public DomainArbitrationProfile GetArbitrationProfile()
+        {
+            return new DomainArbitrationProfile(stickyPrimary: true);
+        }
+    }
+
+    sealed class TestIdleDomain : DomainOrchestrator, IDomainArbitrationProfileSource
+    {
+        public override OrchestrationDomainId DomainId => OrchestrationDomainId.Idle;
+
+        public override void Evaluate(OrchestrationArbiterContext ctx, OrchestrationArbiterProposals proposals)
+        {
+        }
+
+        public DomainArbitrationProfile GetArbitrationProfile()
+        {
+            return new DomainArbitrationProfile(stickyPrimary: false);
+        }
+    }
+
+    static List<Proposal> CreateCombatAndIdleProposals()
+    {
+        return new List<Proposal>
+        {
+            new Proposal(
+                OrchestrationDomainKeys.Combat,
+                OrchestrationProposalKeys.CombatPrimary,
+                priority: 100,
+                score: 1f),
+            new Proposal(
+                OrchestrationDomainKeys.Idle,
+                OrchestrationProposalKeys.IdleDefault,
+                priority: 10,
+                score: 0f),
+        };
+    }
+
     static void SetField(object target, string fieldName, object value)
     {
         FieldInfo fi = target.GetType().GetField(fieldName,
             BindingFlags.NonPublic | BindingFlags.Instance);
         Assert.That(fi, Is.Not.Null, $"Field '{fieldName}' not found on {target.GetType().Name}");
         fi.SetValue(target, value);
+    }
+
+    static void InvokePrivateVoid(object target, string methodName)
+    {
+        MethodInfo mi = target.GetType().GetMethod(methodName,
+            BindingFlags.NonPublic | BindingFlags.Instance);
+        Assert.That(mi, Is.Not.Null, $"Method '{methodName}' not found on {target.GetType().Name}");
+        mi.Invoke(target, null);
     }
 
     static T GetField<T>(object target, string fieldName)

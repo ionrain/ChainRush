@@ -19,12 +19,28 @@ using UnityEngine;
 /// </para>
 /// <para>
 /// IMPORTANT — Policy maps are owned by domains. The arbiter pulls map references
-/// each tick via <see cref="IIdleRolePolicyMapSource"/> / <see cref="ICombatRolePolicyMapSource"/>
-/// from cached <see cref="DomainOrchestrator"/> instances. Domains must not mutate their map reference during Evaluate.
+/// each tick from cached domain registration bindings produced by domains.
+/// Domains must not mutate their map references during Evaluate.
 /// </para>
 /// </summary>
-public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
+public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter, IDomainArbiterBindingApplyTarget
 {
+    readonly struct ArbiterBindingConsumerEntry
+    {
+        public readonly DomainArbiterBindingConsumerKey Key;
+        public readonly ArbiterBindingConsumerApplyHandler Apply;
+
+        public ArbiterBindingConsumerEntry(
+            DomainArbiterBindingConsumerKey key,
+            ArbiterBindingConsumerApplyHandler apply)
+        {
+            Key = key;
+            Apply = apply;
+        }
+    }
+
+    delegate bool ArbiterBindingConsumerApplyHandler(ScriptableObject asset);
+
     // ──────────────────────────────────────────────────────────────────
     //  Serialized — Faction
     // ──────────────────────────────────────────────────────────────────
@@ -48,8 +64,8 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
     // ──────────────────────────────────────────────────────────────────
 
     [Header("Domains")]
-    [Tooltip("Domain orchestrators polled each tick in array order.")]
-    [SerializeField] DomainOrchestrator[] domainOrchestrators;
+    [Tooltip("LEGACY storage only (hidden). Domain composition source-of-truth is OrchestrationLoop (or a composition seam) which applies domains into the arbiter.")]
+    [HideInInspector, SerializeField] DomainOrchestrator[] domainOrchestrators;
 
     [Header("Hysteresis")]
     [Tooltip("Minimum time combat stays active after threat first appears.")]
@@ -64,9 +80,14 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
     //  Runtime — Domain cache
     // ──────────────────────────────────────────────────────────────────
 
-    DomainOrchestrator[] _cachedDomains;
+    DomainRegistration[] _cachedDomainRegistrations;
     int _domainCount;
+    OrchestrationDomainId[] _stickyPrimaryDomainKeys;
+    int _stickyPrimaryDomainKeyCount;
     bool _warnedInvalidDomains;
+    bool _warnedDuplicateStickyPrimaryDomainKeys;
+    bool _domainCompositionApplied;
+    bool _warnedMissingDomainComposition;
 
     // ──────────────────────────────────────────────────────────────────
     //  Runtime — World cache (single reused instance)
@@ -78,13 +99,15 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
     //  Runtime — Proposals (single reused instance)
     // ──────────────────────────────────────────────────────────────────
 
-    readonly OrchestrationArbiterProposals _proposals = new OrchestrationArbiterProposals();
+    // Reusable scratch for C03 compatibility adapter (per-domain legacy Evaluate -> collector import).
+    readonly OrchestrationArbiterProposals _legacyProposalScratch = new OrchestrationArbiterProposals();
+    readonly OrchestrationProposalCollector _proposalCollector = new OrchestrationProposalCollector();
     OrchestrationArbiterContext _ctx;
 
     // ──────────────────────────────────────────────────────────────────
-    //  Runtime — Policy maps (owned by domains, pulled via interfaces)
+    //  Runtime — Policy maps (owned by domains, pulled via cached bindings)
     //  IMPORTANT: Not serialized. Arbiter reads from domains each tick
-    //  via IIdleRolePolicyMapSource / ICombatRolePolicyMapSource.
+    //  via cached domain-registration binding contributors.
     // ──────────────────────────────────────────────────────────────────
 
     IdleRolePolicyMapAsset _idleRolePolicyMap;
@@ -104,7 +127,7 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
     //  redundant SetTarget(null) every tick.
     // ──────────────────────────────────────────────────────────────────
 
-    int _lastDomain;
+    OrchestrationDomainId _lastDomain;
 
     bool _warnedMissingSetup;
 
@@ -115,12 +138,42 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
     bool _warnedDuplicateIdleSource;
     bool _warnedDuplicateCombatSource;
     bool _warnedDuplicateConstraintsSource;
+    bool _warnedUnknownArbiterBindingKey;
+
+    // ──────────────────────────────────────────────────────────────────
+    //  Runtime — Arbiter binding registry (key -> binding applier)
+    //  Transitional C04A step: generic binding-key payload + local application registry.
+    // ──────────────────────────────────────────────────────────────────
+
+    readonly DomainArbiterBindingTargetEntry[] _arbiterBindingRegistry = new DomainArbiterBindingTargetEntry[3];
+    int _arbiterBindingRegistryCount;
+
+    // ──────────────────────────────────────────────────────────────────
+    //  Runtime — Arbiter binding consumer registry (consumer key -> local handler)
+    //  Transitional C04A step: remove consumer-key switch from apply-target seam.
+    // ──────────────────────────────────────────────────────────────────
+
+    readonly ArbiterBindingConsumerEntry[] _arbiterBindingConsumerRegistry = new ArbiterBindingConsumerEntry[3];
+    int _arbiterBindingConsumerRegistryCount;
 
     // ──────────────────────────────────────────────────────────────────
     //  Public — Domain state query
     // ──────────────────────────────────────────────────────────────────
 
-    public bool IsCombatActive => _lastDomain == OrchestrationDomainKeys.Combat;
+    public bool IsCombatActive => _lastDomain == OrchestrationDomainId.Combat;
+
+    /// <summary>
+    /// C04A composition seam for bridge/integration modules.
+    /// Allows data-driven domain ordering/selection to be applied without editing
+    /// RuntimeHost entrypoints. Applies the provided array and rebuilds cached domain
+    /// registrations immediately.
+    /// </summary>
+    public void SetDomainOrchestratorsForComposition(DomainOrchestrator[] domains)
+    {
+        _domainCompositionApplied = true;
+        domainOrchestrators = domains;
+        CacheDomains();
+    }
 
     // ──────────────────────────────────────────────────────────────────
     //  Lifecycle
@@ -128,10 +181,11 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
 
     void OnEnable()
     {
-        _lastDomain = OrchestrationDomainKeys.None;
+        _lastDomain = OrchestrationDomainId.None;
         _combatLockedUntil = 0f;
         _threatMemoryUntil = 0f;
 
+        EnsureArbiterBindingConsumerRegistryInitialized();
         CacheDomains();
     }
 
@@ -143,6 +197,97 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
         _combatRoleConstraintsMap = null;
     }
 
+    void RegisterArbiterBinding(in DomainArbiterBindingTargetEntry entry)
+    {
+        if (entry.Key.IsNone || entry.Apply == null)
+            return;
+
+        for (int i = 0; i < _arbiterBindingRegistryCount; i++)
+        {
+            if (_arbiterBindingRegistry[i].Key != entry.Key)
+                continue;
+
+            return;
+        }
+
+        if (_arbiterBindingRegistryCount >= _arbiterBindingRegistry.Length)
+            return;
+
+        _arbiterBindingRegistry[_arbiterBindingRegistryCount++] = entry;
+    }
+
+    bool TryResolveArbiterBindingApplier(DomainArbiterBindingKey key, out DomainArbiterBindingApplyHandler apply)
+    {
+        for (int i = 0; i < _arbiterBindingRegistryCount; i++)
+        {
+            DomainArbiterBindingTargetEntry entry = _arbiterBindingRegistry[i];
+            if (entry.Key != key)
+                continue;
+
+            apply = entry.Apply;
+            return true;
+        }
+
+        apply = null;
+        return false;
+    }
+
+    void EnsureArbiterBindingConsumerRegistryInitialized()
+    {
+        if (_arbiterBindingConsumerRegistryCount > 0)
+            return;
+
+        RegisterArbiterBindingConsumer(
+            RuntimeHostArbiterBindingConsumerKeys.IdleRolePolicyMap,
+            TryApplyIdleRolePolicyMapBinding);
+        RegisterArbiterBindingConsumer(
+            RuntimeHostArbiterBindingConsumerKeys.CombatRolePolicyMap,
+            TryApplyCombatRolePolicyMapBinding);
+        RegisterArbiterBindingConsumer(
+            RuntimeHostArbiterBindingConsumerKeys.CombatRoleConstraintsMap,
+            TryApplyCombatRoleConstraintsMapBinding);
+    }
+
+    void RegisterArbiterBindingConsumer(
+        DomainArbiterBindingConsumerKey consumerKey,
+        ArbiterBindingConsumerApplyHandler apply)
+    {
+        if (consumerKey.IsNone || apply == null)
+            return;
+
+        for (int i = 0; i < _arbiterBindingConsumerRegistryCount; i++)
+        {
+            if (_arbiterBindingConsumerRegistry[i].Key != consumerKey)
+                continue;
+
+            return;
+        }
+
+        if (_arbiterBindingConsumerRegistryCount >= _arbiterBindingConsumerRegistry.Length)
+            return;
+
+        _arbiterBindingConsumerRegistry[_arbiterBindingConsumerRegistryCount++] =
+            new ArbiterBindingConsumerEntry(consumerKey, apply);
+    }
+
+    bool TryResolveArbiterBindingConsumer(
+        DomainArbiterBindingConsumerKey consumerKey,
+        out ArbiterBindingConsumerApplyHandler apply)
+    {
+        for (int i = 0; i < _arbiterBindingConsumerRegistryCount; i++)
+        {
+            ArbiterBindingConsumerEntry entry = _arbiterBindingConsumerRegistry[i];
+            if (entry.Key != consumerKey)
+                continue;
+
+            apply = entry.Apply;
+            return true;
+        }
+
+        apply = null;
+        return false;
+    }
+
     // ──────────────────────────────────────────────────────────────────
     //  Domain cache — built once on enable
     // ──────────────────────────────────────────────────────────────────
@@ -150,10 +295,12 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
     void CacheDomains()
     {
         _domainCount = 0;
+        _stickyPrimaryDomainKeyCount = 0;
+        _arbiterBindingRegistryCount = 0;
 
         if (domainOrchestrators == null || domainOrchestrators.Length == 0)
         {
-            _cachedDomains = null;
+            _cachedDomainRegistrations = null;
             if (!_warnedInvalidDomains)
             {
                 _warnedInvalidDomains = true;
@@ -163,8 +310,10 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
             return;
         }
 
-        if (_cachedDomains == null || _cachedDomains.Length < domainOrchestrators.Length)
-            _cachedDomains = new DomainOrchestrator[domainOrchestrators.Length];
+        if (_cachedDomainRegistrations == null || _cachedDomainRegistrations.Length < domainOrchestrators.Length)
+            _cachedDomainRegistrations = new DomainRegistration[domainOrchestrators.Length];
+        if (_stickyPrimaryDomainKeys == null || _stickyPrimaryDomainKeys.Length < domainOrchestrators.Length)
+            _stickyPrimaryDomainKeys = new OrchestrationDomainId[domainOrchestrators.Length];
 
         for (int i = 0; i < domainOrchestrators.Length; i++)
         {
@@ -184,8 +333,57 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
                 continue;
             }
 
-            _cachedDomains[_domainCount++] = d;
+            DomainRegistration registration = d.GetRegistration();
+            _cachedDomainRegistrations[_domainCount] = registration;
+            _domainCount++;
+            CacheDomainArbitrationProfile(registration);
+            CacheArbiterBindingTargetRegistry(registration);
         }
+    }
+
+    void CacheArbiterBindingTargetRegistry(in DomainRegistration registration)
+    {
+        IDomainArbiterBindingContributor bindingContributor = registration.ArbiterBindingContributor;
+        if (bindingContributor == null)
+            return;
+
+        DomainArbiterBindingTargetContribution contribution = default;
+        bindingContributor.ContributeArbiterBindingTargets(ref contribution);
+
+        for (int i = 0; i < contribution.Count; i++)
+            RegisterArbiterBinding(contribution.GetEntry(i));
+    }
+
+    void CacheDomainArbitrationProfile(in DomainRegistration registration)
+    {
+        DomainArbitrationProfile profile = registration.ArbitrationProfile;
+        OrchestrationDomainId domainId = registration.Orchestrator == null
+            ? OrchestrationDomainId.None
+            : registration.Orchestrator.DomainId;
+
+        if (domainId == OrchestrationDomainId.None)
+            return;
+
+        if (!profile.StickyPrimary)
+            return;
+
+        for (int i = 0; i < _stickyPrimaryDomainKeyCount; i++)
+        {
+            if (_stickyPrimaryDomainKeys[i] != domainId)
+                continue;
+
+            if (!_warnedDuplicateStickyPrimaryDomainKeys)
+            {
+                _warnedDuplicateStickyPrimaryDomainKeys = true;
+                Debug.LogWarning(string.Concat(
+                    "[OrchestrationArbiter] Duplicate sticky-primary arbitration profile for DomainKey=",
+                    domainId.ToString(),
+                    ". First registration wins."), this);
+            }
+            return;
+        }
+
+        _stickyPrimaryDomainKeys[_stickyPrimaryDomainKeyCount++] = domainId;
     }
 
     // ──────────────────────────────────────────────────────────────────
@@ -332,6 +530,39 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
     /// </summary>
     public OrchestrationTickResult ProduceTick(float now)
     {
+        if (!_domainCompositionApplied)
+        {
+            if (!_warnedMissingDomainComposition)
+            {
+                _warnedMissingDomainComposition = true;
+                Debug.LogError(
+                    "[OrchestrationArbiter] Domain composition was not applied. " +
+                    "Configure ordered domains via OrchestrationLoop.domainOrchestrators " +
+                    "(or apply them through a composition seam) and do not use Arbiter inspector domain fallback.",
+                    this);
+            }
+
+            if (_lastDomain != OrchestrationDomainId.None)
+            {
+                ArbiterDecision holdAll = new ArbiterDecision
+                {
+                    DomainKey = OrchestrationDomainKeys.None,
+                    ProposalKey = OrchestrationProposalKeys.None,
+                    ModeChanged = true
+                };
+                _lastDomain = OrchestrationDomainId.None;
+                return new OrchestrationTickResult
+                {
+                    Decision = holdAll,
+                    World = _world,
+                    ExecContext = default,
+                    Skipped = false
+                };
+            }
+
+            return new OrchestrationTickResult { Skipped = true };
+        }
+
         // ── Validate setup ──────────────────────────────────────────
         if (orchestratorFaction == null || typedRelations == null)
         {
@@ -342,7 +573,7 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
             }
 
             // Signal hold-all to the loop
-            if (_lastDomain != OrchestrationDomainKeys.None)
+            if (_lastDomain != OrchestrationDomainId.None)
             {
                 ArbiterDecision holdAll = new ArbiterDecision
                 {
@@ -350,7 +581,7 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
                     ProposalKey = OrchestrationProposalKeys.None,
                     ModeChanged = true
                 };
-                _lastDomain = OrchestrationDomainKeys.None;
+                _lastDomain = OrchestrationDomainId.None;
                 return new OrchestrationTickResult
                 {
                     Decision = holdAll,
@@ -378,16 +609,20 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
         BuildWorldCache(_ctx);
 
         // ── Clear and poll domains ──────────────────────────────────
-        _proposals.Clear();
-
+        _proposalCollector.Clear();
         for (int i = 0; i < _domainCount; i++)
-            _cachedDomains[i].Evaluate(_ctx, _proposals);
+            _cachedDomainRegistrations[i].Orchestrator.CollectProposals(_ctx, _proposalCollector, _legacyProposalScratch);
 
         // ── Pull policy maps from domains (after Evaluate, before result) ──
         RefreshPolicyMapsFromDomains();
 
         // ── Arbitrate: pure decision ─────────────────────────────────
-        ArbiterDecision decision = Arbitrate(_proposals.ToArbitrationInput(), now);
+        // C04 path: arbitrate from proposal collection metadata (not fixed legacy input flags).
+        ArbiterDecision decision = Arbitrate(_proposalCollector.Entries, _proposalCollector.ThreatPresent, now);
+        CombatCommand selectedCombatCommand = default;
+        bool hasSelectedCombatCommand =
+            (OrchestrationDomainId)decision.DomainKey == OrchestrationDomainId.Combat &&
+            _proposalCollector.TryGetCombatCommand(decision.ProposalKey, out selectedCombatCommand);
 
         // ── Build execution context ──────────────────────────────────
         ExecutionContext execCtx = new ExecutionContext
@@ -395,10 +630,7 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
             IdleRolePolicyMap = _idleRolePolicyMap,
             CombatRolePolicyMap = _combatRolePolicyMap,
             CombatRoleConstraintsMap = _combatRoleConstraintsMap,
-            CombatCommand = decision.DomainKey == OrchestrationDomainKeys.Combat &&
-                            decision.ProposalKey == _proposals.CombatProposalKey
-                ? _proposals.CombatCommand
-                : default,
+            CombatCommand = hasSelectedCombatCommand ? selectedCombatCommand : default,
             OrchestratorFaction = orchestratorFaction,
             Relations = typedRelations,
             WorldAnchor = _ctx.WorldAnchor,
@@ -408,16 +640,16 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
         };
 
         // ── Update mode tracking ─────────────────────────────────────
-        _lastDomain = decision.DomainKey;
+        _lastDomain = (OrchestrationDomainId)decision.DomainKey;
 
         if (debugLog)
         {
             Debug.Log(string.Concat(
-                "[Arbiter] mode=", decision.DomainKey.ToString(),
+                "[Arbiter] mode=", ((OrchestrationDomainId)decision.DomainKey).ToString(),
                 " modeChanged=", decision.ModeChanged ? "1" : "0",
-                " threat=", _proposals.ThreatPresent ? "1" : "0",
-                " combatProp=", _proposals.HasCombat ? "1" : "0",
-                " idleProp=", _proposals.HasIdle ? "1" : "0",
+                " threat=", _proposalCollector.ThreatPresent ? "1" : "0",
+                " combatProp=", _proposalCollector.HasCombat ? "1" : "0",
+                " idleProp=", _proposalCollector.HasIdle ? "1" : "0",
                 " actors=", _world.ActorCount.ToString(),
                 " lock=", (_combatLockedUntil - now).ToString("F1"),
                 "s mem=", (_threatMemoryUntil - now).ToString("F1"), "s"), this);
@@ -439,38 +671,164 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
     // ──────────────────────────────────────────────────────────────────
 
     /// <summary>
-    /// Selects the active domain based on proposals, hysteresis timers, and current time.
+    /// RuntimeHost convenience overload used by local call-sites during migration.
+    /// Canonical interface seam is <see cref="Arbitrate(IReadOnlyList{Proposal}, bool, float)"/>.
+    /// </summary>
+    public ArbiterDecision Arbitrate(OrchestrationProposalCollector collector, float now)
+    {
+        if (collector == null)
+            return Arbitrate((IReadOnlyList<Proposal>)null, false, now);
+
+        return Arbitrate(collector.Entries, collector.ThreatPresent, now);
+    }
+
+    /// <summary>
+    /// Selects an active domain based on proposal-list metadata and current time.
+    /// C04 canonical path: explicit proposal-list arbitration with tie-break policy.
+    /// </summary>
+    public ArbiterDecision Arbitrate(IReadOnlyList<Proposal> proposals, bool threatPresent, float now)
+    {
+        bool hasStickyPrimaryProposal = false;
+        Proposal bestStickyPrimary = default;
+
+        bool hasFallbackProposal = false;
+        Proposal bestFallback = default;
+
+        if (proposals != null)
+        {
+            for (int i = 0; i < proposals.Count; i++)
+            {
+                Proposal p = proposals[i];
+                if ((OrchestrationDomainId)p.DomainKey == OrchestrationDomainId.None || p.ProposalKey == OrchestrationProposalKeys.None)
+                    continue;
+
+                if (IsStickyPrimaryProposal(p))
+                {
+                    if (!hasStickyPrimaryProposal || IsHigherPriorityProposal(p, bestStickyPrimary))
+                    {
+                        bestStickyPrimary = p;
+                        hasStickyPrimaryProposal = true;
+                    }
+                }
+                else
+                {
+                    if (!hasFallbackProposal || IsHigherPriorityProposal(p, bestFallback))
+                    {
+                        bestFallback = p;
+                        hasFallbackProposal = true;
+                    }
+                }
+            }
+        }
+
+        return ArbitrateNormalized(
+            threatPresent,
+            hasStickyPrimaryProposal,
+            bestStickyPrimary,
+            hasFallbackProposal,
+            bestFallback,
+            now);
+    }
+
+    /// <summary>
+    /// Transitional C04 classifier seam.
+    /// Current hysteresis semantics are still combat-centric, so proposal-list arbitration
+    /// maps proposals into "sticky primary" vs "fallback" buckets here.
+    /// C04A/C05+: replace hard-coded domain checks with policy/registration-driven metadata.
+    /// </summary>
+    bool IsStickyPrimaryProposal(in Proposal proposal)
+    {
+        return IsStickyPrimaryDomainKey((OrchestrationDomainId)proposal.DomainKey);
+    }
+
+    bool IsStickyPrimaryDomainKey(OrchestrationDomainId domainKey)
+    {
+        for (int i = 0; i < _stickyPrimaryDomainKeyCount; i++)
+        {
+            if (_stickyPrimaryDomainKeys[i] == domainKey)
+                return true;
+        }
+
+        return false;
+    }
+
+    static bool IsHigherPriorityProposal(in Proposal candidate, in Proposal current)
+    {
+        if (candidate.Priority != current.Priority)
+            return candidate.Priority > current.Priority;
+
+        if (!Mathf.Approximately(candidate.Score, current.Score))
+            return candidate.Score > current.Score;
+
+        // Stable tie-break to avoid hidden dependence on registration order.
+        if (candidate.DomainKey != current.DomainKey)
+            return candidate.DomainKey < current.DomainKey;
+
+        return candidate.ProposalKey < current.ProposalKey;
+    }
+
+    /// <summary>
+    /// Legacy compatibility overload (IArbiter) used until proposal-list arbitration
+    /// becomes the canonical public contract. Runtime path in C04 uses
+    /// <see cref="Arbitrate(OrchestrationProposalCollector,float)"/>.
     /// Pure function aside from updating hysteresis timers.
     /// </summary>
     public ArbiterDecision Arbitrate(in ArbitrationInput input, float now)
     {
+        Proposal legacyCombat = new Proposal(
+            (int)OrchestrationDomainId.Combat,
+            OrchestrationProposalKeys.CombatPrimary,
+            priority: 100,
+            score: input.ThreatPresent ? 1f : 0f);
+        Proposal legacyIdle = new Proposal(
+            (int)OrchestrationDomainId.Idle,
+            OrchestrationProposalKeys.IdleDefault,
+            priority: 10,
+            score: 0f);
+
+        return ArbitrateNormalized(
+            input.ThreatPresent,
+            input.HasPrimaryProposal,
+            legacyCombat,
+            input.HasSecondaryProposal,
+            legacyIdle,
+            now);
+    }
+
+    ArbiterDecision ArbitrateNormalized(
+        bool threatPresent,
+        bool hasStickyPrimaryProposal,
+        in Proposal bestStickyPrimary,
+        bool hasFallbackProposal,
+        in Proposal bestFallback,
+        float now)
+    {
         // ── Update hysteresis timers ────────────────────────────────
-        if (input.ThreatPresent)
+        if (threatPresent)
         {
             _combatLockedUntil = Mathf.Max(_combatLockedUntil, now + combatMinActiveTime);
             _threatMemoryUntil = now + combatCooldownAfterThreat;
         }
 
         bool combatSticky = now <= _combatLockedUntil || now <= _threatMemoryUntil;
-        bool combatActive = input.HasPrimaryProposal && (input.ThreatPresent || combatSticky);
+        bool stickyPrimaryActive = hasStickyPrimaryProposal && (threatPresent || combatSticky);
 
-        // ── Select domain ────────────────────────────────────────────
-        int selectedDomain;
+        OrchestrationDomainId selectedDomain;
         int selectedProposal;
 
-        if (combatActive)
+        if (stickyPrimaryActive)
         {
-            selectedDomain = OrchestrationDomainKeys.Combat;
-            selectedProposal = OrchestrationProposalKeys.CombatPrimary;
+            selectedDomain = (OrchestrationDomainId)bestStickyPrimary.DomainKey;
+            selectedProposal = bestStickyPrimary.ProposalKey;
         }
-        else if (input.HasSecondaryProposal)
+        else if (hasFallbackProposal)
         {
-            selectedDomain = OrchestrationDomainKeys.Idle;
-            selectedProposal = OrchestrationProposalKeys.IdleDefault;
+            selectedDomain = (OrchestrationDomainId)bestFallback.DomainKey;
+            selectedProposal = bestFallback.ProposalKey;
         }
         else
         {
-            selectedDomain = OrchestrationDomainKeys.None;
+            selectedDomain = OrchestrationDomainId.None;
             selectedProposal = OrchestrationProposalKeys.None;
         }
 
@@ -478,88 +836,122 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
 
         return new ArbiterDecision
         {
-            DomainKey = selectedDomain,
+            DomainKey = (int)selectedDomain,
             ProposalKey = selectedProposal,
             ModeChanged = modeChanged
         };
     }
 
     // ──────────────────────────────────────────────────────────────────
-    //  Policy map refresh — pull from cached DomainOrchestrators
+    //  Policy map refresh — pull from cached DomainRegistrations
     //  IMPORTANT: Called once per tick after domain Evaluate, before dispatch.
     //  "Last non-null wins" if multiple domains provide the same map type.
     //  If no source provides a non-null map, the stored field becomes null.
-    //  PERF: Two `is` casts per domain per tick (0.25s interval). Negligible.
+    //  PERF: Provider interface discovery is cached in DomainRegistration.
     // ──────────────────────────────────────────────────────────────────
 
     void RefreshPolicyMapsFromDomains()
     {
-        IdleRolePolicyMapAsset newIdle = null;
-        CombatRolePolicyMapAsset newCombat = null;
-        CombatRoleConstraintsMapAsset newConstraints = null;
-        bool foundIdle = false;
-        bool foundCombat = false;
-        bool foundConstraints = false;
+        // Null clears: if no source provides a map this tick, stored field becomes null.
+        _idleRolePolicyMap = null;
+        _combatRolePolicyMap = null;
+        _combatRoleConstraintsMap = null;
 
         for (int i = 0; i < _domainCount; i++)
         {
-            DomainOrchestrator d = _cachedDomains[i];
+            DomainRegistration registration = _cachedDomainRegistrations[i];
+            DomainOrchestrator d = registration.Orchestrator;
             // Unity-null safe: skip destroyed pooled components
             if (d is Object uo && uo == null) continue;
 
-            if (d is IIdleRolePolicyMapSource idleSrc)
-            {
-                IdleRolePolicyMapAsset m = idleSrc.GetIdleRolePolicyMap();
-                if (m != null)
-                {
-                    if (foundIdle && !_warnedDuplicateIdleSource)
-                    {
-                        _warnedDuplicateIdleSource = true;
-                        Debug.LogWarning("[OrchestrationArbiter] Multiple domains provide " +
-                            "IIdleRolePolicyMapSource. Last non-null wins.", this);
-                    }
-                    newIdle = m;
-                    foundIdle = true;
-                }
-            }
+            IDomainArbiterBindingContributor bindingContributor = registration.ArbiterBindingContributor;
+            if (bindingContributor == null)
+                continue;
 
-            if (d is ICombatRolePolicyMapSource combatSrc)
-            {
-                CombatRolePolicyMapAsset m = combatSrc.GetCombatRolePolicyMap();
-                if (m != null)
-                {
-                    if (foundCombat && !_warnedDuplicateCombatSource)
-                    {
-                        _warnedDuplicateCombatSource = true;
-                        Debug.LogWarning("[OrchestrationArbiter] Multiple domains provide " +
-                            "ICombatRolePolicyMapSource. Last non-null wins.", this);
-                    }
-                    newCombat = m;
-                    foundCombat = true;
-                }
-            }
+            DomainArbiterBindingContribution contribution = default;
+            bindingContributor.ContributeArbiterBindings(ref contribution);
 
-            if (d is ICombatRoleConstraintsMapSource constraintsSrc)
+            for (int j = 0; j < contribution.Count; j++)
             {
-                CombatRoleConstraintsMapAsset cm = constraintsSrc.GetCombatRoleConstraintsMap();
-                if (cm != null)
+                DomainArbiterBindingEntry entry = contribution.GetEntry(j);
+                if (!TryResolveArbiterBindingApplier(entry.Key, out DomainArbiterBindingApplyHandler apply))
                 {
-                    if (foundConstraints && !_warnedDuplicateConstraintsSource)
+                    if (!_warnedUnknownArbiterBindingKey)
                     {
-                        _warnedDuplicateConstraintsSource = true;
-                        Debug.LogWarning("[OrchestrationArbiter] Multiple domains provide " +
-                            "ICombatRoleConstraintsMapSource. Last non-null wins.", this);
+                        _warnedUnknownArbiterBindingKey = true;
+                        Debug.LogWarning(string.Concat(
+                            "[OrchestrationArbiter] Unknown arbiter binding key=",
+                            entry.Key.Value.ToString(),
+                            ". Entry ignored (transitional registry)."), this);
                     }
-                    newConstraints = cm;
-                    foundConstraints = true;
+                    continue;
                 }
+
+                apply(this, entry.Asset);
             }
         }
+    }
 
-        // Null clears: if no source provides a map, stored field becomes null
-        _idleRolePolicyMap = newIdle;
-        _combatRolePolicyMap = newCombat;
-        _combatRoleConstraintsMap = newConstraints;
+    private bool TryApplyIdleRolePolicyMapBinding(ScriptableObject asset)
+    {
+        IdleRolePolicyMapAsset idleMap = asset as IdleRolePolicyMapAsset;
+        if (idleMap == null)
+            return false;
+
+        if (_idleRolePolicyMap != null && !_warnedDuplicateIdleSource)
+        {
+            _warnedDuplicateIdleSource = true;
+            Debug.LogWarning("[OrchestrationArbiter] Multiple domains provide " +
+                "idle role policy map bindings. Last non-null wins.", this);
+        }
+
+        _idleRolePolicyMap = idleMap;
+        return true;
+    }
+
+    private bool TryApplyCombatRolePolicyMapBinding(ScriptableObject asset)
+    {
+        CombatRolePolicyMapAsset combatMap = asset as CombatRolePolicyMapAsset;
+        if (combatMap == null)
+            return false;
+
+        if (_combatRolePolicyMap != null && !_warnedDuplicateCombatSource)
+        {
+            _warnedDuplicateCombatSource = true;
+            Debug.LogWarning("[OrchestrationArbiter] Multiple domains provide " +
+                "combat role policy map bindings. Last non-null wins.", this);
+        }
+
+        _combatRolePolicyMap = combatMap;
+        return true;
+    }
+
+    private bool TryApplyCombatRoleConstraintsMapBinding(ScriptableObject asset)
+    {
+        CombatRoleConstraintsMapAsset constraintsMap = asset as CombatRoleConstraintsMapAsset;
+        if (constraintsMap == null)
+            return false;
+
+        if (_combatRoleConstraintsMap != null && !_warnedDuplicateConstraintsSource)
+        {
+            _warnedDuplicateConstraintsSource = true;
+            Debug.LogWarning("[OrchestrationArbiter] Multiple domains provide " +
+                "combat role constraints map bindings. Last non-null wins.", this);
+        }
+
+        _combatRoleConstraintsMap = constraintsMap;
+        return true;
+    }
+
+    bool IDomainArbiterBindingApplyTarget.TryApplyArbiterBindingConsumer(
+        DomainArbiterBindingConsumerKey consumerKey,
+        ScriptableObject asset)
+    {
+        EnsureArbiterBindingConsumerRegistryInitialized();
+        if (!TryResolveArbiterBindingConsumer(consumerKey, out ArbiterBindingConsumerApplyHandler apply))
+            return false;
+
+        return apply(asset);
     }
 
 }

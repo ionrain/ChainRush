@@ -129,6 +129,15 @@ Arbitration Layer:
 -   MUST возвращать только Decision.
 -   MUST NOT выполнять команды.
 -   MUST NOT иметь side effects.
+-   MUST NOT содержать domain-name specific branching в основной
+    arbitration loop / selection logic (например, `if Domain == Combat`).
+-   Если временно требуется domain-specific классификация во время
+    миграции, она MUST быть:
+    -   локализована в одном explicit classifier seam (helper/policy),
+    -   помечена как transitional,
+    -   покрыта allowlist/architecture test,
+    -   иметь зафиксированный план замены на metadata/policy-driven
+        классификацию.
 
 ------------------------------------------------------------------------
 
@@ -179,6 +188,11 @@ Execution Layer:
 -   MUST быть доменно-агностичной.
 -   MUST NOT зависеть от игровых типов.
 -   MUST NOT хранить состояние мира.
+-   RuntimeHost orchestration wiring (`Arbiter/Loop/Router`) MUST NOT
+    расширяться через ручные domain-name ветвления при добавлении нового
+    домена; расширение должно происходить через registration/contracts.
+-   Любой временный exception (migration seam) MUST быть явно
+    задокументирован в backlog/ADR и ограничен allowlist-ом.
 
 ------------------------------------------------------------------------
 
@@ -335,6 +349,9 @@ CI MUST блокировать merge при нарушении MUST-правил
     -   что выражено data-driven, а что потребовало новый код
 -   Новые architecture exceptions MUST сопровождаться сроком/фазой
     удаления и тестовым/документным следом (allowlist / ADR / backlog).
+-   Для orchestration host-runtime SHOULD существовать отдельный
+    future-gate/architecture test на domain-name specific branching
+    (`Combat/Idle/...`) вне allowlisted transitional seams.
 
 ------------------------------------------------------------------------
 

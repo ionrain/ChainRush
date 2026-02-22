@@ -17,6 +17,8 @@ using UnityEngine;
 public sealed class ExecutionRouter
 {
     readonly InProcessCommandBus _bus;
+    ExecutionRouteRegistration[] _routes;
+    int _routeCount;
 
     // ──────────────────────────────────────────────────────────────────
     //  One-shot warning flags
@@ -24,6 +26,7 @@ public sealed class ExecutionRouter
 
     bool _warnedMissingRoleIdle;
     bool _warnedNoIdleMap;
+    bool _warnedDuplicateRouteKeys;
 
     // ──────────────────────────────────────────────────────────────────
     //  Constructor
@@ -32,6 +35,7 @@ public sealed class ExecutionRouter
     public ExecutionRouter(InProcessCommandBus bus)
     {
         _bus = bus;
+        RegisterBuiltInRoutes();
     }
 
     // ──────────────────────────────────────────────────────────────────
@@ -47,28 +51,7 @@ public sealed class ExecutionRouter
         OrchestrationWorldCache world,
         ExecutionContext ctx)
     {
-        switch (decision.DomainKey)
-        {
-            case OrchestrationDomainKeys.Combat:
-                EmitCombat(ctx.CombatCommand, world);
-                if (decision.ModeChanged)
-                    EmitIdleHoldAll(world);
-                break;
-
-            case OrchestrationDomainKeys.Idle:
-                EmitIdlePerUnit(world, ctx);
-                if (decision.ModeChanged)
-                    EmitCombatHoldAll(world);
-                break;
-
-            default: // None
-                if (decision.ModeChanged)
-                {
-                    EmitCombatHoldAll(world);
-                    EmitIdleHoldAll(world);
-                }
-                break;
-        }
+        TryExecuteRegisteredRoute(decision, world, ctx);
 
         if (ctx.DebugLog)
         {
@@ -84,6 +67,96 @@ public sealed class ExecutionRouter
         }
 
         return new ExecutionResult { EventCount = 0 };
+    }
+
+    /// <summary>
+    /// C04A route registration seam. Later domain modules can supply route behavior
+    /// without editing the router entrypoint. Current bootstrap registers built-ins.
+    /// Last registration for the same DomainKey wins (warn once).
+    /// </summary>
+    public void RegisterRoute(in ExecutionRouteRegistration registration)
+    {
+        if (_routes == null)
+            _routes = new ExecutionRouteRegistration[4];
+        else if (_routeCount >= _routes.Length)
+            System.Array.Resize(ref _routes, _routes.Length * 2);
+
+        for (int i = 0; i < _routeCount; i++)
+        {
+            if (_routes[i].DomainKey != registration.DomainKey)
+                continue;
+
+            if (!_warnedDuplicateRouteKeys)
+            {
+                _warnedDuplicateRouteKeys = true;
+                Debug.LogWarning(string.Concat(
+                    "[ExecutionRouter] Duplicate route registration for DomainKey=",
+                    registration.DomainKey.ToString(),
+                    ". Last registration wins."));
+            }
+
+            _routes[i] = registration;
+            return;
+        }
+
+        _routes[_routeCount++] = registration;
+    }
+
+    void RegisterBuiltInRoutes()
+    {
+        RegisterRoute(new ExecutionRouteRegistration(OrchestrationDomainId.Combat, ExecuteCombatRoute));
+        RegisterRoute(new ExecutionRouteRegistration(OrchestrationDomainId.Idle, ExecuteIdleRoute));
+        RegisterRoute(new ExecutionRouteRegistration(OrchestrationDomainId.None, ExecuteNoneRoute));
+    }
+
+    bool TryExecuteRegisteredRoute(ArbiterDecision decision, OrchestrationWorldCache world, ExecutionContext ctx)
+    {
+        OrchestrationDomainId decisionDomain = (OrchestrationDomainId)decision.DomainKey;
+
+        for (int i = 0; i < _routeCount; i++)
+        {
+            if (_routes[i].DomainKey != decisionDomain)
+                continue;
+
+            DomainExecutionRouteExecutor execute = _routes[i].Execute;
+            if (execute == null)
+                return false;
+
+            execute(decision, world, ctx);
+            return true;
+        }
+
+        // Defensive fallback if no route registered for a domain key.
+        if (decision.ModeChanged)
+        {
+            EmitCombatHoldAll(world);
+            EmitIdleHoldAll(world);
+        }
+
+        return false;
+    }
+
+    void ExecuteCombatRoute(ArbiterDecision decision, OrchestrationWorldCache world, ExecutionContext ctx)
+    {
+        EmitCombat(ctx.CombatCommand, world);
+        if (decision.ModeChanged)
+            EmitIdleHoldAll(world);
+    }
+
+    void ExecuteIdleRoute(ArbiterDecision decision, OrchestrationWorldCache world, ExecutionContext ctx)
+    {
+        EmitIdlePerUnit(world, ctx);
+        if (decision.ModeChanged)
+            EmitCombatHoldAll(world);
+    }
+
+    void ExecuteNoneRoute(ArbiterDecision decision, OrchestrationWorldCache world, ExecutionContext ctx)
+    {
+        if (decision.ModeChanged)
+        {
+            EmitCombatHoldAll(world);
+            EmitIdleHoldAll(world);
+        }
     }
 
     // ──────────────────────────────────────────────────────────────────

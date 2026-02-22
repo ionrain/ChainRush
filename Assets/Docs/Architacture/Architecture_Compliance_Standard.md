@@ -63,6 +63,43 @@ Fitness Functions.
 
 ------------------------------------------------------------------------
 
+## 3.4 Package / Project Boundary (Morboo Layering)
+
+-   `com.morboo.*` packages MUST NOT зависеть от project-layer assemblies
+    (`Game.Runtime`, `Morboo.Bridge`, `Integration.Project`).
+-   Project glue / scene wiring / legacy adaptation MUST находиться в
+    `Assets/Scripts/MorbooBridge` (или эквивалентном project bridge
+    слое), а не в package runtime слоях.
+-   Migration-only переходные формы (legacy keys, compat enums, shim DTOs)
+    MUST быть изолированы в `MorbooBridge` и MUST NOT протекать в
+    `Framework/Core/RuntimeHost/Systems`.
+
+------------------------------------------------------------------------
+
+## 3.5 Inter-System Communication Discipline
+
+-   Системы MUST NOT общаться direct concrete-to-concrete runtime calls.
+-   Межсистемное взаимодействие MUST проходить через:
+    -   contracts / interfaces
+    -   commands / events / queries
+    -   bridge/adapters (на project boundary)
+-   Любой direct call bypass (временный) SHOULD иметь ADR + план удаления.
+
+------------------------------------------------------------------------
+
+## 3.6 Typed Dependency References
+
+-   Нетипизированные dependency-holder ссылки (`GameObject`,
+    `MonoBehaviour`, `Component` как service locator input) MUST NOT
+    использоваться в новом runtime architecture code.
+-   Если цель — доступ к сервису/контракту, MUST использоваться typed
+    dependency (интерфейс, typed provider, explicit adapter).
+-   `GameObject`/`Transform` ссылки MAY использоваться только как
+    view/content references (prefab roots, UI nodes, anchors), но не как
+    способ runtime service resolution.
+
+------------------------------------------------------------------------
+
 # 4. Layer Compliance
 
 ## 4.1 Sensing Layer
@@ -102,6 +139,20 @@ Execution Layer:
 -   MUST преобразовывать Decision в ICommand.
 -   MUST NOT принимать решения.
 -   SHOULD быть максимально детерминированным.
+
+------------------------------------------------------------------------
+
+## 4.5 System Module Placement (Inside Layer)
+
+-   Артефакты, используемые только одной системой, MUST лежать внутри
+    папки этой системы.
+-   Артефакты, используемые несколькими системами на одном слое, SHOULD
+    выноситься в `Common` (или эквивалентный shared module) с явным
+    owner/назначением.
+-   Перед добавлением нового системного модуля MUST быть выполнена
+    проверка на существующую абстракцию/контракт/паттерн для reuse.
+-   Дублирование логики между системами SHOULD устраняться до третьей
+    копии через общий контракт/модуль/data-driven выражение различий.
 
 ------------------------------------------------------------------------
 
@@ -148,6 +199,39 @@ Execution Layer:
 
 ------------------------------------------------------------------------
 
+## 6.3 Canonical Representation & Source-of-Truth
+
+-   Один факт/атрибут в одном contract surface (interface/struct/public
+    DTO) MUST иметь одну каноническую форму представления.
+-   Дублирование одной и той же информации в разных формах внутри одного
+    contract surface (например `Float2` + `Float3` для одной позиции /
+    якоря) MUST NOT использоваться как постоянное решение.
+-   Временная dual-representation форма MAY использоваться только как
+    migration compatibility и MUST:
+    -   иметь explicit allowlist
+    -   иметь план удаления / phase target
+    -   не расширяться без отдельного решения
+-   Внутренние hot-path caches MAY хранить несколько представлений одного
+    факта (например 2D+3D) для performance, но MUST NOT утекать в public
+    package contracts без явного решения.
+-   Source-of-truth для состояния MUST быть единственным в рамках
+    migrated path; read/write обходы SHOULD считаться архитектурным
+    нарушением.
+
+------------------------------------------------------------------------
+
+## 6.4 Transitional Form Isolation
+
+-   Любые transition-only формы (legacy trait keys, compat fields, bridge
+    DTO) MUST быть локализованы в boundary/adaptation слое.
+-   Пакетные слои MUST NOT становиться местом хранения временной
+    совместимости "по привычке".
+-   Если transition форма появляется выше `MorbooBridge`, MUST быть
+    добавлено явное нарушение/исключение в backlog и тестах с дедлайном
+    удаления.
+
+------------------------------------------------------------------------
+
 # 7. Presentation Compliance
 
 -   UI MUST NOT создавать ICommand.
@@ -176,6 +260,40 @@ Execution Layer:
 
 -   Все сериализуемые состояния MUST иметь SchemaVersion.
 -   Миграции MUST быть реализованы для несовместимых изменений.
+
+------------------------------------------------------------------------
+
+## 8.4 Data-Driven-First Variability
+
+-   Вариативность фич/доменов SHOULD сначала выражаться данными
+    (policies/maps/config/content ids), а не новыми кодовыми ветками.
+-   Новый кодовый путь MAY добавляться только если data-driven выражение
+    различий недостаточно/нецелесообразно (должно быть кратко обосновано).
+-   При onboarding нового домена/системы MUST быть проверено, какие
+    различия можно выразить через существующие абстракции и данные.
+
+------------------------------------------------------------------------
+
+## 8.5 File-Sprawl / Onboarding Fan-Out Control
+
+-   Добавление новой системы/домена SHOULD иметь компактную структуру и
+    контролируемый fan-out.
+-   "Файловый взрыв" (много мелких классов/интерфейсов/политик без
+    достаточной data-driven модели) SHOULD рассматриваться как smell и
+    требовать redesign-review.
+-   Для новых систем SHOULD фиксироваться onboarding budget / fan-out
+    метрики (минимум на уровне PR checklist или phase backlog).
+
+------------------------------------------------------------------------
+
+## 8.6 Odin / Editor Data Authoring Policy
+
+-   `Sirenix.Odin` MAY использоваться для UnityEditor/data authoring
+    workflows.
+-   `Sirenix.Odin` MUST NOT становиться required runtime dependency для
+    `framework/systems/core/runtimehost` слоёв.
+-   Использование Odin в package runtime слоях SHOULD считаться
+    нарушением, если нет явного approved exception.
 
 ------------------------------------------------------------------------
 
@@ -209,6 +327,14 @@ CI MUST блокировать merge при нарушении MUST-правил
 -   Финальное закрытие задачи MUST включать semantic review (чеклист в PR):
     проверка смысла размещения по слоям, source-of-truth и недопущение
     migration-only утечек выше MorbooBridge.
+-   PR/commit на новый функционал SHOULD фиксировать:
+    -   выбранный слой и причину выбора по уровню переиспользования
+    -   owner source-of-truth
+    -   почему существующие контракты/паттерны не подошли (если добавлен
+        новый)
+    -   что выражено data-driven, а что потребовало новый код
+-   Новые architecture exceptions MUST сопровождаться сроком/фазой
+    удаления и тестовым/документным следом (allowlist / ADR / backlog).
 
 ------------------------------------------------------------------------
 

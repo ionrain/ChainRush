@@ -136,6 +136,7 @@ Closure evidence:
 
 Type: refactor-seam (contract hardening)  
 Goal: Зафиксировать пространственный seam так, чтобы orchestration platform была 3D-capable, а planar StrategyCombat-логика была явной и изолированной.
+Status: `in progress` (`C02A.1` bootstrap done; `C02A.2` compatibility slice started; `C02A.3` rename batch done with `Float2` kept unchanged).
 
 Changes:
 

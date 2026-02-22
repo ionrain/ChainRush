@@ -314,7 +314,7 @@ Exit Gate:
 ## Phase 4 — Orchestration Platform Remediation
 
 Goal: make orchestration a reusable platform seam.
-Current execution slice: `C02` (RuntimeHost responsibility normalization).
+Current execution slice: `C02` (final Unity gate pending) + `C02A.1` bootstrap, `C02A.2` compatibility slice started, `C02A.3` rename batch done (`Float2` kept unchanged).
 C01A status: `closed` (2026-02-21, boundary and tests active).
 
 Backlog links:
@@ -326,12 +326,14 @@ Backlog links:
 5. `System_Blueprint_Actor.md` section `11` (`Pre-Refactor Minimum For Actor`) -> mandatory implementation slice before C02.
 6. `Assets/Docs/Architacture/MasterMigration/04_Phase4_Orchestration/Orchestration_Spatial_Dimensionality_3DFirst_2026-02-21.md` -> mandatory spatial contract decision (`C02A`) before `C03`.
 7. `Assets/Docs/Architacture/MasterMigration/04_Phase4_Orchestration/C02_RuntimeHost_Move_Preflight_2026-02-21.md` -> C02 preflight dependency cut map.
+8. `Assets/Docs/Architacture/MasterMigration/04_Phase4_Orchestration/C07B_Spatial_DualRepresentation_Allowlist_Burndown_2026-02-22.md` -> final Phase 4 plan to shrink public spatial dual-representation allowlist (`Float2` + `Float3`) to zero.
 
 Execution order inside phase:
 
 1. `C01A` implement minimal Actor boundary for orchestration (contracts/projections/dispatch + bridge adapters) per `System_Blueprint_Actor.md` section `11`.
 2. `C02` move host responsibilities to `Morboo.RuntimeHost`.
 3. `C02A` freeze spatial dimensionality seam (`3D-first` contracts + `2D` strategy specializations + projection adapters).
+   - rule: package public contracts converge to one canonical spatial form (target `Float3`); temporary dual `Float2`+`Float3` contracts are allowlist-gated only during compatibility migration.
 4. `C03` introduce proposal collection seam.
 5. `C04` move arbiter to proposal-list input.
 6. `C04A` add low-friction domain onboarding seam (no file explosion on new domain add).
@@ -339,6 +341,7 @@ Execution order inside phase:
 8. `C06` connect capabilities to runtime decisions.
 9. `C07` remove domain downcasts to concrete world cache.
 10. `C07A` post-refactor cleanup: remove Actor boundary hard links to Combat/Idle and compact domain onboarding structure.
+11. `C07B` shrink spatial dual-representation allowlist to zero (remove temporary `Float2` + `Float3` duplication from package public contracts).
 
 `C01A` scope (must be done before C02):
 
@@ -365,6 +368,7 @@ Entry Gate:
 3. Pre-refactor minimum contract blocks approved and baseline-implemented for orchestrator-coupled systems.
 4. `C01A` completed and verified green.
 5. `C02A` completed and verified green before starting `C03`.
+6. Spatial dual-representation allowlist is not expanding (new public `Float2`+`Float3` contract types forbidden without explicit decision update).
 
 Exit Gate:
 
@@ -375,6 +379,7 @@ Exit Gate:
 5. Actor-orchestrator package boundary has no hard Combat/Idle coupling (StrategyCombat-only specialization remains below boundary).
 6. Domain onboarding seam is compact and data-driven-first (no file explosion beyond agreed fan-out budget).
 7. Relevant future-gate tests are un-ignored and green.
+8. Public package contracts no longer duplicate spatial representation (`Float2` + `Float3`) except explicitly documented/perf-internal non-contract cases.
 
 ## Phase 5 — Engine Anti-Corruption Layer (TDE Containment)
 

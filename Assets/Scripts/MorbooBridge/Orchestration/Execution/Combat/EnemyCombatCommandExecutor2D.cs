@@ -17,7 +17,7 @@ using UnityEngine;
 /// includes the matching decision/action nodes.
 /// </para>
 /// </summary>
-public sealed class EnemyCombatCommandExecutor : MonoBehaviour, ICombatCommandReceiver, IOrchestrationActor, IEntityIdProvider
+public sealed class EnemyCombatCommandExecutor2D : MonoBehaviour, ICombatCommandReceiver, IOrchestrationActor, IEntityIdProvider
 {
     // ──────────────────────────────────────────────────────────────────
     //  Serialized
@@ -115,7 +115,7 @@ public sealed class EnemyCombatCommandExecutor : MonoBehaviour, ICombatCommandRe
         if (!_warnedMissingIdentity)
         {
             _warnedMissingIdentity = true;
-            Debug.LogWarning("[EnemyCombatCommandExecutor] Missing EnemyOrchestrationIdentity; EntityId is None.", this);
+            Debug.LogWarning("[EnemyCombatCommandExecutor2D] Missing EnemyOrchestrationIdentity; EntityId is None.", this);
         }
         return EntityId.None;
     }
@@ -285,7 +285,7 @@ public sealed class EnemyCombatCommandExecutor : MonoBehaviour, ICombatCommandRe
         {
             target = command.TargetPoint.ToString();
         }
-        Debug.Log($"[EnemyCombatCommandExecutor] {command.Type} → {target}" +
+        Debug.Log($"[EnemyCombatCommandExecutor2D] {command.Type} → {target}" +
                   (string.IsNullOrEmpty(command.DebugLabel) ? "" : $" ({command.DebugLabel})"),
                   this);
     }

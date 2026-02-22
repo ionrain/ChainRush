@@ -20,7 +20,7 @@ using UnityEngine;
 /// RuntimeHost-internal fields (receiver lists, RoleByTransform) are NOT exposed via IWorldQuery.
 /// </para>
 /// </summary>
-public sealed class OrchestrationWorldCache : IWorldQuery, IActorReadProjectionQuery
+public sealed class OrchestrationWorldCache : IWorldQuery, IWorldQuery3D, IActorReadProjectionQuery
 {
     // ──────────────────────────────────────────────────────────────────
     //  RuntimeHost-internal — Receiver and actor lists (NOT in IWorldQuery)
@@ -80,16 +80,20 @@ public sealed class OrchestrationWorldCache : IWorldQuery, IActorReadProjectionQ
     // ──────────────────────────────────────────────────────────────────
 
     Float2 _anchor;
+    Float3 _worldAnchor;
     float _now;
+    SpatialProjectionPlane _projectionPlane;
 
     // Actor snapshots (parallel lists, same indices as Actors)
     readonly List<Float2> _actorPositions = new List<Float2>(256);
+    readonly List<Float3> _actorPositionsWorld = new List<Float3>(256);
     readonly List<EntityId> _actorEntityIds = new List<EntityId>(256);
     readonly List<bool> _actorHostile = new List<bool>(256);
     readonly List<EntityLifecycleState> _actorLifecycleStates = new List<EntityLifecycleState>(256);
 
     // Crowd snapshots (IWorldQuery-visible, parallel to FriendlyCrowdTransforms)
     readonly List<Float2> _crowdPositions = new List<Float2>(128);
+    readonly List<Float3> _crowdPositionsWorld = new List<Float3>(128);
     readonly List<EntityId> _crowdEntityIds = new List<EntityId>(128);
 
     // Per-entity actor index lookup (EntityId → index for O(1) position resolve)
@@ -136,6 +140,30 @@ public sealed class OrchestrationWorldCache : IWorldQuery, IActorReadProjectionQ
         }
     }
 
+    public Float3 WorldAnchor
+    {
+        get => _worldAnchor;
+        set
+        {
+#if DEBUG
+            Debug.Assert(!_frozen, "[OrchestrationWorldCache] Mutating WorldAnchor after Freeze.");
+#endif
+            _worldAnchor = value;
+        }
+    }
+
+    public SpatialProjectionPlane ProjectionPlane
+    {
+        get => _projectionPlane;
+        set
+        {
+#if DEBUG
+            Debug.Assert(!_frozen, "[OrchestrationWorldCache] Mutating ProjectionPlane after Freeze.");
+#endif
+            _projectionPlane = value;
+        }
+    }
+
     public float Now
     {
         get => _now;
@@ -162,6 +190,7 @@ public sealed class OrchestrationWorldCache : IWorldQuery, IActorReadProjectionQ
         Debug.Assert(!_frozen, "[OrchestrationWorldCache] SnapshotActors called after Freeze.");
 #endif
         _actorPositions.Clear();
+        _actorPositionsWorld.Clear();
         _actorEntityIds.Clear();
         _actorHostile.Clear();
         _actorLifecycleStates.Clear();
@@ -172,7 +201,9 @@ public sealed class OrchestrationWorldCache : IWorldQuery, IActorReadProjectionQ
             IOrchestrationActor actor = Actors[i];
             Transform t = actor.GetTransform();
 
-            _actorPositions.Add(((Vector2)t.position).ToFloat2());
+            Vector3 worldPos = t.position;
+            _actorPositionsWorld.Add(worldPos.ToFloat3());
+            _actorPositions.Add(worldPos.ProjectToFloat2(_projectionPlane));
             _actorLifecycleStates.Add(actor.GetLifecycleState());
 
             bool isHostile = false;
@@ -207,12 +238,15 @@ public sealed class OrchestrationWorldCache : IWorldQuery, IActorReadProjectionQ
         Debug.Assert(!_frozen, "[OrchestrationWorldCache] SnapshotCrowd called after Freeze.");
 #endif
         _crowdPositions.Clear();
+        _crowdPositionsWorld.Clear();
         _crowdEntityIds.Clear();
 
         for (int i = 0; i < FriendlyCrowdTransforms.Count; i++)
         {
             Transform t = FriendlyCrowdTransforms[i];
-            _crowdPositions.Add(((Vector2)t.position).ToFloat2());
+            Vector3 worldPos = t.position;
+            _crowdPositionsWorld.Add(worldPos.ToFloat3());
+            _crowdPositions.Add(worldPos.ProjectToFloat2(_projectionPlane));
 
             IEntityIdProvider idp = t.GetComponent<IEntityIdProvider>();
             _crowdEntityIds.Add(idp != null ? idp.GetEntityId() : EntityId.None);
@@ -259,11 +293,13 @@ public sealed class OrchestrationWorldCache : IWorldQuery, IActorReadProjectionQ
     // ──────────────────────────────────────────────────────────────────
 
     Float2 IWorldQueryBase.Anchor => _anchor;
+    Float3 IWorldQueryBase3D.Anchor3D => _worldAnchor;
     float IWorldQueryBase.Now => _now;
 
     public int ActorCount => _actorPositions.Count;
     public EntityId GetActorEntityId(int index) => _actorEntityIds[index];
     public Float2 GetActorPosition(int index) => _actorPositions[index];
+    public Float3 GetActorPosition3D(int index) => _actorPositionsWorld[index];
     public bool GetActorIsAlive(int index) => _actorLifecycleStates[index] == EntityLifecycleState.Active;
     public bool GetActorIsHostile(int index) => _actorHostile[index];
 
@@ -278,6 +314,18 @@ public sealed class OrchestrationWorldCache : IWorldQuery, IActorReadProjectionQ
         return false;
     }
 
+    public bool TryGetActorPosition3D(EntityId entityId, out Float3 position)
+    {
+        if (!entityId.IsNone && _actorIndexByEntityId.TryGetValue(entityId, out int idx))
+        {
+            position = _actorPositionsWorld[idx];
+            return true;
+        }
+
+        position = Float3.Zero;
+        return false;
+    }
+
     public bool TryGetActorReadProjection(EntityId entityId, out ActorReadProjection projection)
     {
         if (!entityId.IsNone && _actorIndexByEntityId.TryGetValue(entityId, out int idx))
@@ -288,7 +336,7 @@ public sealed class OrchestrationWorldCache : IWorldQuery, IActorReadProjectionQ
 
             projection = new ActorReadProjection(
                 entityId,
-                _actorPositions[idx],
+                _actorPositionsWorld[idx],
                 _actorLifecycleStates[idx],
                 roleId);
             return true;
@@ -304,6 +352,7 @@ public sealed class OrchestrationWorldCache : IWorldQuery, IActorReadProjectionQ
 
     public int CrowdCount => _crowdPositions.Count;
     public Float2 GetCrowdPosition(int index) => _crowdPositions[index];
+    public Float3 GetCrowdPosition3D(int index) => _crowdPositionsWorld[index];
     public EntityId GetCrowdEntityId(int index) => _crowdEntityIds[index];
 
     // ──────────────────────────────────────────────────────────────────
@@ -415,11 +464,13 @@ public sealed class OrchestrationWorldCache : IWorldQuery, IActorReadProjectionQ
         ResolvedCombatTargetSet = null;
 
         _actorPositions.Clear();
+        _actorPositionsWorld.Clear();
         _actorEntityIds.Clear();
         _actorHostile.Clear();
         _actorLifecycleStates.Clear();
         _actorIndexByEntityId.Clear();
         _crowdPositions.Clear();
+        _crowdPositionsWorld.Clear();
         _crowdEntityIds.Clear();
         _roleIdByEntityId.Clear();
         _idleBoundsByRoleId.Clear();

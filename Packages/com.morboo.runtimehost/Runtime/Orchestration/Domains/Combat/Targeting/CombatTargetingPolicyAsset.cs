@@ -15,7 +15,7 @@ using UnityEngine;
 /// <para>
 /// IMPORTANT — Policies operate on EntityId + Float2 via IWorldQueryBase. No Transform.
 /// EntityId → Transform resolution happens at the Integration boundary
-/// (UnitCombatTargetSelector).
+/// (UnitCombatTargetSelector2D).
 /// </para>
 /// </summary>
 public abstract class CombatTargetingPolicyAsset : ScriptableObject

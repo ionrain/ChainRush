@@ -11,7 +11,7 @@ using UnityEngine;
 /// IMPORTANT — Must be allocation-free and stateless. No per-call allocations.
 /// </para>
 /// </summary>
-public abstract class FormationPatternAsset : ScriptableObject
+public abstract class FormationPattern2DAsset : ScriptableObject
 {
     [SerializeField] string id;
 

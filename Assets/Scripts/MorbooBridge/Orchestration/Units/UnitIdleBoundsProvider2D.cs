@@ -11,7 +11,7 @@ using UnityEngine;
 /// (deterministic, with warning).
 /// </para>
 /// </summary>
-public sealed class UnitIdleBoundsProvider : MonoBehaviour, IIdleBoundsProvider, IRoleAssetProvider
+public sealed class UnitIdleBoundsProvider2D : MonoBehaviour, IIdleBoundsProvider, IRoleAssetProvider
 {
     [Header("Role")]
     [Tooltip("Role this zone provides bounds for. Must match a RoleAsset used by units.")]
@@ -57,15 +57,15 @@ public sealed class UnitIdleBoundsProvider : MonoBehaviour, IIdleBoundsProvider,
     void OnValidate()
     {
         if (role == null)
-            Debug.LogWarning($"[{name}] UnitIdleBoundsProvider has no RoleAsset assigned. " +
+            Debug.LogWarning($"[{name}] UnitIdleBoundsProvider2D has no RoleAsset assigned. " +
                              "It will not register in IdleBoundsRegistry.", this);
 
         if (useColliderBounds && boundsCollider == null)
-            Debug.LogWarning($"[{name}] UnitIdleBoundsProvider: useColliderBounds is true but " +
+            Debug.LogWarning($"[{name}] UnitIdleBoundsProvider2D: useColliderBounds is true but " +
                              "boundsCollider is null. Will use fallbackSize.", this);
 
         if (boundsCollider != null && boundsCollider.bounds.size.sqrMagnitude <= 0.01f)
-            Debug.LogWarning($"[{name}] UnitIdleBoundsProvider: boundsCollider has near-zero size. " +
+            Debug.LogWarning($"[{name}] UnitIdleBoundsProvider2D: boundsCollider has near-zero size. " +
                              "May cause degenerate idle behavior.", this);
     }
 #endif

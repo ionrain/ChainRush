@@ -3,7 +3,7 @@ using UnityEngine;
 
 /// <summary>
 /// TopDownEngine AIDecision that returns true when an
-/// <see cref="EnemyCombatCommandExecutor"/> has an active external command
+/// <see cref="EnemyCombatCommandExecutor2D"/> has an active external command
 /// (target transform or point) that has not expired.
 /// <para>
 /// INTEGRATION: Place this decision on a transition that leads to an AIState
@@ -20,13 +20,13 @@ using UnityEngine;
 /// </summary>
 public class AIDecisionHasExternalCommand2D : AIDecision
 {
-    [SerializeField] EnemyCombatCommandExecutor executor;
+    [SerializeField] EnemyCombatCommandExecutor2D executor;
 
     public override void Initialization()
     {
         base.Initialization();
         if (executor == null)
-            executor = GetComponentInParent<EnemyCombatCommandExecutor>();
+            executor = GetComponentInParent<EnemyCombatCommandExecutor2D>();
     }
 
     public override bool Decide()

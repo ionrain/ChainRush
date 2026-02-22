@@ -6,6 +6,7 @@ public struct OrchestrationArbiterContext
 {
     public FactionAsset OrchestratorFaction;
     public FactionRelationTableAsset Relations;
+    public Float3 WorldAnchor;
     public Float2 Anchor;
     public float Now;
     public bool DebugLog;

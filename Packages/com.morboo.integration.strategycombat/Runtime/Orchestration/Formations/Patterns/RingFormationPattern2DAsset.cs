@@ -5,7 +5,7 @@ using UnityEngine;
 /// Fully deterministic via seed.
 /// </summary>
 [CreateAssetMenu(fileName = "RingFormationPattern", menuName = "Game/Orchestration/Formations/Ring")]
-public sealed class RingFormationPatternAsset : FormationPatternAsset
+public sealed class RingFormationPattern2DAsset : FormationPattern2DAsset
 {
     [Header("Ring")]
     [Tooltip("Radius of the ring around the anchor.")]

@@ -40,6 +40,8 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
     [Header("Anchor")]
     [Tooltip("Idle anchor point (e.g. hero transform). Falls back to this.transform.")]
     [SerializeField] Transform anchorOverride;
+    [Tooltip("Projection from 3D world-space to planar orchestration queries.")]
+    [SerializeField] SpatialProjectionPlane projectionPlane = SpatialProjectionPlane.XY;
 
     // ──────────────────────────────────────────────────────────────────
     //  Serialized — Domains
@@ -195,6 +197,8 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
     void BuildWorldCache(OrchestrationArbiterContext ctx)
     {
         _world.Clear();
+        _world.ProjectionPlane = projectionPlane;
+        _world.WorldAnchor = ctx.WorldAnchor;
         _world.Anchor = ctx.Anchor;
         _world.Now = ctx.Now;
 
@@ -362,9 +366,10 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
         // ── Fill context ────────────────────────────────────────────
         _ctx.OrchestratorFaction = orchestratorFaction;
         _ctx.Relations = typedRelations;
-        _ctx.Anchor = anchorOverride != null
-            ? anchorOverride.position.ToFloat2()
-            : ((Vector2)transform.position).ToFloat2();
+        _ctx.WorldAnchor = anchorOverride != null
+            ? anchorOverride.position.ToFloat3()
+            : transform.position.ToFloat3();
+        _ctx.Anchor = _ctx.WorldAnchor.ProjectToFloat2(projectionPlane);
         _ctx.Now = now;
         _ctx.DebugLog = debugLog;
         _ctx.World = _world;
@@ -396,6 +401,7 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter
                 : default,
             OrchestratorFaction = orchestratorFaction,
             Relations = typedRelations,
+            WorldAnchor = _ctx.WorldAnchor,
             Anchor = _ctx.Anchor,
             Now = now,
             DebugLog = debugLog

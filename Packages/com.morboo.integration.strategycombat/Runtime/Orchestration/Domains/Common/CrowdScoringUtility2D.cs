@@ -1,7 +1,7 @@
 /// <summary>
 /// Shared static utility for crowd-aware scoring and deterministic hashing.
-/// Consumed by idle policies (<see cref="IdleFillAreaPolicyAsset"/>) and combat
-/// constraint spread logic (<see cref="UnitCombatCommandExecutor"/>).
+/// Consumed by idle policies (<see cref="IdleFillAreaPolicy2DAsset"/>) and combat
+/// constraint spread logic (<see cref="UnitCombatCommandExecutor2D"/>).
 /// <para>
 /// PERF: All methods use index loops only — no LINQ, no allocations.
 /// </para>
@@ -14,7 +14,7 @@
 /// No Transform references. All positions are <see cref="Float2"/>.
 /// </para>
 /// </summary>
-public static class CrowdScoringUtility
+public static class CrowdScoringUtility2D
 {
     // ──────────────────────────────────────────────────────────────────
     //  Constants

@@ -2,12 +2,12 @@ using UnityEngine;
 
 /// <summary>
 /// Read-only carrier of Top-K hostile candidates, updated once per orchestrator tick.
-/// Units reference this via <see cref="UnitCombatTargetSelector"/> to pick per-unit
+/// Units reference this via <see cref="UnitCombatTargetSelector2D"/> to pick per-unit
 /// targets from the candidate pool without re-scanning the world.
 /// <para>
 /// IMPORTANT — This component holds no gameplay logic. It is a shared data buffer:
 /// - Written by <see cref="CombatOrchestratorLite"/> each tick.
-/// - Read by <see cref="UnitCombatTargetSelector"/> on demand.
+/// - Read by <see cref="UnitCombatTargetSelector2D"/> on demand.
 /// - Without it, selectors fall back to the orchestrator-chosen primary target.
 /// </para>
 /// <para>

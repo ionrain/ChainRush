@@ -13,9 +13,9 @@ using UnityEngine;
 /// </para>
 /// </summary>
 [CreateAssetMenu(fileName = "IdleRingSlotPolicy", menuName = "Game/Orchestration/Idle/Policies/Ring Slot")]
-public sealed class IdleRingSlotPolicyAsset : IdlePolicyAsset
+public sealed class IdleRingSlotPolicy2DAsset : IdlePolicyAsset
 {
-    // TODO: Migrate radius/angle logic to FormationPatternAsset (RingFormationPatternAsset).
+    // TODO: Migrate radius/angle logic to FormationPattern2DAsset (RingFormationPattern2DAsset).
     [Header("Ring")]
     [SerializeField] float radius = 2.0f;
     [SerializeField] float angleJitterDegrees = 12f;

@@ -3,7 +3,7 @@ using UnityEngine;
 
 /// <summary>
 /// TopDownEngine AIAction that sets <c>_brain.Target</c> from an active external
-/// command stored in <see cref="EnemyCombatCommandExecutor"/>.
+/// command stored in <see cref="EnemyCombatCommandExecutor2D"/>.
 /// <para>
 /// INTEGRATION: This action should live in an AIState that is entered when
 /// <see cref="AIDecisionHasExternalCommand2D"/> returns true. That state should
@@ -23,14 +23,14 @@ using UnityEngine;
 /// </summary>
 public class AIActionSetBrainTargetFromExternal2D : AIAction
 {
-    [SerializeField] EnemyCombatCommandExecutor executor;
+    [SerializeField] EnemyCombatCommandExecutor2D executor;
 
     public override void Initialization()
     {
         if (!ShouldInitialize) return;
         base.Initialization();
         if (executor == null)
-            executor = GetComponentInParent<EnemyCombatCommandExecutor>();
+            executor = GetComponentInParent<EnemyCombatCommandExecutor2D>();
     }
 
     public override void PerformAction()

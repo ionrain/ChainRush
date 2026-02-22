@@ -5,7 +5,7 @@ using UnityEngine;
 /// If <see cref="columns"/> is 0, auto-derives a roughly square layout.
 /// </summary>
 [CreateAssetMenu(fileName = "GridFormationPattern", menuName = "Game/Orchestration/Formations/Grid")]
-public sealed class GridFormationPatternAsset : FormationPatternAsset
+public sealed class GridFormationPattern2DAsset : FormationPattern2DAsset
 {
     [Header("Grid")]
     [Tooltip("Spacing between grid cells.")]

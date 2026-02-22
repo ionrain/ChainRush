@@ -21,7 +21,7 @@ using UnityEngine.Serialization;
 /// (e.g. unit spawned before set), resolves on first <see cref="SelectTarget"/> call.
 /// </para>
 /// </summary>
-public sealed class UnitCombatTargetSelector : MonoBehaviour, ICombatTargetPolicySelector
+public sealed class UnitCombatTargetSelector2D : MonoBehaviour, ICombatTargetPolicySelector
 {
     // ──────────────────────────────────────────────────────────────────
     //  Serialized
@@ -191,7 +191,7 @@ public sealed class UnitCombatTargetSelector : MonoBehaviour, ICombatTargetPolic
             if (debugLog)
             {
                 string targetName = result != null ? result.name : "null";
-                Debug.Log($"[UnitCombatTargetSelector] Policy={active.Id} Info={debugInfo} Target={targetName}", this);
+                Debug.Log($"[UnitCombatTargetSelector2D] Policy={active.Id} Info={debugInfo} Target={targetName}", this);
             }
 
             return result;

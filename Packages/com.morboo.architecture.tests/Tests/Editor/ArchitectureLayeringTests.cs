@@ -26,6 +26,9 @@ public sealed class ArchitectureLayeringTests
     const string StrategyCombatActorContractPath = "Packages/com.morboo.runtimehost/Runtime/Orchestration/IOrchestrationActor.cs";
     const string StrategyCombatWorldCachePath = "Packages/com.morboo.runtimehost/Runtime/Orchestration/Arbitration/OrchestrationWorldCache.cs";
     const string StrategyCombatExecutionRouterPath = "Packages/com.morboo.runtimehost/Runtime/Orchestration/Execution/ExecutionRouter.cs";
+    const string FrameworkFloat3Path = "Packages/com.morboo.framework/Runtime/Math/Float3.cs";
+    const string FrameworkAabb3DPath = "Packages/com.morboo.framework/Runtime/Math/AABB3D.cs";
+    const string SystemsUnityConversionsPath = "Packages/com.morboo.systems/Runtime/Unity/FrameworkUnityConversions.cs";
 
     const string FrameworkAssemblyName = "Morboo.Framework";
 
@@ -162,7 +165,7 @@ public sealed class ArchitectureLayeringTests
         new Regex(@"\bIsAlive\b", RegexOptions.Compiled);
 
     static readonly Regex StrategyCombatWorldCacheProjectionContractRegex =
-        new Regex(@"\bclass\s+OrchestrationWorldCache\s*:\s*IWorldQuery\s*,\s*IActorReadProjectionQuery\b", RegexOptions.Compiled);
+        new Regex(@"\bclass\s+OrchestrationWorldCache\s*:\s*[^{\n]*\bIActorReadProjectionQuery\b", RegexOptions.Compiled);
 
     static readonly Regex StrategyCombatExecutionRouterProjectionUsageRegex =
         new Regex(@"\bTryGetActorReadProjection\s*\(", RegexOptions.Compiled);
@@ -213,6 +216,36 @@ public sealed class ArchitectureLayeringTests
 
     static readonly Regex EntityIdDeclarationRegex =
         new Regex(@"\b(struct|class)\s+EntityId\b", RegexOptions.Compiled);
+
+    static readonly Regex Float3DeclarationRegex =
+        new Regex(@"\bstruct\s+Float3\b", RegexOptions.Compiled);
+
+    static readonly Regex Aabb3DDeclarationRegex =
+        new Regex(@"\bstruct\s+AABB3D\b", RegexOptions.Compiled);
+
+    static readonly Regex SpatialProjectionEnumRegex =
+        new Regex(@"\benum\s+SpatialProjectionPlane\b", RegexOptions.Compiled);
+
+    static readonly Regex SpatialProjectionMethodRegex =
+        new Regex(@"\bProjectToFloat2\s*\(", RegexOptions.Compiled);
+
+    static readonly Regex PublicSpatialContractTypeDeclRegex =
+        new Regex(@"\bpublic\s+(?:readonly\s+)?(struct|interface)\s+(?<name>[A-Za-z_][A-Za-z0-9_]*)\b", RegexOptions.Compiled);
+
+    static readonly Regex Float2TokenRegex =
+        new Regex(@"\bFloat2\b", RegexOptions.Compiled);
+
+    static readonly Regex Float3TokenRegex =
+        new Regex(@"\bFloat3\b", RegexOptions.Compiled);
+
+    static readonly HashSet<string> DualSpatialPublicContractAllowlist =
+        new HashSet<string>(StringComparer.Ordinal)
+        {
+            "Packages/com.morboo.framework/Runtime/State/WorldSnapshot.cs::WorldSnapshot",
+            "Packages/com.morboo.core/Runtime/Actor/ActorReadProjection.cs::ActorReadProjection",
+            "Packages/com.morboo.runtimehost/Runtime/Orchestration/Arbitration/OrchestrationArbiterContext.cs::OrchestrationArbiterContext",
+            "Packages/com.morboo.runtimehost/Runtime/Orchestration/Execution/ExecutionContext.cs::ExecutionContext"
+        };
 
     // ── Existing layering tests ──────────────────────────────────────
 
@@ -942,6 +975,73 @@ public sealed class ArchitectureLayeringTests
             "RuntimeHost calls Apply*Command directly (should emit via ICommandBus):\n" + string.Join("\n", violations));
     }
 
+    [Test]
+    public void Framework_Has3DSpatialPrimitives()
+    {
+        Assert.That(File.Exists(FrameworkFloat3Path), Is.True, $"Missing file: {FrameworkFloat3Path}");
+        Assert.That(File.Exists(FrameworkAabb3DPath), Is.True, $"Missing file: {FrameworkAabb3DPath}");
+
+        string float3 = StripCommentsAndStrings(File.ReadAllText(FrameworkFloat3Path));
+        string aabb3D = StripCommentsAndStrings(File.ReadAllText(FrameworkAabb3DPath));
+
+        Assert.That(Float3DeclarationRegex.IsMatch(float3), Is.True, "Float3 struct declaration is missing.");
+        Assert.That(Aabb3DDeclarationRegex.IsMatch(aabb3D), Is.True, "AABB3D struct declaration is missing.");
+    }
+
+    [Test]
+    public void Systems_UsesExplicitSpatialProjectionAdapter()
+    {
+        Assert.That(File.Exists(SystemsUnityConversionsPath), Is.True, $"Missing file: {SystemsUnityConversionsPath}");
+
+        string source = StripCommentsAndStrings(File.ReadAllText(SystemsUnityConversionsPath));
+        Assert.That(SpatialProjectionEnumRegex.IsMatch(source), Is.True,
+            "SpatialProjectionPlane enum is missing in FrameworkUnityConversions.");
+        Assert.That(SpatialProjectionMethodRegex.IsMatch(source), Is.True,
+            "Explicit ProjectToFloat2 adapter is missing in FrameworkUnityConversions.");
+    }
+
+    [Test]
+    public void PublicSpatialContracts_DualFloat2AndFloat3Representations_AreAllowlistedOnly()
+    {
+        string[] roots =
+        {
+            FrameworkSourceRoot,
+            CoreSourceRoot,
+            RuntimeHostSourceRoot
+        };
+
+        var violations = new List<string>();
+        foreach (string root in roots)
+        {
+            if (!Directory.Exists(root))
+                continue;
+
+            foreach (string file in Directory.GetFiles(root, "*.cs", SearchOption.AllDirectories))
+            {
+                string normalizedPath = NormalizePath(file);
+                string stripped = StripCommentsAndStrings(File.ReadAllText(file));
+
+                foreach (PublicContractTypeSlice contract in EnumeratePublicContractTypes(stripped))
+                {
+                    bool hasFloat2 = Float2TokenRegex.IsMatch(contract.Body);
+                    bool hasFloat3 = Float3TokenRegex.IsMatch(contract.Body);
+                    if (!hasFloat2 || !hasFloat3)
+                        continue;
+
+                    string key = $"{normalizedPath}::{contract.Name}";
+                    if (DualSpatialPublicContractAllowlist.Contains(key))
+                        continue;
+
+                    violations.Add(key);
+                }
+            }
+        }
+
+        Assert.That(violations, Is.Empty,
+            "Public contracts must not expose duplicate spatial representations (Float2 + Float3) unless explicitly allowlisted for migration:\n" +
+            string.Join("\n", violations));
+    }
+
     // ── Package placement policy gates ───────────────────────────────
 
     [Test]
@@ -1522,6 +1622,52 @@ public sealed class ArchitectureLayeringTests
         return data;
     }
 
+    static IEnumerable<PublicContractTypeSlice> EnumeratePublicContractTypes(string strippedSource)
+    {
+        MatchCollection matches = PublicSpatialContractTypeDeclRegex.Matches(strippedSource);
+        for (int mi = 0; mi < matches.Count; mi++)
+        {
+            Match match = matches[mi];
+            string name = match.Groups["name"].Value;
+            if (string.IsNullOrWhiteSpace(name))
+                continue;
+
+            int bodyStart = strippedSource.IndexOf('{', match.Index + match.Length);
+            if (bodyStart < 0)
+                continue;
+
+            int depth = 0;
+            int bodyEnd = -1;
+            for (int i = bodyStart; i < strippedSource.Length; i++)
+            {
+                char c = strippedSource[i];
+                if (c == '{')
+                    depth++;
+                else if (c == '}')
+                {
+                    depth--;
+                    if (depth == 0)
+                    {
+                        bodyEnd = i;
+                        break;
+                    }
+                }
+            }
+
+            if (bodyEnd < 0 || bodyEnd < bodyStart)
+                continue;
+
+            yield return new PublicContractTypeSlice(
+                name,
+                strippedSource.Substring(match.Index, bodyEnd - match.Index + 1));
+        }
+    }
+
+    static string NormalizePath(string path)
+    {
+        return path.Replace('\\', '/');
+    }
+
     static string StripCommentsAndStrings(string source)
     {
         var sb = new StringBuilder(source.Length);
@@ -1680,5 +1826,17 @@ public sealed class ArchitectureLayeringTests
         public string name;
         public string[] references;
         public bool noEngineReferences;
+    }
+
+    readonly struct PublicContractTypeSlice
+    {
+        public PublicContractTypeSlice(string name, string body)
+        {
+            Name = name;
+            Body = body;
+        }
+
+        public string Name { get; }
+        public string Body { get; }
     }
 }

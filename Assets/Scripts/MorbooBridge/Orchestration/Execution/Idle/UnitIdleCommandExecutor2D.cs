@@ -18,7 +18,7 @@ using UnityEngine;
 /// The executor does NOT enforce distance checks. No Update loop. No per-frame work.
 /// </para>
 /// </summary>
-public sealed class UnitIdleCommandExecutor : MonoBehaviour, IIdleCommandReceiver, IFactionAssetProvider, IOrchestrationActor, IRoleContextProvider
+public sealed class UnitIdleCommandExecutor2D : MonoBehaviour, IIdleCommandReceiver, IFactionAssetProvider, IOrchestrationActor, IRoleContextProvider
 {
     [SerializeField] Unit _unit;
     [SerializeField] UnitOrchestrationIdentity _identity;
@@ -165,7 +165,7 @@ public sealed class UnitIdleCommandExecutor : MonoBehaviour, IIdleCommandReceive
         if (!_warnedMissingIdentity)
         {
             _warnedMissingIdentity = true;
-            Debug.LogWarning("[UnitIdleCommandExecutor] Missing UnitOrchestrationIdentity; EntityId is None.", this);
+            Debug.LogWarning("[UnitIdleCommandExecutor2D] Missing UnitOrchestrationIdentity; EntityId is None.", this);
         }
         return EntityId.None;
     }

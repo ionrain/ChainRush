@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// Idle policy that chooses a point inside provided bounds while avoiding crowding.
 /// Uses deterministic sampling with "personal space" and "crowd penalty" scoring
-/// via the shared <see cref="CrowdScoringUtility"/>.
+/// via the shared <see cref="CrowdScoringUtility2D"/>.
 /// <para>
 /// IMPORTANT — Allocation-free and stateless. Per-unit state belongs in selectors/executors.
 /// </para>
@@ -14,7 +14,7 @@ using UnityEngine;
 /// </para>
 /// </summary>
 [CreateAssetMenu(fileName = "IdleFillAreaPolicy", menuName = "Game/Orchestration/Idle/Fill Area Policy")]
-public sealed class IdleFillAreaPolicyAsset : IdlePolicyAsset
+public sealed class IdleFillAreaPolicy2DAsset : IdlePolicyAsset
 {
     // ──────────────────────────────────────────────────────────────────
     //  Serialized — Sampling
@@ -113,10 +113,10 @@ public sealed class IdleFillAreaPolicyAsset : IdlePolicyAsset
         for (int i = 0; i < sampleCount; i++)
         {
             int seed = roleSeed ^ entitySeed ^ (i * SAMPLE_SEED_PRIME);
-            Float2 candidate = CrowdScoringUtility.RandomPointInBounds(bounds, seed);
+            Float2 candidate = CrowdScoringUtility2D.RandomPointInBounds(bounds, seed);
 
             // Crowd penalty via shared utility (soft penalty, never rejects)
-            float score = CrowdScoringUtility.ScoreCrowdPenalty(
+            float score = CrowdScoringUtility2D.ScoreCrowdPenalty(
                 world, selfId, candidate,
                 personalSpaceSqr, crowdRadiusSqr, PERSONAL_SPACE_PENALTY);
 

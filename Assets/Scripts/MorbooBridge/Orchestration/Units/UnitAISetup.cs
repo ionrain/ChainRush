@@ -26,7 +26,7 @@ public sealed class UnitAISetup : MonoBehaviour, IPostSpawnSetup
     [SerializeField] UnitOrchestrationIdentity identity;
     [SerializeField] UnitCapabilityProvider capabilityProvider;
     [SerializeField] UnitIdlePolicySelector idlePolicySelector;
-    [SerializeField] UnitCombatTargetSelector combatTargetSelector;
+    [SerializeField] UnitCombatTargetSelector2D combatTargetSelector;
 
     // ──────────────────────────────────────────────────────────────────
     //  Serialized — Maps
@@ -79,7 +79,7 @@ public sealed class UnitAISetup : MonoBehaviour, IPostSpawnSetup
         identity = GetComponent<UnitOrchestrationIdentity>();
         capabilityProvider = GetComponent<UnitCapabilityProvider>();
         idlePolicySelector = GetComponent<UnitIdlePolicySelector>();
-        combatTargetSelector = GetComponent<UnitCombatTargetSelector>();
+        combatTargetSelector = GetComponent<UnitCombatTargetSelector2D>();
     }
 
     // ──────────────────────────────────────────────────────────────────

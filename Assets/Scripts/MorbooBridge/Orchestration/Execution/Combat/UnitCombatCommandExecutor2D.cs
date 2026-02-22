@@ -22,7 +22,7 @@ using UnityEngine;
 /// </para>
 /// </summary>
 [RequireComponent(typeof(Unit))]
-public sealed class UnitCombatCommandExecutor : MonoBehaviour, ICombatCommandReceiver, IConstrainedCombatReceiver, IOrchestrationActor, IRoleAssetProvider, IEntityIdProvider
+public sealed class UnitCombatCommandExecutor2D : MonoBehaviour, ICombatCommandReceiver, IConstrainedCombatReceiver, IOrchestrationActor, IRoleAssetProvider, IEntityIdProvider
 {
     // ──────────────────────────────────────────────────────────────────
     //  Serialized
@@ -30,7 +30,7 @@ public sealed class UnitCombatCommandExecutor : MonoBehaviour, ICombatCommandRec
 
     [SerializeField] Unit _unit;
     [SerializeField] UnitOrchestrationIdentity _identity;
-    [SerializeField] UnitCombatTargetSelector _selector;
+    [SerializeField] UnitCombatTargetSelector2D _selector;
 
     [Header("Waypoint")]
     [Tooltip("When true, Reset/OnValidate will create a child waypoint for editor convenience.")]
@@ -87,7 +87,7 @@ public sealed class UnitCombatCommandExecutor : MonoBehaviour, ICombatCommandRec
     {
         _unit = GetComponent<Unit>();
         _identity = GetComponent<UnitOrchestrationIdentity>();
-        _selector = GetComponent<UnitCombatTargetSelector>();
+        _selector = GetComponent<UnitCombatTargetSelector2D>();
         if (createWaypointOnReset)
             FindOrCreateWaypointEditor();
     }
@@ -99,7 +99,7 @@ public sealed class UnitCombatCommandExecutor : MonoBehaviour, ICombatCommandRec
         if (_identity == null)
             _identity = GetComponent<UnitOrchestrationIdentity>();
         if (_selector == null)
-            _selector = GetComponent<UnitCombatTargetSelector>();
+            _selector = GetComponent<UnitCombatTargetSelector2D>();
         if (createWaypointOnReset)
             FindOrCreateWaypointEditor();
     }
@@ -132,7 +132,7 @@ public sealed class UnitCombatCommandExecutor : MonoBehaviour, ICombatCommandRec
         if (_identity == null)
             _identity = GetComponent<UnitOrchestrationIdentity>();
         if (_selector == null)
-            _selector = GetComponent<UnitCombatTargetSelector>();
+            _selector = GetComponent<UnitCombatTargetSelector2D>();
 
         if (_waypoint == null)
             _waypoint = FindWaypointChild();
@@ -157,7 +157,7 @@ public sealed class UnitCombatCommandExecutor : MonoBehaviour, ICombatCommandRec
         if (!_warnedMissingIdentity)
         {
             _warnedMissingIdentity = true;
-            Debug.LogWarning("[UnitCombatCommandExecutor] Missing UnitOrchestrationIdentity; EntityId is None.", this);
+            Debug.LogWarning("[UnitCombatCommandExecutor2D] Missing UnitOrchestrationIdentity; EntityId is None.", this);
         }
         return EntityId.None;
     }
@@ -492,7 +492,7 @@ public sealed class UnitCombatCommandExecutor : MonoBehaviour, ICombatCommandRec
     /// with lowest crowd penalty + anchor distance. Only "outside leash" is hard-rejected;
     /// personal space is a soft penalty so a position is always found.
     /// <para>
-    /// PERF: Uses <see cref="CrowdScoringUtility"/> with <see cref="ICrowdQuery"/>.
+    /// PERF: Uses <see cref="CrowdScoringUtility2D"/> with <see cref="ICrowdQuery"/>.
     /// Self-skip via <see cref="EntityId"/>. No allocations, no <c>UnityEngine.Random</c>.
     /// </para>
     /// </summary>
@@ -513,7 +513,7 @@ public sealed class UnitCombatCommandExecutor : MonoBehaviour, ICombatCommandRec
         int entitySeed = selfId.ToStableInt();
         int qx = Mathf.RoundToInt(boundaryPoint.x * BOUNDARY_QUANT);
         int qy = Mathf.RoundToInt(boundaryPoint.y * BOUNDARY_QUANT);
-        int baseSeed = entitySeed ^ CrowdScoringUtility.Hash01ToInt(qx ^ (qy * 0x6C62272E));
+        int baseSeed = entitySeed ^ CrowdScoringUtility2D.Hash01ToInt(qx ^ (qy * 0x6C62272E));
 
         Vector2 bestPoint = boundaryPoint;
         float bestScore = float.MaxValue;
@@ -521,8 +521,8 @@ public sealed class UnitCombatCommandExecutor : MonoBehaviour, ICombatCommandRec
         for (int i = 0; i < sampleCount; i++)
         {
             int sampleSeed = baseSeed ^ (i * SAMPLE_SEED_PRIME);
-            float angle = CrowdScoringUtility.Hash01(sampleSeed) * 360f;
-            float dist = personalSpace + CrowdScoringUtility.Hash01(sampleSeed ^ 0x1B873) * (maxOffset - personalSpace);
+            float angle = CrowdScoringUtility2D.Hash01(sampleSeed) * 360f;
+            float dist = personalSpace + CrowdScoringUtility2D.Hash01(sampleSeed ^ 0x1B873) * (maxOffset - personalSpace);
 
             float rad = angle * Mathf.Deg2Rad;
             Vector2 candidate = boundaryPoint + new Vector2(Mathf.Cos(rad), Mathf.Sin(rad)) * dist;
@@ -532,7 +532,7 @@ public sealed class UnitCombatCommandExecutor : MonoBehaviour, ICombatCommandRec
                 continue;
 
             // Score: crowd penalty via IWorldQuery (soft — never rejects, self-skip via EntityId)
-            float score = CrowdScoringUtility.ScoreCrowdPenalty(
+            float score = CrowdScoringUtility2D.ScoreCrowdPenalty(
                 _world, selfId, candidate.ToFloat2(),
                 personalSpaceSqr, crowdRadiusSqr);
 
@@ -605,7 +605,7 @@ public sealed class UnitCombatCommandExecutor : MonoBehaviour, ICombatCommandRec
         {
             target = command.TargetPoint.ToString();
         }
-        Debug.Log($"[UnitCombatCommandExecutor] {command.Type} → {target}" +
+        Debug.Log($"[UnitCombatCommandExecutor2D] {command.Type} → {target}" +
                   (string.IsNullOrEmpty(command.DebugLabel) ? "" : $" ({command.DebugLabel})"),
                   this);
     }

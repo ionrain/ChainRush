@@ -42,7 +42,7 @@ public abstract class IdlePolicyAsset : ScriptableObject
     /// <para>
     /// Default implementation ignores both seeds and delegates to the original
     /// abstract method. Override in policies that need role/entity awareness
-    /// (e.g. <see cref="IdleRingSlotPolicyAsset"/>).
+    /// (e.g. <see cref="IdleRingSlotPolicy2DAsset"/>).
     /// </para>
     /// </summary>
     public virtual IdleCommand ChooseCommand(

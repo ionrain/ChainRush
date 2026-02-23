@@ -166,7 +166,7 @@ Refactor (3D seam consumption + projection adapters):
 2. `Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/DomainContracts/Idle/IdleCommand.cs`.
 3. `Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/DomainContracts/Combat/CombatAdapter.cs`.
 4. `Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/Adapters/IdleCommandAdapter.cs`.
-5. `Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/Domains/Combat/CombatOrchestratorLite.cs`.
+5. `Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/Domains/Combat/CombatDomainOrchestrator.cs`.
 6. `Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/Domains/Combat/Targeting/CombatTargetingPolicyAsset.cs`.
 7. `Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/Domains/Combat/Targeting/Policies/NearestToSelfPolicyAsset.cs`.
 8. `Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/Domains/Combat/Targeting/Policies/PrimaryTargetPolicyAsset.cs`.

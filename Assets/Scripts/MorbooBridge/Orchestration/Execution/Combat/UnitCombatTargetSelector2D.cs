@@ -14,12 +14,6 @@ using UnityEngine.Serialization;
 /// IMPORTANT — Policies operate on EntityId + Float2 + IWorldQueryBase (no Transform).
 /// This component resolves the returned EntityId → Transform at the Integration boundary.
 /// </para>
-/// <para>
-/// Variant B binding: If <see cref="autoResolveTargetSet"/> is true and no
-/// <see cref="targetSet"/> is assigned, resolves from <see cref="OrchestrationRegistry"/>
-/// by faction. Supports HOT REBIND: if the set was not available at OnEnable
-/// (e.g. unit spawned before set), resolves on first <see cref="SelectTarget"/> call.
-/// </para>
 /// </summary>
 public sealed class UnitCombatTargetSelector2D : MonoBehaviour, ICombatTargetPolicySelector
 {
@@ -31,11 +25,8 @@ public sealed class UnitCombatTargetSelector2D : MonoBehaviour, ICombatTargetPol
     [SerializeField] UnitOrchestrationIdentity _identity;
 
     [Header("Target Set")]
-    [Tooltip("Optional shared Top-K hostile candidates. If null and autoResolveTargetSet " +
-             "is true, resolved from OrchestrationRegistry by faction.")]
+    [Tooltip("Optional explicit shared Top-K hostile candidates. Must be assigned explicitly; legacy auto-resolve fallback was removed.")]
     [SerializeField] CombatTargetSet targetSet;
-    [Tooltip("When true, resolve targetSet from OrchestrationRegistry if not assigned.")]
-    [SerializeField] bool autoResolveTargetSet = true;
 
     [Header("Typed Policy")]
     [Tooltip("Per-unit targeting policy override. Takes priority over runtime default and defaultPolicy.")]
@@ -56,13 +47,6 @@ public sealed class UnitCombatTargetSelector2D : MonoBehaviour, ICombatTargetPol
     // ──────────────────────────────────────────────────────────────────
     //  Runtime
     // ──────────────────────────────────────────────────────────────────
-
-    /// <summary>
-    /// One-shot guard. Set true after the first resolve attempt so we don't
-    /// call TryGetCombatTargetSet every SelectTarget call.
-    /// Reset in OnEnable for pooling safety.
-    /// </summary>
-    bool _triedResolveTargetSet;
 
     /// <summary>
     /// Runtime default policy injected by arbiter per-role dispatch.
@@ -99,11 +83,8 @@ public sealed class UnitCombatTargetSelector2D : MonoBehaviour, ICombatTargetPol
 
     void OnEnable()
     {
-        // Reset for pooling: old refs may be stale after scene change / re-pool.
-        _triedResolveTargetSet = false;
         _runtimeDefaultPolicy = null;
         _worldQuery = null;
-        TryResolveTargetSet();
     }
 
     // ──────────────────────────────────────────────────────────────────
@@ -157,10 +138,6 @@ public sealed class UnitCombatTargetSelector2D : MonoBehaviour, ICombatTargetPol
         if (command.IsNone || command.Type == CombatCommandType.Hold)
             return null;
 
-        // HOT REBIND: if CombatTargetSet registered after our OnEnable, try once.
-        if (targetSet == null && autoResolveTargetSet && !_triedResolveTargetSet)
-            TryResolveTargetSet();
-
         CombatTargetingPolicyAsset active = ResolvePolicy();
 
         if (active != null)
@@ -203,28 +180,4 @@ public sealed class UnitCombatTargetSelector2D : MonoBehaviour, ICombatTargetPol
             : null;
     }
 
-    // ──────────────────────────────────────────────────────────────────
-    //  Auto-resolve (Variant B)
-    // ──────────────────────────────────────────────────────────────────
-
-    /// <summary>
-    /// One-shot attempt to resolve <see cref="targetSet"/> from
-    /// <see cref="OrchestrationRegistry"/> by this unit's typed <see cref="FactionAsset"/>.
-    /// If the identity has no faction asset assigned, leaves targetSet null (no fallback).
-    /// Sets <see cref="_triedResolveTargetSet"/> so subsequent calls are no-ops.
-    /// </summary>
-    void TryResolveTargetSet()
-    {
-        _triedResolveTargetSet = true;
-
-        if (targetSet != null) return;
-        if (!autoResolveTargetSet) return;
-
-        if (_identity != null)
-        {
-            FactionAsset fa = _identity.GetFactionAsset();
-            if (fa != null)
-                OrchestrationRegistry.TryGetCombatTargetSet(fa, out targetSet);
-        }
-    }
 }

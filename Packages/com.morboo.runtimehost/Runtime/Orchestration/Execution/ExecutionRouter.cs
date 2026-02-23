@@ -14,19 +14,19 @@ using UnityEngine;
 /// (EntityId + RoleId), not MonoBehaviour receiver lists. Zero direct receiver access.
 /// </para>
 /// </summary>
-public sealed class ExecutionRouter
+public sealed class ExecutionRouter : IExecutionRouteHost
 {
     readonly InProcessCommandBus _bus;
     ExecutionRouteRegistration[] _routes;
     int _routeCount;
+    DomainExecutionRouteExecutor _unknownRouteFallback;
 
     // ──────────────────────────────────────────────────────────────────
     //  One-shot warning flags
     // ──────────────────────────────────────────────────────────────────
 
-    bool _warnedMissingRoleIdle;
-    bool _warnedNoIdleMap;
     bool _warnedDuplicateRouteKeys;
+    bool _warnedDuplicateUnknownRouteFallback;
 
     // ──────────────────────────────────────────────────────────────────
     //  Constructor
@@ -35,7 +35,6 @@ public sealed class ExecutionRouter
     public ExecutionRouter(InProcessCommandBus bus)
     {
         _bus = bus;
-        RegisterBuiltInRoutes();
     }
 
     // ──────────────────────────────────────────────────────────────────
@@ -102,11 +101,25 @@ public sealed class ExecutionRouter
         _routes[_routeCount++] = registration;
     }
 
-    void RegisterBuiltInRoutes()
+    /// <summary>
+    /// Registers a fallback executor used when no route is registered for a decision domain key.
+    /// Last registration wins (warn once).
+    /// </summary>
+    public void RegisterUnknownRouteFallback(DomainExecutionRouteExecutor fallback)
     {
-        RegisterRoute(new ExecutionRouteRegistration(OrchestrationDomainId.Combat, ExecuteCombatRoute));
-        RegisterRoute(new ExecutionRouteRegistration(OrchestrationDomainId.Idle, ExecuteIdleRoute));
-        RegisterRoute(new ExecutionRouteRegistration(OrchestrationDomainId.None, ExecuteNoneRoute));
+        if (fallback == null)
+            return;
+
+        if (_unknownRouteFallback == fallback)
+            return;
+
+        if (_unknownRouteFallback != null && !_warnedDuplicateUnknownRouteFallback)
+        {
+            _warnedDuplicateUnknownRouteFallback = true;
+            Debug.LogWarning("[ExecutionRouter] Duplicate unknown-route fallback registration. Last registration wins.");
+        }
+
+        _unknownRouteFallback = fallback;
     }
 
     bool TryExecuteRegisteredRoute(ArbiterDecision decision, OrchestrationWorldCache world, ExecutionContext ctx)
@@ -122,185 +135,14 @@ public sealed class ExecutionRouter
             if (execute == null)
                 return false;
 
-            execute(decision, world, ctx);
+            execute(this, decision, world, ctx);
             return true;
         }
 
-        // Defensive fallback if no route registered for a domain key.
-        if (decision.ModeChanged)
-        {
-            EmitCombatHoldAll(world);
-            EmitIdleHoldAll(world);
-        }
+        // Defensive unknown-route fallback is configurable via route-contributor seam.
+        _unknownRouteFallback?.Invoke(this, decision, world, ctx);
 
         return false;
-    }
-
-    void ExecuteCombatRoute(ArbiterDecision decision, OrchestrationWorldCache world, ExecutionContext ctx)
-    {
-        EmitCombat(ctx.CombatCommand, world);
-        if (decision.ModeChanged)
-            EmitIdleHoldAll(world);
-    }
-
-    void ExecuteIdleRoute(ArbiterDecision decision, OrchestrationWorldCache world, ExecutionContext ctx)
-    {
-        EmitIdlePerUnit(world, ctx);
-        if (decision.ModeChanged)
-            EmitCombatHoldAll(world);
-    }
-
-    void ExecuteNoneRoute(ArbiterDecision decision, OrchestrationWorldCache world, ExecutionContext ctx)
-    {
-        if (decision.ModeChanged)
-        {
-            EmitCombatHoldAll(world);
-            EmitIdleHoldAll(world);
-        }
-    }
-
-    // ──────────────────────────────────────────────────────────────────
-    //  Combat emission — iterates receiver identity snapshots
-    // ──────────────────────────────────────────────────────────────────
-
-    void EmitCombat(CombatCommand cmd, OrchestrationWorldCache world)
-    {
-        int count = world.CombatReceiverCount;
-        for (int i = 0; i < count; i++)
-        {
-            EntityId eid = world.GetCombatReceiverEntityId(i);
-            if (eid.IsNone) continue;
-
-            _bus.Publish(new DispatchCombatCommand
-            {
-                ReceiverEntityId = eid,
-                Payload = cmd,
-                ReceiverRoleId = world.GetCombatReceiverRoleId(i)
-            });
-        }
-    }
-
-    void EmitCombatHoldAll(OrchestrationWorldCache world)
-    {
-        CombatCommand hold = CombatCommand.Create(CombatCommandType.Hold,
-            debugLabel: "Router=IdleActive");
-        EmitCombat(hold, world);
-    }
-
-    // ──────────────────────────────────────────────────────────────────
-    //  Idle emission — Per-role policy, per-unit command
-    //  IMPORTANT: Policy is looked up by RoleId from ctx.IdleRolePolicyMap.
-    //  Commands are computed per-unit using entitySeed so units of the
-    //  same role don't clump. Selector override is handled by Integration adapter.
-    // ──────────────────────────────────────────────────────────────────
-
-    void EmitIdlePerUnit(OrchestrationWorldCache world, ExecutionContext ctx)
-    {
-        int count = world.IdleReceiverCount;
-
-        // Guard: no idle map bound → Hold all with warning
-        if (ctx.IdleRolePolicyMap == null)
-        {
-            if (!_warnedNoIdleMap)
-            {
-                _warnedNoIdleMap = true;
-                Debug.LogWarning("[ExecutionRouter] Idle domain active but no idle role policy map bound. " +
-                                 "All idlers will Hold.");
-            }
-
-            IdleCommand holdCmd = IdleCommand.Hold();
-            for (int i = 0; i < count; i++)
-            {
-                EntityId eid = world.GetIdleReceiverEntityId(i);
-                if (eid.IsNone) continue;
-
-                _bus.Publish(new DispatchIdleCommand
-                {
-                    ReceiverEntityId = eid,
-                    Payload = holdCmd,
-                    ReceiverRoleId = world.GetIdleReceiverRoleId(i)
-                });
-            }
-            return;
-        }
-
-        for (int i = 0; i < count; i++)
-        {
-            EntityId eid = world.GetIdleReceiverEntityId(i);
-            if (eid.IsNone) continue;
-
-            RoleId roleId = world.GetIdleReceiverRoleId(i);
-            int entitySeed = eid.ToStableInt();
-
-            IdlePolicyAsset policy;
-            IdleCommand cmd;
-
-            if (!roleId.IsNone && ctx.IdleRolePolicyMap.TryGet(roleId, out policy) && policy != null)
-            {
-                // Compute command from role-map policy.
-                // IMPORTANT: Selector override is handled by IdleCommandAdapter (Integration).
-                int roleSeed = roleId.ToStableInt();
-
-                Float2 selfPos;
-                ActorReadProjection actorProjection;
-                if (world.TryGetActorReadProjection(eid, out actorProjection))
-                    selfPos = actorProjection.Position;
-                else
-                    selfPos = ctx.Anchor;
-
-                string dbg;
-                cmd = policy.ChooseCommand(selfPos, eid, ctx.Anchor, ctx.Now, roleSeed, entitySeed, world, out dbg);
-
-                // PERF: Only allocate DebugLabel string when logging is on
-                if (ctx.DebugLog)
-                {
-                    cmd.DebugLabel = string.Concat("Idle=", policy.Id, ":", roleId.ToString());
-                    if (dbg != null)
-                        Debug.Log(string.Concat("[Router] role=", roleId.ToString(), " policy=", policy.Id, " dbg=", dbg));
-                }
-            }
-            else
-            {
-                // Strict: no role match → Hold. Do NOT fall back to selector defaults.
-                cmd = IdleCommand.Hold();
-                if (ctx.DebugLog)
-                    cmd.DebugLabel = "Router=NoRoleMatch";
-
-                if (roleId.IsNone && !_warnedMissingRoleIdle)
-                {
-                    _warnedMissingRoleIdle = true;
-                    Debug.LogWarning("[ExecutionRouter] Unit missing RoleId; idle will Hold.");
-                }
-
-                if (ctx.DebugLog)
-                    Debug.Log(string.Concat("[Router] No role match for '", roleId.ToString(), "'"));
-            }
-
-            _bus.Publish(new DispatchIdleCommand
-            {
-                ReceiverEntityId = eid,
-                Payload = cmd,
-                ReceiverRoleId = roleId
-            });
-        }
-    }
-
-    void EmitIdleHoldAll(OrchestrationWorldCache world)
-    {
-        IdleCommand hold = IdleCommand.Hold();
-        int count = world.IdleReceiverCount;
-        for (int i = 0; i < count; i++)
-        {
-            EntityId eid = world.GetIdleReceiverEntityId(i);
-            if (eid.IsNone) continue;
-
-            _bus.Publish(new DispatchIdleCommand
-            {
-                ReceiverEntityId = eid,
-                Payload = hold,
-                ReceiverRoleId = world.GetIdleReceiverRoleId(i)
-            });
-        }
     }
 
     // ──────────────────────────────────────────────────────────────────
@@ -334,4 +176,8 @@ public sealed class ExecutionRouter
         }
         return sb.ToString();
     }
+
+    void IExecutionRouteHost.PublishCommand<TCommand>(TCommand command) => PublishCommand(command);
+
+    void PublishCommand<TCommand>(TCommand command) where TCommand : struct, ICommand => _bus.Publish(command);
 }

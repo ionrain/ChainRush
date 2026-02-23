@@ -44,12 +44,15 @@ Minimum requirement:
 4. `C03` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 4`
 5. `C04` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 4`
 6. `C04A` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 4`
-7. `C05` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 4`
-8. `C06` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 4`
-9. `C07` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 4`
-10. `C08` -> Owner: `Kernel Systems Owner` -> Target phase: `Phase 8`
-11. `C09` -> Owner: `Kernel Systems Owner` -> Target phase: `Phase 8`
-12. `C10` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 8`
+7. `C04B` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 4`
+8. `C04C` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 4`
+9. `C04D` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 4`
+10. `C05` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 4`
+11. `C06` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 4`
+12. `C07` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 4`
+13. `C08` -> Owner: `Kernel Systems Owner` -> Target phase: `Phase 8`
+14. `C09` -> Owner: `Kernel Systems Owner` -> Target phase: `Phase 8`
+15. `C10` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 8`
 
 ## Commit Plan
 
@@ -198,7 +201,20 @@ Acceptance:
 
 Type: refactor-seam  
 Goal: Сделать подключение нового домена “низкофрикционным”, без каскадной правки десятков файлов.
-Status: `in progress` (`C04A` bootstrap started: arbiter sticky-domain classifier now reads domain arbitration metadata profiles (`IDomainArbitrationProfileSource`) instead of hardcoded `Combat` branch in classifier seam; host caches `DomainRegistration` records from domains and reuses cached policy providers in runtime loop; `ExecutionRouter` entrypoint dispatches through route registrations instead of hardcoded domain switch; `OrchestrationLoop` exposes optional `OrchestrationDomainModule` composition seam for centralized domain onboarding hooks; current single-scene source-of-truth for enabled domain orchestrators is `OrchestrationLoop.domainOrchestrators` (temporary bridge composition module/asset scaffold removed for now; can be reintroduced later if multi-scene variants become necessary); `DomainRegistration` transitional policy provider slots collapsed into a single cached arbiter-binding contributor seam; base `DomainOrchestrator` no longer performs StrategyCombat-specific policy-source casts (domains provide contributors explicitly); legacy `IIdle/ICombat*Role*MapSource` discovery interfaces removed and `Combat/Idle` domains now contribute direct policy-map bindings; arbiter binding contribution payload moved from fixed fields to generic key+entry payload and `OrchestrationArbiter` applies bindings through a local key->applier registry sourced from cached domain contributors (concrete binding keys and concrete binding appliers moved to `Morboo.Integration.StrategyCombat`; `RuntimeHost` keeps generic key/registry mechanism + generic `IDomainArbiterBindingApplyTarget.TryApplyArbiterBindingConsumer(...)` seam + RuntimeHost-owned consumer-slot keys; `DomainArbiterBindingTargetKind` switch removed from arbiter and consumer-key switch removed from apply-target method via local consumer registry); arbiter inspector domain list is hidden and `ProduceTick()` now fail-fasts until loop/composition seam applies domains, preventing dual source-of-truth fallback).
+Status: `closed (single-scope path)` (route/body ownership extracted above `RuntimeHost`; domain onboarding seams and generic registration/binding routes stabilized for current single-scene path; bridge route-policy seam and behavior proof added; loop-level duplicate composition seam removed. Remaining multi-faction structural ownership issues are explicitly deferred to `C04B`.)
+
+Checkpoint cleanup note (current commit boundary):
+
+1. `StrategyCombatExecutionRoutes` aggregate helper removed; ownership stays split across per-route executors in `Morboo.Integration.StrategyCombat`.
+2. StrategyCombat route executors are being normalized to instance-based executors (instead of static route-combinator style) to avoid creating a bad template for future development.
+3. Unknown-route fallback registration now suppresses duplicate warning when the same delegate is registered more than once (still warns for conflicting fallback registrations).
+4. Next `C04A` continuation after this checkpoint: move StrategyCombat route execution toward data/policy-driven configuration (without reintroducing RuntimeHost route-body ownership).
+5. Pilot route policy seam started: optional `StrategyCombatRouteExecutionPolicyAsset` overrides mode-change hold behavior and selected debug/warning semantics (including `Idle` fallback warnings / `NoRoleMatch` label / debug trace toggles) for `Combat/Idle/None/UnknownRouteFallback` route executors; null/empty values preserve legacy behavior.
+6. `StrategyCombatRouteExecutionPolicyAsset` and `StrategyCombatRouteExecutionProfile` now both use grouped route sections (`Combat/Idle/None/UnknownRouteFallback`); flat compatibility serialized fields were intentionally not kept.
+7. Composition-level route-profile preset selection now has a Bridge seam (`StrategyCombatRouteExecutionPolicyBridge` in `MorbooBridge`): a shared `StrategyCombatRouteExecutionPolicyAsset` is applied before `OrchestrationLoop` builds route registrations, while `OrchestrationLoop.domainOrchestrators` remains the single scene source-of-truth for enabled/ordered domains (bridge reads loop-configured domains instead of keeping a duplicate domain list; no `RuntimeHost` route-body ownership regression).
+8. `OrchestrationLoop` no longer exposes `domainModules` / `OrchestrationDomainModule` in the current single-scene path to avoid an unused second composition mechanism.
+9. Route-policy pilot now has behavior coverage: `RuntimeHostTests` verifies `StrategyCombatRouteExecutionPolicyAsset` can change `None` route mode-change hold-all emission without `RuntimeHost` changes.
+10. `C04A` is closed for the current single-scene / single-scope path. Multi-faction scope ownership, multi-arbiter host composition, and scope-aware targeting ownership are tracked in `C04B` and are not `C04A` blockers.
 
 Changes:
 
@@ -218,6 +234,7 @@ Changes:
    - заменить `[SerializeField] MonoBehaviour ...` + cast на типизированные зависимости/typed providers,
    - убрать fallback `GetComponent<...>()` как основной способ разрешения critical runtime dependencies.
 8. Ввести data-driven onboarding-дескриптор домена (policy/config driven), чтобы различия нового домена задавались данными, а не изменением host-пайплайна.
+   - C04A continuation (route-side): route execution differences (`Combat/Idle/None/UnknownRouteFallback`) should also converge to data/policy-driven configuration in `Morboo.Integration.StrategyCombat`, not static helper growth.
 9. Заменить combat-centric sticky classifier в arbiter на registration/policy metadata (например `proposal traits` / `domain arbitration profile`) без правок proposal scan loop.
 10. Явно убрать transitional StrategyCombat-shaped provider slots из `DomainRegistration`
     (`IIdleRolePolicyMapSource`, `ICombatRolePolicyMapSource`,
@@ -232,6 +249,105 @@ Acceptance:
 4. Runtime orchestration wiring не использует нетипизированные dependency holder refs.
 5. Пробный новый домен подключается через data/config изменения с минимальным новым кодом вне domain папки.
 6. Есть architecture test/future-gate на domain-name specific branching в `Morboo.RuntimeHost` arbitration/wiring с allowlist только для задокументированных transitional seams (на текущем этапе: sticky classifier seam в arbiter).
+
+## C04B — Multi-Scope / Multi-Arbiter Host Restructure (Scene-Breaking Allowed)
+
+Type: structural refactor (scene-breaking allowed)  
+Goal: Убрать single-scope ограничение текущего `OrchestrationLoop -> Arbiter + Domains` и перейти к модели `LoopHost -> Pipelines[]` с единым source-of-truth для scope/faction и per-pipeline domain composition.
+Status: `in progress` (`Faction-first` start selected: no new typed scope seam yet; `B2-B4` are in code: `OrchestrationPipeline` runtime container extracted, `OrchestrationLoop` hosts ordered `OrchestrationPipelineComponent[]`, and per-pipeline domain composition moved under pipeline component owner; `B5` in code with per-pipeline faction + host-global relations composition propagation into arbiter/runtime contexts; `B6` pivots to domain-owned `CombatTargetProvider` / `IdleTargetProvider` in `Morboo.Integration.StrategyCombat`, removing temporary `CombatTargetSet` ownership from `RuntimeHost` pipeline API; `B7` host/path migration started in code: `Level` scene uses `Player + Enemy` pipelines and `OrchestrationLoop` now uses a shared command bus with per-flush dispatch-context override so existing adapters can consume commands from all pipelines.)
+Detail plan: `Assets/Docs/Architacture/MasterMigration/04_Phase4_Orchestration/C04B_MultiScope_MultiArbiter_Host_Restructure_2026-02-23.md`
+
+Changes (high level):
+
+1. Стартовать с `Faction-first` pipeline scope semantics (без нового `int`-based scope seam в package interfaces).
+   - если позже понадобится generalized scope contract, вводить только asset-based typed identity (base asset/contract), а не raw `int` id seam.
+2. Выделить runtime container `OrchestrationPipeline` (`Arbiter`, `Router`, `Bus`, `DomainOrchestrators[]`, `Scope`).
+3. Эволюционировать `OrchestrationLoop` в host для `pipelines[]` вместо single arbiter/domain list как primary model.
+4. Перенести source-of-truth доменов под pipeline (не loop-global).
+5. Сделать StrategyCombat targeting scope-aware через domain-owned `CombatTargetProvider` / `IdleTargetProvider` (без доменно-типизированных targeting полей в `Morboo.RuntimeHost` pipeline API), чтобы multi-faction pipelines не делили неявный global targeting state.
+6. Мигрировать core scene на reference composition с двумя pipeline-ами (`Player`, `Enemy`) без дублирования host-кода.
+7. При любом блокере на пути выноса абстракции вверх по слоям (`RuntimeHost` -> generic orchestration layer -> `Core`) сначала абстрагировать мешающий узел; не сужать `C04B` цель под слабое звено без явного согласования и фиксации решения в backlog.
+
+Acceptance:
+
+1. `OrchestrationLoop` (host-role) тикает минимум `2` независимых pipeline-а.
+2. Domain composition принадлежит pipeline, а не loop-global field как primary model.
+3. `Scope/Faction` имеет один typed source-of-truth на pipeline и прокидывается в arbiter/domain execution path.
+4. Bridge composition не дублирует domain list отдельно от pipeline для того же pipeline.
+5. Multi-pipeline smoke/playtest path задокументирован и проходит.
+6. `B7` scene migration acceptance на текущем шаге ограничен host/path integration parity (`Player + Enemy` pipelines tick/dispatch/routing/faction composition). Full enemy behavior parity, зависящий от `UnitClass`-oriented mapping assumptions, переносится в `C04C` (domain-orchestrator form convergence) и не закрывается fallback-путями.
+
+## C04C — Domain Orchestrator Form Convergence (Remove *Lite as Target Shape)
+
+Status: `closed`
+
+Type: structural refactor (domain-layer form cleanup)  
+Goal: Явно довести один из ключевых мотивов orchestration refactor: уйти от отдельных runtime entrypoint-классов per-domain (`Combat*` / `Idle*`) как целевой формы к общей/composable форме `StrategyCombatDomainOrchestrator` + domain components/providers + data-driven config в `Morboo.Integration.StrategyCombat`.
+
+Changes:
+
+1. Зафиксировать shared/composable orchestration shape в `Morboo.Integration.StrategyCombat` (не в `RuntimeHost`) через `DomainOrchestrator + components/providers + data` и shared helper/interface seams (без дополнительного orchestrator inheritance layer).
+2. Разделить domain-specific concerns по компонентам/провайдерам (например `CombatTargetProvider`, `IdleTargetProvider`, shared route-policy provider, route/profile config).
+   - `CombatTargetProvider` и `IdleTargetProvider` должны быть приведены к общей форме:
+     общий базовый тип + один общий orchestration-facing интерфейс (при необходимости с typed-расширениями поверх него для domain payload).
+   - Общая форма должна использоваться не только декларативно, но и в runtime validation/wiring path (shared validation helper/guard).
+3. Перевести `Idle` на новую форму первым (меньший риск).
+4. Перевести `Combat` на новую форму вторым.
+5. Убрать `*OrchestratorLite` и отдельные `Combat/Idle` domain-orchestrator entrypoint classes как target architecture form (допускается временная совместимость на время миграции, но с removal plan).
+6. Если на пути выноса общей orchestration-формы из `Morboo.Integration.StrategyCombat` наверх мешает конкретный тип/компонент/policy/provider seam, сначала абстрагировать этот seam (общий contract/base), а не оставлять общую форму в `StrategyCombat` "потому что так проще" без явного разрешения.
+
+Acceptance:
+
+1. Целевая форма доменных оркестраторов описана и реализована как shared/composable `StrategyCombatDomainOrchestrator` + domain components/data.
+2. `Idle` и `Combat` используют один и тот же structural pattern (без ad-hoc divergence по форме классов) через `CombatDomainComponent` / `IdleDomainComponent` под одним `StrategyCombatDomainOrchestrator`.
+3. `CombatTargetProvider` и `IdleTargetProvider` имеют общий базовый тип и общий orchestration-facing интерфейс (typed domain-specific API допускается только как расширение, а не как замена общей формы).
+4. Новый domain добавляется по этому шаблону без копирования `*Lite` паттерна и без создания отдельного domain-orchestrator entrypoint класса.
+5. `RuntimeHost` не получает обратно domain-specific orchestrator logic/ownership.
+6. Ни один шаг `C04C` не закрывается "локальной" genre-specific абстракцией вместо общей без явного решения/approval, зафиксированного в roadmap/backlog.
+
+## C04D — Generic Orchestration Composition Abstraction Extraction (No Compatibility Path)
+
+Status: `planned`
+
+Type: structural refactor (package-breaking + scene-breaking)  
+Goal: Убрать из `Morboo.Integration.StrategyCombat` владение общей orchestration composition-инфраструктурой и разложить её по существующим верхним пакетам (`RuntimeHost` / `Core` / `Framework` по ownership), оставив в `StrategyCombat` только domain components/providers/route executors/policies/data.
+
+Detail plan: `Assets/Docs/Architacture/MasterMigration/04_Phase4_Orchestration/C04D_Generic_Orchestration_Composition_Extraction_2026-02-23.md`
+
+Changes:
+
+1. Вынести общий orchestration wrapper/component форму из `StrategyCombat` в существующие верхние пакеты (primary owner: `Morboo.RuntimeHost` для Unity-dependent generic orchestration forms):
+   - `StrategyCombatDomainOrchestrator` -> generic `DomainOrchestratorComponent`
+   - `StrategyCombatDomainComponentBase` -> generic `DomainComponent`
+   - `StrategyCombatDomainOrchestratorCommon` -> generic orchestration composition helper
+   - `IStrategyCombatRouteExecutionPolicyConsumer` -> generic `IDomainRouteExecutionPolicyConsumer`
+2. Вынести общий target-provider contract/validation из `StrategyCombat` в существующие верхние пакеты (primary owner: `Morboo.RuntimeHost` для Unity-dependent abstraction):
+   - `DomainTargetProviderBase` -> `DomainTargetProvider` (abstract, no `Base` suffix)
+   - сохранить общий `IDomainTargetProvider` + shared validation helper.
+3. Вынести общий route-policy contract/provider form в существующие верхние пакеты (primary owner: `Morboo.RuntimeHost`; `Core` / `Framework` только где это их уровень):
+   - generic `DomainRouteExecutionPolicy` (abstract `ScriptableObject`)
+   - generic route-policy consumer/provider contracts.
+4. Оставить в `StrategyCombat` только genre-specific реализации:
+   - `CombatDomainComponent`
+   - `IdleDomainComponent`
+   - `CombatTargetProvider`
+   - `IdleTargetProvider`
+   - route executors
+   - strategy-specific binding keys/appliers
+   - strategy route policies/profile assets
+5. Разбить `StrategyCombatRouteExecutionPolicyAsset` (монолит) на route/domain-specific policy assets + strategy profile aggregate.
+6. Переименовать/перевести bridge policy application на generic contracts (без concrete StrategyCombat branching).
+7. При любом блокере сначала абстрагировать слабое звено; не оставлять общую orchestration форму в `StrategyCombat` "потому что так проще" без явного разрешения.
+
+Acceptance:
+
+1. В `Morboo.Integration.StrategyCombat` больше нет strategy-owned generic orchestration infrastructure (`StrategyCombatDomainOrchestrator*`, `*DomainComponentBase`, shared orchestration helper/interface seams).
+2. Shared orchestration composition form находится в существующих верхних пакетах (`RuntimeHost` / `Core` / `Framework` по ownership) и использует семантические имена без суффикса `Base` для abstract types.
+3. `CombatDomainComponent` / `IdleDomainComponent` и `CombatTargetProvider` / `IdleTargetProvider` являются genre-specific реализациями общих контрактов.
+4. `StrategyCombatRouteExecutionPolicyAsset` (монолит) удалён; route-policy ownership в `StrategyCombat` разнесён по route/domain-specific assets + profile aggregate.
+5. Bridge policy application использует generic contracts и не ветвится по конкретным StrategyCombat orchestrator wrapper types.
+6. `RuntimeHost` не получает обратно domain-specific ownership.
+7. `C04D` выполнен без compatibility path / legacy fallback.
 
 ## C05 — Event Pipeline Activation
 

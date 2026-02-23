@@ -71,7 +71,7 @@ _Нормативный шаблон требований к новой сист
 
 **Типичные содержимое:**
 - system-level контракты и payload types, которые **не являются** реализацией конкретных доменов проекта  
-  (пример: `Orchestration` как “движок принятия решений”, но не `CombatOrchestratorLite`)
+  (пример: `Orchestration` как “движок принятия решений”, но не `CombatDomainOrchestrator`)
 - типы команд/интентов системы, если они engine-agnostic (на `EntityId`, `Float2` и т.п.)
 - system-core SO (только если это чистые данные, без сценовых ссылок)
 
@@ -80,7 +80,7 @@ _Нормативный шаблон требований к новой сист
 - зависеть от `Morboo.Framework`
 
 **MUST NOT:**
-- содержать “project-type домены” (например `CombatOrchestratorLite`, `IdleOrchestratorLite`, конкретные политики боёвки/айла)
+- содержать “project-type домены” (например `CombatDomainOrchestrator`, `IdleDomainOrchestrator`, конкретные политики боёвки/айла)
 - содержать Unity-сценовые механики и интеграцию (`GetComponent`, `MonoBehaviour`-оркестрация, доступ к конкретной игре)
 
 ---

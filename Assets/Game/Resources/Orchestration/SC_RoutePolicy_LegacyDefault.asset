@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e824bd131dbd44d308cc6e9d0274eac4, type: 3}
+  m_Name: SC_RoutePolicy_LegacyDefault
+  m_EditorClassIdentifier: Morboo.Integration.StrategyCombat::StrategyCombatRouteExecutionPolicyAsset
+  combat:
+    emitIdleHoldOnModeChange: 1
+  idle:
+    emitCombatHoldOnModeChange: 1
+    combatHoldDebugLabelOverride: 
+    noRoleMatchDebugLabelOverride: 
+    warnWhenRolePolicyMapMissing: 1
+    warnWhenRoleMissing: 1
+    logPolicyDecisionTraceWhenDebugLog: 1
+    logNoRoleMatchTraceWhenDebugLog: 1
+  noneRoute:
+    emitCombatHoldOnModeChange: 1
+    emitIdleHoldOnModeChange: 1
+    combatHoldDebugLabelOverride: 
+  unknownRouteFallback:
+    emitCombatHoldOnModeChange: 1
+    emitIdleHoldOnModeChange: 1
+    combatHoldDebugLabelOverride: 

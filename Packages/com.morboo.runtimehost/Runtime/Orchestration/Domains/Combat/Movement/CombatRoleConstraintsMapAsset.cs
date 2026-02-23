@@ -4,7 +4,7 @@ using UnityEngine;
 
 /// <summary>
 /// Data-driven mapping of <see cref="RoleAsset"/> to <see cref="CombatMoveConstraintsAsset"/>.
-/// Assigned to <see cref="CombatOrchestratorLite"/> and pulled by the arbiter each tick
+/// Assigned to <see cref="CombatDomainComponent"/> (through <see cref="StrategyCombatDomainOrchestrator"/> wiring) and pulled by the arbiter each tick
 /// via domain arbiter bindings contributed by combat domains.
 /// <para>
 /// IMPORTANT: Routing uses <c>ReferenceEquals</c> on <see cref="RoleAsset"/>.

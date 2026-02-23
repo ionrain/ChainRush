@@ -25,7 +25,8 @@ public sealed class ArchitectureLayeringTests
     const string CoreActorReadProjectionPath = "Packages/com.morboo.core/Runtime/Actor/ActorReadProjection.cs";
     const string StrategyCombatActorContractPath = "Packages/com.morboo.runtimehost/Runtime/Orchestration/IOrchestrationActor.cs";
     const string StrategyCombatWorldCachePath = "Packages/com.morboo.runtimehost/Runtime/Orchestration/Arbitration/OrchestrationWorldCache.cs";
-    const string StrategyCombatExecutionRouterPath = "Packages/com.morboo.runtimehost/Runtime/Orchestration/Execution/ExecutionRouter.cs";
+    const string StrategyCombatIdleExecutionRoutePath = "Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/Execution/StrategyCombatIdleExecutionRoute.cs";
+    const string StrategyCombatIdleTargetProviderPath = "Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/Domains/Idle/Targeting/IdleTargetProvider.cs";
     const string FrameworkFloat3Path = "Packages/com.morboo.framework/Runtime/Math/Float3.cs";
     const string FrameworkAabb3DPath = "Packages/com.morboo.framework/Runtime/Math/AABB3D.cs";
     const string SystemsUnityConversionsPath = "Packages/com.morboo.systems/Runtime/Unity/FrameworkUnityConversions.cs";
@@ -167,7 +168,7 @@ public sealed class ArchitectureLayeringTests
     static readonly Regex StrategyCombatWorldCacheProjectionContractRegex =
         new Regex(@"\bclass\s+OrchestrationWorldCache\s*:\s*[^{\n]*\bIActorReadProjectionQuery\b", RegexOptions.Compiled);
 
-    static readonly Regex StrategyCombatExecutionRouterProjectionUsageRegex =
+    static readonly Regex StrategyCombatExecutionRouteProjectionUsageRegex =
         new Regex(@"\bTryGetActorReadProjection\s*\(", RegexOptions.Compiled);
 
     static readonly Regex CoreCombatIdleContractsRegex =
@@ -175,7 +176,7 @@ public sealed class ArchitectureLayeringTests
             RegexOptions.Compiled);
 
     static readonly Regex RuntimeHostDomainSpecificTokensRegex =
-        new Regex(@"\b(CombatOrchestratorLite|IdleOrchestratorLite|CombatTargetingPolicyAsset|IdlePolicyAsset|CombatRolePolicyMapAsset|IdleRolePolicyMapAsset|CombatMoveConstraintsAsset|CombatRoleConstraintsMapAsset|CombatTargetSet|OrchestrationArbiter|OrchestrationLoop|ExecutionRouter|ExecutionContext|DispatchCombatCommand|DispatchIdleCommand)\b",
+        new Regex(@"\b(CombatDomainComponent|IdleDomainComponent|StrategyCombatDomainOrchestrator|CombatTargetingPolicyAsset|IdlePolicyAsset|CombatRolePolicyMapAsset|IdleRolePolicyMapAsset|CombatMoveConstraintsAsset|CombatRoleConstraintsMapAsset|CombatTargetSet|OrchestrationArbiter|OrchestrationLoop|ExecutionRouter|ExecutionContext|DispatchCombatCommand|DispatchIdleCommand)\b",
             RegexOptions.Compiled);
 
     static readonly Regex ForbiddenSirenixUsingRegex =
@@ -533,13 +534,13 @@ public sealed class ArchitectureLayeringTests
     }
 
     [Test]
-    public void StrategyCombatExecutionRouter_UsesActorReadProjectionQuery()
+    public void StrategyCombatIdleTargetProvider_UsesActorReadProjectionQuery()
     {
-        Assert.That(File.Exists(StrategyCombatExecutionRouterPath), Is.True, $"Missing file: {StrategyCombatExecutionRouterPath}");
+        Assert.That(File.Exists(StrategyCombatIdleTargetProviderPath), Is.True, $"Missing file: {StrategyCombatIdleTargetProviderPath}");
 
-        string stripped = StripCommentsAndStrings(File.ReadAllText(StrategyCombatExecutionRouterPath));
-        Assert.That(StrategyCombatExecutionRouterProjectionUsageRegex.IsMatch(stripped), Is.True,
-            "ExecutionRouter must use IActorReadProjectionQuery (TryGetActorReadProjection) for actor read-side projection.");
+        string stripped = StripCommentsAndStrings(File.ReadAllText(StrategyCombatIdleTargetProviderPath));
+        Assert.That(StrategyCombatExecutionRouteProjectionUsageRegex.IsMatch(stripped), Is.True,
+            "StrategyCombat idle target provider must use IActorReadProjectionQuery (TryGetActorReadProjection) for actor read-side projection.");
     }
 
     [Test]

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -25,29 +26,26 @@ using UnityEngine;
 /// </summary>
 public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter, IDomainArbiterBindingApplyTarget
 {
-    readonly struct ArbiterBindingConsumerEntry
+    struct ArbiterBindingAssetEntry
     {
-        public readonly DomainArbiterBindingConsumerKey Key;
-        public readonly ArbiterBindingConsumerApplyHandler Apply;
+        public Type AssetType;
+        public ScriptableObject Asset;
 
-        public ArbiterBindingConsumerEntry(
-            DomainArbiterBindingConsumerKey key,
-            ArbiterBindingConsumerApplyHandler apply)
+        public ArbiterBindingAssetEntry(Type assetType, ScriptableObject asset)
         {
-            Key = key;
-            Apply = apply;
+            AssetType = assetType;
+            Asset = asset;
         }
     }
-
-    delegate bool ArbiterBindingConsumerApplyHandler(ScriptableObject asset);
 
     // ──────────────────────────────────────────────────────────────────
     //  Serialized — Faction
     // ──────────────────────────────────────────────────────────────────
 
     [Header("Faction")]
-    [SerializeField] FactionAsset orchestratorFaction;
-    [SerializeField] FactionRelationTableAsset typedRelations;
+    [Tooltip("LEGACY storage only (hidden). Faction-first orchestration identity source-of-truth is the per-pipeline composition component in OrchestrationLoop, which applies faction context into the arbiter.")]
+    [HideInInspector, SerializeField] FactionAsset orchestratorFaction;
+    [HideInInspector, SerializeField] FactionRelationTableAsset typedRelations;
 
     // ──────────────────────────────────────────────────────────────────
     //  Serialized — Anchor
@@ -90,6 +88,15 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter, IDomainArbit
     bool _warnedMissingDomainComposition;
 
     // ──────────────────────────────────────────────────────────────────
+    //  Runtime — Pipeline-applied faction-first context (C04B/B5)
+    // ──────────────────────────────────────────────────────────────────
+
+    FactionAsset _composedOrchestratorFaction;
+    FactionRelationTableAsset _composedTypedRelations;
+    bool _factionCompositionApplied;
+    bool _warnedMissingFactionComposition;
+
+    // ──────────────────────────────────────────────────────────────────
     //  Runtime — World cache (single reused instance)
     // ──────────────────────────────────────────────────────────────────
 
@@ -105,14 +112,14 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter, IDomainArbit
     OrchestrationArbiterContext _ctx;
 
     // ──────────────────────────────────────────────────────────────────
-    //  Runtime — Policy maps (owned by domains, pulled via cached bindings)
+    //  Runtime — Execution bindings (owned by domains, pulled via cached bindings)
     //  IMPORTANT: Not serialized. Arbiter reads from domains each tick
     //  via cached domain-registration binding contributors.
+    //  C04A: Generic internal store; typed ExecutionContext projection is compatibility-only.
     // ──────────────────────────────────────────────────────────────────
 
-    IdleRolePolicyMapAsset _idleRolePolicyMap;
-    CombatRolePolicyMapAsset _combatRolePolicyMap;
-    CombatRoleConstraintsMapAsset _combatRoleConstraintsMap;
+    ArbiterBindingAssetEntry[] _arbiterBindingAssets;
+    int _arbiterBindingAssetCount;
 
     // ──────────────────────────────────────────────────────────────────
     //  Runtime — Hysteresis
@@ -135,9 +142,10 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter, IDomainArbit
     //  Runtime — One-shot warning flags (separate per category)
     // ──────────────────────────────────────────────────────────────────
 
-    bool _warnedDuplicateIdleSource;
-    bool _warnedDuplicateCombatSource;
-    bool _warnedDuplicateConstraintsSource;
+    DomainArbiterBindingKey[] _warnedDuplicateBindingKeys;
+    int _warnedDuplicateBindingKeyCount;
+    DomainArbiterBindingKey[] _seenBindingKeysScratch;
+    int _seenBindingKeyScratchCount;
     bool _warnedUnknownArbiterBindingKey;
 
     // ──────────────────────────────────────────────────────────────────
@@ -145,22 +153,25 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter, IDomainArbit
     //  Transitional C04A step: generic binding-key payload + local application registry.
     // ──────────────────────────────────────────────────────────────────
 
-    readonly DomainArbiterBindingTargetEntry[] _arbiterBindingRegistry = new DomainArbiterBindingTargetEntry[3];
+    DomainArbiterBindingTargetEntry[] _arbiterBindingRegistry;
     int _arbiterBindingRegistryCount;
-
-    // ──────────────────────────────────────────────────────────────────
-    //  Runtime — Arbiter binding consumer registry (consumer key -> local handler)
-    //  Transitional C04A step: remove consumer-key switch from apply-target seam.
-    // ──────────────────────────────────────────────────────────────────
-
-    readonly ArbiterBindingConsumerEntry[] _arbiterBindingConsumerRegistry = new ArbiterBindingConsumerEntry[3];
-    int _arbiterBindingConsumerRegistryCount;
 
     // ──────────────────────────────────────────────────────────────────
     //  Public — Domain state query
     // ──────────────────────────────────────────────────────────────────
 
     public bool IsCombatActive => _lastDomain == OrchestrationDomainId.Combat;
+
+    /// <summary>
+    /// C04B/B5 faction-first composition seam.
+    /// Per-pipeline composition component in OrchestrationLoop owns orchestration faction/relations and applies them into the arbiter.
+    /// </summary>
+    public void SetFactionContextForComposition(FactionAsset faction, FactionRelationTableAsset relations)
+    {
+        _factionCompositionApplied = true;
+        _composedOrchestratorFaction = faction;
+        _composedTypedRelations = relations;
+    }
 
     /// <summary>
     /// C04A composition seam for bridge/integration modules.
@@ -185,16 +196,13 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter, IDomainArbit
         _combatLockedUntil = 0f;
         _threatMemoryUntil = 0f;
 
-        EnsureArbiterBindingConsumerRegistryInitialized();
         CacheDomains();
     }
 
     void OnDisable()
     {
-        // Clear stored maps to avoid stale refs on scene reload / domain toggles
-        _idleRolePolicyMap = null;
-        _combatRolePolicyMap = null;
-        _combatRoleConstraintsMap = null;
+        // Clear stored bindings to avoid stale refs on scene reload / domain toggles.
+        ClearArbiterBindingAssets();
     }
 
     void RegisterArbiterBinding(in DomainArbiterBindingTargetEntry entry)
@@ -210,8 +218,10 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter, IDomainArbit
             return;
         }
 
-        if (_arbiterBindingRegistryCount >= _arbiterBindingRegistry.Length)
-            return;
+        if (_arbiterBindingRegistry == null)
+            _arbiterBindingRegistry = new DomainArbiterBindingTargetEntry[4];
+        else if (_arbiterBindingRegistryCount >= _arbiterBindingRegistry.Length)
+            System.Array.Resize(ref _arbiterBindingRegistry, _arbiterBindingRegistry.Length * 2);
 
         _arbiterBindingRegistry[_arbiterBindingRegistryCount++] = entry;
     }
@@ -232,60 +242,128 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter, IDomainArbit
         return false;
     }
 
-    void EnsureArbiterBindingConsumerRegistryInitialized()
+    void RegisterArbiterBindingAssetSlot(Type assetType)
     {
-        if (_arbiterBindingConsumerRegistryCount > 0)
+        if (assetType == null)
             return;
 
-        RegisterArbiterBindingConsumer(
-            RuntimeHostArbiterBindingConsumerKeys.IdleRolePolicyMap,
-            TryApplyIdleRolePolicyMapBinding);
-        RegisterArbiterBindingConsumer(
-            RuntimeHostArbiterBindingConsumerKeys.CombatRolePolicyMap,
-            TryApplyCombatRolePolicyMapBinding);
-        RegisterArbiterBindingConsumer(
-            RuntimeHostArbiterBindingConsumerKeys.CombatRoleConstraintsMap,
-            TryApplyCombatRoleConstraintsMapBinding);
-    }
-
-    void RegisterArbiterBindingConsumer(
-        DomainArbiterBindingConsumerKey consumerKey,
-        ArbiterBindingConsumerApplyHandler apply)
-    {
-        if (consumerKey.IsNone || apply == null)
-            return;
-
-        for (int i = 0; i < _arbiterBindingConsumerRegistryCount; i++)
+        for (int i = 0; i < _arbiterBindingAssetCount; i++)
         {
-            if (_arbiterBindingConsumerRegistry[i].Key != consumerKey)
-                continue;
-
-            return;
+            if (_arbiterBindingAssets[i].AssetType == assetType)
+                return;
         }
 
-        if (_arbiterBindingConsumerRegistryCount >= _arbiterBindingConsumerRegistry.Length)
-            return;
+        if (_arbiterBindingAssets == null)
+            _arbiterBindingAssets = new ArbiterBindingAssetEntry[4];
+        else if (_arbiterBindingAssetCount >= _arbiterBindingAssets.Length)
+            System.Array.Resize(ref _arbiterBindingAssets, _arbiterBindingAssets.Length * 2);
 
-        _arbiterBindingConsumerRegistry[_arbiterBindingConsumerRegistryCount++] =
-            new ArbiterBindingConsumerEntry(consumerKey, apply);
+        _arbiterBindingAssets[_arbiterBindingAssetCount++] = new ArbiterBindingAssetEntry(assetType, null);
     }
 
-    bool TryResolveArbiterBindingConsumer(
-        DomainArbiterBindingConsumerKey consumerKey,
-        out ArbiterBindingConsumerApplyHandler apply)
+    void ClearArbiterBindingAssets()
     {
-        for (int i = 0; i < _arbiterBindingConsumerRegistryCount; i++)
+        for (int i = 0; i < _arbiterBindingAssetCount; i++)
+            _arbiterBindingAssets[i].Asset = null;
+    }
+
+    void CopyArbiterBindingAssetsTo(ref ExecutionContext ctx)
+    {
+        for (int i = 0; i < _arbiterBindingAssetCount; i++)
         {
-            ArbiterBindingConsumerEntry entry = _arbiterBindingConsumerRegistry[i];
-            if (entry.Key != consumerKey)
+            ArbiterBindingAssetEntry entry = _arbiterBindingAssets[i];
+            if (entry.AssetType == null || entry.Asset == null)
                 continue;
 
-            apply = entry.Apply;
-            return true;
+            ctx.SetBindingRaw(entry.AssetType, entry.Asset);
+        }
+    }
+
+    bool TryGetArbiterBindingAsset<TAsset>(out TAsset asset)
+        where TAsset : ScriptableObject
+    {
+        Type assetType = typeof(TAsset);
+        for (int i = 0; i < _arbiterBindingAssetCount; i++)
+        {
+            if (_arbiterBindingAssets[i].AssetType != assetType)
+                continue;
+
+            asset = _arbiterBindingAssets[i].Asset as TAsset;
+            return asset != null;
         }
 
-        apply = null;
+        asset = null;
         return false;
+    }
+
+    void SetArbiterBindingAsset<TAsset>(TAsset asset)
+        where TAsset : ScriptableObject
+    {
+        Type assetType = typeof(TAsset);
+        for (int i = 0; i < _arbiterBindingAssetCount; i++)
+        {
+            if (_arbiterBindingAssets[i].AssetType != assetType)
+                continue;
+
+            _arbiterBindingAssets[i].Asset = asset;
+            return;
+        }
+
+        if (_arbiterBindingAssets == null)
+            _arbiterBindingAssets = new ArbiterBindingAssetEntry[4];
+        else if (_arbiterBindingAssetCount >= _arbiterBindingAssets.Length)
+            System.Array.Resize(ref _arbiterBindingAssets, _arbiterBindingAssets.Length * 2);
+
+        _arbiterBindingAssets[_arbiterBindingAssetCount++] = new ArbiterBindingAssetEntry(assetType, asset);
+    }
+
+    bool HasWarnedDuplicateBindingKey(DomainArbiterBindingKey key)
+    {
+        for (int i = 0; i < _warnedDuplicateBindingKeyCount; i++)
+        {
+            if (_warnedDuplicateBindingKeys[i] == key)
+                return true;
+        }
+
+        return false;
+    }
+
+    void MarkWarnedDuplicateBindingKey(DomainArbiterBindingKey key)
+    {
+        if (key.IsNone || HasWarnedDuplicateBindingKey(key))
+            return;
+
+        if (_warnedDuplicateBindingKeys == null)
+            _warnedDuplicateBindingKeys = new DomainArbiterBindingKey[4];
+        else if (_warnedDuplicateBindingKeyCount >= _warnedDuplicateBindingKeys.Length)
+            System.Array.Resize(ref _warnedDuplicateBindingKeys, _warnedDuplicateBindingKeys.Length * 2);
+
+        _warnedDuplicateBindingKeys[_warnedDuplicateBindingKeyCount++] = key;
+    }
+
+    void ClearSeenBindingKeysScratch()
+    {
+        _seenBindingKeyScratchCount = 0;
+    }
+
+    bool TryMarkSeenBindingKey(DomainArbiterBindingKey key)
+    {
+        if (key.IsNone)
+            return false;
+
+        for (int i = 0; i < _seenBindingKeyScratchCount; i++)
+        {
+            if (_seenBindingKeysScratch[i] == key)
+                return false;
+        }
+
+        if (_seenBindingKeysScratch == null)
+            _seenBindingKeysScratch = new DomainArbiterBindingKey[4];
+        else if (_seenBindingKeyScratchCount >= _seenBindingKeysScratch.Length)
+            System.Array.Resize(ref _seenBindingKeysScratch, _seenBindingKeysScratch.Length * 2);
+
+        _seenBindingKeysScratch[_seenBindingKeyScratchCount++] = key;
+        return true;
     }
 
     // ──────────────────────────────────────────────────────────────────
@@ -320,7 +398,7 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter, IDomainArbit
             DomainOrchestrator d = domainOrchestrators[i];
 
             // Unity-null safe: skip destroyed pooled components
-            if (d is Object uo && uo == null) { d = null; }
+            if (d is UnityEngine.Object uo && uo == null) { d = null; }
             if (d == null)
             {
                 if (!_warnedInvalidDomains)
@@ -406,7 +484,7 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter, IDomainArbit
         {
             IStateReporter r = reporters[i];
             if (r == null) continue;
-            if (r is Object uo && uo == null) continue;
+            if (r is UnityEngine.Object uo && uo == null) continue;
 
             IOrchestrationActor actor = r as IOrchestrationActor;
             if (actor == null) continue;
@@ -428,7 +506,7 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter, IDomainArbit
         {
             ICombatCommandReceiver c = combat[i];
             if (c == null) continue;
-            if (c is Object cObj && cObj == null) continue;
+            if (c is UnityEngine.Object cObj && cObj == null) continue;
 
             if (IsFriendlyReceiverTyped(c, ctx.OrchestratorFaction, ctx.Relations))
                 _world.FriendlyCombatReceivers.Add(c);
@@ -440,7 +518,7 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter, IDomainArbit
         {
             IIdleCommandReceiver ir = idle[i];
             if (ir == null) continue;
-            if (ir is Object iObj && iObj == null) continue;
+            if (ir is UnityEngine.Object iObj && iObj == null) continue;
 
             if (IsFriendlyReceiverTyped(ir, ctx.OrchestratorFaction, ctx.Relations))
                 _world.FriendlyIdleReceivers.Add(ir);
@@ -488,9 +566,7 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter, IDomainArbit
         IdleBoundsRegistry.FillResolvedBounds(_world.ResolvedIdleBounds);
 
         // ── Resolve combat target set ───────────────────────────────
-        CombatTargetSet resolvedTs;
-        OrchestrationRegistry.TryGetCombatTargetSet(ctx.OrchestratorFaction, out resolvedTs);
-        _world.ResolvedCombatTargetSet = resolvedTs;
+        _world.ResolvedCombatTargetSet = null;
 
         // ── Snapshot IWorldQuery data and freeze ─────────────────────
         _world.SnapshotActors(ctx.OrchestratorFaction, ctx.Relations);
@@ -563,13 +639,47 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter, IDomainArbit
             return new OrchestrationTickResult { Skipped = true };
         }
 
+        // ── Validate faction-first pipeline composition ─────────────
+        if (!_factionCompositionApplied)
+        {
+            if (!_warnedMissingFactionComposition)
+            {
+                _warnedMissingFactionComposition = true;
+                Debug.LogError("[OrchestrationArbiter] Missing pipeline-applied faction context composition (Faction-first C04B/B5 seam).", this);
+            }
+
+            // Signal hold-all to the loop
+            if (_lastDomain != OrchestrationDomainId.None)
+            {
+                ArbiterDecision holdAll = new ArbiterDecision
+                {
+                    DomainKey = OrchestrationDomainKeys.None,
+                    ProposalKey = OrchestrationProposalKeys.None,
+                    ModeChanged = true
+                };
+                _lastDomain = OrchestrationDomainId.None;
+                return new OrchestrationTickResult
+                {
+                    Decision = holdAll,
+                    World = _world,
+                    ExecContext = default,
+                    Skipped = false
+                };
+            }
+
+            return new OrchestrationTickResult { Skipped = true };
+        }
+
+        FactionAsset effectiveOrchestratorFaction = _composedOrchestratorFaction;
+        FactionRelationTableAsset effectiveRelations = _composedTypedRelations;
+
         // ── Validate setup ──────────────────────────────────────────
-        if (orchestratorFaction == null || typedRelations == null)
+        if (effectiveOrchestratorFaction == null || effectiveRelations == null)
         {
             if (!_warnedMissingSetup)
             {
                 _warnedMissingSetup = true;
-                Debug.LogWarning("[OrchestrationArbiter] Missing orchestratorFaction or typedRelations.", this);
+                Debug.LogWarning("[OrchestrationArbiter] Missing pipeline OrchestratorFaction or Relations.", this);
             }
 
             // Signal hold-all to the loop
@@ -595,8 +705,8 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter, IDomainArbit
         }
 
         // ── Fill context ────────────────────────────────────────────
-        _ctx.OrchestratorFaction = orchestratorFaction;
-        _ctx.Relations = typedRelations;
+        _ctx.OrchestratorFaction = effectiveOrchestratorFaction;
+        _ctx.Relations = effectiveRelations;
         _ctx.WorldAnchor = anchorOverride != null
             ? anchorOverride.position.ToFloat3()
             : transform.position.ToFloat3();
@@ -627,17 +737,15 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter, IDomainArbit
         // ── Build execution context ──────────────────────────────────
         ExecutionContext execCtx = new ExecutionContext
         {
-            IdleRolePolicyMap = _idleRolePolicyMap,
-            CombatRolePolicyMap = _combatRolePolicyMap,
-            CombatRoleConstraintsMap = _combatRoleConstraintsMap,
             CombatCommand = hasSelectedCombatCommand ? selectedCombatCommand : default,
-            OrchestratorFaction = orchestratorFaction,
-            Relations = typedRelations,
+            OrchestratorFaction = effectiveOrchestratorFaction,
+            Relations = effectiveRelations,
             WorldAnchor = _ctx.WorldAnchor,
             Anchor = _ctx.Anchor,
             Now = now,
             DebugLog = debugLog
         };
+        CopyArbiterBindingAssetsTo(ref execCtx);
 
         // ── Update mode tracking ─────────────────────────────────────
         _lastDomain = (OrchestrationDomainId)decision.DomainKey;
@@ -846,23 +954,22 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter, IDomainArbit
     //  Policy map refresh — pull from cached DomainRegistrations
     //  IMPORTANT: Called once per tick after domain Evaluate, before dispatch.
     //  "Last non-null wins" if multiple domains provide the same map type.
-    //  If no source provides a non-null map, the stored field becomes null.
+    //  If no source provides a non-null map, the corresponding stored binding slot becomes null.
     //  PERF: Provider interface discovery is cached in DomainRegistration.
     // ──────────────────────────────────────────────────────────────────
 
     void RefreshPolicyMapsFromDomains()
     {
-        // Null clears: if no source provides a map this tick, stored field becomes null.
-        _idleRolePolicyMap = null;
-        _combatRolePolicyMap = null;
-        _combatRoleConstraintsMap = null;
+        // Null clears: if no source provides a map this tick, stored binding slot becomes null.
+        ClearArbiterBindingAssets();
+        ClearSeenBindingKeysScratch();
 
         for (int i = 0; i < _domainCount; i++)
         {
             DomainRegistration registration = _cachedDomainRegistrations[i];
             DomainOrchestrator d = registration.Orchestrator;
             // Unity-null safe: skip destroyed pooled components
-            if (d is Object uo && uo == null) continue;
+            if (d is UnityEngine.Object uo && uo == null) continue;
 
             IDomainArbiterBindingContributor bindingContributor = registration.ArbiterBindingContributor;
             if (bindingContributor == null)
@@ -874,6 +981,16 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter, IDomainArbit
             for (int j = 0; j < contribution.Count; j++)
             {
                 DomainArbiterBindingEntry entry = contribution.GetEntry(j);
+                bool firstSeenThisTick = TryMarkSeenBindingKey(entry.Key);
+                if (!firstSeenThisTick && !HasWarnedDuplicateBindingKey(entry.Key))
+                {
+                    MarkWarnedDuplicateBindingKey(entry.Key);
+                    Debug.LogWarning(string.Concat(
+                        "[OrchestrationArbiter] Multiple domains provide arbiter binding key=",
+                        entry.Key.Value.ToString(),
+                        ". Last non-null wins."), this);
+                }
+
                 if (!TryResolveArbiterBindingApplier(entry.Key, out DomainArbiterBindingApplyHandler apply))
                 {
                     if (!_warnedUnknownArbiterBindingKey)
@@ -892,66 +1009,21 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter, IDomainArbit
         }
     }
 
-    private bool TryApplyIdleRolePolicyMapBinding(ScriptableObject asset)
-    {
-        IdleRolePolicyMapAsset idleMap = asset as IdleRolePolicyMapAsset;
-        if (idleMap == null)
-            return false;
-
-        if (_idleRolePolicyMap != null && !_warnedDuplicateIdleSource)
-        {
-            _warnedDuplicateIdleSource = true;
-            Debug.LogWarning("[OrchestrationArbiter] Multiple domains provide " +
-                "idle role policy map bindings. Last non-null wins.", this);
-        }
-
-        _idleRolePolicyMap = idleMap;
-        return true;
-    }
-
-    private bool TryApplyCombatRolePolicyMapBinding(ScriptableObject asset)
-    {
-        CombatRolePolicyMapAsset combatMap = asset as CombatRolePolicyMapAsset;
-        if (combatMap == null)
-            return false;
-
-        if (_combatRolePolicyMap != null && !_warnedDuplicateCombatSource)
-        {
-            _warnedDuplicateCombatSource = true;
-            Debug.LogWarning("[OrchestrationArbiter] Multiple domains provide " +
-                "combat role policy map bindings. Last non-null wins.", this);
-        }
-
-        _combatRolePolicyMap = combatMap;
-        return true;
-    }
-
-    private bool TryApplyCombatRoleConstraintsMapBinding(ScriptableObject asset)
-    {
-        CombatRoleConstraintsMapAsset constraintsMap = asset as CombatRoleConstraintsMapAsset;
-        if (constraintsMap == null)
-            return false;
-
-        if (_combatRoleConstraintsMap != null && !_warnedDuplicateConstraintsSource)
-        {
-            _warnedDuplicateConstraintsSource = true;
-            Debug.LogWarning("[OrchestrationArbiter] Multiple domains provide " +
-                "combat role constraints map bindings. Last non-null wins.", this);
-        }
-
-        _combatRoleConstraintsMap = constraintsMap;
-        return true;
-    }
-
-    bool IDomainArbiterBindingApplyTarget.TryApplyArbiterBindingConsumer(
-        DomainArbiterBindingConsumerKey consumerKey,
+    private bool TryApplyArbiterBindingAsset<TAsset>(
         ScriptableObject asset)
+        where TAsset : ScriptableObject
     {
-        EnsureArbiterBindingConsumerRegistryInitialized();
-        if (!TryResolveArbiterBindingConsumer(consumerKey, out ArbiterBindingConsumerApplyHandler apply))
+        TAsset typedAsset = asset as TAsset;
+        if (typedAsset == null)
             return false;
 
-        return apply(asset);
+        SetArbiterBindingAsset(typedAsset);
+        return true;
+    }
+
+    bool IDomainArbiterBindingApplyTarget.TryApplyArbiterBindingConsumer<TAsset>(ScriptableObject asset)
+    {
+        return TryApplyArbiterBindingAsset<TAsset>(asset);
     }
 
 }

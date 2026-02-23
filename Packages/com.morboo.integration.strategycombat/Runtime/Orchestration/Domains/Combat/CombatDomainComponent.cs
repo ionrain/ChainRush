@@ -1,11 +1,11 @@
 using UnityEngine;
 
 /// <summary>
-/// Controls how <see cref="CombatOrchestratorLite"/> searches for hostile candidates.
+/// Controls how <see cref="CombatDomainComponent"/> searches for hostile candidates.
 /// </summary>
 public enum TargetSearchMode
 {
-    /// <summary>Search within <see cref="CombatOrchestratorLite.aggroRadius"/> of anchor.</summary>
+    /// <summary>Search within <see cref="CombatDomainComponent.aggroRadius"/> of anchor.</summary>
     Radius = 0,
 
     /// <summary>
@@ -18,10 +18,11 @@ public enum TargetSearchMode
 }
 
 /// <summary>
-/// Combat domain evaluator. Scans actors via <see cref="IWorldQuery"/> for
+/// Combat domain component. Scans actors via <see cref="IWorldQuery"/> for
 /// hostile entities and writes a <see cref="CombatCommand"/> proposal.
 /// Owns <see cref="CombatRolePolicyMapAsset"/> / <see cref="CombatRoleConstraintsMapAsset"/>
-/// references and contributes them to the arbiter via cached domain registration bindings.
+/// references and contributes them to the arbiter via cached domain registration bindings
+/// through <see cref="StrategyCombatDomainOrchestrator"/>.
 /// <para>
 /// IMPORTANT — This class does NOT tick itself. It implements
 /// <see cref="IOrchestrationDomain"/> and is polled by
@@ -41,9 +42,12 @@ public enum TargetSearchMode
 /// in FillTargetSet (uses IWorldQuery only).
 /// </para>
 /// </summary>
-public sealed class CombatOrchestratorLite : DomainOrchestrator, IDomainArbitrationProfileSource
+public sealed class CombatDomainComponent : StrategyCombatDomainComponentBase
 {
+    StrategyCombatCombatExecutionRoute _combatExecutionRoute;
+
     public override OrchestrationDomainId DomainId => OrchestrationDomainId.Combat;
+    public override bool StickyPrimaryArbitration => true;
 
     // ──────────────────────────────────────────────────────────────────
     //  Serialized
@@ -59,12 +63,9 @@ public sealed class CombatOrchestratorLite : DomainOrchestrator, IDomainArbitrat
     [SerializeField] float viewportMargin = 0f;
 
     [Header("Target Set")]
-    [Tooltip("Optional shared candidate carrier. If null and autoResolveTargetSet is true, " +
-             "resolved from OrchestrationRegistry by faction.")]
-    [SerializeField] CombatTargetSet targetSet;
-    [Tooltip("When true, resolve targetSet from OrchestrationRegistry if not assigned in inspector.")]
-    [SerializeField] bool autoResolveTargetSet = true;
-    [Tooltip("Number of Top-K hostile candidates to store (clamped to targetSet.Capacity).")]
+    [Tooltip("Domain-owned combat target provider. Owns CombatTargetSet resolution/selection carrier for this combat domain.")]
+    [SerializeField] CombatTargetProvider combatTargetProvider;
+    [Tooltip("Number of Top-K hostile candidates to store (clamped to provider-resolved CombatTargetSet.Capacity).")]
     [SerializeField] int targetSetSize = 4;
 
     [Header("Role Policies")]
@@ -74,6 +75,10 @@ public sealed class CombatOrchestratorLite : DomainOrchestrator, IDomainArbitrat
     [Header("Role Constraints")]
     [Tooltip("Optional per-role movement constraints map. If null, units use unconstrained movement.")]
     [SerializeField] CombatRoleConstraintsMapAsset roleConstraintsMap;
+
+    [Header("Route Execution")]
+    [Tooltip("Shared route-execution policy provider component (optional; null preserves current behavior).")]
+    [SerializeField] StrategyCombatRouteExecutionPolicyProvider routeExecutionPolicyProvider;
 
     [Header("Debug")]
     [SerializeField] bool debugLog;
@@ -87,40 +92,62 @@ public sealed class CombatOrchestratorLite : DomainOrchestrator, IDomainArbitrat
     int _topKCount;
 
     bool _warnedNoCamera;
-
-    // One-shot guard for auto-resolve target set.
-    bool _triedResolveTargetSet;
+    DomainTargetProviderValidationWarningState _targetProviderValidationWarnings;
+    bool _warnedMissingRoutePolicyProviderForPolicy;
 
     // ──────────────────────────────────────────────────────────────────
     //  Lifecycle
     // ──────────────────────────────────────────────────────────────────
 
-    void OnEnable()
+    public override IDomainArbiterBindingContributor CreateArbiterBindingContributor()
     {
-        _triedResolveTargetSet = false;
+        return DomainArbiterBindingContributors.CreateFixedContributor(
+            default,
+            new DomainArbiterBindingRegistration(
+                StrategyCombatArbiterBindingKeys.CombatRolePolicyMap,
+                StrategyCombatArbiterBindingAppliers.CombatRolePolicyMap,
+                rolePolicyMap),
+            new DomainArbiterBindingRegistration(
+                StrategyCombatArbiterBindingKeys.CombatRoleConstraintsMap,
+                StrategyCombatArbiterBindingAppliers.CombatRoleConstraintsMap,
+                roleConstraintsMap));
     }
 
-    // ──────────────────────────────────────────────────────────────────
-    //  IDomainArbitrationProfileSource
-    // ──────────────────────────────────────────────────────────────────
-
-    public DomainArbitrationProfile GetArbitrationProfile()
+    public override IDomainExecutionRouteContributor CreateExecutionRouteContributor()
     {
-        return new DomainArbitrationProfile(stickyPrimary: true);
+        StrategyCombatRouteExecutionPolicyAsset routePolicy = GetRouteExecutionPolicyAsset();
+        _combatExecutionRoute ??= new StrategyCombatCombatExecutionRoute(routePolicy);
+        return StrategyCombatDomainOrchestratorCommon.CreateFixedRouteContributorWithUnknownFallback(
+            DomainId,
+            routePolicy,
+            _combatExecutionRoute.Execute);
     }
 
-    protected override IDomainArbiterBindingContributor CreateArbiterBindingContributor()
+    public override void ApplyRouteExecutionPolicy(StrategyCombatRouteExecutionPolicyAsset policy)
     {
-        return DomainArbiterBindingContributors.CreatePolicyMapContributor(
-            idleRolePolicyMapKey: default,
-            idleRolePolicyMapApply: null,
-            idleRolePolicyMap: null,
-            combatRolePolicyMapKey: StrategyCombatArbiterBindingKeys.CombatRolePolicyMap,
-            combatRolePolicyMapApply: StrategyCombatArbiterBindingAppliers.CombatRolePolicyMap,
-            combatRolePolicyMap: rolePolicyMap,
-            combatRoleConstraintsMapKey: StrategyCombatArbiterBindingKeys.CombatRoleConstraintsMap,
-            combatRoleConstraintsMapApply: StrategyCombatArbiterBindingAppliers.CombatRoleConstraintsMap,
-            combatRoleConstraintsMap: roleConstraintsMap);
+        StrategyCombatRouteExecutionPolicyAsset currentPolicy = GetRouteExecutionPolicyAsset();
+        if (!StrategyCombatDomainOrchestratorCommon.ShouldRebuildRouteExecutorForPolicyChange(currentPolicy, policy))
+            return;
+
+        if (routeExecutionPolicyProvider != null)
+        {
+            routeExecutionPolicyProvider.ApplyRouteExecutionPolicy(policy);
+        }
+        else if (!_warnedMissingRoutePolicyProviderForPolicy)
+        {
+            _warnedMissingRoutePolicyProviderForPolicy = true;
+            Debug.LogError(
+                "[CombatDomainComponent] Missing StrategyCombatRouteExecutionPolicyProvider. " +
+                "Route-policy bridge cannot apply policy configuration to this domain without the shared provider component.",
+                this);
+        }
+
+        _combatExecutionRoute = null;
+    }
+
+    StrategyCombatRouteExecutionPolicyAsset GetRouteExecutionPolicyAsset()
+    {
+        return routeExecutionPolicyProvider != null ? routeExecutionPolicyProvider.CurrentPolicy : null;
     }
 
     // ──────────────────────────────────────────────────────────────────
@@ -132,7 +159,7 @@ public sealed class CombatOrchestratorLite : DomainOrchestrator, IDomainArbitrat
     /// fills Top-K target set, and writes a combat proposal.
     /// Does NOT dispatch commands. Does NOT scan OrchestrationRegistry.
     /// </summary>
-    public override void Evaluate(OrchestrationArbiterContext ctx, OrchestrationArbiterProposals proposals)
+    public override void EvaluateDomain(OrchestrationArbiterContext ctx, OrchestrationArbiterProposals proposals)
     {
         IWorldQuery world = ctx.World;
 
@@ -143,21 +170,33 @@ public sealed class CombatOrchestratorLite : DomainOrchestrator, IDomainArbitrat
         // ── Build command (engine-agnostic: EntityId, no Transform) ──
         CombatCommand cmd = !bestEntityId.IsNone
             ? CombatCommand.Create(CombatCommandType.AttackTarget, targetEntityId: bestEntityId,
-                debugLabel: "Orchestrator=CombatOrchestratorLite")
+                debugLabel: "Domain=Combat")
             : CombatCommand.Create(CombatCommandType.Hold,
-                debugLabel: "Orchestrator=CombatOrchestratorLite");
+                debugLabel: "Domain=Combat");
 
-        // ── Fill Top-K target set (optional) ─────────────────────
-        if (targetSet == null && autoResolveTargetSet && !_triedResolveTargetSet)
+        // ── Fill Top-K target set (optional, domain-owned provider) ──
+        CombatTargetSet resolvedTargetSet = null;
+        DomainTargetProviderValidationFailure targetProviderValidation =
+            DomainTargetProviderValidation.Validate(combatTargetProvider, DomainId);
+        if (targetProviderValidation == DomainTargetProviderValidationFailure.None)
         {
-            _triedResolveTargetSet = true;
-            OrchestrationWorldCache worldCache = world as OrchestrationWorldCache;
-            if (worldCache != null)
-                targetSet = worldCache.GetCombatTargetSetInternal(); // may be null — that's ok
+            resolvedTargetSet = combatTargetProvider.ResolveTargetSet();
+        }
+        else
+        {
+            DomainTargetProviderValidation.LogFailureOnce(
+                ref _targetProviderValidationWarnings,
+                targetProviderValidation,
+                combatTargetProvider,
+                DomainId,
+                "CombatDomainComponent",
+                "[CombatDomainComponent] Missing CombatTargetProvider. " +
+                "Combat target-set ownership must be provided explicitly by the domain.",
+                this);
         }
 
-        if (targetSet != null)
-            FillTargetSet(world, ctx);
+        if (resolvedTargetSet != null)
+            FillTargetSet(resolvedTargetSet, world, ctx);
 
         // ── Write proposal ───────────────────────────────────────
         bool threatPresent = !bestEntityId.IsNone;
@@ -166,9 +205,9 @@ public sealed class CombatOrchestratorLite : DomainOrchestrator, IDomainArbitrat
         if (ctx.DebugLog || debugLog)
         {
             string targetName = !bestEntityId.IsNone ? bestEntityId.ToStableInt().ToString() : "none";
-            int topK = targetSet != null ? _topKCount : 0;
+            int topK = resolvedTargetSet != null ? _topKCount : 0;
             Debug.Log(string.Concat(
-                "[CombatOrchestratorLite] TargetEid=", targetName,
+                "[CombatDomainComponent] TargetEid=", targetName,
                 ", TopK=", topK.ToString(),
                 ", Mode=", searchMode.ToString()), this);
         }
@@ -194,7 +233,7 @@ public sealed class CombatOrchestratorLite : DomainOrchestrator, IDomainArbitrat
             {
                 if (debugLog && !_warnedNoCamera)
                 {
-                    Debug.LogWarning("[CombatOrchestratorLite] ScreenViewport mode but no camera available. " +
+                    Debug.LogWarning("[CombatDomainComponent] ScreenViewport mode but no camera available. " +
                         "Assign searchCamera or ensure Camera.main exists.", this);
                     _warnedNoCamera = true;
                 }
@@ -248,7 +287,7 @@ public sealed class CombatOrchestratorLite : DomainOrchestrator, IDomainArbitrat
     //  (faction Hostile, Radius/ScreenViewport). No LINQ, no allocations.
     // ──────────────────────────────────────────────────────────────────
 
-    void FillTargetSet(IWorldQuery world, OrchestrationArbiterContext ctx)
+    void FillTargetSet(CombatTargetSet targetSet, IWorldQuery world, OrchestrationArbiterContext ctx)
     {
         int k = targetSetSize > 0 ? targetSetSize : 1;
         if (k > targetSet.Capacity) k = targetSet.Capacity;

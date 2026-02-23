@@ -15,8 +15,8 @@ public sealed class CombatCommandAdapter : MonoBehaviour
     //  Serialized
     // ──────────────────────────────────────────────────────────────────
 
-    [Tooltip("OrchestrationLoop component (MonoBehaviour). Falls back to GetComponent on this GameObject.")]
-    [SerializeField] MonoBehaviour orchestrationLoopComponent;
+    [Tooltip("OrchestrationLoop component. Typed dependency; no runtime GetComponent fallback.")]
+    [SerializeField] OrchestrationLoop orchestrationLoopComponent;
 
     // ──────────────────────────────────────────────────────────────────
     //  Runtime
@@ -31,9 +31,7 @@ public sealed class CombatCommandAdapter : MonoBehaviour
 
     void OnEnable()
     {
-        _loop = orchestrationLoopComponent as OrchestrationLoop;
-        if (_loop == null)
-            _loop = GetComponent<OrchestrationLoop>();
+        _loop = orchestrationLoopComponent;
 
         if (_loop != null)
         {
@@ -69,12 +67,14 @@ public sealed class CombatCommandAdapter : MonoBehaviour
 
         ExecutionContext ctx = _loop.CurrentExecContext;
         OrchestrationWorldCache world = _loop.CurrentWorld;
+        ctx.TryGetBinding(out CombatRolePolicyMapAsset combatRolePolicyMap);
+        ctx.TryGetBinding(out CombatRoleConstraintsMapAsset combatRoleConstraintsMap);
 
         // ── Per-role targeting policy injection ──────────────────────
-        if (ctx.CombatRolePolicyMap != null && !cmd.ReceiverRoleId.IsNone)
+        if (combatRolePolicyMap != null && !cmd.ReceiverRoleId.IsNone)
         {
             CombatTargetingPolicyAsset policyAsset;
-            if (ctx.CombatRolePolicyMap.TryGet(cmd.ReceiverRoleId, out policyAsset))
+            if (combatRolePolicyMap.TryGet(cmd.ReceiverRoleId, out policyAsset))
             {
                 // PERF: GetComponentInParent — selector may be on parent GO
                 ICombatTargetPolicySelector selector = t.GetComponentInParent<ICombatTargetPolicySelector>();
@@ -97,8 +97,8 @@ public sealed class CombatCommandAdapter : MonoBehaviour
         if (ccr != null)
         {
             CombatMoveConstraintsAsset resolved = null;
-            if (ctx.CombatRoleConstraintsMap != null && !cmd.ReceiverRoleId.IsNone)
-                ctx.CombatRoleConstraintsMap.TryGet(cmd.ReceiverRoleId, out resolved);
+            if (combatRoleConstraintsMap != null && !cmd.ReceiverRoleId.IsNone)
+                combatRoleConstraintsMap.TryGet(cmd.ReceiverRoleId, out resolved);
             ccr.SetRuntimeContext(resolved, world);
         }
 

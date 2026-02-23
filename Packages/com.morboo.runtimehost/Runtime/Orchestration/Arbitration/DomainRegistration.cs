@@ -12,14 +12,17 @@ public readonly struct DomainRegistration
     public readonly DomainOrchestrator Orchestrator;
     public readonly DomainArbitrationProfile ArbitrationProfile;
     public readonly IDomainArbiterBindingContributor ArbiterBindingContributor;
+    public readonly IDomainExecutionRouteContributor ExecutionRouteContributor;
 
     public DomainRegistration(
         DomainOrchestrator orchestrator,
         in DomainArbitrationProfile arbitrationProfile,
-        IDomainArbiterBindingContributor arbiterBindingContributor)
+        IDomainArbiterBindingContributor arbiterBindingContributor,
+        IDomainExecutionRouteContributor executionRouteContributor)
     {
         Orchestrator = orchestrator;
         ArbitrationProfile = arbitrationProfile;
         ArbiterBindingContributor = arbiterBindingContributor;
+        ExecutionRouteContributor = executionRouteContributor;
     }
 }

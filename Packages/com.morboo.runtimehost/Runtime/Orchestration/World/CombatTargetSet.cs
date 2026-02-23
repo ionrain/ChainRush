@@ -6,7 +6,7 @@ using UnityEngine;
 /// targets from the candidate pool without re-scanning the world.
 /// <para>
 /// IMPORTANT — This component holds no gameplay logic. It is a shared data buffer:
-/// - Written by <see cref="CombatOrchestratorLite"/> each tick.
+/// - Written by <see cref="CombatDomainComponent"/> each tick (via <see cref="StrategyCombatDomainOrchestrator"/>).
 /// - Read by <see cref="UnitCombatTargetSelector2D"/> on demand.
 /// - Without it, selectors fall back to the orchestrator-chosen primary target.
 /// </para>
@@ -72,7 +72,7 @@ public sealed class CombatTargetSet : MonoBehaviour, IFactionAssetProvider
 
     /// <summary>
     /// Overwrites the candidate set from a raw array.
-    /// Called by <see cref="CombatOrchestratorLite"/> each tick.
+    /// Called by <see cref="CombatDomainComponent"/> each tick.
     /// <paramref name="count"/> is the number of valid entries in <paramref name="src"/>
     /// (starting at index 0). Entries beyond <paramref name="count"/> are ignored.
     /// <paramref name="now"/> is the current tick time from <see cref="IWorldQuery.Now"/> or

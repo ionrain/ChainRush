@@ -44,11 +44,14 @@ public abstract class DomainOrchestrator : MonoBehaviour, IOrchestrationDomain
 
         IDomainArbiterBindingContributor arbiterBindingContributor =
             CreateArbiterBindingContributor();
+        IDomainExecutionRouteContributor executionRouteContributor =
+            CreateExecutionRouteContributor();
 
         return new DomainRegistration(
             orchestrator: this,
             arbitrationProfile: profile,
-            arbiterBindingContributor: arbiterBindingContributor);
+            arbiterBindingContributor: arbiterBindingContributor,
+            executionRouteContributor: executionRouteContributor);
     }
 
     /// <summary>
@@ -57,6 +60,16 @@ public abstract class DomainOrchestrator : MonoBehaviour, IOrchestrationDomain
     /// domain-specific provider interfaces.
     /// </summary>
     protected virtual IDomainArbiterBindingContributor CreateArbiterBindingContributor()
+    {
+        return null;
+    }
+
+    /// <summary>
+    /// C04A route onboarding seam: domains may contribute execution route registrations
+    /// (for example RuntimeHost built-in routes during migration) without editing
+    /// <see cref="ExecutionRouter"/> constructor/entrypoint.
+    /// </summary>
+    protected virtual IDomainExecutionRouteContributor CreateExecutionRouteContributor()
     {
         return null;
     }

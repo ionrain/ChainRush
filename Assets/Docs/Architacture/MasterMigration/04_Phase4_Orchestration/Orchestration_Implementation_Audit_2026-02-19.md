@@ -113,7 +113,7 @@ Scope: `Morboo.Framework` + `Morboo.Systems` + `Morboo.Core` + `Morboo.RuntimeHo
 
 ### 5.3 Каст к concrete world cache внутри домена
 
-1. `CombatOrchestratorLite` кастует `IWorldQuery` к `OrchestrationWorldCache` ради targetSet (`Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/Domains/Combat/CombatOrchestratorLite.cs:141`).
+1. `CombatDomainOrchestrator` кастует `IWorldQuery` к `OrchestrationWorldCache` ради targetSet (`Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/Domains/Combat/CombatDomainOrchestrator.cs:141`).
 2. Это ломает чистоту abstraction boundary `IWorldQuery`.
 
 ### 5.4 Core не engine-agnostic

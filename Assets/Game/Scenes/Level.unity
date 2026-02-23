@@ -8714,14 +8714,13 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 258903835}
+  - component: {fileID: 258903849}
   - component: {fileID: 258903845}
   - component: {fileID: 258903844}
+  - component: {fileID: 258903848}
   - component: {fileID: 258903843}
   - component: {fileID: 258903842}
-  - component: {fileID: 258903840}
-  - component: {fileID: 258903836}
-  - component: {fileID: 258903841}
-  - component: {fileID: 258903839}
+  - component: {fileID: 258903850}
   m_Layer: 0
   m_Name: Orchestration
   m_TagString: Untagged
@@ -8741,83 +8740,11 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 317884004}
+  - {fileID: 992308724}
   m_Father: {fileID: 1254502159}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &258903836
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 258903834}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f27a0da450ea6407ebb3e9f427c86a63, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CombatOrchestratorLite
-  searchMode: 1
-  aggroRadius: 12
-  searchCamera: {fileID: 0}
-  viewportMargin: 0
-  targetSet: {fileID: 258903839}
-  autoResolveTargetSet: 1
-  targetSetSize: 4
-  rolePolicyMap: {fileID: 11400000, guid: bbdd1192619974b96ae0c37c2a1af824, type: 2}
-  roleConstraintsMap: {fileID: 11400000, guid: 36710e6c9d9294b01872a62bf549b82b, type: 2}
-  debugLog: 1
---- !u!114 &258903839
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 258903834}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 84448ae31436b4c078c27987c9efe815, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CombatTargetSet
-  capacity: 6
-  ttlSeconds: 0.9
-  faction: {fileID: 11400000, guid: c705fd72106504e2c9904710eda101d4, type: 2}
---- !u!114 &258903840
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 258903834}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 410f11f3a89024a1ab356df9c29fee60, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::OrchestrationArbiter
-  orchestratorFaction: {fileID: 11400000, guid: c705fd72106504e2c9904710eda101d4,
-    type: 2}
-  typedRelations: {fileID: 11400000, guid: 45bf0d83b9c4c414a9b621b1fb5a7b1a, type: 2}
-  anchorOverride: {fileID: 172273282}
-  projectionPlane: 0
-  domainOrchestrators:
-  - {fileID: 258903836}
-  - {fileID: 258903841}
-  combatMinActiveTime: 0.8
-  combatCooldownAfterThreat: 0.6
-  debugLog: 1
---- !u!114 &258903841
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 258903834}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 120893b8fad7a4d6fbebd867b42ff493, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::IdleOrchestratorLite
-  rolePolicyMap: {fileID: 11400000, guid: be3df890ebcb24f3b8fe327265fc0914, type: 2}
-  debugLog: 1
 --- !u!114 &258903842
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8857,11 +8784,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Morboo.Integration.StrategyCombat::OrchestrationLoop
   tickSourceComponent: {fileID: 258903845}
-  arbiter: {fileID: 258903840}
-  domainOrchestrators:
-  - {fileID: 258903836}
-  - {fileID: 258903841}
-  domainModules: []
+  pipelines:
+  - {fileID: 317884009}
+  - {fileID: 992308731}
+  sharedRelations: {fileID: 11400000, guid: 45bf0d83b9c4c414a9b621b1fb5a7b1a, type: 2}
 --- !u!114 &258903845
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8875,6 +8801,55 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Morboo.Systems::RealtimeScheduler
   tickInterval: 0.8
+--- !u!114 &258903848
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 258903834}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6cc63fc7606f641099df4c3ce884a033, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Morboo.Bridge::StrategyCombatRouteExecutionPolicyBridge
+  routeExecutionPolicy: {fileID: 11400000, guid: ccf603af7c0f747ff89e9cf274313470,
+    type: 2}
+  orchestrationLoop: {fileID: 258903844}
+  applyOnAwake: 1
+  warnOnNullEntries: 1
+--- !u!114 &258903849
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 258903834}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bed87d494ddd4eda95bffa54c5b0f561, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  unitManager: {fileID: 115462961}
+  enemyManager: {fileID: 448253310}
+  logLifecycleEvents: 0
+  registeredEntityCount: 0
+  createdEventsCount: 0
+  destroyedEventsCount: 0
+--- !u!114 &258903850
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 258903834}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18aa9b07d8e284c869d789dac0916821, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Morboo.Integration.StrategyCombat::StrategyCombatRouteExecutionPolicyProvider
+  routeExecutionPolicy: {fileID: 11400000, guid: ccf603af7c0f747ff89e9cf274313470,
+    type: 2}
 --- !u!1 &260744812
 GameObject:
   m_ObjectHideFlags: 0
@@ -10609,6 +10584,194 @@ MonoBehaviour:
   time: {x: 0.3, y: 0.4}
   offset: {x: 0, y: 0}
   feedback: {fileID: 0}
+--- !u!1 &317884003
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 317884004}
+  - component: {fileID: 317884009}
+  - component: {fileID: 317884008}
+  - component: {fileID: 317884012}
+  - component: {fileID: 317884013}
+  - component: {fileID: 317884007}
+  - component: {fileID: 317884006}
+  - component: {fileID: 317884005}
+  - component: {fileID: 317884011}
+  - component: {fileID: 317884010}
+  m_Layer: 0
+  m_Name: Player
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &317884004
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 317884003}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 258903835}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &317884005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 317884003}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84448ae31436b4c078c27987c9efe815, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CombatTargetSet
+  capacity: 6
+  ttlSeconds: 0.9
+  faction: {fileID: 11400000, guid: c705fd72106504e2c9904710eda101d4, type: 2}
+--- !u!114 &317884006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 317884003}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f27a0da450ea6407ebb3e9f427c86a63, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Morboo.Integration.StrategyCombat::CombatDomainComponent
+  searchMode: 1
+  aggroRadius: 12
+  searchCamera: {fileID: 0}
+  viewportMargin: 0
+  combatTargetProvider: {fileID: 317884011}
+  targetSetSize: 4
+  rolePolicyMap: {fileID: 11400000, guid: bbdd1192619974b96ae0c37c2a1af824, type: 2}
+  roleConstraintsMap: {fileID: 11400000, guid: 36710e6c9d9294b01872a62bf549b82b, type: 2}
+  routeExecutionPolicyProvider: {fileID: 258903850}
+  debugLog: 1
+--- !u!114 &317884007
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 317884003}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 120893b8fad7a4d6fbebd867b42ff493, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Morboo.Integration.StrategyCombat::IdleDomainComponent
+  rolePolicyMap: {fileID: 11400000, guid: be3df890ebcb24f3b8fe327265fc0914, type: 2}
+  idleTargetProvider: {fileID: 317884010}
+  routeExecutionPolicyProvider: {fileID: 258903850}
+  debugLog: 1
+--- !u!114 &317884008
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 317884003}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 410f11f3a89024a1ab356df9c29fee60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OrchestrationArbiter
+  orchestratorFaction: {fileID: 11400000, guid: c705fd72106504e2c9904710eda101d4,
+    type: 2}
+  typedRelations: {fileID: 11400000, guid: 45bf0d83b9c4c414a9b621b1fb5a7b1a, type: 2}
+  anchorOverride: {fileID: 172273282}
+  projectionPlane: 0
+  domainOrchestrators:
+  - {fileID: 317884012}
+  - {fileID: 317884013}
+  combatMinActiveTime: 0.8
+  combatCooldownAfterThreat: 0.6
+  debugLog: 1
+--- !u!114 &317884009
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 317884003}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4255f636c3cd744ddbf31c8c8ec046dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Morboo.RuntimeHost::OrchestrationPipelineComponent
+  arbiter: {fileID: 317884008}
+  orchestratorFaction: {fileID: 11400000, guid: c705fd72106504e2c9904710eda101d4,
+    type: 2}
+  domainOrchestrators:
+  - {fileID: 317884012}
+  - {fileID: 317884013}
+--- !u!114 &317884010
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 317884003}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01e689d5a474f4e10b92da681a14162a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Morboo.Integration.StrategyCombat::IdleTargetProvider
+  useActorReadProjection: 1
+--- !u!114 &317884011
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 317884003}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1b4f1147da534cc5b6e216ae7b8edb7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Morboo.Integration.StrategyCombat::CombatTargetProvider
+  targetSet: {fileID: 317884005}
+--- !u!114 &317884012
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 317884003}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7021f2bb7e354c928f600a3b1d51ee0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Morboo.Integration.StrategyCombat::StrategyCombatDomainOrchestrator
+  domainComponent: {fileID: 317884006}
+  warnOnInvalidDomainComponent: 1
+--- !u!114 &317884013
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 317884003}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7021f2bb7e354c928f600a3b1d51ee0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Morboo.Integration.StrategyCombat::StrategyCombatDomainOrchestrator
+  domainComponent: {fileID: 317884007}
+  warnOnInvalidDomainComponent: 1
 --- !u!1 &350431856
 GameObject:
   m_ObjectHideFlags: 0
@@ -12381,7 +12544,6 @@ GameObject:
   - component: {fileID: 448253308}
   - component: {fileID: 448253310}
   - component: {fileID: 448253309}
-  - component: {fileID: 448253311}
   m_Layer: 0
   m_Name: EnemyManager
   m_TagString: Untagged
@@ -12526,24 +12688,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 512
   maxSpawnAttempts: 100
---- !u!114 &448253311
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 448253306}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bed87d494ddd4eda95bffa54c5b0f561, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  unitManager: {fileID: 115462961}
-  enemyManager: {fileID: 448253310}
-  logLifecycleEvents: 0
-  registeredEntityCount: 0
-  createdEventsCount: 0
-  destroyedEventsCount: 0
 --- !u!1 &450259797
 GameObject:
   m_ObjectHideFlags: 0
@@ -42947,6 +43091,194 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
   m_EffectDistance: {x: 0, y: -10}
   m_UseGraphicAlpha: 1
+--- !u!1 &992308723
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 992308724}
+  - component: {fileID: 992308731}
+  - component: {fileID: 992308730}
+  - component: {fileID: 992308732}
+  - component: {fileID: 992308733}
+  - component: {fileID: 992308729}
+  - component: {fileID: 992308728}
+  - component: {fileID: 992308727}
+  - component: {fileID: 992308726}
+  - component: {fileID: 992308725}
+  m_Layer: 0
+  m_Name: Enemy
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &992308724
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 992308723}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 258903835}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &992308725
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 992308723}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01e689d5a474f4e10b92da681a14162a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Morboo.Integration.StrategyCombat::IdleTargetProvider
+  useActorReadProjection: 1
+--- !u!114 &992308726
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 992308723}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 120893b8fad7a4d6fbebd867b42ff493, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Morboo.Integration.StrategyCombat::IdleDomainComponent
+  rolePolicyMap: {fileID: 11400000, guid: be3df890ebcb24f3b8fe327265fc0914, type: 2}
+  idleTargetProvider: {fileID: 992308725}
+  routeExecutionPolicyProvider: {fileID: 258903850}
+  debugLog: 1
+--- !u!114 &992308727
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 992308723}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84448ae31436b4c078c27987c9efe815, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CombatTargetSet
+  capacity: 6
+  ttlSeconds: 0.9
+  faction: {fileID: 11400000, guid: f4a25507508184ab3a509c259f65f78e, type: 2}
+--- !u!114 &992308728
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 992308723}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1b4f1147da534cc5b6e216ae7b8edb7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Morboo.Integration.StrategyCombat::CombatTargetProvider
+  targetSet: {fileID: 992308727}
+--- !u!114 &992308729
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 992308723}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f27a0da450ea6407ebb3e9f427c86a63, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Morboo.Integration.StrategyCombat::CombatDomainComponent
+  searchMode: 1
+  aggroRadius: 12
+  searchCamera: {fileID: 0}
+  viewportMargin: 0
+  combatTargetProvider: {fileID: 992308728}
+  targetSetSize: 4
+  rolePolicyMap: {fileID: 11400000, guid: bbdd1192619974b96ae0c37c2a1af824, type: 2}
+  roleConstraintsMap: {fileID: 11400000, guid: 36710e6c9d9294b01872a62bf549b82b, type: 2}
+  routeExecutionPolicyProvider: {fileID: 258903850}
+  debugLog: 1
+--- !u!114 &992308730
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 992308723}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 410f11f3a89024a1ab356df9c29fee60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OrchestrationArbiter
+  orchestratorFaction: {fileID: 11400000, guid: f4a25507508184ab3a509c259f65f78e,
+    type: 2}
+  typedRelations: {fileID: 11400000, guid: 45bf0d83b9c4c414a9b621b1fb5a7b1a, type: 2}
+  anchorOverride: {fileID: 1070189277}
+  projectionPlane: 0
+  domainOrchestrators:
+  - {fileID: 992308732}
+  - {fileID: 992308733}
+  combatMinActiveTime: 0.8
+  combatCooldownAfterThreat: 0.6
+  debugLog: 1
+--- !u!114 &992308731
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 992308723}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4255f636c3cd744ddbf31c8c8ec046dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Morboo.RuntimeHost::OrchestrationPipelineComponent
+  arbiter: {fileID: 992308730}
+  orchestratorFaction: {fileID: 11400000, guid: f4a25507508184ab3a509c259f65f78e,
+    type: 2}
+  domainOrchestrators:
+  - {fileID: 992308732}
+  - {fileID: 992308733}
+--- !u!114 &992308732
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 992308723}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7021f2bb7e354c928f600a3b1d51ee0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Morboo.Integration.StrategyCombat::StrategyCombatDomainOrchestrator
+  domainComponent: {fileID: 992308729}
+  warnOnInvalidDomainComponent: 1
+--- !u!114 &992308733
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 992308723}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7021f2bb7e354c928f600a3b1d51ee0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Morboo.Integration.StrategyCombat::StrategyCombatDomainOrchestrator
+  domainComponent: {fileID: 992308726}
+  warnOnInvalidDomainComponent: 1
 --- !u!1 &1001967109
 GameObject:
   m_ObjectHideFlags: 0

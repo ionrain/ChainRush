@@ -67,6 +67,14 @@ Fitness Functions.
 
 -   `com.morboo.*` packages MUST NOT зависеть от project-layer assemblies
     (`Game.Runtime`, `Morboo.Bridge`, `Integration.Project`).
+-   Новые `com.morboo.*` packages MUST NOT создаваться в рамках
+    рефакторинга существующего game type. Исключение допускается только
+    для выделения инфраструктуры/интеграции под новый тип игры
+    (new game type package family) и MUST требовать ADR.
+-   Если задача требует "новой полки" по абстракции, команда MUST
+    сначала разнести код по существующим слоям (`Framework`, `Core`,
+    `RuntimeHost`, `Systems/Integration`, `MorbooBridge`) и абстрагировать
+    блокирующее слабое звено, а не создавать новый package как shortcut.
 -   Project glue / scene wiring / legacy adaptation MUST находиться в
     `Assets/Scripts/MorbooBridge` (или эквивалентном project bridge
     слое), а не в package runtime слоях.
@@ -243,6 +251,52 @@ Execution Layer:
 -   Если transition форма появляется выше `MorbooBridge`, MUST быть
     добавлено явное нарушение/исключение в backlog и тестах с дедлайном
     удаления.
+
+------------------------------------------------------------------------
+
+## 6.5 No Parallel Legacy Fallback Paths ("Just In Case" Ban)
+
+-   Legacy/compatibility fallback path MUST NOT добавляться "на всякий
+    случай" параллельно migrated owner-path.
+-   Если введён новый source-of-truth / owner-path, старый fallback path
+    MUST быть либо:
+    -   удалён сразу, либо
+    -   оставлен только как временный migration seam с явным флагом /
+        phase-gate / allowlist и дедлайном удаления.
+-   Hidden/implicit fallback (silent auto-resolve, registry fallback,
+    inspector fallback, secondary discovery path) MUST считаться
+    архитектурным нарушением, если он создаёт второй рабочий слой
+    поведения и усложняет debug.
+-   Предпочтительное поведение при незавершённой миграции: fail-fast с
+    диагностикой вместо silent fallback.
+-   Compatibility fallback MAY использоваться только когда он:
+    -   явно задокументирован как временный,
+    -   не дублирует ownership бесконечно,
+    -   покрыт тестом и removal-plan.
+
+------------------------------------------------------------------------
+
+## 6.6 Refactor Escalation Rule (Do Not Lower Target To Fit Weak Links)
+
+-   Если целевая архитектурная задача требует вынести абстракцию выше по
+    слоям, а текущий "слабый" узел (тип, контракт, компонент, provider,
+    asset, seam) мешает этому переносу, исполнитель MUST сначала
+    попытаться абстрагировать/перестроить сам мешающий узел.
+-   Исполнитель MUST NOT понижать/сужать целевую задачу ("оставим в
+    ближайшем слое", "вынесем только частично", "зафиксируем локальный
+    shared helper в genre-layer") только потому, что текущая реализация
+    неудобна для переноса.
+-   Изменение цели рефактора под ограничения слабого звена допускается
+    только после явного согласования с владельцем архитектуры (explicit
+    approval) и должно быть зафиксировано в backlog/roadmap как отдельное
+    решение с причиной.
+-   Предпочтительный порядок действий:
+    -   определить мешающий узел,
+    -   поднять для него общий contract/base/seam,
+    -   затем продолжить перенос исходной абстракции в целевой слой.
+-   Это правило распространяется на package-layer split, orchestration
+    refactor, domain/provider hierarchies, route-policy abstractions и
+    любые похожие structural migrations.
 
 ------------------------------------------------------------------------
 

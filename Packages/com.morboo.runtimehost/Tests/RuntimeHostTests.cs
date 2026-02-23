@@ -244,7 +244,7 @@ public sealed class RuntimeHostTests
     public void CommandEmitter_CombatDecision_ProducesDispatchCommands()
     {
         var bus = new InProcessCommandBus();
-        var router = new ExecutionRouter(bus);
+        var router = CreateRouterWithBuiltInRoutes(bus);
         var world = new OrchestrationWorldCache();
 
         // Populate minimal receiver snapshot data
@@ -281,7 +281,7 @@ public sealed class RuntimeHostTests
     public void CommandEmitter_IdleHoldAll_ProducesDispatchCommands()
     {
         var bus = new InProcessCommandBus();
-        var router = new ExecutionRouter(bus);
+        var router = CreateRouterWithBuiltInRoutes(bus);
         var world = new OrchestrationWorldCache();
 
         // Add idle receiver
@@ -311,6 +311,74 @@ public sealed class RuntimeHostTests
     }
 
     [Test]
+    public void StrategyCombatNoneRoute_RouteExecutionPolicy_CanDisableModeChangeHoldAll()
+    {
+        var world = new OrchestrationWorldCache();
+        AddCombatReceiverSnapshot(world, new EntityId(11), new RoleId(101));
+        AddIdleReceiverSnapshot(world, new EntityId(22), new RoleId(202));
+        world.Freeze();
+
+        var decision = new ArbiterDecision
+        {
+            DomainKey = OrchestrationDomainKeys.None,
+            ProposalKey = OrchestrationProposalKeys.None,
+            ModeChanged = true
+        };
+
+        var ctx = new ExecutionContext();
+
+        // Baseline (null policy) preserves legacy behavior: emit hold-all for both combat and idle.
+        var baselineBus = new InProcessCommandBus();
+        var baselineRouter = new ExecutionRouter(baselineBus);
+        baselineRouter.RegisterRoute(new ExecutionRouteRegistration(
+            OrchestrationDomainId.None,
+            new StrategyCombatNoneExecutionRoute().Execute));
+
+        var baselineCombat = new List<DispatchCombatCommand>();
+        var baselineIdle = new List<DispatchIdleCommand>();
+        baselineBus.Subscribe<DispatchCombatCommand>(c => baselineCombat.Add(c));
+        baselineBus.Subscribe<DispatchIdleCommand>(c => baselineIdle.Add(c));
+
+        baselineRouter.Execute(decision, world, ctx);
+        baselineBus.Flush();
+
+        Assert.That(baselineCombat.Count, Is.EqualTo(1),
+            "Legacy/default StrategyCombat none-route behavior should emit combat hold-all on mode change.");
+        Assert.That(baselineIdle.Count, Is.EqualTo(1),
+            "Legacy/default StrategyCombat none-route behavior should emit idle hold-all on mode change.");
+
+        // Policy override disables both hold-all emissions for None route.
+        StrategyCombatRouteExecutionPolicyAsset policy = ScriptableObject.CreateInstance<StrategyCombatRouteExecutionPolicyAsset>();
+        try
+        {
+            ConfigureNoneRoutePolicy(policy, emitCombatHoldOnModeChange: false, emitIdleHoldOnModeChange: false);
+
+            var policyBus = new InProcessCommandBus();
+            var policyRouter = new ExecutionRouter(policyBus);
+            policyRouter.RegisterRoute(new ExecutionRouteRegistration(
+                OrchestrationDomainId.None,
+                new StrategyCombatNoneExecutionRoute(policy).Execute));
+
+            var policyCombat = new List<DispatchCombatCommand>();
+            var policyIdle = new List<DispatchIdleCommand>();
+            policyBus.Subscribe<DispatchCombatCommand>(c => policyCombat.Add(c));
+            policyBus.Subscribe<DispatchIdleCommand>(c => policyIdle.Add(c));
+
+            policyRouter.Execute(decision, world, ctx);
+            policyBus.Flush();
+
+            Assert.That(policyCombat.Count, Is.EqualTo(0),
+                "None-route policy should be able to disable combat hold-all emission on mode change.");
+            Assert.That(policyIdle.Count, Is.EqualTo(0),
+                "None-route policy should be able to disable idle hold-all emission on mode change.");
+        }
+        finally
+        {
+            Object.DestroyImmediate(policy);
+        }
+    }
+
+    [Test]
     public void CommandBus_Flush_ClearsQueue()
     {
         var bus = new InProcessCommandBus();
@@ -331,9 +399,139 @@ public sealed class RuntimeHostTests
         Assert.That(count, Is.EqualTo(0));
     }
 
+    [Test]
+    public void OrchestrationLoop_BuildsTwoPipelines_AndTreatsPipelineComponentAsCompositionOwner()
+    {
+        var loopGo = new GameObject("TestOrchestrationLoop");
+        var p1Go = new GameObject("Pipeline1");
+        var p2Go = new GameObject("Pipeline2");
+
+        try
+        {
+            var loop = loopGo.AddComponent<OrchestrationLoop>();
+
+            var arbiter1 = p1Go.AddComponent<OrchestrationArbiter>();
+            var arbiter2 = p2Go.AddComponent<OrchestrationArbiter>();
+            var pipeline1 = p1Go.AddComponent<OrchestrationPipelineComponent>();
+            var pipeline2 = p2Go.AddComponent<OrchestrationPipelineComponent>();
+
+            // Composition owner should still be valid when the component is disabled;
+            // only the GameObject active state is relevant for scene composition.
+            pipeline2.enabled = false;
+
+            SetField(pipeline1, "arbiter", arbiter1);
+            SetField(pipeline1, "domainOrchestrators", System.Array.Empty<DomainOrchestrator>());
+            SetField(pipeline2, "arbiter", arbiter2);
+            SetField(pipeline2, "domainOrchestrators", System.Array.Empty<DomainOrchestrator>());
+
+            SetField(loop, "pipelines", new[] { pipeline1, pipeline2 });
+            SetField(loop, "sharedRelations", null);
+
+            InvokePrivateVoid(loop, "BuildAndApplyConfiguredPipelines");
+
+            Assert.That(loop.ConfiguredPipelines.Count, Is.EqualTo(2));
+            Assert.That(GetField<int>(loop, "_runtimePipelineCount"), Is.EqualTo(2),
+                "Loop host should build two runtime pipelines for C04B/B7 multi-pipeline path.");
+            Assert.That(GetField<OrchestrationPipeline>(loop, "_primaryPipeline"), Is.Not.Null,
+                "Loop must preserve compatibility primary pipeline (index 0) while adapters still read loop-level context properties.");
+            var runtimePipelines = GetField<OrchestrationPipeline[]>(loop, "_runtimePipelines");
+            Assert.That(runtimePipelines, Is.Not.Null);
+            Assert.That(runtimePipelines.Length, Is.EqualTo(2));
+            Assert.That(ReferenceEquals(runtimePipelines[0].CommandBus, loop.CommandBus), Is.True);
+            Assert.That(ReferenceEquals(runtimePipelines[1].CommandBus, loop.CommandBus), Is.True,
+                "B7 multi-pipeline path should use the shared loop command bus so existing adapters can consume commands from all pipelines.");
+            Assert.That(GetField<bool>(loop, "_warnedInvalidConfiguredPipelines"), Is.False,
+                "Disabled OrchestrationPipelineComponent must not be treated as invalid composition input.");
+        }
+        finally
+        {
+            Object.DestroyImmediate(loopGo);
+            Object.DestroyImmediate(p1Go);
+            Object.DestroyImmediate(p2Go);
+        }
+    }
+
     // ──────────────────────────────────────────────────────────────────
     //  Helpers
     // ──────────────────────────────────────────────────────────────────
+
+    static ExecutionRouter CreateRouterWithBuiltInRoutes(InProcessCommandBus bus)
+    {
+        var router = new ExecutionRouter(bus);
+        router.RegisterRoute(new ExecutionRouteRegistration(OrchestrationDomainId.Combat, TestCombatRoute));
+        router.RegisterRoute(new ExecutionRouteRegistration(OrchestrationDomainId.Idle, TestIdleRoute));
+        router.RegisterRoute(new ExecutionRouteRegistration(OrchestrationDomainId.None, TestNoneRoute));
+        return router;
+    }
+
+    static void TestCombatRoute(IExecutionRouteHost host, ArbiterDecision decision, OrchestrationWorldCache world, ExecutionContext ctx)
+    {
+        if (host == null)
+            return;
+
+        PublishCombatCommandForAll(host, ctx.CombatCommand, world);
+        if (decision.ModeChanged)
+            PublishIdleHoldForAll(host, world);
+    }
+
+    static void TestIdleRoute(IExecutionRouteHost host, ArbiterDecision decision, OrchestrationWorldCache world, ExecutionContext ctx)
+    {
+        if (host == null)
+            return;
+
+        PublishIdleHoldForAll(host, world);
+        if (decision.ModeChanged)
+            PublishCombatCommandForAll(host, CombatCommand.Create(CombatCommandType.Hold, debugLabel: "Test=IdleActive"), world);
+    }
+
+    static void TestNoneRoute(IExecutionRouteHost host, ArbiterDecision decision, OrchestrationWorldCache world, ExecutionContext ctx)
+    {
+        if (host == null)
+            return;
+
+        if (decision.ModeChanged)
+        {
+            PublishCombatCommandForAll(host, CombatCommand.Create(CombatCommandType.Hold, debugLabel: "Test=None"), world);
+            PublishIdleHoldForAll(host, world);
+        }
+    }
+
+    static void PublishCombatCommandForAll(IExecutionRouteHost host, CombatCommand cmd, OrchestrationWorldCache world)
+    {
+        int count = world.CombatReceiverCount;
+        for (int i = 0; i < count; i++)
+        {
+            EntityId eid = world.GetCombatReceiverEntityId(i);
+            if (eid.IsNone)
+                continue;
+
+            host.PublishCommand(new DispatchCombatCommand
+            {
+                ReceiverEntityId = eid,
+                Payload = cmd,
+                ReceiverRoleId = world.GetCombatReceiverRoleId(i)
+            });
+        }
+    }
+
+    static void PublishIdleHoldForAll(IExecutionRouteHost host, OrchestrationWorldCache world)
+    {
+        IdleCommand hold = IdleCommand.Hold();
+        int count = world.IdleReceiverCount;
+        for (int i = 0; i < count; i++)
+        {
+            EntityId eid = world.GetIdleReceiverEntityId(i);
+            if (eid.IsNone)
+                continue;
+
+            host.PublishCommand(new DispatchIdleCommand
+            {
+                ReceiverEntityId = eid,
+                Payload = hold,
+                ReceiverRoleId = world.GetIdleReceiverRoleId(i)
+            });
+        }
+    }
 
     /// <summary>
     /// Adds a combat receiver snapshot entry to the world cache via reflection.
@@ -406,6 +604,19 @@ public sealed class RuntimeHostTests
             BindingFlags.NonPublic | BindingFlags.Instance);
         Assert.That(fi, Is.Not.Null, $"Field '{fieldName}' not found on {target.GetType().Name}");
         fi.SetValue(target, value);
+    }
+
+    static void ConfigureNoneRoutePolicy(
+        StrategyCombatRouteExecutionPolicyAsset policy,
+        bool emitCombatHoldOnModeChange,
+        bool emitIdleHoldOnModeChange)
+    {
+        Assert.That(policy, Is.Not.Null);
+
+        var section = new StrategyCombatRouteExecutionPolicyAsset.NoneRoutePolicySection();
+        SetField(section, "emitCombatHoldOnModeChange", emitCombatHoldOnModeChange);
+        SetField(section, "emitIdleHoldOnModeChange", emitIdleHoldOnModeChange);
+        SetField(policy, "noneRoute", section);
     }
 
     static void InvokePrivateVoid(object target, string methodName)

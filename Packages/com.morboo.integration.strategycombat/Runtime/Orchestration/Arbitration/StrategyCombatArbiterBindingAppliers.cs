@@ -12,22 +12,16 @@ public static class StrategyCombatArbiterBindingAppliers
 
     static bool ApplyIdleRolePolicyMap(IDomainArbiterBindingApplyTarget target, ScriptableObject asset)
     {
-        return target != null && target.TryApplyArbiterBindingConsumer(
-            RuntimeHostArbiterBindingConsumerKeys.IdleRolePolicyMap,
-            asset);
+        return target != null && target.TryApplyArbiterBindingConsumer<IdleRolePolicyMapAsset>(asset);
     }
 
     static bool ApplyCombatRolePolicyMap(IDomainArbiterBindingApplyTarget target, ScriptableObject asset)
     {
-        return target != null && target.TryApplyArbiterBindingConsumer(
-            RuntimeHostArbiterBindingConsumerKeys.CombatRolePolicyMap,
-            asset);
+        return target != null && target.TryApplyArbiterBindingConsumer<CombatRolePolicyMapAsset>(asset);
     }
 
     static bool ApplyCombatRoleConstraintsMap(IDomainArbiterBindingApplyTarget target, ScriptableObject asset)
     {
-        return target != null && target.TryApplyArbiterBindingConsumer(
-            RuntimeHostArbiterBindingConsumerKeys.CombatRoleConstraintsMap,
-            asset);
+        return target != null && target.TryApplyArbiterBindingConsumer<CombatRoleConstraintsMapAsset>(asset);
     }
 }

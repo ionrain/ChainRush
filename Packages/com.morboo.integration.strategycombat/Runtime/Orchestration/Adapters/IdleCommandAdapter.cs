@@ -21,8 +21,8 @@ public sealed class IdleCommandAdapter : MonoBehaviour
     //  Serialized
     // ──────────────────────────────────────────────────────────────────
 
-    [Tooltip("OrchestrationLoop component (MonoBehaviour). Falls back to GetComponent on this GameObject.")]
-    [SerializeField] MonoBehaviour orchestrationLoopComponent;
+    [Tooltip("OrchestrationLoop component. Typed dependency; no runtime GetComponent fallback.")]
+    [SerializeField] OrchestrationLoop orchestrationLoopComponent;
 
     // ──────────────────────────────────────────────────────────────────
     //  Runtime
@@ -36,9 +36,7 @@ public sealed class IdleCommandAdapter : MonoBehaviour
 
     void OnEnable()
     {
-        _loop = orchestrationLoopComponent as OrchestrationLoop;
-        if (_loop == null)
-            _loop = GetComponent<OrchestrationLoop>();
+        _loop = orchestrationLoopComponent;
 
         if (_loop != null)
         {
@@ -74,16 +72,17 @@ public sealed class IdleCommandAdapter : MonoBehaviour
 
         ExecutionContext ctx = _loop.CurrentExecContext;
         OrchestrationWorldCache world = _loop.CurrentWorld;
+        ctx.TryGetBinding(out IdleRolePolicyMapAsset idleRolePolicyMap);
 
         IdleCommand finalCmd = cmd.Payload;
 
         // ── Selector override: per-unit override wins over role-map ──
         // IMPORTANT: The router computed the command from role-map policy.
         // The selector can override to a different policy. If so, recompute.
-        if (ctx.IdleRolePolicyMap != null && !cmd.ReceiverRoleId.IsNone)
+        if (idleRolePolicyMap != null && !cmd.ReceiverRoleId.IsNone)
         {
             IdlePolicyAsset rolePolicy;
-            if (ctx.IdleRolePolicyMap.TryGet(cmd.ReceiverRoleId, out rolePolicy) && rolePolicy != null)
+            if (idleRolePolicyMap.TryGet(cmd.ReceiverRoleId, out rolePolicy) && rolePolicy != null)
             {
                 IIdlePolicySelector sel = t.GetComponent<IIdlePolicySelector>();
                 if (sel != null)

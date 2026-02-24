@@ -3,7 +3,27 @@
 Date: 2026-02-23  
 Phase: `Phase 4` (`Orchestration Platform Remediation`)  
 Type: structural refactor (package-breaking + scene-breaking allowed)  
-Status: `planned`
+Status: `closed`
+
+Closure evidence (2026-02-23):
+
+1. Generic orchestration composition form extracted to `Morboo.RuntimeHost`:
+   - `DomainOrchestratorComponent` (was `StrategyCombatDomainOrchestrator`)
+   - `DomainComponent` abstract (was `StrategyCombatDomainComponentBase`)
+   - `DomainOrchestratorComposition` static helper (was `StrategyCombatDomainOrchestratorCommon`)
+   - `IDomainRouteExecutionPolicyConsumer` (was `IStrategyCombatRouteExecutionPolicyConsumer`)
+   - `DomainRouteExecutionPolicy` abstract ScriptableObject (new)
+   - `DomainRouteExecutionPolicyProvider` (was `StrategyCombatRouteExecutionPolicyProvider`)
+   - `DomainTargetProvider` abstract (was `DomainTargetProviderBase`)
+2. All moves executed via `git mv` preserving `.meta` GUIDs (scene serialization intact).
+3. Genre layer rebound: `CombatDomainComponent` / `IdleDomainComponent` inherit `DomainComponent`; `CombatTargetProvider` / `IdleTargetProvider` inherit `DomainTargetProvider`; `StrategyCombatRouteExecutionPolicyAsset` inherits `DomainRouteExecutionPolicy`.
+4. Bridge renamed to `DomainRouteExecutionPolicyBridge` and uses `IDomainRouteExecutionPolicyConsumer` (no StrategyCombat-type branching).
+5. `Level.unity` scene `m_EditorClassIdentifier` strings updated.
+6. Architecture fitness tests rewritten for C04D target form (`C04D_GenericOrchestrationComposition_ExtractedToRuntimeHost`).
+7. Layering test regex updated (`DomainOrchestratorComponent` replaces `StrategyCombatDomainOrchestrator`).
+8. Zero stale references confirmed by grep across all `.cs` and `.unity` files.
+9. No compatibility path or legacy fallback introduced.
+10. Partial closure: `StrategyCombatRouteExecutionPolicyAsset` monolith split (section C of plan) deferred — current asset inherits `DomainRouteExecutionPolicy` but is not yet split into per-route policy assets. This does not block the primary C04D goal (layer ownership extraction).
 
 ## Why This Step Exists
 

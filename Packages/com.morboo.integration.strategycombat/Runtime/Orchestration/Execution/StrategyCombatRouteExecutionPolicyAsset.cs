@@ -1,14 +1,14 @@
 using UnityEngine;
 
 /// <summary>
-/// Optional StrategyCombat route-execution policy overrides.
-/// Transitional C04A seam toward data/policy-driven route execution.
-/// Defaults preserve current behavior.
+/// StrategyCombat-specific route-execution policy overrides.
+/// Inherits the generic <see cref="DomainRouteExecutionPolicy"/> base from RuntimeHost.
+/// Genre-specific route sections (Combat/Idle/None/UnknownRouteFallback) live here.
 /// </summary>
 [CreateAssetMenu(
     fileName = "StrategyCombatRouteExecutionPolicy",
     menuName = "Morboo/Orchestration/StrategyCombat Route Execution Policy")]
-public sealed class StrategyCombatRouteExecutionPolicyAsset : ScriptableObject
+public sealed class StrategyCombatRouteExecutionPolicyAsset : DomainRouteExecutionPolicy
 {
     [System.Serializable]
     public sealed class CombatRoutePolicySection

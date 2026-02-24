@@ -1,16 +1,17 @@
 using UnityEngine;
 
 /// <summary>
-/// Shared StrategyCombat domain orchestrator entrypoint.
+/// Generic orchestration domain orchestrator wrapper.
 /// Owns the <see cref="DomainOrchestrator"/> runtime contract while delegating
 /// domain-specific behavior to a component/provider graph
-/// (<see cref="StrategyCombatDomainComponentBase"/> + target providers + data assets).
+/// (<see cref="DomainComponent"/> + target providers + data assets).
+/// IMPORTANT: RuntimeHost owns the generic form; genre-specific components live in StrategyCombat.
 /// </summary>
-public sealed class StrategyCombatDomainOrchestrator : DomainOrchestrator, IDomainArbitrationProfileSource, IStrategyCombatRouteExecutionPolicyConsumer
+public sealed class DomainOrchestratorComponent : DomainOrchestrator, IDomainArbitrationProfileSource, IDomainRouteExecutionPolicyConsumer
 {
     [Header("Domain Component")]
-    [Tooltip("StrategyCombat domain component that owns domain-specific evaluation/bindings/routes.")]
-    [SerializeField] StrategyCombatDomainComponentBase domainComponent;
+    [Tooltip("Domain component that owns domain-specific evaluation/bindings/routes.")]
+    [SerializeField] DomainComponent domainComponent;
 
     [Header("Debug")]
     [SerializeField] bool warnOnInvalidDomainComponent = true;
@@ -22,7 +23,7 @@ public sealed class StrategyCombatDomainOrchestrator : DomainOrchestrator, IDoma
     {
         get
         {
-            StrategyCombatDomainComponentBase component = domainComponent;
+            DomainComponent component = domainComponent;
             if (component == null)
                 return OrchestrationDomainId.None;
 
@@ -32,42 +33,42 @@ public sealed class StrategyCombatDomainOrchestrator : DomainOrchestrator, IDoma
 
     public DomainArbitrationProfile GetArbitrationProfile()
     {
-        StrategyCombatDomainComponentBase component = domainComponent;
+        DomainComponent component = domainComponent;
         bool stickyPrimary = component != null && component.StickyPrimaryArbitration;
-        return StrategyCombatDomainOrchestratorCommon.CreateArbitrationProfile(stickyPrimary);
+        return DomainOrchestratorComposition.CreateArbitrationProfile(stickyPrimary);
     }
 
     protected override IDomainArbiterBindingContributor CreateArbiterBindingContributor()
     {
-        StrategyCombatDomainComponentBase component = GetValidDomainComponentForComposition();
+        DomainComponent component = GetValidDomainComponentForComposition();
         return component != null ? component.CreateArbiterBindingContributor() : null;
     }
 
     protected override IDomainExecutionRouteContributor CreateExecutionRouteContributor()
     {
-        StrategyCombatDomainComponentBase component = GetValidDomainComponentForComposition();
+        DomainComponent component = GetValidDomainComponentForComposition();
         return component != null ? component.CreateExecutionRouteContributor() : null;
     }
 
-    public void ApplyRouteExecutionPolicy(StrategyCombatRouteExecutionPolicyAsset policy)
+    public void ApplyRouteExecutionPolicy(DomainRouteExecutionPolicy policy)
     {
-        StrategyCombatDomainComponentBase component = GetValidDomainComponentForComposition();
+        DomainComponent component = GetValidDomainComponentForComposition();
         if (component != null)
             component.ApplyRouteExecutionPolicy(policy);
     }
 
     public override void Evaluate(OrchestrationArbiterContext ctx, OrchestrationArbiterProposals proposals)
     {
-        StrategyCombatDomainComponentBase component = GetValidDomainComponentForComposition();
+        DomainComponent component = GetValidDomainComponentForComposition();
         if (component == null)
             return;
 
         component.EvaluateDomain(ctx, proposals);
     }
 
-    StrategyCombatDomainComponentBase GetValidDomainComponentForComposition()
+    DomainComponent GetValidDomainComponentForComposition()
     {
-        StrategyCombatDomainComponentBase component = domainComponent;
+        DomainComponent component = domainComponent;
         if (component == null)
         {
             WarnMissingDomainComponentOnce();
@@ -90,7 +91,7 @@ public sealed class StrategyCombatDomainOrchestrator : DomainOrchestrator, IDoma
 
         _warnedMissingDomainComponent = true;
         Debug.LogError(
-            "[StrategyCombatDomainOrchestrator] Missing StrategyCombatDomainComponentBase. " +
+            "[DomainOrchestratorComponent] Missing DomainComponent. " +
             "Assign a domain component (Combat/Idle/...) explicitly.",
             this);
     }
@@ -102,7 +103,7 @@ public sealed class StrategyCombatDomainOrchestrator : DomainOrchestrator, IDoma
 
         _warnedInvalidDomainId = true;
         Debug.LogError(
-            "[StrategyCombatDomainOrchestrator] Domain component returned OrchestrationDomainId.None. " +
+            "[DomainOrchestratorComponent] Domain component returned OrchestrationDomainId.None. " +
             "Domain components must provide an explicit DomainId.",
             this);
     }

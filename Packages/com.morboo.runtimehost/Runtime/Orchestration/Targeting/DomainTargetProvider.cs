@@ -1,9 +1,11 @@
 using UnityEngine;
 
 /// <summary>
-/// Common orchestration-facing target-provider contract for StrategyCombat domains.
-/// C04C bootstrap: concrete domain providers may expose typed APIs, but should converge
-/// on one shared base + interface so domain orchestrators can use one structural pattern.
+/// Common orchestration-facing target-provider contract for orchestration domains.
+/// Concrete domain providers (e.g. CombatTargetProvider, IdleTargetProvider) may expose
+/// typed APIs, but converge on one shared base + interface so domain orchestrators
+/// can use one structural pattern.
+/// IMPORTANT: RuntimeHost owns the generic form; genre-specific providers live in StrategyCombat.
 /// </summary>
 public interface IDomainTargetProvider
 {
@@ -94,9 +96,10 @@ public static class DomainTargetProviderValidation
 }
 
 /// <summary>
-/// Shared MonoBehaviour base for domain target providers in StrategyCombat.
+/// Shared MonoBehaviour base for domain target providers.
+/// IMPORTANT: No <c>Base</c> suffix per C04D naming rule for abstract types in upper layers.
 /// </summary>
-public abstract class DomainTargetProviderBase : MonoBehaviour, IDomainTargetProvider
+public abstract class DomainTargetProvider : MonoBehaviour, IDomainTargetProvider
 {
     public abstract OrchestrationDomainId DomainId { get; }
 

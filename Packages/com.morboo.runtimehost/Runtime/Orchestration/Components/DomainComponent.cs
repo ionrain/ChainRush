@@ -1,12 +1,13 @@
 using UnityEngine;
 
 /// <summary>
-/// Shared StrategyCombat domain-component contract.
-/// A single <see cref="StrategyCombatDomainOrchestrator"/> delegates domain identity,
-/// proposal evaluation, arbiter bindings and route contribution to one component that
-/// implements this contract.
+/// Generic orchestration domain-component contract.
+/// A <see cref="DomainOrchestratorComponent"/> delegates domain identity, proposal evaluation,
+/// arbiter bindings and route contribution to one component implementing this contract.
+/// IMPORTANT: RuntimeHost owns the generic form; genre-specific implementations
+/// (e.g. CombatDomainComponent, IdleDomainComponent) live in StrategyCombat.
 /// </summary>
-public interface IStrategyCombatDomainComponent : IStrategyCombatRouteExecutionPolicyConsumer
+public interface IDomainComponent : IDomainRouteExecutionPolicyConsumer
 {
     OrchestrationDomainId DomainId { get; }
     bool StickyPrimaryArbitration { get; }
@@ -17,10 +18,10 @@ public interface IStrategyCombatDomainComponent : IStrategyCombatRouteExecutionP
 }
 
 /// <summary>
-/// Base class for StrategyCombat domain components used by the shared
-/// <see cref="StrategyCombatDomainOrchestrator"/>.
+/// Abstract base for orchestration domain components used by <see cref="DomainOrchestratorComponent"/>.
+/// IMPORTANT: No <c>Base</c> suffix per C04D naming rule for abstract types in upper layers.
 /// </summary>
-public abstract class StrategyCombatDomainComponentBase : MonoBehaviour, IStrategyCombatDomainComponent
+public abstract class DomainComponent : MonoBehaviour, IDomainComponent
 {
     public abstract OrchestrationDomainId DomainId { get; }
     public abstract bool StickyPrimaryArbitration { get; }
@@ -37,7 +38,7 @@ public abstract class StrategyCombatDomainComponentBase : MonoBehaviour, IStrate
         return null;
     }
 
-    public virtual void ApplyRouteExecutionPolicy(StrategyCombatRouteExecutionPolicyAsset policy)
+    public virtual void ApplyRouteExecutionPolicy(DomainRouteExecutionPolicy policy)
     {
     }
 }

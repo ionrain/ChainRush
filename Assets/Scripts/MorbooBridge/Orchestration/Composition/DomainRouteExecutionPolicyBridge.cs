@@ -1,16 +1,18 @@
 using UnityEngine;
 
 /// <summary>
-/// Project-level composition helper for applying a shared StrategyCombat route-execution policy.
-/// Applies a shared <see cref="StrategyCombatRouteExecutionPolicyAsset"/> to scene domain orchestrators
+/// Project-level composition helper for applying a shared route-execution policy.
+/// Applies a shared <see cref="DomainRouteExecutionPolicy"/> to scene domain orchestrators
 /// before <see cref="OrchestrationLoop"/> builds route registrations.
+/// IMPORTANT — Uses generic <see cref="IDomainRouteExecutionPolicyConsumer"/> contract.
+/// Genre-specific policy assets inherit <see cref="DomainRouteExecutionPolicy"/>.
 /// </summary>
 [DefaultExecutionOrder(-1000)]
-public sealed class StrategyCombatRouteExecutionPolicyBridge : MonoBehaviour
+public sealed class DomainRouteExecutionPolicyBridge : MonoBehaviour
 {
     [Header("Route Policy")]
-    [Tooltip("Shared route-execution policy applied to configured StrategyCombat domains.")]
-    [SerializeField] StrategyCombatRouteExecutionPolicyAsset routeExecutionPolicy;
+    [Tooltip("Shared route-execution policy applied to configured domains.")]
+    [SerializeField] DomainRouteExecutionPolicy routeExecutionPolicy;
 
     [Header("Source Of Truth")]
     [Tooltip("OrchestrationLoop that owns the ordered domain composition for this scene.")]
@@ -56,7 +58,7 @@ public sealed class StrategyCombatRouteExecutionPolicyBridge : MonoBehaviour
                 continue;
             }
 
-            if (domain is IStrategyCombatRouteExecutionPolicyConsumer policyConsumer)
+            if (domain is IDomainRouteExecutionPolicyConsumer policyConsumer)
             {
                 policyConsumer.ApplyRouteExecutionPolicy(routeExecutionPolicy);
                 continue;
@@ -71,7 +73,7 @@ public sealed class StrategyCombatRouteExecutionPolicyBridge : MonoBehaviour
 
         _warnedNullEntries = true;
         Debug.LogWarning(string.Concat(
-            "[StrategyCombatRouteExecutionPolicyBridge] ",
+            "[DomainRouteExecutionPolicyBridge] ",
             arrayName, "[", index.ToString(), "] is null. Skipping."), this);
     }
 
@@ -82,7 +84,7 @@ public sealed class StrategyCombatRouteExecutionPolicyBridge : MonoBehaviour
 
         _warnedMissingLoop = true;
         Debug.LogWarning(
-            "[StrategyCombatRouteExecutionPolicyBridge] orchestrationLoop is not assigned. " +
+            "[DomainRouteExecutionPolicyBridge] orchestrationLoop is not assigned. " +
             "Route policy was not applied.", this);
     }
 }

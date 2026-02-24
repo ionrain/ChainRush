@@ -176,7 +176,7 @@ public sealed class ArchitectureLayeringTests
             RegexOptions.Compiled);
 
     static readonly Regex RuntimeHostDomainSpecificTokensRegex =
-        new Regex(@"\b(CombatDomainComponent|IdleDomainComponent|StrategyCombatDomainOrchestrator|CombatTargetingPolicyAsset|IdlePolicyAsset|CombatRolePolicyMapAsset|IdleRolePolicyMapAsset|CombatMoveConstraintsAsset|CombatRoleConstraintsMapAsset|CombatTargetSet|OrchestrationArbiter|OrchestrationLoop|ExecutionRouter|ExecutionContext|DispatchCombatCommand|DispatchIdleCommand)\b",
+        new Regex(@"\b(CombatDomainComponent|IdleDomainComponent|DomainOrchestratorComponent|CombatTargetingPolicyAsset|IdlePolicyAsset|CombatRolePolicyMapAsset|IdleRolePolicyMapAsset|CombatMoveConstraintsAsset|CombatRoleConstraintsMapAsset|CombatTargetSet|OrchestrationArbiter|OrchestrationLoop|ExecutionRouter|ExecutionContext|DispatchCombatCommand|DispatchIdleCommand)\b",
             RegexOptions.Compiled);
 
     static readonly Regex ForbiddenSirenixUsingRegex =

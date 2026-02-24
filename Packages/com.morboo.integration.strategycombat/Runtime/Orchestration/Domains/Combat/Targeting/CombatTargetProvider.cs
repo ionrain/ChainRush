@@ -4,7 +4,7 @@ using UnityEngine;
 /// Domain-owned Combat target-set provider (StrategyCombat).
 /// Keeps CombatTargetSet ownership/resolution out of RuntimeHost pipeline composition.
 /// </summary>
-public sealed class CombatTargetProvider : DomainTargetProviderBase
+public sealed class CombatTargetProvider : DomainTargetProvider
 {
     [Tooltip("Optional explicit CombatTargetSet owned by this combat domain.")]
     [SerializeField] CombatTargetSet targetSet;

@@ -6,7 +6,7 @@ using UnityEngine;
 /// targets from the candidate pool without re-scanning the world.
 /// <para>
 /// IMPORTANT — This component holds no gameplay logic. It is a shared data buffer:
-/// - Written by <see cref="CombatDomainComponent"/> each tick (via <see cref="StrategyCombatDomainOrchestrator"/>).
+/// - Written by <see cref="CombatDomainComponent"/> each tick (via <see cref="DomainOrchestratorComponent"/>).
 /// - Read by <see cref="UnitCombatTargetSelector2D"/> on demand.
 /// - Without it, selectors fall back to the orchestrator-chosen primary target.
 /// </para>

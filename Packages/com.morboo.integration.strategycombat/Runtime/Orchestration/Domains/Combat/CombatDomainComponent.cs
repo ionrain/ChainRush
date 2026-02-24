@@ -22,7 +22,7 @@ public enum TargetSearchMode
 /// hostile entities and writes a <see cref="CombatCommand"/> proposal.
 /// Owns <see cref="CombatRolePolicyMapAsset"/> / <see cref="CombatRoleConstraintsMapAsset"/>
 /// references and contributes them to the arbiter via cached domain registration bindings
-/// through <see cref="StrategyCombatDomainOrchestrator"/>.
+/// through <see cref="DomainOrchestratorComponent"/>.
 /// <para>
 /// IMPORTANT — This class does NOT tick itself. It implements
 /// <see cref="IOrchestrationDomain"/> and is polled by
@@ -42,7 +42,7 @@ public enum TargetSearchMode
 /// in FillTargetSet (uses IWorldQuery only).
 /// </para>
 /// </summary>
-public sealed class CombatDomainComponent : StrategyCombatDomainComponentBase
+public sealed class CombatDomainComponent : DomainComponent
 {
     StrategyCombatCombatExecutionRoute _combatExecutionRoute;
 
@@ -78,7 +78,7 @@ public sealed class CombatDomainComponent : StrategyCombatDomainComponentBase
 
     [Header("Route Execution")]
     [Tooltip("Shared route-execution policy provider component (optional; null preserves current behavior).")]
-    [SerializeField] StrategyCombatRouteExecutionPolicyProvider routeExecutionPolicyProvider;
+    [SerializeField] DomainRouteExecutionPolicyProvider routeExecutionPolicyProvider;
 
     [Header("Debug")]
     [SerializeField] bool debugLog;
@@ -117,16 +117,16 @@ public sealed class CombatDomainComponent : StrategyCombatDomainComponentBase
     {
         StrategyCombatRouteExecutionPolicyAsset routePolicy = GetRouteExecutionPolicyAsset();
         _combatExecutionRoute ??= new StrategyCombatCombatExecutionRoute(routePolicy);
-        return StrategyCombatDomainOrchestratorCommon.CreateFixedRouteContributorWithUnknownFallback(
+        return DomainOrchestratorComposition.CreateFixedRouteContributorWithUnknownFallback(
             DomainId,
-            routePolicy,
-            _combatExecutionRoute.Execute);
+            _combatExecutionRoute.Execute,
+            StrategyCombatUnknownRouteFallbackExecutionRoute.GetShared(routePolicy).Execute);
     }
 
-    public override void ApplyRouteExecutionPolicy(StrategyCombatRouteExecutionPolicyAsset policy)
+    public override void ApplyRouteExecutionPolicy(DomainRouteExecutionPolicy policy)
     {
         StrategyCombatRouteExecutionPolicyAsset currentPolicy = GetRouteExecutionPolicyAsset();
-        if (!StrategyCombatDomainOrchestratorCommon.ShouldRebuildRouteExecutorForPolicyChange(currentPolicy, policy))
+        if (!DomainOrchestratorComposition.ShouldRebuildRouteExecutorForPolicyChange(currentPolicy, policy))
             return;
 
         if (routeExecutionPolicyProvider != null)
@@ -137,7 +137,7 @@ public sealed class CombatDomainComponent : StrategyCombatDomainComponentBase
         {
             _warnedMissingRoutePolicyProviderForPolicy = true;
             Debug.LogError(
-                "[CombatDomainComponent] Missing StrategyCombatRouteExecutionPolicyProvider. " +
+                "[CombatDomainComponent] Missing DomainRouteExecutionPolicyProvider. " +
                 "Route-policy bridge cannot apply policy configuration to this domain without the shared provider component.",
                 this);
         }
@@ -147,7 +147,7 @@ public sealed class CombatDomainComponent : StrategyCombatDomainComponentBase
 
     StrategyCombatRouteExecutionPolicyAsset GetRouteExecutionPolicyAsset()
     {
-        return routeExecutionPolicyProvider != null ? routeExecutionPolicyProvider.CurrentPolicy : null;
+        return routeExecutionPolicyProvider != null ? routeExecutionPolicyProvider.CurrentPolicy as StrategyCombatRouteExecutionPolicyAsset : null;
     }
 
     // ──────────────────────────────────────────────────────────────────

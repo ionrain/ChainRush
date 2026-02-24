@@ -16,7 +16,7 @@ using UnityEngine;
 /// other components during its tick handler.
 /// </para>
 /// </summary>
-public sealed class OrchestrationLoop : MonoBehaviour
+public sealed class OrchestrationLoop : MonoBehaviour, IEventBusProvider, ICommandBusProvider
 {
     // ──────────────────────────────────────────────────────────────────
     //  Serialized
@@ -38,6 +38,7 @@ public sealed class OrchestrationLoop : MonoBehaviour
 
     ITickSource _tickSource;
     readonly InProcessCommandBus _commandBus = new InProcessCommandBus();
+    readonly InProcessEventBus _eventBus = new InProcessEventBus();
     OrchestrationPipeline[] _runtimePipelines;
     int _runtimePipelineCount;
     OrchestrationPipeline _primaryPipeline;
@@ -54,6 +55,10 @@ public sealed class OrchestrationLoop : MonoBehaviour
 
     /// <summary>Command bus for adapter subscription. Set before first tick.</summary>
     public InProcessCommandBus CommandBus => _primaryPipeline?.CommandBus ?? _commandBus;
+
+    // ── ICommandBusProvider / IEventBusProvider (C05) ────────────────
+    ICommandBus ICommandBusProvider.CommandBus => _commandBus;
+    IEventBus IEventBusProvider.EventBus => _eventBus;
 
     /// <summary>Per-tick world cache, set before bus Flush. Integration adapters read this.</summary>
     public OrchestrationWorldCache CurrentWorld => _hasCurrentDispatchContext ? _currentDispatchWorld : _primaryPipeline?.CurrentWorld;
@@ -185,7 +190,7 @@ public sealed class OrchestrationLoop : MonoBehaviour
                 continue;
             }
 
-            var pipeline = new OrchestrationPipeline(pipelineArbiter, _commandBus);
+            var pipeline = new OrchestrationPipeline(pipelineArbiter, _commandBus, _eventBus);
             pipeline.SetDispatchContextSink(SetCurrentDispatchContext);
             pipeline.ApplyFactionContext(pipelineComponent.OrchestratorFaction, sharedRelations);
             DomainOrchestrator[] resolvedDomains = ResolveConfiguredDomainsForPipeline(pipelineIndex, pipelineComponent.GetConfiguredDomainArrayOrEmpty());

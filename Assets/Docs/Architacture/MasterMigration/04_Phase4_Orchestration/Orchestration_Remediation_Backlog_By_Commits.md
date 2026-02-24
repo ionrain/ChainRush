@@ -47,7 +47,7 @@ Minimum requirement:
 7. `C04B` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 4`
 8. `C04C` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 4`
 9. `C04D` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 4`
-10. `C05` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 4`
+10. `C05` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 4` -> Status: `closed`
 11. `C06` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 4`
 12. `C07` -> Owner: `Orchestration Platform Owner` -> Target phase: `Phase 4`
 13. `C08` -> Owner: `Kernel Systems Owner` -> Target phase: `Phase 8`
@@ -307,63 +307,64 @@ Acceptance:
 
 ## C04D — Generic Orchestration Composition Abstraction Extraction (No Compatibility Path)
 
-Status: `planned`
+Status: `closed`
 
-Type: structural refactor (package-breaking + scene-breaking)  
+Type: structural refactor (package-breaking + scene-breaking)
 Goal: Убрать из `Morboo.Integration.StrategyCombat` владение общей orchestration composition-инфраструктурой и разложить её по существующим верхним пакетам (`RuntimeHost` / `Core` / `Framework` по ownership), оставив в `StrategyCombat` только domain components/providers/route executors/policies/data.
 
 Detail plan: `Assets/Docs/Architacture/MasterMigration/04_Phase4_Orchestration/C04D_Generic_Orchestration_Composition_Extraction_2026-02-23.md`
 
-Changes:
+Closure evidence (2026-02-23):
 
-1. Вынести общий orchestration wrapper/component форму из `StrategyCombat` в существующие верхние пакеты (primary owner: `Morboo.RuntimeHost` для Unity-dependent generic orchestration forms):
-   - `StrategyCombatDomainOrchestrator` -> generic `DomainOrchestratorComponent`
-   - `StrategyCombatDomainComponentBase` -> generic `DomainComponent`
-   - `StrategyCombatDomainOrchestratorCommon` -> generic orchestration composition helper
-   - `IStrategyCombatRouteExecutionPolicyConsumer` -> generic `IDomainRouteExecutionPolicyConsumer`
-2. Вынести общий target-provider contract/validation из `StrategyCombat` в существующие верхние пакеты (primary owner: `Morboo.RuntimeHost` для Unity-dependent abstraction):
-   - `DomainTargetProviderBase` -> `DomainTargetProvider` (abstract, no `Base` suffix)
-   - сохранить общий `IDomainTargetProvider` + shared validation helper.
-3. Вынести общий route-policy contract/provider form в существующие верхние пакеты (primary owner: `Morboo.RuntimeHost`; `Core` / `Framework` только где это их уровень):
-   - generic `DomainRouteExecutionPolicy` (abstract `ScriptableObject`)
-   - generic route-policy consumer/provider contracts.
-4. Оставить в `StrategyCombat` только genre-specific реализации:
-   - `CombatDomainComponent`
-   - `IdleDomainComponent`
-   - `CombatTargetProvider`
-   - `IdleTargetProvider`
-   - route executors
-   - strategy-specific binding keys/appliers
-   - strategy route policies/profile assets
-5. Разбить `StrategyCombatRouteExecutionPolicyAsset` (монолит) на route/domain-specific policy assets + strategy profile aggregate.
-6. Переименовать/перевести bridge policy application на generic contracts (без concrete StrategyCombat branching).
-7. При любом блокере сначала абстрагировать слабое звено; не оставлять общую orchestration форму в `StrategyCombat` "потому что так проще" без явного разрешения.
+1. Generic orchestration composition form extracted to `Morboo.RuntimeHost` (sections A, B, D, E, F of plan):
+   - `DomainOrchestratorComponent`, `DomainComponent`, `DomainOrchestratorComposition`, `IDomainRouteExecutionPolicyConsumer`, `DomainRouteExecutionPolicy`, `DomainRouteExecutionPolicyProvider`, `DomainTargetProvider` — all in `RuntimeHost`.
+2. Genre layer rebound: `CombatDomainComponent` / `IdleDomainComponent` → `DomainComponent`; `CombatTargetProvider` / `IdleTargetProvider` → `DomainTargetProvider`; `StrategyCombatRouteExecutionPolicyAsset` → `DomainRouteExecutionPolicy`.
+3. Bridge renamed to `DomainRouteExecutionPolicyBridge`, uses `IDomainRouteExecutionPolicyConsumer`.
+4. Scene, architecture tests, layering tests updated.
+5. No compatibility path, no legacy fallback.
+6. Deferred: section C (monolith policy split into per-route assets) — `StrategyCombatRouteExecutionPolicyAsset` now inherits `DomainRouteExecutionPolicy` but is not yet split. Does not block primary C04D goal.
 
-Acceptance:
+Acceptance status:
 
-1. В `Morboo.Integration.StrategyCombat` больше нет strategy-owned generic orchestration infrastructure (`StrategyCombatDomainOrchestrator*`, `*DomainComponentBase`, shared orchestration helper/interface seams).
-2. Shared orchestration composition form находится в существующих верхних пакетах (`RuntimeHost` / `Core` / `Framework` по ownership) и использует семантические имена без суффикса `Base` для abstract types.
-3. `CombatDomainComponent` / `IdleDomainComponent` и `CombatTargetProvider` / `IdleTargetProvider` являются genre-specific реализациями общих контрактов.
-4. `StrategyCombatRouteExecutionPolicyAsset` (монолит) удалён; route-policy ownership в `StrategyCombat` разнесён по route/domain-specific assets + profile aggregate.
-5. Bridge policy application использует generic contracts и не ветвится по конкретным StrategyCombat orchestrator wrapper types.
-6. `RuntimeHost` не получает обратно domain-specific ownership.
-7. `C04D` выполнен без compatibility path / legacy fallback.
+1. [DONE] В `Morboo.Integration.StrategyCombat` больше нет strategy-owned generic orchestration infrastructure.
+2. [DONE] Shared orchestration composition form в `RuntimeHost` с семантическими именами без `Base`.
+3. [DONE] Genre domain components/providers являются реализациями generic контрактов.
+4. [PARTIAL] `StrategyCombatRouteExecutionPolicyAsset` наследует generic base, но монолит не разбит на per-route assets (deferred).
+5. [DONE] Bridge использует generic contracts без StrategyCombat branching.
+6. [DONE] `RuntimeHost` не получил domain-specific ownership.
+7. [DONE] Выполнен без compatibility path / legacy fallback.
 
 ## C05 — Event Pipeline Activation
 
-Type: feature-complete (platform)  
-Goal: Включить доменные события как часть orchestration loop.
+Type: feature-complete (platform seam activation + bus provider decoupling)
+Status: `closed`
+Detail plan: `Assets/Docs/Architacture/MasterMigration/04_Phase4_Orchestration/C05_Event_Pipeline_Activation_2026-02-24.md`
+Goal: Включить доменные события как часть orchestration loop; декаплить bus consumers от конкретных bus owners через provider interfaces в Framework; ввести typed subscriber infrastructure.
 
-Changes:
+Changes (delivered):
 
-1. Определить минимальный набор `IDomainEvent` для orchestration lifecycle.
-2. Подключить `IEventBus` publish на execution boundary.
-3. Добавить подписчики в integration только там, где это нужно.
+1. `IEventBusProvider` / `ICommandBusProvider` в `com.morboo.framework` для декаплинга bus consumers от конкретных bus owners.
+2. `IDomainEventHandler<TEvent>` typed contract в `com.morboo.framework` (без Unity-зависимости).
+3. `InProcessEventBus` переведён на deferred multi-handler model (queue + flush, единообразие с `InProcessCommandBus`).
+4. Tier 1 `IDomainEvent` для orchestration lifecycle: `OrchestrationModeChangedEvent`, `OrchestrationTickExecutedEvent`.
+5. `IEventBus` publish в pipeline tick (arbiter + pipeline) с `EventBus.Flush()` строго после `CommandBus.Flush()`.
+6. `OrchestrationLoop` реализует `IEventBusProvider` и `ICommandBusProvider`.
+7. `EventBusSubscriber` universal abstract MonoBehaviour base в RuntimeHost (depends on `IEventBusProvider`, not `OrchestrationLoop`; не orchestration-specific).
+8. `ModeChangeDebugSubscriber` proof-of-integration в MorbooBridge.
+9. `FutureGate_RuntimePipeline_UsesDomainEvents` un-ignored; `OrchestrationLoop_ImplementsBusProviderInterfaces` and `OrchestrationPipeline_FlushesEventBusAfterCommandBus` architecture tests added.
 
-Acceptance:
+Deferred:
 
-1. Есть хотя бы один runtime publisher и subscriber доменных событий.
-2. Включить future-gate тест по EventBus/DomainEvent usage (из C01).
+1. Command adapter refactor to `ICommandBusProvider` (S5): `ICommandBus` lacks `Subscribe`/`Unsubscribe`; adapters also need `OrchestrationLoop` for `CurrentExecContext`/`CurrentWorld` (requires `IOrchestrationContextProvider`).
+2. Tier 2 events (`ThreatStateChangedEvent`, `DomainProposalArbitratedEvent`): optional enrichment for future step.
+
+Acceptance (verified):
+
+1. Runtime publisher (`OrchestrationArbiter` + `OrchestrationPipeline`) and subscriber (`ModeChangeDebugSubscriber`) exist.
+2. Future-gate test `FutureGate_RuntimePipeline_UsesDomainEvents` un-ignored.
+3. `IEventBusProvider` / `ICommandBusProvider` implemented by `OrchestrationLoop`.
+4. `EventBusSubscriber` base does not depend on `OrchestrationLoop`.
+5. `EventBus.Flush()` called after `CommandBus.Flush()` in pipeline tick (verified by architecture test).
 
 ## C06 — Capabilities Integration Into Decision/Execution
 

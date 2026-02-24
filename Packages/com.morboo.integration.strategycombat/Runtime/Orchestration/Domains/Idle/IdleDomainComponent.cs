@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// Idle domain component. Owns the <see cref="IdleRolePolicyMapAsset"/> reference
 /// and contributes it to the arbiter via cached domain registration bindings
-/// through <see cref="StrategyCombatDomainOrchestrator"/>.
+/// through <see cref="DomainOrchestratorComponent"/>.
 /// Signals "idle domain active" via proposals.
 /// <para>
 /// IMPORTANT — This class does NOT tick itself. It implements
@@ -15,7 +15,7 @@ using UnityEngine;
 /// The arbiter owns all dispatch logic including per-unit command generation.
 /// </para>
 /// </summary>
-public sealed class IdleDomainComponent : StrategyCombatDomainComponentBase
+public sealed class IdleDomainComponent : DomainComponent
 {
     StrategyCombatIdleExecutionRoute _idleExecutionRoute;
 
@@ -32,7 +32,7 @@ public sealed class IdleDomainComponent : StrategyCombatDomainComponentBase
 
     [Header("Route Execution")]
     [Tooltip("Shared route-execution policy provider component (optional; null preserves current behavior).")]
-    [SerializeField] StrategyCombatRouteExecutionPolicyProvider routeExecutionPolicyProvider;
+    [SerializeField] DomainRouteExecutionPolicyProvider routeExecutionPolicyProvider;
 
     [Header("Debug")]
     [SerializeField] bool debugLog;
@@ -53,16 +53,16 @@ public sealed class IdleDomainComponent : StrategyCombatDomainComponentBase
     {
         StrategyCombatRouteExecutionPolicyAsset routePolicy = GetRouteExecutionPolicyAsset();
         _idleExecutionRoute ??= new StrategyCombatIdleExecutionRoute(idleTargetProvider, routePolicy);
-        return StrategyCombatDomainOrchestratorCommon.CreateFixedRouteContributorWithUnknownFallback(
+        return DomainOrchestratorComposition.CreateFixedRouteContributorWithUnknownFallback(
             DomainId,
-            routePolicy,
-            _idleExecutionRoute.Execute);
+            _idleExecutionRoute.Execute,
+            StrategyCombatUnknownRouteFallbackExecutionRoute.GetShared(routePolicy).Execute);
     }
 
-    public override void ApplyRouteExecutionPolicy(StrategyCombatRouteExecutionPolicyAsset policy)
+    public override void ApplyRouteExecutionPolicy(DomainRouteExecutionPolicy policy)
     {
         StrategyCombatRouteExecutionPolicyAsset currentPolicy = GetRouteExecutionPolicyAsset();
-        if (!StrategyCombatDomainOrchestratorCommon.ShouldRebuildRouteExecutorForPolicyChange(currentPolicy, policy))
+        if (!DomainOrchestratorComposition.ShouldRebuildRouteExecutorForPolicyChange(currentPolicy, policy))
             return;
 
         if (routeExecutionPolicyProvider != null)
@@ -73,7 +73,7 @@ public sealed class IdleDomainComponent : StrategyCombatDomainComponentBase
         {
             _warnedMissingRoutePolicyProviderForPolicy = true;
             Debug.LogError(
-                "[IdleDomainComponent] Missing StrategyCombatRouteExecutionPolicyProvider. " +
+                "[IdleDomainComponent] Missing DomainRouteExecutionPolicyProvider. " +
                 "Route-policy bridge cannot apply policy configuration to this domain without the shared provider component.",
                 this);
         }
@@ -83,7 +83,7 @@ public sealed class IdleDomainComponent : StrategyCombatDomainComponentBase
 
     StrategyCombatRouteExecutionPolicyAsset GetRouteExecutionPolicyAsset()
     {
-        return routeExecutionPolicyProvider != null ? routeExecutionPolicyProvider.CurrentPolicy : null;
+        return routeExecutionPolicyProvider != null ? routeExecutionPolicyProvider.CurrentPolicy as StrategyCombatRouteExecutionPolicyAsset : null;
     }
 
     // ──────────────────────────────────────────────────────────────────

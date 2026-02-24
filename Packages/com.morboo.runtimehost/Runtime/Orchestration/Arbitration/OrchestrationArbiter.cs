@@ -149,6 +149,12 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter, IDomainArbit
     bool _warnedUnknownArbiterBindingKey;
 
     // ──────────────────────────────────────────────────────────────────
+    //  Runtime — Event bus (C05: publishes OrchestrationModeChangedEvent)
+    // ──────────────────────────────────────────────────────────────────
+
+    IEventBus _eventBus;
+
+    // ──────────────────────────────────────────────────────────────────
     //  Runtime — Arbiter binding registry (key -> binding applier)
     //  Transitional C04A step: generic binding-key payload + local application registry.
     // ──────────────────────────────────────────────────────────────────
@@ -161,6 +167,15 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter, IDomainArbit
     // ──────────────────────────────────────────────────────────────────
 
     public bool IsCombatActive => _lastDomain == OrchestrationDomainId.Combat;
+
+    /// <summary>
+    /// C05 seam: inject event bus for domain lifecycle event publishing.
+    /// Queued events are flushed by the pipeline after command bus flush.
+    /// </summary>
+    public void SetEventBus(IEventBus eventBus)
+    {
+        _eventBus = eventBus;
+    }
 
     /// <summary>
     /// C04B/B5 faction-first composition seam.
@@ -746,6 +761,19 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter, IDomainArbit
             DebugLog = debugLog
         };
         CopyArbiterBindingAssetsTo(ref execCtx);
+
+        // ── Publish mode-change event (C05) ─────────────────────────
+        // IMPORTANT: Published before _lastDomain update so PreviousDomain is correct.
+        // Event is queued (deferred); pipeline flushes after command bus.
+        if (decision.ModeChanged && _eventBus != null)
+        {
+            _eventBus.Publish(new OrchestrationModeChangedEvent
+            {
+                PreviousDomain = _lastDomain,
+                CurrentDomain = (OrchestrationDomainId)decision.DomainKey,
+                Timestamp = now
+            });
+        }
 
         // ── Update mode tracking ─────────────────────────────────────
         _lastDomain = (OrchestrationDomainId)decision.DomainKey;

@@ -25,14 +25,16 @@ public sealed class OrchestrationImplementationFitnessTests
     const string IdleDomainComponentPath = "Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/Domains/Idle/IdleDomainComponent.cs";
     const string StrategyCombatCombatTargetProviderPath = "Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/Domains/Combat/Targeting/CombatTargetProvider.cs";
     const string StrategyCombatIdleTargetProviderPath = "Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/Domains/Idle/Targeting/IdleTargetProvider.cs";
-    const string StrategyCombatDomainTargetProviderBasePath = "Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/Domains/Targeting/DomainTargetProviderBase.cs";
-    const string StrategyCombatDomainComponentBasePath = "Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/Domains/StrategyCombatDomainComponentBase.cs";
-    const string StrategyCombatDomainOrchestratorPath = "Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/Domains/StrategyCombatDomainOrchestrator.cs";
-    const string StrategyCombatDomainOrchestratorCommonPath = "Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/Domains/StrategyCombatDomainOrchestratorCommon.cs";
+    const string RuntimeHostDomainTargetProviderPath = "Packages/com.morboo.runtimehost/Runtime/Orchestration/Targeting/DomainTargetProvider.cs";
+    const string RuntimeHostDomainComponentPath = "Packages/com.morboo.runtimehost/Runtime/Orchestration/Components/DomainComponent.cs";
+    const string RuntimeHostDomainOrchestratorComponentPath = "Packages/com.morboo.runtimehost/Runtime/Orchestration/Components/DomainOrchestratorComponent.cs";
+    const string RuntimeHostDomainOrchestratorCompositionPath = "Packages/com.morboo.runtimehost/Runtime/Orchestration/Components/DomainOrchestratorComposition.cs";
+    const string RuntimeHostDomainRouteExecutionPolicyPath = "Packages/com.morboo.runtimehost/Runtime/Orchestration/Execution/DomainRouteExecutionPolicy.cs";
+    const string RuntimeHostDomainRouteExecutionPolicyConsumerPath = "Packages/com.morboo.runtimehost/Runtime/Orchestration/Execution/IDomainRouteExecutionPolicyConsumer.cs";
     const string StrategyCombatNoneExecutionRoutePath = "Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/Execution/StrategyCombatNoneExecutionRoute.cs";
     const string StrategyCombatUnknownRouteFallbackExecutionRoutePath = "Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/Execution/StrategyCombatUnknownRouteFallbackExecutionRoute.cs";
-    const string StrategyCombatRouteExecutionPolicyProviderPath = "Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/Execution/StrategyCombatRouteExecutionPolicyProvider.cs";
-    const string StrategyCombatRouteExecutionPolicyBridgePath = "Assets/Scripts/MorbooBridge/Orchestration/Composition/StrategyCombatRouteExecutionPolicyBridge.cs";
+    const string RuntimeHostDomainRouteExecutionPolicyProviderPath = "Packages/com.morboo.runtimehost/Runtime/Orchestration/Execution/DomainRouteExecutionPolicyProvider.cs";
+    const string DomainRouteExecutionPolicyBridgePath = "Assets/Scripts/MorbooBridge/Orchestration/Composition/DomainRouteExecutionPolicyBridge.cs";
     const string RuntimeHostLoopPath = "Packages/com.morboo.runtimehost/Runtime/Orchestration/OrchestrationLoop.cs";
     const string RuntimeHostPipelinePath = "Packages/com.morboo.runtimehost/Runtime/Orchestration/OrchestrationPipeline.cs";
     const string RuntimeHostPipelineComponentPath = "Packages/com.morboo.runtimehost/Runtime/Orchestration/OrchestrationPipelineComponent.cs";
@@ -669,18 +671,18 @@ public sealed class OrchestrationImplementationFitnessTests
     }
 
     [Test]
-    public void MorbooBridge_StrategyCombatRoutePolicyBridge_UsesTypedCompositionRefs_AndNoUntypedLookupFallback()
+    public void MorbooBridge_DomainRoutePolicyBridge_UsesGenericCompositionRefs_AndNoUntypedLookupFallback()
     {
-        Assert.That(File.Exists(StrategyCombatRouteExecutionPolicyBridgePath), Is.True,
-            $"Missing file: {StrategyCombatRouteExecutionPolicyBridgePath}");
+        Assert.That(File.Exists(DomainRouteExecutionPolicyBridgePath), Is.True,
+            $"Missing file: {DomainRouteExecutionPolicyBridgePath}");
 
-        string source = File.ReadAllText(StrategyCombatRouteExecutionPolicyBridgePath);
+        string source = File.ReadAllText(DomainRouteExecutionPolicyBridgePath);
         string stripped = StripCommentsAndStrings(source);
 
         Assert.That(Regex.IsMatch(stripped, @"\bDefaultExecutionOrder\s*\(\s*-1000\s*\)"), Is.True,
             "Bridge route-policy component should run before OrchestrationLoop Awake to apply route policy before route-registration build.");
-        Assert.That(Regex.IsMatch(stripped, @"\bStrategyCombatRouteExecutionPolicyAsset\s+routeExecutionPolicy\b"), Is.True,
-            "Bridge route-policy component should hold a typed StrategyCombatRouteExecutionPolicyAsset policy reference.");
+        Assert.That(Regex.IsMatch(stripped, @"\bDomainRouteExecutionPolicy\s+routeExecutionPolicy\b"), Is.True,
+            "Bridge route-policy component should hold a generic DomainRouteExecutionPolicy policy reference (not genre-specific).");
         Assert.That(Regex.IsMatch(stripped, @"\bOrchestrationLoop\s+orchestrationLoop\b"), Is.True,
             "Bridge route-policy component should reference OrchestrationLoop as the single scene composition source-of-truth.");
         Assert.That(Regex.IsMatch(stripped, @"\bConfiguredDomainOrchestrators\b"), Is.True,
@@ -689,8 +691,8 @@ public sealed class OrchestrationImplementationFitnessTests
             "Bridge route-policy component should not keep a duplicate Combat domain list once OrchestrationLoop is source-of-truth.");
         Assert.That(Regex.IsMatch(stripped, @"\bIdleDomainComponent\s*\[\s*\]\s+idleDomains\b"), Is.False,
             "Bridge route-policy component should not keep a duplicate Idle domain list once OrchestrationLoop is source-of-truth.");
-        Assert.That(Regex.IsMatch(stripped, @"\bIStrategyCombatRouteExecutionPolicyConsumer\b"), Is.True,
-            "Bridge route-policy component should apply route-policy through shared StrategyCombat policy-consumer interface (no concrete domain branching).");
+        Assert.That(Regex.IsMatch(stripped, @"\bIDomainRouteExecutionPolicyConsumer\b"), Is.True,
+            "Bridge route-policy component should apply route-policy through generic RuntimeHost policy-consumer interface (no concrete domain branching).");
         Assert.That(Regex.IsMatch(stripped, @"\b(domain\s+is\s+CombatDomainComponent|domain\s+is\s+IdleDomainComponent)\b"), Is.False,
             "Bridge route-policy component should not branch by concrete Combat/Idle orchestrator types when applying route policies.");
         Assert.That(Regex.IsMatch(stripped, @"\bApplyRouteExecutionPolicy\s*\("), Is.True,
@@ -1035,120 +1037,152 @@ public sealed class OrchestrationImplementationFitnessTests
     }
 
     [Test]
-    public void C04C_Bootstrap_StrategyCombatTargetProviders_ShareBaseAndInterface()
+    public void C04D_GenericOrchestrationComposition_ExtractedToRuntimeHost()
     {
-        Assert.That(File.Exists(StrategyCombatDomainTargetProviderBasePath), Is.True,
-            $"Missing file: {StrategyCombatDomainTargetProviderBasePath}");
-        Assert.That(File.Exists(StrategyCombatDomainOrchestratorPath), Is.True,
-            $"Missing file: {StrategyCombatDomainOrchestratorPath}");
-        Assert.That(File.Exists(StrategyCombatDomainOrchestratorCommonPath), Is.True,
-            $"Missing file: {StrategyCombatDomainOrchestratorCommonPath}");
+        // ── File existence: RuntimeHost generic types ──────────────────
+        Assert.That(File.Exists(RuntimeHostDomainTargetProviderPath), Is.True,
+            $"Missing file: {RuntimeHostDomainTargetProviderPath}");
+        Assert.That(File.Exists(RuntimeHostDomainOrchestratorComponentPath), Is.True,
+            $"Missing file: {RuntimeHostDomainOrchestratorComponentPath}");
+        Assert.That(File.Exists(RuntimeHostDomainOrchestratorCompositionPath), Is.True,
+            $"Missing file: {RuntimeHostDomainOrchestratorCompositionPath}");
+        Assert.That(File.Exists(RuntimeHostDomainComponentPath), Is.True,
+            $"Missing file: {RuntimeHostDomainComponentPath}");
+        Assert.That(File.Exists(RuntimeHostDomainRouteExecutionPolicyPath), Is.True,
+            $"Missing file: {RuntimeHostDomainRouteExecutionPolicyPath}");
+        Assert.That(File.Exists(RuntimeHostDomainRouteExecutionPolicyConsumerPath), Is.True,
+            $"Missing file: {RuntimeHostDomainRouteExecutionPolicyConsumerPath}");
+        Assert.That(File.Exists(RuntimeHostDomainRouteExecutionPolicyProviderPath), Is.True,
+            $"Missing file: {RuntimeHostDomainRouteExecutionPolicyProviderPath}");
         Assert.That(File.Exists(StrategyCombatCombatTargetProviderPath), Is.True,
             $"Missing file: {StrategyCombatCombatTargetProviderPath}");
         Assert.That(File.Exists(StrategyCombatIdleTargetProviderPath), Is.True,
             $"Missing file: {StrategyCombatIdleTargetProviderPath}");
-        Assert.That(File.Exists(StrategyCombatRouteExecutionPolicyProviderPath), Is.True,
-            $"Missing file: {StrategyCombatRouteExecutionPolicyProviderPath}");
 
-        string baseStripped = StripCommentsAndStrings(File.ReadAllText(StrategyCombatDomainTargetProviderBasePath));
-        string sharedOrchestratorStripped = StripCommentsAndStrings(File.ReadAllText(StrategyCombatDomainOrchestratorPath));
-        string orchestratorCommonStripped = StripCommentsAndStrings(File.ReadAllText(StrategyCombatDomainOrchestratorCommonPath));
+        // ── Read sources ───────────────────────────────────────────────
+        string targetProviderBaseStripped = StripCommentsAndStrings(File.ReadAllText(RuntimeHostDomainTargetProviderPath));
+        string orchestratorComponentStripped = StripCommentsAndStrings(File.ReadAllText(RuntimeHostDomainOrchestratorComponentPath));
+        string orchestratorCompositionStripped = StripCommentsAndStrings(File.ReadAllText(RuntimeHostDomainOrchestratorCompositionPath));
+        string domainComponentStripped = StripCommentsAndStrings(File.ReadAllText(RuntimeHostDomainComponentPath));
+        string routePolicyStripped = StripCommentsAndStrings(File.ReadAllText(RuntimeHostDomainRouteExecutionPolicyPath));
+        string policyConsumerStripped = StripCommentsAndStrings(File.ReadAllText(RuntimeHostDomainRouteExecutionPolicyConsumerPath));
+        string routePolicyProviderStripped = StripCommentsAndStrings(File.ReadAllText(RuntimeHostDomainRouteExecutionPolicyProviderPath));
         string combatProviderStripped = StripCommentsAndStrings(File.ReadAllText(StrategyCombatCombatTargetProviderPath));
         string idleProviderStripped = StripCommentsAndStrings(File.ReadAllText(StrategyCombatIdleTargetProviderPath));
-        string routePolicyProviderStripped = StripCommentsAndStrings(File.ReadAllText(StrategyCombatRouteExecutionPolicyProviderPath));
         string combatDomainComponentStripped = StripCommentsAndStrings(File.ReadAllText(CombatDomainComponentPath));
         string idleDomainComponentStripped = StripCommentsAndStrings(File.ReadAllText(IdleDomainComponentPath));
 
-        Assert.That(Regex.IsMatch(baseStripped, @"\binterface\s+IDomainTargetProvider\b"), Is.True,
-            "C04C requires one common orchestration-facing target-provider interface.");
-        Assert.That(Regex.IsMatch(baseStripped, @"\benum\s+DomainTargetProviderValidationFailure\b"), Is.True,
-            "C04C bootstrap should define a shared target-provider validation result enum.");
-        Assert.That(Regex.IsMatch(baseStripped, @"\bstatic\s+class\s+DomainTargetProviderValidation\b"), Is.True,
-            "C04C bootstrap should define shared target-provider validation helper.");
-        Assert.That(Regex.IsMatch(baseStripped, @"\bValidate\s*\(\s*IDomainTargetProvider\s+\w+\s*,\s*OrchestrationDomainId\s+\w+\s*\)"), Is.True,
+        // ── DomainTargetProvider (RuntimeHost, no Base suffix) ─────────
+        Assert.That(Regex.IsMatch(targetProviderBaseStripped, @"\binterface\s+IDomainTargetProvider\b"), Is.True,
+            "RuntimeHost must own the common orchestration-facing target-provider interface.");
+        Assert.That(Regex.IsMatch(targetProviderBaseStripped, @"\benum\s+DomainTargetProviderValidationFailure\b"), Is.True,
+            "RuntimeHost DomainTargetProvider file should define the shared target-provider validation result enum.");
+        Assert.That(Regex.IsMatch(targetProviderBaseStripped, @"\bstatic\s+class\s+DomainTargetProviderValidation\b"), Is.True,
+            "RuntimeHost DomainTargetProvider file should define shared target-provider validation helper.");
+        Assert.That(Regex.IsMatch(targetProviderBaseStripped, @"\bValidate\s*\(\s*IDomainTargetProvider\s+\w+\s*,\s*OrchestrationDomainId\s+\w+\s*\)"), Is.True,
             "Shared target-provider validation helper should validate against the common interface + DomainId.");
-        Assert.That(Regex.IsMatch(baseStripped, @"\babstract\s+class\s+DomainTargetProviderBase\s*:\s*MonoBehaviour\s*,\s*IDomainTargetProvider\b"), Is.True,
-            "C04C bootstrap should introduce a shared MonoBehaviour base for StrategyCombat target providers.");
-        Assert.That(Regex.IsMatch(baseStripped, @"\bOrchestrationDomainId\s+DomainId\b"), Is.True,
+        Assert.That(Regex.IsMatch(targetProviderBaseStripped, @"\babstract\s+class\s+DomainTargetProvider\s*:\s*MonoBehaviour\s*,\s*IDomainTargetProvider\b"), Is.True,
+            "C04D target form: DomainTargetProvider (no Base suffix) abstract MonoBehaviour in RuntimeHost.");
+        Assert.That(Regex.IsMatch(targetProviderBaseStripped, @"\bOrchestrationDomainId\s+DomainId\b"), Is.True,
             "Common target-provider interface/base should expose a typed DomainId.");
-        Assert.That(Regex.IsMatch(baseStripped, @"\bIsConfiguredForOrchestration\b"), Is.True,
+        Assert.That(Regex.IsMatch(targetProviderBaseStripped, @"\bIsConfiguredForOrchestration\b"), Is.True,
             "Common target-provider interface/base should expose a minimal orchestration readiness signal.");
 
-        Assert.That(Regex.IsMatch(combatProviderStripped, @"\bclass\s+CombatTargetProvider\s*:\s*DomainTargetProviderBase\b"), Is.True,
-            "CombatTargetProvider should inherit the shared DomainTargetProviderBase.");
+        // ── Genre providers inherit generic DomainTargetProvider ───────
+        Assert.That(Regex.IsMatch(combatProviderStripped, @"\bclass\s+CombatTargetProvider\s*:\s*DomainTargetProvider\b"), Is.True,
+            "CombatTargetProvider should inherit generic DomainTargetProvider (no Base suffix).");
         Assert.That(Regex.IsMatch(combatProviderStripped, @"\boverride\s+OrchestrationDomainId\s+DomainId\s*=>\s*OrchestrationDomainId\s*\.\s*Combat\b"), Is.True,
             "CombatTargetProvider should identify itself via the shared DomainId contract.");
         Assert.That(Regex.IsMatch(combatProviderStripped, @"\boverride\s+bool\s+IsConfiguredForOrchestration\b"), Is.True,
             "CombatTargetProvider should expose readiness via shared orchestration-facing contract.");
 
-        Assert.That(Regex.IsMatch(idleProviderStripped, @"\bclass\s+IdleTargetProvider\s*:\s*DomainTargetProviderBase\b"), Is.True,
-            "IdleTargetProvider should inherit the shared DomainTargetProviderBase.");
+        Assert.That(Regex.IsMatch(idleProviderStripped, @"\bclass\s+IdleTargetProvider\s*:\s*DomainTargetProvider\b"), Is.True,
+            "IdleTargetProvider should inherit generic DomainTargetProvider (no Base suffix).");
         Assert.That(Regex.IsMatch(idleProviderStripped, @"\boverride\s+OrchestrationDomainId\s+DomainId\s*=>\s*OrchestrationDomainId\s*\.\s*Idle\b"), Is.True,
             "IdleTargetProvider should identify itself via the shared DomainId contract.");
 
-        Assert.That(Regex.IsMatch(combatProviderStripped, @"\bDomainTargetProviderBase\b"), Is.True);
         Assert.That(Regex.IsMatch(File.ReadAllText(CombatDomainComponentPath), @"\bDomainTargetProviderValidation\s*\.\s*Validate\s*\("), Is.True,
             "CombatDomainComponent should use the shared target-provider validation helper in runtime path.");
         Assert.That(Regex.IsMatch(File.ReadAllText(StrategyCombatIdleExecutionRoutePath), @"\bDomainTargetProviderValidation\s*\.\s*Validate\s*\("), Is.True,
             "StrategyCombatIdleExecutionRoute should use the shared target-provider validation helper in runtime path.");
 
-        Assert.That(Regex.IsMatch(orchestratorCommonStripped, @"\binterface\s+IStrategyCombatRouteExecutionPolicyConsumer\b"), Is.True,
-            "C04C should expose a shared route-policy consumer interface (component-facing seam) instead of adding another orchestrator inheritance layer.");
-        Assert.That(Regex.IsMatch(orchestratorCommonStripped, @"\bstatic\s+class\s+StrategyCombatDomainOrchestratorCommon\b"), Is.True,
-            "C04C should converge common orchestrator structure via a shared helper, not by multiplying orchestrator base layers.");
-        Assert.That(Regex.IsMatch(orchestratorCommonStripped, @"\bCreateArbitrationProfile\s*\("), Is.True,
-            "Shared StrategyCombat orchestrator helper should own common arbitration-profile construction.");
-        Assert.That(Regex.IsMatch(orchestratorCommonStripped, @"\bCreateFixedRouteContributorWithUnknownFallback\s*\("), Is.True,
-            "Shared StrategyCombat orchestrator helper should own the common route-contributor pattern.");
-        Assert.That(Regex.IsMatch(orchestratorCommonStripped, @"\bShouldRebuildRouteExecutorForPolicyChange\s*\("), Is.True,
-            "Shared StrategyCombat orchestrator helper should own the route-policy rebuild decision.");
+        // ── DomainRouteExecutionPolicy (RuntimeHost abstract SO) ──────
+        Assert.That(Regex.IsMatch(routePolicyStripped, @"\babstract\s+class\s+DomainRouteExecutionPolicy\s*:\s*ScriptableObject\b"), Is.True,
+            "C04D: DomainRouteExecutionPolicy is abstract ScriptableObject base in RuntimeHost.");
 
-        Assert.That(Regex.IsMatch(sharedOrchestratorStripped, @"\bclass\s+StrategyCombatDomainOrchestrator\s*:\s*DomainOrchestrator\s*,\s*IDomainArbitrationProfileSource\s*,\s*IStrategyCombatRouteExecutionPolicyConsumer\b"), Is.True,
-            "C04C target form requires one shared StrategyCombatDomainOrchestrator entrypoint on top of DomainOrchestrator.");
-        Assert.That(Regex.IsMatch(sharedOrchestratorStripped, @"\bStrategyCombatDomainComponentBase\s+domainComponent\b"), Is.True,
-            "Shared StrategyCombatDomainOrchestrator should own one typed StrategyCombatDomainComponentBase reference.");
-        Assert.That(Regex.IsMatch(sharedOrchestratorStripped, @"\bcomponent\s*\.\s*EvaluateDomain\s*\("), Is.True,
-            "Shared StrategyCombatDomainOrchestrator should delegate proposal evaluation to the configured domain component.");
-        Assert.That(Regex.IsMatch(sharedOrchestratorStripped, @"\bcomponent\s*\.\s*CreateArbiterBindingContributor\s*\("), Is.True,
-            "Shared StrategyCombatDomainOrchestrator should delegate arbiter binding contributions to the domain component.");
-        Assert.That(Regex.IsMatch(sharedOrchestratorStripped, @"\bcomponent\s*\.\s*CreateExecutionRouteContributor\s*\("), Is.True,
-            "Shared StrategyCombatDomainOrchestrator should delegate execution route contribution to the domain component.");
-        Assert.That(Regex.IsMatch(sharedOrchestratorStripped, @"\bcomponent\s*\.\s*ApplyRouteExecutionPolicy\s*\("), Is.True,
-            "Shared StrategyCombatDomainOrchestrator should delegate route-policy application to the domain component.");
-        Assert.That(Regex.IsMatch(sharedOrchestratorStripped, @"\bStrategyCombatDomainOrchestratorCommon\s*\.\s*CreateArbitrationProfile\s*\("), Is.True,
-            "Shared StrategyCombatDomainOrchestrator should use shared helper for arbitration-profile construction.");
+        // ── IDomainRouteExecutionPolicyConsumer (RuntimeHost) ─────────
+        Assert.That(Regex.IsMatch(policyConsumerStripped, @"\binterface\s+IDomainRouteExecutionPolicyConsumer\b"), Is.True,
+            "C04D: generic route-policy consumer interface lives in RuntimeHost (not genre-specific).");
+        Assert.That(Regex.IsMatch(policyConsumerStripped, @"\bApplyRouteExecutionPolicy\s*\(\s*DomainRouteExecutionPolicy\b"), Is.True,
+            "IDomainRouteExecutionPolicyConsumer.ApplyRouteExecutionPolicy takes generic DomainRouteExecutionPolicy.");
 
-        Assert.That(Regex.IsMatch(combatDomainComponentStripped, @"\bclass\s+CombatDomainComponent\s*:\s*StrategyCombatDomainComponentBase\b"), Is.True,
-            "CombatDomainComponent should inherit the shared StrategyCombatDomainComponentBase (components/providers/data shape).");
-        Assert.That(Regex.IsMatch(idleDomainComponentStripped, @"\bclass\s+IdleDomainComponent\s*:\s*StrategyCombatDomainComponentBase\b"), Is.True,
-            "IdleDomainComponent should inherit the shared StrategyCombatDomainComponentBase (components/providers/data shape).");
+        // ── DomainOrchestratorComposition (RuntimeHost static helper) ──
+        Assert.That(Regex.IsMatch(orchestratorCompositionStripped, @"\bstatic\s+class\s+DomainOrchestratorComposition\b"), Is.True,
+            "C04D: DomainOrchestratorComposition is the generic static composition helper in RuntimeHost.");
+        Assert.That(Regex.IsMatch(orchestratorCompositionStripped, @"\bCreateArbitrationProfile\s*\("), Is.True,
+            "DomainOrchestratorComposition should own common arbitration-profile construction.");
+        Assert.That(Regex.IsMatch(orchestratorCompositionStripped, @"\bCreateFixedRouteContributorWithUnknownFallback\s*\("), Is.True,
+            "DomainOrchestratorComposition should own the common route-contributor pattern.");
+        Assert.That(Regex.IsMatch(orchestratorCompositionStripped, @"\bShouldRebuildRouteExecutorForPolicyChange\s*\("), Is.True,
+            "DomainOrchestratorComposition should own the route-policy rebuild decision.");
+
+        // ── DomainOrchestratorComponent (RuntimeHost) ──────────────────
+        Assert.That(Regex.IsMatch(orchestratorComponentStripped, @"\bclass\s+DomainOrchestratorComponent\s*:\s*DomainOrchestrator\s*,\s*IDomainArbitrationProfileSource\s*,\s*IDomainRouteExecutionPolicyConsumer\b"), Is.True,
+            "C04D: DomainOrchestratorComponent implements generic IDomainRouteExecutionPolicyConsumer.");
+        Assert.That(Regex.IsMatch(orchestratorComponentStripped, @"\bDomainComponent\s+domainComponent\b"), Is.True,
+            "DomainOrchestratorComponent should own one typed DomainComponent reference.");
+        Assert.That(Regex.IsMatch(orchestratorComponentStripped, @"\bcomponent\s*\.\s*EvaluateDomain\s*\("), Is.True,
+            "DomainOrchestratorComponent should delegate proposal evaluation to the configured domain component.");
+        Assert.That(Regex.IsMatch(orchestratorComponentStripped, @"\bcomponent\s*\.\s*CreateArbiterBindingContributor\s*\("), Is.True,
+            "DomainOrchestratorComponent should delegate arbiter binding contributions to the domain component.");
+        Assert.That(Regex.IsMatch(orchestratorComponentStripped, @"\bcomponent\s*\.\s*CreateExecutionRouteContributor\s*\("), Is.True,
+            "DomainOrchestratorComponent should delegate execution route contribution to the domain component.");
+        Assert.That(Regex.IsMatch(orchestratorComponentStripped, @"\bcomponent\s*\.\s*ApplyRouteExecutionPolicy\s*\("), Is.True,
+            "DomainOrchestratorComponent should delegate route-policy application to the domain component.");
+        Assert.That(Regex.IsMatch(orchestratorComponentStripped, @"\bDomainOrchestratorComposition\s*\.\s*CreateArbitrationProfile\s*\("), Is.True,
+            "DomainOrchestratorComponent should use DomainOrchestratorComposition helper for arbitration-profile construction.");
+
+        // ── DomainComponent (RuntimeHost abstract base) ────────────────
+        Assert.That(Regex.IsMatch(domainComponentStripped, @"\babstract\s+class\s+DomainComponent\s*:\s*MonoBehaviour\b"), Is.True,
+            "C04D: DomainComponent is abstract MonoBehaviour base in RuntimeHost (no Base suffix).");
+        Assert.That(Regex.IsMatch(domainComponentStripped, @"\bApplyRouteExecutionPolicy\s*\(\s*DomainRouteExecutionPolicy\b"), Is.True,
+            "DomainComponent.ApplyRouteExecutionPolicy takes generic DomainRouteExecutionPolicy.");
+
+        // ── Genre domain components inherit generic DomainComponent ────
+        Assert.That(Regex.IsMatch(combatDomainComponentStripped, @"\bclass\s+CombatDomainComponent\s*:\s*DomainComponent\b"), Is.True,
+            "CombatDomainComponent should inherit generic DomainComponent (RuntimeHost).");
+        Assert.That(Regex.IsMatch(idleDomainComponentStripped, @"\bclass\s+IdleDomainComponent\s*:\s*DomainComponent\b"), Is.True,
+            "IdleDomainComponent should inherit generic DomainComponent (RuntimeHost).");
         Assert.That(Regex.IsMatch(combatDomainComponentStripped, @"\bclass\s+CombatDomainComponent\s*:\s*DomainOrchestrator\b"), Is.False,
-            "CombatDomainComponent should not be a DomainOrchestrator entrypoint after C04C convergence.");
+            "CombatDomainComponent should not be a DomainOrchestrator entrypoint.");
         Assert.That(Regex.IsMatch(idleDomainComponentStripped, @"\bclass\s+IdleDomainComponent\s*:\s*DomainOrchestrator\b"), Is.False,
-            "IdleDomainComponent should not be a DomainOrchestrator entrypoint after C04C convergence.");
-        Assert.That(Regex.IsMatch(combatDomainComponentStripped, @"\bStrategyCombatDomainOrchestratorCommon\s*\.\s*CreateFixedRouteContributorWithUnknownFallback\s*\("), Is.True,
-            "CombatDomainComponent should use shared helper for route-contributor pattern.");
-        Assert.That(Regex.IsMatch(idleDomainComponentStripped, @"\bStrategyCombatDomainOrchestratorCommon\s*\.\s*CreateFixedRouteContributorWithUnknownFallback\s*\("), Is.True,
-            "IdleDomainComponent should use shared helper for route-contributor pattern.");
-        Assert.That(Regex.IsMatch(combatDomainComponentStripped, @"\bStrategyCombatDomainOrchestratorCommon\s*\.\s*ShouldRebuildRouteExecutorForPolicyChange\s*\("), Is.True,
-            "CombatDomainComponent should use shared helper for route-policy executor rebuild decision.");
-        Assert.That(Regex.IsMatch(idleDomainComponentStripped, @"\bStrategyCombatDomainOrchestratorCommon\s*\.\s*ShouldRebuildRouteExecutorForPolicyChange\s*\("), Is.True,
-            "IdleDomainComponent should use shared helper for route-policy executor rebuild decision.");
-        Assert.That(Regex.IsMatch(routePolicyProviderStripped, @"\bsealed\s+class\s+StrategyCombatRouteExecutionPolicyProvider\s*:\s*MonoBehaviour\s*,\s*IStrategyCombatRouteExecutionPolicyConsumer\b"), Is.True,
-            "C04C should move shared route-policy ownership into a reusable component/provider, not duplicate policy fields in each orchestrator.");
-        Assert.That(Regex.IsMatch(routePolicyProviderStripped, @"\bStrategyCombatRouteExecutionPolicyAsset\s+routeExecutionPolicy\b"), Is.True,
-            "Route-policy provider should own the serialized StrategyCombatRouteExecutionPolicyAsset field.");
-        Assert.That(Regex.IsMatch(combatDomainComponentStripped, @"\bStrategyCombatRouteExecutionPolicyProvider\s+routeExecutionPolicyProvider\b"), Is.True,
-            "CombatDomainComponent should depend on shared StrategyCombatRouteExecutionPolicyProvider component.");
-        Assert.That(Regex.IsMatch(idleDomainComponentStripped, @"\bStrategyCombatRouteExecutionPolicyProvider\s+routeExecutionPolicyProvider\b"), Is.True,
-            "IdleDomainComponent should depend on shared StrategyCombatRouteExecutionPolicyProvider component.");
+            "IdleDomainComponent should not be a DomainOrchestrator entrypoint.");
+        Assert.That(Regex.IsMatch(combatDomainComponentStripped, @"\bDomainOrchestratorComposition\s*\.\s*CreateFixedRouteContributorWithUnknownFallback\s*\("), Is.True,
+            "CombatDomainComponent should use generic DomainOrchestratorComposition helper for route-contributor pattern.");
+        Assert.That(Regex.IsMatch(idleDomainComponentStripped, @"\bDomainOrchestratorComposition\s*\.\s*CreateFixedRouteContributorWithUnknownFallback\s*\("), Is.True,
+            "IdleDomainComponent should use generic DomainOrchestratorComposition helper for route-contributor pattern.");
+        Assert.That(Regex.IsMatch(combatDomainComponentStripped, @"\bDomainOrchestratorComposition\s*\.\s*ShouldRebuildRouteExecutorForPolicyChange\s*\("), Is.True,
+            "CombatDomainComponent should use generic DomainOrchestratorComposition helper for route-policy rebuild decision.");
+        Assert.That(Regex.IsMatch(idleDomainComponentStripped, @"\bDomainOrchestratorComposition\s*\.\s*ShouldRebuildRouteExecutorForPolicyChange\s*\("), Is.True,
+            "IdleDomainComponent should use generic DomainOrchestratorComposition helper for route-policy rebuild decision.");
+
+        // ── DomainRouteExecutionPolicyProvider (RuntimeHost) ───────────
+        Assert.That(Regex.IsMatch(routePolicyProviderStripped, @"\bsealed\s+class\s+DomainRouteExecutionPolicyProvider\s*:\s*MonoBehaviour\s*,\s*IDomainRouteExecutionPolicyConsumer\b"), Is.True,
+            "C04D: DomainRouteExecutionPolicyProvider implements generic IDomainRouteExecutionPolicyConsumer in RuntimeHost.");
+        Assert.That(Regex.IsMatch(routePolicyProviderStripped, @"\bDomainRouteExecutionPolicy\s+routeExecutionPolicy\b"), Is.True,
+            "Route-policy provider should own the serialized DomainRouteExecutionPolicy field (generic base type).");
+        Assert.That(Regex.IsMatch(combatDomainComponentStripped, @"\bDomainRouteExecutionPolicyProvider\s+routeExecutionPolicyProvider\b"), Is.True,
+            "CombatDomainComponent should depend on generic DomainRouteExecutionPolicyProvider component.");
+        Assert.That(Regex.IsMatch(idleDomainComponentStripped, @"\bDomainRouteExecutionPolicyProvider\s+routeExecutionPolicyProvider\b"), Is.True,
+            "IdleDomainComponent should depend on generic DomainRouteExecutionPolicyProvider component.");
         Assert.That(Regex.IsMatch(combatDomainComponentStripped, @"\bStrategyCombatRouteExecutionPolicyAsset\s+routeExecutionPolicy\b"), Is.False,
             "CombatDomainComponent should not keep duplicated serialized route policy asset ownership after provider extraction.");
         Assert.That(Regex.IsMatch(idleDomainComponentStripped, @"\bStrategyCombatRouteExecutionPolicyAsset\s+routeExecutionPolicy\b"), Is.False,
             "IdleDomainComponent should not keep duplicated serialized route policy asset ownership after provider extraction.");
 
-        Assert.That(Regex.IsMatch(sharedOrchestratorStripped, @"\bCombatDomainOrchestrator\b|\bIdleDomainOrchestrator\b"), Is.False,
-            "C04C target form should remove separate Combat/Idle orchestrator entrypoint classes.");
+        // ── No legacy StrategyCombat-specific types in RuntimeHost ─────
+        Assert.That(Regex.IsMatch(orchestratorComponentStripped, @"\bCombatDomainOrchestrator\b|\bIdleDomainOrchestrator\b"), Is.False,
+            "C04D target form should not reference separate Combat/Idle orchestrator entrypoint classes.");
     }
 
     [Test]
@@ -1200,7 +1234,7 @@ public sealed class OrchestrationImplementationFitnessTests
             "Expected proposal contracts usage outside Framework after migration.");
     }
 
-    [Test, Ignore("Enable after event-pipeline migration (commit C05).")]
+    [Test]
     public void FutureGate_RuntimePipeline_UsesDomainEvents()
     {
         var roots = new[]
@@ -1215,6 +1249,39 @@ public sealed class OrchestrationImplementationFitnessTests
 
         Assert.That(matches, Is.GreaterThan(0),
             "Expected IEventBus/IDomainEvent usage outside Framework/Systems after migration.");
+    }
+
+    [Test]
+    public void OrchestrationLoop_ImplementsBusProviderInterfaces()
+    {
+        string loopPath = RuntimeHostLoopPath;
+        Assert.That(File.Exists(loopPath), Is.True,
+            $"OrchestrationLoop file not found at {loopPath}");
+
+        string stripped = StripCommentsAndStrings(File.ReadAllText(loopPath));
+        Assert.That(Regex.IsMatch(stripped, @"\bIEventBusProvider\b"), Is.True,
+            "OrchestrationLoop must implement IEventBusProvider (C05).");
+        Assert.That(Regex.IsMatch(stripped, @"\bICommandBusProvider\b"), Is.True,
+            "OrchestrationLoop must implement ICommandBusProvider (C05).");
+    }
+
+    [Test]
+    public void OrchestrationPipeline_FlushesEventBusAfterCommandBus()
+    {
+        string pipelinePath = RuntimeHostPipelinePath;
+        Assert.That(File.Exists(pipelinePath), Is.True,
+            $"OrchestrationPipeline file not found at {pipelinePath}");
+
+        string content = File.ReadAllText(pipelinePath);
+        int commandFlushPos = content.IndexOf("_commandBus.Flush()");
+        int eventFlushPos = content.IndexOf("_eventBus.Flush()");
+
+        Assert.That(commandFlushPos, Is.GreaterThan(0),
+            "OrchestrationPipeline must call _commandBus.Flush().");
+        Assert.That(eventFlushPos, Is.GreaterThan(0),
+            "OrchestrationPipeline must call _eventBus.Flush() (C05).");
+        Assert.That(eventFlushPos, Is.GreaterThan(commandFlushPos),
+            "EventBus.Flush must occur AFTER CommandBus.Flush in pipeline tick sequence (C05).");
     }
 
     [Test, Ignore("Enable after C04A domain onboarding simplification; only allowlisted transitional seam is currently permitted.")]

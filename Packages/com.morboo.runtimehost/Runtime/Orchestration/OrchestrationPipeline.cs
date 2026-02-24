@@ -10,6 +10,7 @@ public sealed class OrchestrationPipeline
     public delegate void DispatchContextSink(OrchestrationWorldCache world, ExecutionContext execContext);
 
     readonly InProcessCommandBus _commandBus;
+    readonly InProcessEventBus _eventBus;
     readonly ExecutionRouter _router;
     DispatchContextSink _dispatchContextSink;
 
@@ -19,15 +20,20 @@ public sealed class OrchestrationPipeline
     ExecutionContext _currentExecContext;
     DomainOrchestrator[] _configuredDomains;
 
-    public OrchestrationPipeline(OrchestrationArbiter arbiter, InProcessCommandBus commandBus = null)
+    public OrchestrationPipeline(OrchestrationArbiter arbiter, InProcessCommandBus commandBus = null, InProcessEventBus eventBus = null)
     {
         _commandBus = commandBus ?? new InProcessCommandBus();
+        _eventBus = eventBus ?? new InProcessEventBus();
         _router = new ExecutionRouter(_commandBus);
         _arbiter = arbiter;
         _configuredDomains = Array.Empty<DomainOrchestrator>();
+
+        if (_arbiter != null)
+            _arbiter.SetEventBus(_eventBus);
     }
 
     public InProcessCommandBus CommandBus => _commandBus;
+    public InProcessEventBus EventBus => _eventBus;
     public OrchestrationWorldCache CurrentWorld => _currentWorld;
     public ExecutionContext CurrentExecContext => _currentExecContext;
     public IReadOnlyList<DomainOrchestrator> ConfiguredDomainOrchestrators => _configuredDomains ?? Array.Empty<DomainOrchestrator>();
@@ -36,6 +42,8 @@ public sealed class OrchestrationPipeline
     public void SetArbiter(OrchestrationArbiter arbiter)
     {
         _arbiter = arbiter;
+        if (_arbiter != null)
+            _arbiter.SetEventBus(_eventBus);
     }
 
     public void SetDispatchContextSink(DispatchContextSink sink)
@@ -89,6 +97,16 @@ public sealed class OrchestrationPipeline
         _dispatchContextSink?.Invoke(_currentWorld, _currentExecContext);
 
         _commandBus.Flush();
+
+        // C05: publish tick-executed event and flush event bus after command bus.
+        // IMPORTANT: Tick sequence is arbiter → router → commandBus.Flush → eventBus.Flush.
+        _eventBus.Publish(new OrchestrationTickExecutedEvent
+        {
+            Domain = (OrchestrationDomainId)result.Decision.DomainKey,
+            CommandCount = 0, // PERF: CommandBus.Flush is void; count is diagnostic-only.
+            Timestamp = result.ExecContext.Now
+        });
+        _eventBus.Flush();
     }
 
     void RegisterDomainRoutes(DomainOrchestrator[] resolvedDomains)

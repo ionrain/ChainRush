@@ -4,7 +4,7 @@ using UnityEngine;
 /// Domain-owned Idle target/self-position provider (StrategyCombat).
 /// Encapsulates how Idle route execution resolves actor position for policy evaluation.
 /// </summary>
-public sealed class IdleTargetProvider : DomainTargetProviderBase
+public sealed class IdleTargetProvider : DomainTargetProvider
 {
     [Tooltip("When true, prefer actor read projection from world snapshot; otherwise always fall back to anchor.")]
     [SerializeField] bool useActorReadProjection = true;

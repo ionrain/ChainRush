@@ -4,7 +4,7 @@ using UnityEngine;
 
 /// <summary>
 /// Data-driven mapping of <see cref="RoleAsset"/> to idle policies.
-/// Assigned to <see cref="IdleDomainComponent"/> (through <see cref="StrategyCombatDomainOrchestrator"/> wiring) to define which policy
+/// Assigned to <see cref="IdleDomainComponent"/> (through <see cref="DomainOrchestratorComponent"/> wiring) to define which policy
 /// each unit role uses during idle.
 /// <para>
 /// IMPORTANT: Routing uses <c>ReferenceEquals</c> on <see cref="RoleAsset"/>.

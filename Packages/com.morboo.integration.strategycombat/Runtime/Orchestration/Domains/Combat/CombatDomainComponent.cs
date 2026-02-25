@@ -19,7 +19,7 @@ public enum TargetSearchMode
 
 /// <summary>
 /// Combat domain component. Scans actors via <see cref="IWorldQuery"/> for
-/// hostile entities and writes a <see cref="CombatCommand"/> proposal.
+/// hostile entities and writes an <see cref="OrchestrationCommand"/> proposal.
 /// Owns <see cref="CombatRolePolicyMapAsset"/> / <see cref="CombatRoleConstraintsMapAsset"/>
 /// references and contributes them to the arbiter via cached domain registration bindings
 /// through <see cref="DomainOrchestratorComponent"/>.
@@ -37,7 +37,7 @@ public enum TargetSearchMode
 /// Uses the per-tick <see cref="IWorldQuery"/> built by the arbiter.
 /// </para>
 /// <para>
-/// IMPORTANT — CombatCommand uses EntityId for targets (no Transform).
+/// IMPORTANT — OrchestrationCommand/OrchestrationTargetRef use EntityId for targets (no Transform).
 /// CombatTargetSet stores EntityId[]. No OrchestrationWorldCache dependency
 /// in FillTargetSet (uses IWorldQuery only).
 /// </para>
@@ -190,10 +190,11 @@ public sealed class CombatDomainComponent : DomainComponent
         EntityId bestEntityId = bestIndex >= 0 ? world.GetActorEntityId(bestIndex) : EntityId.None;
 
         // ── Build command (engine-agnostic: EntityId, no Transform) ──
-        CombatCommand cmd = !bestEntityId.IsNone
-            ? CombatCommand.Create(CombatCommandType.AttackTarget, targetEntityId: bestEntityId,
+        OrchestrationCommand cmd = !bestEntityId.IsNone
+            ? OrchestrationCommand.Engage(
+                OrchestrationTargetRef.Entity(bestEntityId),
                 debugLabel: "Domain=Combat")
-            : CombatCommand.Create(CombatCommandType.Hold,
+            : OrchestrationCommand.Cancel(
                 debugLabel: "Domain=Combat");
 
         // ── Fill Top-K target set (optional, domain-owned provider) ──
@@ -222,7 +223,7 @@ public sealed class CombatDomainComponent : DomainComponent
 
         // ── Write proposal ───────────────────────────────────────
         bool threatPresent = !bestEntityId.IsNone;
-        proposals.SetCombat(cmd, threatPresent);
+        proposals.SetCommand(DomainId, cmd, threatPresent);
 
         if (ctx.DebugLog || debugLog)
         {

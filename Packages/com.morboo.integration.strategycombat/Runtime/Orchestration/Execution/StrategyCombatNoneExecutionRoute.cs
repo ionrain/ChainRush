@@ -1,6 +1,5 @@
 /// <summary>
-/// Transitional StrategyCombat none-route executor (mode-change hold-all fallback).
-/// Ownership is in StrategyCombat (not RuntimeHost) during C04A.
+/// StrategyCombat none-route executor (mode-change cancel-all fallback).
 /// </summary>
 public sealed class StrategyCombatNoneExecutionRoute
 {
@@ -18,15 +17,10 @@ public sealed class StrategyCombatNoneExecutionRoute
 
         if (decision.ModeChanged)
         {
-            if (_profile.NoneRoute.EmitCombatHoldOnModeChange)
-                PublishCombatCommandForAll(host, CombatCommand.Create(
-                    CombatCommandType.Hold,
-                    debugLabel: ResolveDebugLabel(
-                        _profile.NoneRoute.CombatHoldDebugLabelOverride,
-                        "Router=None")), world);
-
-            if (_profile.NoneRoute.EmitIdleHoldOnModeChange)
-                PublishIdleHoldForAll(host, world);
+            if (_profile.NoneRoute.EmitCombatHoldOnModeChange || _profile.NoneRoute.EmitIdleHoldOnModeChange)
+                PublishCancelForAll(host, world, ResolveDebugLabel(
+                    _profile.NoneRoute.CombatHoldDebugLabelOverride,
+                    "Router=None"));
         }
     }
 
@@ -35,39 +29,20 @@ public sealed class StrategyCombatNoneExecutionRoute
         return string.IsNullOrEmpty(overrideLabel) ? fallback : overrideLabel;
     }
 
-    void PublishCombatCommandForAll(IExecutionRouteHost host, CombatCommand cmd, OrchestrationWorldCache world)
+    static void PublishCancelForAll(IExecutionRouteHost host, OrchestrationWorldCache world, string debugLabel)
     {
-        int count = world.CombatReceiverCount;
+        OrchestrationCommand cmd = OrchestrationCommand.Cancel(debugLabel);
+        int count = world.OperatorCount;
         for (int i = 0; i < count; i++)
         {
-            EntityId eid = world.GetCombatReceiverEntityId(i);
+            EntityId eid = world.GetOperatorEntityId(i);
             if (eid.IsNone)
                 continue;
 
-            host.PublishCommand(new DispatchCombatCommand
+            host.PublishCommand(new DispatchOrchestrationCommand
             {
                 ReceiverEntityId = eid,
-                Payload = cmd,
-                ReceiverRoleId = world.GetCombatReceiverRoleId(i)
-            });
-        }
-    }
-
-    void PublishIdleHoldForAll(IExecutionRouteHost host, OrchestrationWorldCache world)
-    {
-        IdleCommand hold = IdleCommand.Hold();
-        int count = world.IdleReceiverCount;
-        for (int i = 0; i < count; i++)
-        {
-            EntityId eid = world.GetIdleReceiverEntityId(i);
-            if (eid.IsNone)
-                continue;
-
-            host.PublishCommand(new DispatchIdleCommand
-            {
-                ReceiverEntityId = eid,
-                Payload = hold,
-                ReceiverRoleId = world.GetIdleReceiverRoleId(i)
+                Payload = cmd
             });
         }
     }

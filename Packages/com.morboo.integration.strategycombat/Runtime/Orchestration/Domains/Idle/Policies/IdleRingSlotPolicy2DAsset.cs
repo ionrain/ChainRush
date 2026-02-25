@@ -34,9 +34,10 @@ public sealed class IdleRingSlotPolicy2DAsset : IdlePolicyAsset
     /// with <c>roleSeed=0</c> and <c>entitySeed=self.GetInstanceID()</c> to ensure
     /// identical determinism in both code paths.
     /// </summary>
-    public override IdleCommand ChooseCommand(Transform self, Vector2 anchor, float now, out string debugInfo)
+    public override OrchestrationCommand ChooseCommand(Transform self, Vector2 anchor, float now, out string debugInfo)
     {
-        return ChooseCommand(self, anchor, now, 0, self.GetInstanceID(), out debugInfo);
+        int entitySeed = self != null ? self.GetInstanceID() : 0;
+        return ChooseCommand(self, anchor, now, 0, entitySeed, out debugInfo);
     }
 
     /// <summary>
@@ -44,7 +45,7 @@ public sealed class IdleRingSlotPolicy2DAsset : IdlePolicyAsset
     /// a combined seed from roleSeed and entitySeed.
     /// PERF: No allocations. Pure math.
     /// </summary>
-    public override IdleCommand ChooseCommand(
+    public override OrchestrationCommand ChooseCommand(
         Transform self, Vector2 anchor, float now,
         int roleSeed, int entitySeed,
         out string debugInfo)
@@ -60,7 +61,32 @@ public sealed class IdleRingSlotPolicy2DAsset : IdlePolicyAsset
         Float2 point = anchor.ToFloat2() + dir * radius;
 
         debugInfo = null;
-        return IdleCommand.MoveToPoint(point, stopDistance);
+        return BuildPointCommand(self, point);
+    }
+
+    public override OrchestrationCommand ChooseCommand(
+        Float2 selfPosition, EntityId selfId,
+        Float2 anchor, float now,
+        int roleSeed, int entitySeed,
+        IWorldQuery world,
+        out string debugInfo)
+    {
+        int seed = roleSeed ^ (entitySeed * FnvPrime);
+
+        float baseAngle = Hash01(seed) * 360f;
+        float jitter = (Hash01(seed * 48611) * 2f - 1f) * angleJitterDegrees;
+        float angleRad = (baseAngle + jitter) * Mathf.Deg2Rad;
+
+        Float2 dir = new Float2(Mathf.Cos(angleRad), Mathf.Sin(angleRad));
+        Float2 point = anchor + dir * radius;
+
+        debugInfo = null;
+
+        EntityId pointTargetId = OrchestrationTargetPointRegistry.SetOperatorPointTarget(selfId, point);
+        if (pointTargetId.IsNone)
+            return OrchestrationCommand.Cancel();
+
+        return OrchestrationCommand.Engage(OrchestrationTargetRef.Point(pointTargetId));
     }
 
     /// <summary>
@@ -78,5 +104,22 @@ public sealed class IdleRingSlotPolicy2DAsset : IdlePolicyAsset
             u ^= u >> 16;
             return (u & 0x00FFFFFF) / 16777215f;
         }
+    }
+
+    static OrchestrationCommand BuildPointCommand(Transform self, in Float2 point)
+    {
+        if (self == null)
+            return OrchestrationCommand.Cancel();
+
+        IEntityIdProvider idp = self.GetComponent<IEntityIdProvider>();
+        EntityId selfId = idp != null ? idp.GetEntityId() : EntityId.None;
+        if (selfId.IsNone)
+            return OrchestrationCommand.Cancel();
+
+        EntityId pointTargetId = OrchestrationTargetPointRegistry.SetOperatorPointTarget(selfId, point);
+        if (pointTargetId.IsNone)
+            return OrchestrationCommand.Cancel();
+
+        return OrchestrationCommand.Engage(OrchestrationTargetRef.Point(pointTargetId));
     }
 }

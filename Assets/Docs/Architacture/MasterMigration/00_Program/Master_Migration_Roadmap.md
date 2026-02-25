@@ -346,9 +346,10 @@ Backlog links:
 12. `Assets/Docs/Architacture/MasterMigration/04_Phase4_Orchestration/C05_Event_Pipeline_Activation_2026-02-24.md` -> closed (domain event pipeline activation + bus provider decoupling + subscriber infrastructure; `IEventBusProvider`/`ICommandBusProvider` in Framework; `EventBusSubscriber` universal base in RuntimeHost; command adapter refactor deferred — needs `IOrchestrationContextProvider`).
 13. `Assets/Docs/Architacture/MasterMigration/04_Phase4_Orchestration/C06_Capabilities_Integration_Into_Decision_Execution_2026-02-24.md` -> planned/active capability integration (`ActorCapability`, `IActorCapabilityQuery`, engagement policy, unified policy gating).
 14. `Assets/Docs/Architacture/MasterMigration/04_Phase4_Orchestration/C06A_Universal_Command_System_Target_Search_2026-02-25.md` -> planned structural step: intent-only unified command/dispatch/receiver with universal `TargetRef` payload + operator-level addressing via `EntityId` (actors/groups are operator entities) + shared target search extraction (command payload explicitly excludes actor/group spacing/range/urgency preferences; group behavior semantics deferred).
-15. `C06B` -> planned follow-up: target reservations/slots + `DomainComponent`/`TargetProvider` convergence around generic targets on top of `C06A` `TargetRef`.
+15. `C06B` -> planned follow-up: target reservations/slots + `DomainComponent`/`TargetProvider` convergence around generic targets on top of `C06A` `TargetRef`, including introduction of a universal `DomainTargetSet` (domain-neutral target-candidate carrier), convergence of `CombatDomainComponent` and `IdleDomainComponent` to one domain-neutral domain-output format (remove combat-vs-idle output asymmetry), and an explicit `C06B` architecture decision on post-convergence seam ownership (`DomainComponent` remains a separate seam vs collapses into `DomainOrchestrator`/`DomainOrchestratorComponent`); **exit gate before `C06C`**: remove remaining `ExecutionContext` migration artifacts (`Anchor`, or replace with domain-neutral equivalent; `CombatCommand` already removed in `C06A`); clean `OrchestrationWorldCache` (remove domain-specific receiver snapshots from active path, consolidate around operator snapshot API, and bound/split mixed crowd/spatial responsibilities); resolve `CombatTargetSet.cs` ownership (no unresolved StrategyCombat-specific `CombatTargetSet` living in `RuntimeHost`: move to StrategyCombat or replace with universal `DomainTargetSet` + optional StrategyCombat-specific extensions).
 16. `C06C` -> planned follow-up: group commanding / formations / slot assignment / cohesion policies on top of `C06A` operator addressing.
 17. `C06D` -> planned follow-up: game-owned actor/group brain seam parallel to TDE/AIBrain (policy-driven intent interpretation via orchestration buses).
+18. `C06E` -> planned follow-up: operator-scoped arbitration (`operator -> proposals[] -> chosen command`) replacing world-scoped single-active-domain arbitration; remove global `ThreatPresent` and legacy `ArbitrationInput`/`IArbiter` assumptions; execute after `C06B/C06C` prep and in coordination with `C06D` hysteresis ownership decisions.
 
 Execution order inside phase:
 
@@ -373,12 +374,19 @@ Execution order inside phase:
 11. `C06` connect capabilities to runtime decisions.
 12. `C06A` unify command/dispatch/receiver shape around intent-only `OrchestrationCommand` + operator-level addressing via `EntityId` (actors/groups as operator entities) and extract shared target search.
    - command-scope rule for this step: `OrchestrationCommand` carries intent + target only; actor/group execution preferences (range/spacing/stop-distance/anti-clump/urgency) stay out of the payload.
-13. `C06B` expand `TargetRef` producer/resolver usage across domains and converge target selection/provider seams; add reservations/slots for contested targets.
+   - migration rule for this step: no `OrchestrationCommandConversions`-style bridges on the active runtime path (`OrchestrationArbiter`, execution routes, integration adapter); producers/proposals/policies must emit `OrchestrationCommand` directly.
+13. `C06B` expand `TargetRef` producer/resolver usage across domains, introduce a universal `DomainTargetSet`, converge target selection/provider seams, and align `CombatDomainComponent`/`IdleDomainComponent` to a common domain-neutral domain-output format; add reservations/slots for contested targets and record the `DomainComponent` vs `DomainOrchestrator` post-convergence ownership decision.
+   - exit gate for progression to `C06C`: `ExecutionContext` must not carry legacy domain payload artifacts; `CombatCommand` is already removed in `C06A`, and `Anchor` must be replaced/removed before group-commanding work starts.
+   - exit gate for progression to `C06C`: `OrchestrationWorldCache` must be cleaned — no domain-specific receiver snapshots (`Combat*`/`Idle*`) on the active dispatch path; unified operator snapshot API is the only route-facing receiver surface.
+   - exit gate for progression to `C06C`: resolve `Packages/com.morboo.runtimehost/Runtime/Orchestration/World/CombatTargetSet.cs` ownership — no unresolved StrategyCombat-specific target-set type remains in `RuntimeHost` (move to StrategyCombat or replace/generalize with domain-neutral carrier).
 14. `C06C` introduce group commanding on top of `C06A` operator addressing (`GroupBrainPolicy`, formation/cohesion/sync/role-slot rules, member fan-out).
 15. `C06D` introduce game-owned actor/group brain seam parallel to TDE/AIBrain; move local execution behavior interpretation behind policies while preserving compatibility rollout.
-16. `C07` remove domain downcasts to concrete world cache.
-17. `C07A` post-refactor cleanup: remove Actor boundary hard links to Combat/Idle and compact domain onboarding structure.
-18. `C07B` shrink spatial dual-representation allowlist to zero (remove temporary `Float2` + `Float3` duplication from package public contracts).
+16. `C06E` replace world-scoped single-active-domain arbitration with operator-scoped conflict resolution (`operator -> proposals[] -> chosen command`); remove global `ThreatPresent` and legacy `ArbitrationInput`/`IArbiter` assumptions after `C06B/C06C` preparation and with `C06D` hysteresis ownership finalized.
+   - preparation rule for this step: `C06B` must first align domain output semantics (`CombatDomainComponent`/`IdleDomainComponent`) and `C06C` must establish actor/group operator commanding so arbitration can target operators uniformly.
+   - hysteresis rule for this step: actor/group execution hysteresis belongs in the brain seam (`C06D`); arbitration may keep only domain-agnostic per-operator conflict hysteresis if required.
+17. `C07` remove domain downcasts to concrete world cache.
+18. `C07A` post-refactor cleanup: remove Actor boundary hard links to Combat/Idle and compact domain onboarding structure.
+19. `C07B` shrink spatial dual-representation allowlist to zero (remove temporary `Float2` + `Float3` duplication from package public contracts).
 
 `C01A` scope (must be done before C02):
 
@@ -394,7 +402,7 @@ Execution order inside phase:
 1. actor contract surface in `Packages/com.morboo.core/Runtime/Actor/ActorContracts.cs`.
 2. actor read projection in `Packages/com.morboo.core/Runtime/Actor/ActorReadProjection.cs`.
 3. orchestration read-side adoption in `Packages/com.morboo.runtimehost/Runtime/Orchestration/Arbitration/OrchestrationWorldCache.cs` and `Packages/com.morboo.runtimehost/Runtime/Orchestration/Execution/ExecutionRouter.cs`.
-4. command dispatch write path via `DispatchCombatCommand` / `DispatchIdleCommand` in `Packages/com.morboo.runtimehost/Runtime/Orchestration/DomainContracts/Dispatch/` and adapters in `Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/Adapters/`.
+4. command dispatch write path via unified `DispatchOrchestrationCommand` in `Packages/com.morboo.runtimehost/Runtime/Orchestration/DomainContracts/Dispatch/` and `OrchestrationCommandAdapter` in `Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/Adapters/`.
 5. Unit/Enemy bridge adapters in `Assets/Scripts/MorbooBridge/Orchestration/`.
 6. architecture gates in `Packages/com.morboo.architecture.tests/Tests/Editor/ArchitectureLayeringTests.cs`.
 

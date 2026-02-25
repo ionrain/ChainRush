@@ -96,6 +96,6 @@ public sealed class IdleDomainComponent : DomainComponent
     /// </summary>
     public override void EvaluateDomain(OrchestrationArbiterContext ctx, OrchestrationArbiterProposals proposals)
     {
-        proposals.SetIdle();
+        proposals.MarkDomainPresent(DomainId);
     }
 }

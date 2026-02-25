@@ -8718,7 +8718,6 @@ GameObject:
   - component: {fileID: 258903845}
   - component: {fileID: 258903844}
   - component: {fileID: 258903848}
-  - component: {fileID: 258903843}
   - component: {fileID: 258903842}
   - component: {fileID: 258903850}
   m_Layer: 0
@@ -8756,20 +8755,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2525935fb2c864d619ad53fa93cbbb05, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Morboo.Integration.StrategyCombat::CombatCommandAdapter
-  orchestrationLoopComponent: {fileID: 258903844}
---- !u!114 &258903843
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 258903834}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 61219c0a7d4054263baadd04228eb2f9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Morboo.Integration.StrategyCombat::IdleCommandAdapter
+  m_EditorClassIdentifier: Morboo.Integration.StrategyCombat::OrchestrationCommandAdapter
   orchestrationLoopComponent: {fileID: 258903844}
 --- !u!114 &258903844
 MonoBehaviour:

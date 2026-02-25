@@ -39,8 +39,7 @@ public sealed class OrchestrationImplementationFitnessTests
     const string RuntimeHostPipelinePath = "Packages/com.morboo.runtimehost/Runtime/Orchestration/OrchestrationPipeline.cs";
     const string RuntimeHostPipelineComponentPath = "Packages/com.morboo.runtimehost/Runtime/Orchestration/OrchestrationPipelineComponent.cs";
     const string StrategyCombatArbiterBindingAppliersPath = "Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/Arbitration/StrategyCombatArbiterBindingAppliers.cs";
-    const string StrategyCombatCombatCommandAdapterPath = "Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/Adapters/CombatCommandAdapter.cs";
-    const string StrategyCombatIdleCommandAdapterPath = "Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/Adapters/IdleCommandAdapter.cs";
+    const string StrategyCombatCombatCommandAdapterPath = "Packages/com.morboo.integration.strategycombat/Runtime/Orchestration/Adapters/OrchestrationCommandAdapter.cs";
     const string FrameworkArbiterContractPath = "Packages/com.morboo.framework/Runtime/Decision/IArbiter.cs";
 
     static readonly Regex PublishCallRegex = new Regex(@"\bPublish\s*\(", RegexOptions.Compiled);
@@ -69,8 +68,8 @@ public sealed class OrchestrationImplementationFitnessTests
             RegexOptions.Compiled);
     static readonly Regex ArbiterDirectEvaluateCallRegex =
         new Regex(@"\b_cachedDomains\s*\[[^\]]+\]\s*\.\s*Evaluate\s*\(", RegexOptions.Compiled);
-    static readonly Regex DomainOrchestratorImportLegacyCallRegex =
-        new Regex(@"\bcollector\s*\.\s*ImportLegacy\s*\(", RegexOptions.Compiled);
+    static readonly Regex DomainOrchestratorCollectorImportCallRegex =
+        new Regex(@"\bcollector\s*\.\s*Import\s*\(", RegexOptions.Compiled);
     static readonly Regex ArbiterCollectorArbitrateCallRegex =
         new Regex(@"\bArbitrate\s*\(\s*_proposalCollector\s*\.\s*Entries\s*,\s*_proposalCollector\s*\.\s*ThreatPresent\s*,\s*now\s*\)", RegexOptions.Compiled);
     static readonly Regex ArbiterCollectorProposalIterationRegex =
@@ -210,11 +209,14 @@ public sealed class OrchestrationImplementationFitnessTests
             StripCommentsAndStrings(File.ReadAllText(StrategyCombatNoneExecutionRoutePath)), "\n",
             StripCommentsAndStrings(File.ReadAllText(StrategyCombatUnknownRouteFallbackExecutionRoutePath)));
 
-        Assert.That(Regex.IsMatch(stripped, @"\bDispatchCombatCommand\b"), Is.True,
-            "StrategyCombat route executors must emit DispatchCombatCommand.");
+        Assert.That(Regex.IsMatch(stripped, @"\bDispatchOrchestrationCommand\b"), Is.True,
+            "StrategyCombat route executors must emit DispatchOrchestrationCommand.");
 
-        Assert.That(Regex.IsMatch(stripped, @"\bDispatchIdleCommand\b"), Is.True,
-            "StrategyCombat route executors must emit DispatchIdleCommand.");
+        Assert.That(Regex.IsMatch(stripped, @"\bDispatchCombatCommand\b"), Is.False,
+            "StrategyCombat route executors must not emit legacy DispatchCombatCommand.");
+
+        Assert.That(Regex.IsMatch(stripped, @"\bDispatchIdleCommand\b"), Is.False,
+            "StrategyCombat route executors must not emit legacy DispatchIdleCommand.");
     }
 
     [Test]
@@ -249,8 +251,8 @@ public sealed class OrchestrationImplementationFitnessTests
         Assert.That(ProposalCollectorLegacyArbitrationInputCallRegex.IsMatch(arbiterStripped), Is.False,
             "OrchestrationArbiter still arbitrates from collector via legacy ArbitrationInput adapter in C04 path.");
 
-        Assert.That(DomainOrchestratorImportLegacyCallRegex.IsMatch(domainOrchestratorStripped), Is.True,
-            "DomainOrchestrator compatibility producer seam must import legacy proposals into collector.");
+        Assert.That(DomainOrchestratorCollectorImportCallRegex.IsMatch(domainOrchestratorStripped), Is.True,
+            "DomainOrchestrator producer seam must import domain proposals into collector.");
 
         Assert.That(ArbiterCollectorProposalIterationRegex.IsMatch(arbiterStripped), Is.True,
             "Arbiter proposal-list path must iterate proposal collector entries (collector.Count/Get).");
@@ -1330,8 +1332,7 @@ public sealed class OrchestrationImplementationFitnessTests
     public void StrategyCombat_Adapters_UseTypedOrchestrationLoopRef_WithoutGetComponentFallback()
     {
         foreach (string file in ResolveExistingFiles(
-                     StrategyCombatCombatCommandAdapterPath,
-                     StrategyCombatIdleCommandAdapterPath))
+                     StrategyCombatCombatCommandAdapterPath))
         {
             string stripped = StripCommentsAndStrings(File.ReadAllText(file));
 

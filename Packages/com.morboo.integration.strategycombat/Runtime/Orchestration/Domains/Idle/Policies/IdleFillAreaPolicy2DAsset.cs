@@ -66,10 +66,10 @@ public sealed class IdleFillAreaPolicy2DAsset : IdlePolicyAsset
     //  Base overload — Hold (requires world context to function)
     // ──────────────────────────────────────────────────────────────────
 
-    public override IdleCommand ChooseCommand(Transform self, Vector2 anchor, float now, out string debugInfo)
+    public override OrchestrationCommand ChooseCommand(Transform self, Vector2 anchor, float now, out string debugInfo)
     {
         debugInfo = null;
-        return IdleCommand.Hold();
+        return OrchestrationCommand.Cancel();
     }
 
     // ──────────────────────────────────────────────────────────────────
@@ -78,7 +78,7 @@ public sealed class IdleFillAreaPolicy2DAsset : IdlePolicyAsset
     //  Uses ICrowdQuery + IRoleQuery + IIdleBoundsQuery for scoring.
     // ──────────────────────────────────────────────────────────────────
 
-    public override IdleCommand ChooseCommand(
+    public override OrchestrationCommand ChooseCommand(
         Float2 selfPosition, EntityId selfId,
         Float2 anchor, float now,
         int roleSeed, int entitySeed,
@@ -139,7 +139,12 @@ public sealed class IdleFillAreaPolicy2DAsset : IdlePolicyAsset
                 " BestScore=", bestScore.ToString("F1"));
         }
 
-        return IdleCommand.MoveToPoint(bestPoint, stopDistance,
+        EntityId pointTargetId = OrchestrationTargetPointRegistry.SetOperatorPointTarget(selfId, bestPoint);
+        if (pointTargetId.IsNone)
+            return OrchestrationCommand.Cancel(includeDebugInfo ? debugInfo : null);
+
+        return OrchestrationCommand.Engage(
+            OrchestrationTargetRef.Point(pointTargetId),
             includeDebugInfo ? debugInfo : null);
     }
 

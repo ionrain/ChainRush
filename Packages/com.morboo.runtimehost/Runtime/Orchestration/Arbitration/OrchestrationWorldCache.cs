@@ -29,13 +29,12 @@ public sealed class OrchestrationWorldCache : IWorldQuery, IWorldQuery3D, IActor
 
     // PERF: Pre-sized, reused each tick. Clear() does not shrink capacity.
     public readonly List<IOrchestrationActor> Actors = new List<IOrchestrationActor>(256);
-    public readonly List<ICombatCommandReceiver> FriendlyCombatReceivers = new List<ICombatCommandReceiver>(128);
-    public readonly List<IIdleCommandReceiver> FriendlyIdleReceivers = new List<IIdleCommandReceiver>(128);
+    public readonly List<IOrchestrationCommandReceiver> FriendlyOperators = new List<IOrchestrationCommandReceiver>(128);
 
     /// <summary>
     /// Pre-filtered friendly transforms for crowd scoring (RuntimeHost-internal).
     /// IMPORTANT: Kept for compatibility. Prefer IWorldQuery crowd API for new code.
-    /// Built from friendly combat + idle receiver transforms (deduped via HashSet).
+    /// Built from friendly operator receiver transforms (deduped via HashSet).
     /// </summary>
     public readonly List<Transform> FriendlyCrowdTransforms = new List<Transform>(128);
 
@@ -65,15 +64,12 @@ public sealed class OrchestrationWorldCache : IWorldQuery, IWorldQuery3D, IActor
     public CombatTargetSet ResolvedCombatTargetSet;
 
     // ──────────────────────────────────────────────────────────────────
-    //  Receiver identity snapshots — parallel to receiver lists
-    //  IMPORTANT: Built by SnapshotReceivers() after RoleByTransform is populated.
-    //  The ExecutionRouter iterates these instead of touching MonoBehaviour receivers.
+    //  Operator identity snapshots — parallel to FriendlyOperators
+    //  IMPORTANT: The ExecutionRouter iterates these instead of touching MonoBehaviour receivers.
     // ──────────────────────────────────────────────────────────────────
 
-    readonly List<EntityId> _combatReceiverEntityIds = new List<EntityId>(128);
-    readonly List<RoleId> _combatReceiverRoleIds = new List<RoleId>(128);
-    readonly List<EntityId> _idleReceiverEntityIds = new List<EntityId>(128);
-    readonly List<RoleId> _idleReceiverRoleIds = new List<RoleId>(128);
+    readonly List<EntityId> _operatorEntityIds = new List<EntityId>(128);
+    readonly List<RoleId> _operatorRoleIds = new List<RoleId>(128);
 
     // ──────────────────────────────────────────────────────────────────
     //  IWorldQuery snapshot data — snapshotted during build, frozen for domains
@@ -414,70 +410,36 @@ public sealed class OrchestrationWorldCache : IWorldQuery, IWorldQuery3D, IActor
         return false;
     }
 
-    // ──────────────────────────────────────────────────────────────────
-    //  Receiver identity snapshot — for ExecutionRouter command emission
-    //  IMPORTANT: Router iterates these instead of MonoBehaviour receiver lists.
-    // ──────────────────────────────────────────────────────────────────
+    public int OperatorCount => _operatorEntityIds.Count;
+    public EntityId GetOperatorEntityId(int index) => _operatorEntityIds[index];
+    public RoleId GetOperatorRoleId(int index) => _operatorRoleIds[index];
 
-    public int CombatReceiverCount => _combatReceiverEntityIds.Count;
-    public EntityId GetCombatReceiverEntityId(int index) => _combatReceiverEntityIds[index];
-    public RoleId GetCombatReceiverRoleId(int index) => _combatReceiverRoleIds[index];
-
-    public int IdleReceiverCount => _idleReceiverEntityIds.Count;
-    public EntityId GetIdleReceiverEntityId(int index) => _idleReceiverEntityIds[index];
-    public RoleId GetIdleReceiverRoleId(int index) => _idleReceiverRoleIds[index];
-
-    /// <summary>
-    /// Snapshots receiver EntityIds and RoleIds into parallel lists.
-    /// Called after RoleByTransform is populated, before Freeze.
-    /// IMPORTANT: Must be called after BuildRoleByEntityId.
-    /// </summary>
-    public void SnapshotReceivers()
+    public void SnapshotOperators()
     {
 #if DEBUG
-        Debug.Assert(!_frozen, "[OrchestrationWorldCache] SnapshotReceivers called after Freeze.");
+        Debug.Assert(!_frozen, "[OrchestrationWorldCache] SnapshotOperators called after Freeze.");
 #endif
-        _combatReceiverEntityIds.Clear();
-        _combatReceiverRoleIds.Clear();
-        _idleReceiverEntityIds.Clear();
-        _idleReceiverRoleIds.Clear();
+        _operatorEntityIds.Clear();
+        _operatorRoleIds.Clear();
 
-        for (int i = 0; i < FriendlyCombatReceivers.Count; i++)
+        for (int i = 0; i < FriendlyOperators.Count; i++)
         {
-            Component c = FriendlyCombatReceivers[i] as Component;
+            Component c = FriendlyOperators[i] as Component;
             if (c == null)
             {
-                _combatReceiverEntityIds.Add(EntityId.None);
-                _combatReceiverRoleIds.Add(RoleId.None);
+                _operatorEntityIds.Add(EntityId.None);
+                _operatorRoleIds.Add(RoleId.None);
                 continue;
             }
 
             IEntityIdProvider idp = c.GetComponent<IEntityIdProvider>();
             EntityId eid = idp != null ? idp.GetEntityId() : EntityId.None;
-            _combatReceiverEntityIds.Add(eid);
+            _operatorEntityIds.Add(eid);
 
             RoleId rid;
-            if (!RoleByTransform.TryGetValue(c.transform, out rid)) rid = RoleId.None;
-            _combatReceiverRoleIds.Add(rid);
-        }
-
-        for (int i = 0; i < FriendlyIdleReceivers.Count; i++)
-        {
-            Component c = FriendlyIdleReceivers[i] as Component;
-            if (c == null)
-            {
-                _idleReceiverEntityIds.Add(EntityId.None);
-                _idleReceiverRoleIds.Add(RoleId.None);
-                continue;
-            }
-
-            IEntityIdProvider idp = c.GetComponent<IEntityIdProvider>();
-            EntityId eid = idp != null ? idp.GetEntityId() : EntityId.None;
-            _idleReceiverEntityIds.Add(eid);
-
-            RoleId rid;
-            if (!RoleByTransform.TryGetValue(c.transform, out rid)) rid = RoleId.None;
-            _idleReceiverRoleIds.Add(rid);
+            if (!RoleByTransform.TryGetValue(c.transform, out rid))
+                rid = RoleId.None;
+            _operatorRoleIds.Add(rid);
         }
     }
 
@@ -494,8 +456,7 @@ public sealed class OrchestrationWorldCache : IWorldQuery, IWorldQuery3D, IActor
         _frozen = false;
 #endif
         Actors.Clear();
-        FriendlyCombatReceivers.Clear();
-        FriendlyIdleReceivers.Clear();
+        FriendlyOperators.Clear();
         FriendlyCrowdTransforms.Clear();
         CrowdDedup.Clear();
         RoleByTransform.Clear();
@@ -515,9 +476,7 @@ public sealed class OrchestrationWorldCache : IWorldQuery, IWorldQuery3D, IActor
         _roleIdByEntityId.Clear();
         _idleBoundsByRoleId.Clear();
 
-        _combatReceiverEntityIds.Clear();
-        _combatReceiverRoleIds.Clear();
-        _idleReceiverEntityIds.Clear();
-        _idleReceiverRoleIds.Clear();
+        _operatorEntityIds.Clear();
+        _operatorRoleIds.Clear();
     }
 }

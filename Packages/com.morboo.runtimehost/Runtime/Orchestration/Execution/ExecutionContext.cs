@@ -16,10 +16,9 @@ public struct ExecutionContext
     ScriptableObject _bindingAsset2;
     byte _bindingCount;
 
-    public CombatCommand CombatCommand;
+    public OrchestrationCommand Command;
     public FactionAsset OrchestratorFaction;
     public FactionRelationTableAsset Relations;
-    public Float3 WorldAnchor;
     public Float2 Anchor;
     public float Now;
     public bool DebugLog;

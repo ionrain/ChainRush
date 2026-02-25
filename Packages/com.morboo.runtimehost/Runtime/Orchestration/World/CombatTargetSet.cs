@@ -11,11 +11,6 @@ using UnityEngine;
 /// - Without it, selectors fall back to the orchestrator-chosen primary target.
 /// </para>
 /// <para>
-/// Variant B binding: Registers itself in <see cref="OrchestrationRegistry"/> by
-/// <see cref="faction"/> on enable. Consumers resolve via
-/// <see cref="OrchestrationRegistry.TryGetCombatTargetSet"/> without inspector wiring.
-/// </para>
-/// <para>
 /// IMPORTANT — Stores EntityId[], not Transform[]. Consumers resolve EntityId → Transform
 /// at the Integration boundary via <see cref="EntityTransformResolver"/>.
 /// </para>
@@ -48,13 +43,6 @@ public sealed class CombatTargetSet : MonoBehaviour, IFactionAssetProvider
     float _expiresAt;
 
     // ──────────────────────────────────────────────────────────────────
-    //  Lifecycle — Variant B registry binding
-    // ──────────────────────────────────────────────────────────────────
-
-    void OnEnable() => OrchestrationRegistry.Register(this);
-    void OnDisable() => OrchestrationRegistry.Unregister(this);
-
-    // ──────────────────────────────────────────────────────────────────
     //  Public API
     // ──────────────────────────────────────────────────────────────────
 
@@ -66,7 +54,7 @@ public sealed class CombatTargetSet : MonoBehaviour, IFactionAssetProvider
 
     /// <summary>
     /// Returns the typed faction asset, or null if not assigned.
-    /// IMPORTANT: Combat orchestration runtime uses this for registry binding.
+    /// IMPORTANT: Metadata only; target-set ownership is resolved explicitly by combat-domain providers.
     /// </summary>
     public FactionAsset GetFactionAsset() => faction;
 

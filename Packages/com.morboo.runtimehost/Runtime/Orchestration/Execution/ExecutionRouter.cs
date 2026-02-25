@@ -2,15 +2,15 @@ using UnityEngine;
 
 /// <summary>
 /// Command emitter for orchestration decisions.
-/// Consumes <see cref="ArbiterDecision"/> and emits <see cref="DispatchCombatCommand"/>
-/// / <see cref="DispatchIdleCommand"/> into the <see cref="InProcessCommandBus"/>.
+/// Consumes <see cref="ArbiterDecision"/> and emits orchestration dispatch commands
+/// into the <see cref="InProcessCommandBus"/>.
 /// <para>
-/// IMPORTANT — The router does NOT call ApplyCombatCommand / ApplyIdleCommand.
-/// Integration adapters (<see cref="CombatCommandAdapter"/>, <see cref="IdleCommandAdapter"/>)
+/// IMPORTANT — The router does NOT call Apply on receivers.
+/// Integration adapters (e.g. unified orchestration adapter)
 /// subscribe to the bus, resolve EntityId → receiver, inject policies, and call Apply.
 /// </para>
 /// <para>
-/// IMPORTANT — Iterates receiver identity snapshots from <see cref="OrchestrationWorldCache"/>
+/// IMPORTANT — Iterates operator identity snapshots from <see cref="OrchestrationWorldCache"/>
 /// (EntityId + RoleId), not MonoBehaviour receiver lists. Zero direct receiver access.
 /// </para>
 /// </summary>
@@ -59,9 +59,8 @@ public sealed class ExecutionRouter : IExecutionRouteHost
             string firstCrowdIds = BuildFirstCrowdIds(world, 3);
             Debug.Log(string.Concat(
                 "[Router] domain=", decision.DomainKey.ToString(),
-                " combatRx=", world.CombatReceiverCount.ToString(),
-                " idleRx=", world.IdleReceiverCount.ToString(),
-                " firstRxIds=", firstRxIds,
+                " operators=", world.OperatorCount.ToString(),
+                " firstOperatorIds=", firstRxIds,
                 " firstCrowdIds=", firstCrowdIds));
         }
 
@@ -151,14 +150,14 @@ public sealed class ExecutionRouter : IExecutionRouteHost
 
     static string BuildFirstReceiverIds(OrchestrationWorldCache world, int max)
     {
-        int total = world.CombatReceiverCount;
+        int total = world.OperatorCount;
         if (total == 0) return "-";
         System.Text.StringBuilder sb = new System.Text.StringBuilder(32);
         int count = total < max ? total : max;
         for (int i = 0; i < count; i++)
         {
             if (i > 0) sb.Append(',');
-            sb.Append(world.GetCombatReceiverEntityId(i).ToStableInt().ToString());
+            sb.Append(world.GetOperatorEntityId(i).ToStableInt().ToString());
         }
         return sb.ToString();
     }

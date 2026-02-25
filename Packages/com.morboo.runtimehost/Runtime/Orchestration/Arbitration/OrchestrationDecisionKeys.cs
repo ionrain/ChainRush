@@ -16,6 +16,5 @@ public static class OrchestrationDomainKeys
 public static class OrchestrationProposalKeys
 {
     public const int None = 0;
-    public const int CombatPrimary = 1;
-    public const int IdleDefault = 1;
+    public const int DomainDefault = 1;
 }

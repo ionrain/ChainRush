@@ -515,59 +515,31 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter, IDomainArbit
             _world.Actors.Add(actor);
         }
 
-        // ── Friendly combat receivers ────────────────────────────────
-        IReadOnlyList<ICombatCommandReceiver> combat = OrchestrationRegistry.CombatReceivers;
-        for (int i = 0; i < combat.Count; i++)
+        // ── Friendly command operators (unified C06A receiver list) ───────────
+        IReadOnlyList<IOrchestrationCommandReceiver> operators = OrchestrationRegistry.CommandReceivers;
+        for (int i = 0; i < operators.Count; i++)
         {
-            ICombatCommandReceiver c = combat[i];
-            if (c == null) continue;
-            if (c is UnityEngine.Object cObj && cObj == null) continue;
+            IOrchestrationCommandReceiver op = operators[i];
+            if (op == null) continue;
+            if (op is UnityEngine.Object opObj && opObj == null) continue;
 
-            if (IsFriendlyReceiverTyped(c, ctx.OrchestratorFaction, ctx.Relations))
-                _world.FriendlyCombatReceivers.Add(c);
+            if (IsFriendlyReceiverTyped(op, ctx.OrchestratorFaction, ctx.Relations))
+                _world.FriendlyOperators.Add(op);
         }
 
-        // ── Friendly idle receivers ──────────────────────────────────
-        IReadOnlyList<IIdleCommandReceiver> idle = OrchestrationRegistry.IdleReceivers;
-        for (int i = 0; i < idle.Count; i++)
+        // ── Build crowd transforms from operators ────────────────────
+        for (int i = 0; i < _world.FriendlyOperators.Count; i++)
         {
-            IIdleCommandReceiver ir = idle[i];
-            if (ir == null) continue;
-            if (ir is UnityEngine.Object iObj && iObj == null) continue;
-
-            if (IsFriendlyReceiverTyped(ir, ctx.OrchestratorFaction, ctx.Relations))
-                _world.FriendlyIdleReceivers.Add(ir);
-        }
-
-        // ── Build crowd transforms from receivers ────────────────────
-        for (int i = 0; i < _world.FriendlyCombatReceivers.Count; i++)
-        {
-            Component c = _world.FriendlyCombatReceivers[i] as Component;
-            if (c != null && _world.CrowdDedup.Add(c.transform))
-                _world.FriendlyCrowdTransforms.Add(c.transform);
-        }
-        for (int i = 0; i < _world.FriendlyIdleReceivers.Count; i++)
-        {
-            Component c = _world.FriendlyIdleReceivers[i] as Component;
+            Component c = _world.FriendlyOperators[i] as Component;
             if (c != null && _world.CrowdDedup.Add(c.transform))
                 _world.FriendlyCrowdTransforms.Add(c.transform);
         }
 
         // ── Build role-by-transform lookup ──────────────────────────
         // IMPORTANT: RoleAsset → RoleId conversion at this Integration boundary.
-        for (int i = 0; i < _world.FriendlyIdleReceivers.Count; i++)
+        for (int i = 0; i < _world.FriendlyOperators.Count; i++)
         {
-            Component c = _world.FriendlyIdleReceivers[i] as Component;
-            if (c == null) continue;
-            IRoleAssetProvider rp = c.GetComponent<IRoleAssetProvider>();
-            if (rp == null) continue;
-            RoleAsset roleAsset = rp.GetRoleAsset();
-            if (roleAsset != null && !roleAsset.RoleId.IsNone)
-                _world.RoleByTransform[c.transform] = roleAsset.RoleId;
-        }
-        for (int i = 0; i < _world.FriendlyCombatReceivers.Count; i++)
-        {
-            Component c = _world.FriendlyCombatReceivers[i] as Component;
+            Component c = _world.FriendlyOperators[i] as Component;
             if (c == null) continue;
             if (_world.RoleByTransform.ContainsKey(c.transform)) continue;
             IRoleAssetProvider rp = c.GetComponent<IRoleAssetProvider>();
@@ -588,7 +560,7 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter, IDomainArbit
         _world.SnapshotActorCapabilities();
         _world.SnapshotCrowd();
         _world.BuildRoleByEntityId();
-        _world.SnapshotReceivers();
+        _world.SnapshotOperators();
         _world.Freeze();
     }
 
@@ -746,18 +718,17 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter, IDomainArbit
         // ── Arbitrate: pure decision ─────────────────────────────────
         // C04 path: arbitrate from proposal collection metadata (not fixed legacy input flags).
         ArbiterDecision decision = Arbitrate(_proposalCollector.Entries, _proposalCollector.ThreatPresent, now);
-        CombatCommand selectedCombatCommand = default;
-        bool hasSelectedCombatCommand =
-            (OrchestrationDomainId)decision.DomainKey == OrchestrationDomainId.Combat &&
-            _proposalCollector.TryGetCombatCommand(decision.ProposalKey, out selectedCombatCommand);
+        OrchestrationDomainId selectedDomainId = (OrchestrationDomainId)decision.DomainKey;
+        OrchestrationCommand selectedCommand = default;
+        bool hasSelectedCommand =
+            _proposalCollector.TryGetCommand(selectedDomainId, decision.ProposalKey, out selectedCommand);
 
         // ── Build execution context ──────────────────────────────────
         ExecutionContext execCtx = new ExecutionContext
         {
-            CombatCommand = hasSelectedCombatCommand ? selectedCombatCommand : default,
+            Command = hasSelectedCommand ? selectedCommand : OrchestrationCommand.None,
             OrchestratorFaction = effectiveOrchestratorFaction,
             Relations = effectiveRelations,
-            WorldAnchor = _ctx.WorldAnchor,
             Anchor = _ctx.Anchor,
             Now = now,
             DebugLog = debugLog
@@ -786,8 +757,8 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter, IDomainArbit
                 "[Arbiter] mode=", ((OrchestrationDomainId)decision.DomainKey).ToString(),
                 " modeChanged=", decision.ModeChanged ? "1" : "0",
                 " threat=", _proposalCollector.ThreatPresent ? "1" : "0",
-                " combatProp=", _proposalCollector.HasCombat ? "1" : "0",
-                " idleProp=", _proposalCollector.HasIdle ? "1" : "0",
+                " combatProp=", _proposalCollector.HasDomain(OrchestrationDomainId.Combat) ? "1" : "0",
+                " idleProp=", _proposalCollector.HasDomain(OrchestrationDomainId.Idle) ? "1" : "0",
                 " actors=", _world.ActorCount.ToString(),
                 " lock=", (_combatLockedUntil - now).ToString("F1"),
                 "s mem=", (_threatMemoryUntil - now).ToString("F1"), "s"), this);
@@ -915,12 +886,12 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter, IDomainArbit
     {
         Proposal legacyCombat = new Proposal(
             (int)OrchestrationDomainId.Combat,
-            OrchestrationProposalKeys.CombatPrimary,
+            OrchestrationProposalKeys.DomainDefault,
             priority: 100,
             score: input.ThreatPresent ? 1f : 0f);
         Proposal legacyIdle = new Proposal(
             (int)OrchestrationDomainId.Idle,
-            OrchestrationProposalKeys.IdleDefault,
+            OrchestrationProposalKeys.DomainDefault,
             priority: 10,
             score: 0f);
 

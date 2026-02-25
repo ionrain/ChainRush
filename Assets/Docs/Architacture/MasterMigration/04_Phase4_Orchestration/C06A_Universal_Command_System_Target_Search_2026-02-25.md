@@ -80,10 +80,11 @@ With C06's capability system in place, actors have the data they need to make th
 7. **PERF: no per-tick allocations beyond warmup, no LINQ** — same constraint as all orchestration code. `OrchestrationCommand` is a struct. Target search output reuses pre-allocated arrays.
 8. **Existing behavior preserved when no capabilities configured** — `OrchestrationCommand.Engage(target)` without capability data = same as `CombatCommand.AttackTarget(target)` today. Receiver implementations must handle the general `Engage` by defaulting to attack when no capability data is available.
 9. **`ExecutionRouter` stays generic** — routes register by `OrchestrationDomainId`, delegate signature unchanged. Routes decide which `DispatchOrchestrationCommand` to emit.
-10. **Backward compatibility via transition shims** — during migration slices, old types (`CombatCommand`, `DispatchCombatCommand`, `ICombatCommandReceiver`) exist as deprecated wrappers forwarding to new types. Deleted in the final slice.
+10. **No legacy command conversions in the runtime path** — `OrchestrationCommandConversions`-style bridges are NOT allowed in `OrchestrationArbiter`, `ExecutionRouter` routes, or integration adapters. `C06A` must migrate producers/proposals/policies so active runtime code emits/consumes `OrchestrationCommand` directly.
 11. **`OrchestrationWorldCache` operator snapshot remains per-tick full rebuild** — consistent with all other WorldCache data.
 12. **C06A operator abstraction is addressing-only** — actors and groups are both addressable as operator entities (`EntityId`) behind the same `IOrchestrationCommandReceiver` contract, but C06A does NOT introduce `GroupBrainPolicy`, formation logic, slot assignment, or member fan-out. Those stay in `C06C`.
 13. **Domain components own domain-specific logic** — `CombatDomainComponent` still decides WHEN to engage (domain evaluation), calls target search utility for WHO, and proposes the command. The unified command only changes the command SHAPE, not the domain evaluation flow.
+14. **`C06A` includes producer/proposal API migration** — `OrchestrationArbiterProposals`, `OrchestrationProposalCollector`, and active domain producers/policies (`CombatDomainComponent`, idle policy command generation path) are in scope and must stop using `CombatCommand` / `IdleCommand` on the active runtime path.
 
 ---
 
@@ -938,8 +939,14 @@ To reach the architecture target discussed during C06A review, C06A is intention
 1. **`C06B` — TargetProvider/DomainComponent convergence + reservations on top of `TargetRef`**
    - Expand producer/resolver usage of `TargetRef` (`Entity | Point | Area | Route`) across domains (beyond combat actor search and point move commands).
    - Unify target search/selection contracts around generic targets (not combat-only actor targets).
+   - Introduce a universal `DomainTargetSet` (domain-neutral target candidate/selection carrier) so `CombatDomainComponent` and `IdleDomainComponent` can converge on the same domain-output pipeline shape instead of one-off combat target-set handling.
    - Add target reservation / slot semantics for contested economic targets (tree, mine, building interaction slots).
    - Reform `DomainComponent` and `TargetProvider` seams so domains provide "what target" consistently without leaking execution behavior.
+   - Converge `CombatDomainComponent` and `IdleDomainComponent` to a domain-neutral domain-output format (same proposal/output shape and evaluation contract semantics), removing the current asymmetry where combat emits a domain command while idle only marks domain presence and relies on route-side generation.
+   - Architecture analysis/decision for post-convergence seam ownership: after `DomainComponent` + `DomainTargetSet` convergence, evaluate whether `DomainTargetSet` should be reusable across domains (default target-candidate carrier) and whether `DomainComponent` should remain a separate seam or collapse into `DomainOrchestrator`/`DomainOrchestratorComponent`. Record and implement one chosen direction in `C06B` (no long-lived half-state).
+   - **Exit gate before `C06C`: remove remaining `ExecutionContext` migration artifacts** — `ExecutionContext.Anchor` MUST be removed (or replaced by a domain-neutral equivalent). `ExecutionContext.CombatCommand` was removed during `C06A`; group-commanding (`C06C`) must not reintroduce combat/idle-era execution payload assumptions.
+   - **Exit gate before `C06C`: clean `OrchestrationWorldCache` ownership/scope** — `OrchestrationWorldCache` MUST stop mixing domain-specific receiver snapshots (`Combat*` / `Idle*`) with unified operator dispatch snapshots and unrelated crowd/spatial concerns in one compatibility-heavy surface. At minimum: remove domain-specific receiver lists/accessors from the active path and consolidate around a clean operator snapshot API; any remaining crowd/spatial/query responsibilities should be explicitly separated or clearly bounded.
+   - **Exit gate before `C06C`: resolve `CombatTargetSet.cs` ownership (`RuntimeHost` domain leak)** — `Packages/com.morboo.runtimehost/Runtime/Orchestration/World/CombatTargetSet.cs` MUST no longer remain an unresolved StrategyCombat-specific type in `RuntimeHost`. `C06B` must either move it to the StrategyCombat integration package (domain-owned) or replace it with the universal `DomainTargetSet` (domain-neutral carrier) plus optional StrategyCombat-specific extensions.
 
 2. **`C06C` — Group commanding / group brain on top of C06A operator addressing**
    - C06A already establishes operator-level addressing in dispatch infrastructure (actors and groups are command-targetable operator entities identified by `EntityId`).
@@ -950,3 +957,12 @@ To reach the architecture target discussed during C06A review, C06A is intention
    - Introduce a game-owned brain/policy system analogous to TDE `AIBrain`, integrated with `CommandBus`/`EventBus`/orchestration.
    - Run in parallel with existing TDE/AIBrain during rollout to validate policy storage and intent interpretation.
    - Move actor-local execution preferences (`preferred range`, approach style, stop distance) behind the new seam without requiring immediate full TDE removal.
+
+4. **`C06E` — Operator-scoped arbitration (`operator -> proposals[] -> chosen command`) + `ThreatPresent`/`ArbitrationInput` removal**
+   - Replace world-scoped single-active-domain arbitration (`Combat` vs `Idle`) with operator-scoped proposal resolution (actors/groups can receive different domain commands in the same tick).
+   - Remove global `ThreatPresent` from orchestration arbitration contracts and logic (`IArbiter` proposal-list overload input semantics + `ArbitrationInput` legacy compatibility model in Framework).
+   - Replace domain-specific proposal assumptions (`CombatPrimary`/`IdleDefault` semantics and hardcoded primary-vs-fallback interpretation) with per-operator conflict resolution policy.
+   - **Hysteresis placement rule:** domain-level "engagement continuity" may stay in domain producers during `C06B/C06C` prep; actor-local/group-local execution hysteresis belongs in the new brain seam (`C06D`); arbitration retains only conflict-resolution hysteresis if truly cross-domain/per-operator and domain-agnostic.
+   - **Preparation dependency on `C06B`:** domain output convergence (`CombatDomainComponent` and `IdleDomainComponent` same output semantics), `TargetRef`/TargetProvider convergence, and removal of route-side idle-only command synthesis assumptions.
+   - **Preparation dependency on `C06C`:** operator/group commanding semantics must exist first (group is an operator entity), so arbitration can resolve conflicts per operator (actor or group) without reworking payload/addressing again.
+   - **Coordination dependency on `C06D`:** finalize hysteresis ownership and brain-policy responsibilities before deleting `ThreatPresent`, to avoid moving stickiness logic twice.

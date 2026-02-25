@@ -75,9 +75,8 @@ public abstract class DomainOrchestrator : MonoBehaviour, IOrchestrationDomain
     }
 
     /// <summary>
-    /// Producer-format bridge used during C03 migration. Default implementation
-    /// preserves legacy domain behavior by evaluating into a reusable legacy
-    /// proposal scratch buffer and importing it into the unified collector.
+    /// Producer-format bridge for domain polling. Default implementation evaluates
+    /// into a reusable proposal scratch buffer and imports it into the unified collector.
     /// </summary>
     public virtual void CollectProposals(
         OrchestrationArbiterContext ctx,
@@ -89,6 +88,6 @@ public abstract class DomainOrchestrator : MonoBehaviour, IOrchestrationDomain
 
         legacyProposalScratch.Clear();
         Evaluate(ctx, legacyProposalScratch);
-        collector.ImportLegacy(legacyProposalScratch);
+        collector.Import(legacyProposalScratch);
     }
 }

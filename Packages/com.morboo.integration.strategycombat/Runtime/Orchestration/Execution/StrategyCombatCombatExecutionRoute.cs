@@ -1,6 +1,5 @@
 /// <summary>
-/// Transitional StrategyCombat combat route executor.
-/// Ownership is in StrategyCombat (not RuntimeHost) during C04A.
+/// StrategyCombat combat route executor (C06A unified dispatch path).
 /// </summary>
 public sealed class StrategyCombatCombatExecutionRoute
 {
@@ -16,44 +15,25 @@ public sealed class StrategyCombatCombatExecutionRoute
         if (host == null)
             return;
 
-        PublishCombatCommandForAll(host, ctx.CombatCommand, world);
-        if (decision.ModeChanged && _profile.Combat.EmitIdleHoldOnModeChange)
-            PublishIdleHoldForAll(host, world);
+        PublishCommandForAll(host, ctx.Command, world);
     }
 
-    void PublishCombatCommandForAll(IExecutionRouteHost host, CombatCommand cmd, OrchestrationWorldCache world)
+    static void PublishCommandForAll(IExecutionRouteHost host, OrchestrationCommand cmd, OrchestrationWorldCache world)
     {
-        int count = world.CombatReceiverCount;
+        if (cmd.IsNone)
+            return;
+
+        int count = world.OperatorCount;
         for (int i = 0; i < count; i++)
         {
-            EntityId eid = world.GetCombatReceiverEntityId(i);
+            EntityId eid = world.GetOperatorEntityId(i);
             if (eid.IsNone)
                 continue;
 
-            host.PublishCommand(new DispatchCombatCommand
+            host.PublishCommand(new DispatchOrchestrationCommand
             {
                 ReceiverEntityId = eid,
-                Payload = cmd,
-                ReceiverRoleId = world.GetCombatReceiverRoleId(i)
-            });
-        }
-    }
-
-    void PublishIdleHoldForAll(IExecutionRouteHost host, OrchestrationWorldCache world)
-    {
-        IdleCommand hold = IdleCommand.Hold();
-        int count = world.IdleReceiverCount;
-        for (int i = 0; i < count; i++)
-        {
-            EntityId eid = world.GetIdleReceiverEntityId(i);
-            if (eid.IsNone)
-                continue;
-
-            host.PublishCommand(new DispatchIdleCommand
-            {
-                ReceiverEntityId = eid,
-                Payload = hold,
-                ReceiverRoleId = world.GetIdleReceiverRoleId(i)
+                Payload = cmd
             });
         }
     }

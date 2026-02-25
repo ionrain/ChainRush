@@ -3,97 +3,133 @@ using System.Collections.Generic;
 /// <summary>
 /// Host-level proposal collector used by <see cref="OrchestrationArbiter"/>.
 /// Collects proposal metadata entries (framework <see cref="Proposal"/>) and
-/// preserves current legacy arbitration semantics via a compatibility adapter.
+/// preserves current arbitration semantics while domain producers migrate to
+/// unified <see cref="OrchestrationCommand"/> payloads.
 /// <para>
 /// IMPORTANT: A single instance is reused each tick (no per-tick allocations).
 /// </para>
 /// </summary>
 public sealed class OrchestrationProposalCollector
 {
+    struct CollectedDomainState
+    {
+        public int ProposalKey;
+        public bool HasCommand;
+        public OrchestrationCommand Command;
+        public bool ThreatPresent;
+    }
+
     readonly List<Proposal> _entries = new List<Proposal>(8);
-
-    bool _hasCombat;
-    CombatCommand _combatCommand;
-    int _combatProposalKey;
-    bool _threatPresent;
-
-    bool _hasIdle;
-    int _idleProposalKey;
+    readonly Dictionary<OrchestrationDomainId, CollectedDomainState> _domainStates =
+        new Dictionary<OrchestrationDomainId, CollectedDomainState>(4);
+    bool _anyThreatPresent;
 
     public int Count => _entries.Count;
     public Proposal Get(int index) => _entries[index];
     public IReadOnlyList<Proposal> Entries => _entries;
 
-    public bool HasCombat => _hasCombat;
-    public int CombatProposalKey => _combatProposalKey;
-    public bool ThreatPresent => _threatPresent;
-
-    public bool HasIdle => _hasIdle;
-    public int IdleProposalKey => _idleProposalKey;
+    public bool ThreatPresent => _anyThreatPresent;
 
     public void Clear()
     {
         _entries.Clear();
-
-        _hasCombat = false;
-        _combatCommand = default;
-        _combatProposalKey = OrchestrationProposalKeys.None;
-        _threatPresent = false;
-
-        _hasIdle = false;
-        _idleProposalKey = OrchestrationProposalKeys.None;
+        _domainStates.Clear();
+        _anyThreatPresent = false;
     }
 
     /// <summary>
-    /// Compatibility bridge for C03: imports current fixed combat/idle proposal container
-    /// into a generic proposal collection without changing behavior.
+    /// Imports current domain proposal scratch data into the collector without
+    /// changing arbitration behavior.
     /// </summary>
-    public void ImportLegacy(OrchestrationArbiterProposals legacy)
+    public void Import(OrchestrationArbiterProposals proposals)
     {
-        if (legacy == null)
+        if (proposals == null)
             return;
 
-        if (legacy.HasCombat)
+        foreach (KeyValuePair<OrchestrationDomainId, OrchestrationArbiterProposals.DomainProposalState> kvp in proposals.DomainStates)
         {
-            _hasCombat = true;
-            _combatCommand = legacy.CombatCommand;
-            _combatProposalKey = legacy.CombatProposalKey;
-            _threatPresent = legacy.ThreatPresent;
+            OrchestrationDomainId domainId = kvp.Key;
+            OrchestrationArbiterProposals.DomainProposalState src = kvp.Value;
+
+            CollectedDomainState dst = new CollectedDomainState
+            {
+                ProposalKey = src.ProposalKey,
+                HasCommand = src.HasCommand,
+                Command = src.Command,
+                ThreatPresent = src.ThreatPresent
+            };
+            _domainStates[domainId] = dst;
+            _anyThreatPresent |= src.ThreatPresent;
 
             _entries.Add(new Proposal(
-                (int)OrchestrationDomainId.Combat,
-                legacy.CombatProposalKey,
-                priority: 100,
-                score: legacy.ThreatPresent ? 1f : 0f));
-        }
-
-        if (legacy.HasIdle)
-        {
-            _hasIdle = true;
-            _idleProposalKey = legacy.IdleProposalKey;
-
-            _entries.Add(new Proposal(
-                (int)OrchestrationDomainId.Idle,
-                legacy.IdleProposalKey,
-                priority: 10,
-                score: 0f));
+                (int)domainId,
+                src.ProposalKey,
+                priority: GetDefaultPriority(domainId),
+                score: GetDefaultScore(domainId, src.ThreatPresent)));
         }
     }
 
     public ArbitrationInput ToArbitrationInput()
     {
-        return new ArbitrationInput(_hasCombat, _hasIdle, _threatPresent);
+        // Compatibility mapping for the legacy two-slot arbitration input contract.
+        return new ArbitrationInput(
+            HasDomain(OrchestrationDomainId.Combat),
+            HasDomain(OrchestrationDomainId.Idle),
+            _anyThreatPresent);
     }
 
-    public bool TryGetCombatCommand(int proposalKey, out CombatCommand command)
+    public bool HasDomain(OrchestrationDomainId domainId)
     {
-        if (_hasCombat && proposalKey == _combatProposalKey)
+        return domainId != OrchestrationDomainId.None && _domainStates.ContainsKey(domainId);
+    }
+
+    public int GetProposalKey(OrchestrationDomainId domainId)
+    {
+        if (domainId == OrchestrationDomainId.None)
+            return OrchestrationProposalKeys.None;
+
+        CollectedDomainState state;
+        return _domainStates.TryGetValue(domainId, out state)
+            ? state.ProposalKey
+            : OrchestrationProposalKeys.None;
+    }
+
+    public bool TryGetCommand(OrchestrationDomainId domainId, int proposalKey, out OrchestrationCommand command)
+    {
+        if (domainId != OrchestrationDomainId.None &&
+            _domainStates.TryGetValue(domainId, out CollectedDomainState state) &&
+            state.HasCommand &&
+            proposalKey == state.ProposalKey)
         {
-            command = _combatCommand;
+            command = state.Command;
             return true;
         }
 
         command = default;
         return false;
+    }
+
+    static int GetDefaultPriority(OrchestrationDomainId domainId)
+    {
+        switch (domainId)
+        {
+            case OrchestrationDomainId.Combat:
+                return 100;
+            case OrchestrationDomainId.Idle:
+                return 10;
+            default:
+                return 0;
+        }
+    }
+
+    static float GetDefaultScore(OrchestrationDomainId domainId, bool threatPresent)
+    {
+        switch (domainId)
+        {
+            case OrchestrationDomainId.Combat:
+                return threatPresent ? 1f : 0f;
+            default:
+                return 0f;
+        }
     }
 }

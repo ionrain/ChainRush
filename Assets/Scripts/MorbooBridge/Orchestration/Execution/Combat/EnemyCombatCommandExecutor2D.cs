@@ -7,17 +7,17 @@ using UnityEngine;
 /// commands into the existing enemy AIBrain without modifying engine code.
 /// <para>
 /// IMPORTANT — Ownership contract:
-/// • Orchestration decides WHAT target to pursue via <see cref="ApplyCombatCommand"/>.
+/// • Orchestration decides WHAT target to pursue via <see cref="IOrchestrationCommandReceiver.ApplyCommand"/>.
 /// • AIBrain / AIDecisions decide HOW to move and WHEN to transition states.
 /// This executor never drives movement or attacks directly.
 /// </para>
 /// <para>
 /// Adding this component to an enemy prefab has zero gameplay effect until
-/// <see cref="ApplyCombatCommand"/> is called by an orchestrator AND the AIBrain
+/// <see cref="IOrchestrationCommandReceiver.ApplyCommand"/> is called by an orchestrator AND the AIBrain
 /// includes the matching decision/action nodes.
 /// </para>
 /// </summary>
-public sealed class EnemyCombatCommandExecutor2D : MonoBehaviour, ICombatCommandReceiver, IOrchestrationActor, IEntityIdProvider
+public sealed class EnemyCombatCommandExecutor2D : MonoBehaviour, IOrchestrationCommandReceiver, IOrchestrationActor, IEntityIdProvider
 {
     // ──────────────────────────────────────────────────────────────────
     //  Serialized
@@ -98,8 +98,8 @@ public sealed class EnemyCombatCommandExecutor2D : MonoBehaviour, ICombatCommand
 
     bool _warnedMissingIdentity;
 
-    void OnEnable() => OrchestrationRegistry.Register((ICombatCommandReceiver)this);
-    void OnDisable() => OrchestrationRegistry.Unregister((ICombatCommandReceiver)this);
+    void OnEnable() => OrchestrationRegistry.Register((IOrchestrationCommandReceiver)this);
+    void OnDisable() => OrchestrationRegistry.Unregister((IOrchestrationCommandReceiver)this);
 
     // ──────────────────────────────────────────────────────────────────
     //  IEntityIdProvider
@@ -148,53 +148,56 @@ public sealed class EnemyCombatCommandExecutor2D : MonoBehaviour, ICombatCommand
     }
 
     // ──────────────────────────────────────────────────────────────────
-    //  ICombatCommandReceiver
+    //  IOrchestrationCommandReceiver
     // ──────────────────────────────────────────────────────────────────
 
-    /// <summary>
-    /// Stores the command's target or point with a TTL.
-    /// The actual brain target injection is performed by
-    /// <see cref="AIActionSetBrainTargetFromExternal2D"/> during the AIBrain tick.
-    /// </summary>
-    public void ApplyCombatCommand(CombatCommand command)
+    public void ApplyCommand(OrchestrationCommand command)
     {
         if (_enemy == null)
             return;
 
         switch (command.Type)
         {
-            case CombatCommandType.None:
-                break;
+            case OrchestrationCommandType.None:
+                return;
 
-            case CombatCommandType.Hold:
+            case OrchestrationCommandType.Cancel:
                 ClearExternal();
                 break;
 
-            case CombatCommandType.MoveToPoint:
-                SetExternalPoint(command.TargetPoint.ToVector2());
+            case OrchestrationCommandType.Engage:
+                switch (command.Target.Kind)
+                {
+                    case OrchestrationTargetKind.Entity:
+                    {
+                        Transform resolved = !command.Target.TargetEntityId.IsNone
+                            ? EntityTransformResolver.Resolve(command.Target.TargetEntityId)
+                            : null;
+                        if (resolved != null)
+                            SetExternalTarget(resolved);
+                        else
+                            ClearExternal();
+                        break;
+                    }
+
+                    case OrchestrationTargetKind.Point:
+                        if (OrchestrationTargetPointRegistry.TryGetPointTarget(command.Target.TargetEntityId, out Float2 point))
+                            SetExternalPoint(point.ToVector2());
+                        else
+                            ClearExternal();
+                        break;
+
+                    case OrchestrationTargetKind.Area:
+                    case OrchestrationTargetKind.Route:
+                    case OrchestrationTargetKind.None:
+                    default:
+                        ClearExternal();
+                        break;
+                }
                 break;
 
-            case CombatCommandType.MoveToTarget:
-            case CombatCommandType.AttackTarget:
-            {
-                // IMPORTANT: EntityId→Transform resolution at Integration boundary
-                Transform resolved = command.HasEntityTarget
-                    ? EntityTransformResolver.Resolve(command.TargetEntityId) : null;
-                if (resolved != null)
-                    SetExternalTarget(resolved);
-                break;
-            }
-
-            case CombatCommandType.KeepDistance:
-            case CombatCommandType.HideBehind:
-            case CombatCommandType.Assist:
-            {
-                Transform resolved = command.HasEntityTarget
-                    ? EntityTransformResolver.Resolve(command.TargetEntityId) : null;
-                if (resolved != null)
-                    SetExternalTarget(resolved);
-                break;
-            }
+            default:
+                return;
         }
 
         if (debugLog)
@@ -273,19 +276,34 @@ public sealed class EnemyCombatCommandExecutor2D : MonoBehaviour, ICombatCommand
     //  Debug
     // ──────────────────────────────────────────────────────────────────
 
-    void LogCommand(CombatCommand command)
+    void LogCommand(OrchestrationCommand command)
     {
-        string target;
-        if (command.HasEntityTarget)
+        string target = "None";
+        if (command.Type == OrchestrationCommandType.Cancel)
         {
-            Transform resolved = EntityTransformResolver.Resolve(command.TargetEntityId);
-            target = resolved != null ? resolved.name : command.TargetEntityId.ToStableInt().ToString();
+            target = "Cancel";
         }
-        else
+        else if (command.Type == OrchestrationCommandType.Engage)
         {
-            target = command.TargetPoint.ToString();
+            switch (command.Target.Kind)
+            {
+                case OrchestrationTargetKind.Entity:
+                    Transform resolved = EntityTransformResolver.Resolve(command.Target.TargetEntityId);
+                    target = resolved != null ? resolved.name : command.Target.TargetEntityId.ToStableInt().ToString();
+                    break;
+                case OrchestrationTargetKind.Point:
+                    if (OrchestrationTargetPointRegistry.TryGetPointTarget(command.Target.TargetEntityId, out Float2 point))
+                        target = point.ToString();
+                    else
+                        target = command.Target.TargetEntityId.ToStableInt().ToString();
+                    break;
+                default:
+                    target = command.Target.Kind.ToString();
+                    break;
+            }
         }
-        Debug.Log($"[EnemyCombatCommandExecutor2D] {command.Type} → {target}" +
+
+        Debug.Log($"[EnemyCombatCommandExecutor2D] {command.Type}/{command.Target.Kind} → {target}" +
                   (string.IsNullOrEmpty(command.DebugLabel) ? "" : $" ({command.DebugLabel})"),
                   this);
     }

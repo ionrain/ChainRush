@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Thin adapter that translates <see cref="CombatCommand"/> structs into
+/// Thin adapter that translates <see cref="OrchestrationCommand"/> structs into
 /// <see cref="Unit.SetTarget"/> calls, letting the existing AIBrain state
 /// machine (Idle ↔ MoveToTarget) handle all movement and attack transitions.
 /// <para>
@@ -12,7 +12,7 @@ using UnityEngine;
 /// </para>
 /// <para>
 /// Adding this component to a Unit prefab has zero gameplay effect until
-/// <see cref="ApplyCombatCommand"/> is called explicitly by an orchestrator.
+/// <see cref="IOrchestrationCommandReceiver.ApplyCommand"/> is called explicitly by an orchestrator.
 /// </para>
 /// <para>
 /// IMPORTANT — Movement constraints: When <see cref="IConstrainedCombatReceiver.SetRuntimeContext"/>
@@ -22,7 +22,7 @@ using UnityEngine;
 /// </para>
 /// </summary>
 [RequireComponent(typeof(Unit))]
-public sealed class UnitCombatCommandExecutor2D : MonoBehaviour, ICombatCommandReceiver, IConstrainedCombatReceiver, IOrchestrationActor, IRoleAssetProvider, IEntityIdProvider
+public sealed class UnitCombatCommandExecutor2D : MonoBehaviour, IOrchestrationCommandReceiver, IConstrainedCombatReceiver, IOrchestrationActor, IRoleAssetProvider, IEntityIdProvider
 {
     // ──────────────────────────────────────────────────────────────────
     //  Serialized
@@ -138,8 +138,8 @@ public sealed class UnitCombatCommandExecutor2D : MonoBehaviour, ICombatCommandR
             _waypoint = FindWaypointChild();
     }
 
-    void OnEnable() => OrchestrationRegistry.Register((ICombatCommandReceiver)this);
-    void OnDisable() => OrchestrationRegistry.Unregister((ICombatCommandReceiver)this);
+    void OnEnable() => OrchestrationRegistry.Register((IOrchestrationCommandReceiver)this);
+    void OnDisable() => OrchestrationRegistry.Unregister((IOrchestrationCommandReceiver)this);
 
     bool _warnedMissingIdentity;
 
@@ -206,7 +206,7 @@ public sealed class UnitCombatCommandExecutor2D : MonoBehaviour, ICombatCommandR
 
     /// <summary>
     /// Injects runtime constraints and world cache for this tick.
-    /// IMPORTANT: Called by arbiter BEFORE <see cref="ApplyCombatCommand"/> each tick.
+    /// IMPORTANT: Called by arbiter BEFORE <see cref="IOrchestrationCommandReceiver.ApplyCommand"/> each tick.
     /// Null constraints = unconstrained movement (default behavior).
     /// </summary>
     public void SetRuntimeContext(CombatMoveConstraintsAsset constraints, IWorldQuery world)
@@ -220,45 +220,48 @@ public sealed class UnitCombatCommandExecutor2D : MonoBehaviour, ICombatCommandR
     }
 
     // ──────────────────────────────────────────────────────────────────
-    //  ICombatCommandReceiver
+    //  IOrchestrationCommandReceiver
     // ──────────────────────────────────────────────────────────────────
 
-    /// <summary>
-    /// Applies a combat command by setting (or clearing) the Unit's AIBrain target.
-    /// Called on demand — not per-frame.
-    /// </summary>
-    public void ApplyCombatCommand(CombatCommand command)
+    public void ApplyCommand(OrchestrationCommand command)
     {
         if (_unit == null)
             return;
 
         switch (command.Type)
         {
-            // None = "no command issued; do not change current target."
-            case CombatCommandType.None:
-                break;
+            case OrchestrationCommandType.None:
+                return;
 
-            case CombatCommandType.Hold:
+            case OrchestrationCommandType.Cancel:
                 ApplyHold();
                 break;
 
-            case CombatCommandType.MoveToPoint:
-                ApplyMoveToPointConstrained(command);
+            case OrchestrationCommandType.Engage:
+                switch (command.Target.Kind)
+                {
+                    case OrchestrationTargetKind.Entity:
+                        ApplyTargetOrHoldConstrained(command.Target.TargetEntityId);
+                        break;
+
+                    case OrchestrationTargetKind.Point:
+                        if (OrchestrationTargetPointRegistry.TryGetPointTarget(command.Target.TargetEntityId, out Float2 point))
+                            ApplyMoveToPointConstrained(point);
+                        else
+                            ApplyHold();
+                        break;
+
+                    case OrchestrationTargetKind.Area:
+                    case OrchestrationTargetKind.Route:
+                    case OrchestrationTargetKind.None:
+                    default:
+                        ApplyHold();
+                        break;
+                }
                 break;
 
-            case CombatCommandType.MoveToTarget:
-            case CombatCommandType.AttackTarget:
-                ApplyTargetOrHoldConstrained(command);
-                break;
-
-            // RATIONALE: KeepDistance, HideBehind, and Assist require domain planner
-            // support (range management, cover evaluation, formation logic).
-            // The executor only provides basic target plumbing as a conservative fallback.
-            case CombatCommandType.KeepDistance:
-            case CombatCommandType.HideBehind:
-            case CombatCommandType.Assist:
-                ApplyFallback(command);
-                break;
+            default:
+                return;
         }
 
         if (debugLog)
@@ -275,44 +278,27 @@ public sealed class UnitCombatCommandExecutor2D : MonoBehaviour, ICombatCommandR
     }
 
     /// <summary>
-    /// Positions the cached waypoint at <see cref="CombatCommand.TargetPoint"/>
+    /// Positions the cached waypoint at the given point
     /// and sets it as the AIBrain target.
-    /// IMPORTANT: TargetPoint is always treated as valid for MoveToPoint commands.
     /// </summary>
-    void ApplyMoveToPoint(CombatCommand command)
+    void ApplyMoveToPoint(Float2 targetPoint)
     {
         EnsureWaypoint();
-        _waypoint.position = new Vector3(command.TargetPoint.X, command.TargetPoint.Y, 0f);
+        _waypoint.position = new Vector3(targetPoint.X, targetPoint.Y, 0f);
         _unit.SetTarget(_waypoint);
     }
 
     /// <summary>
     /// Sets target transform if available; otherwise falls back to Hold (clear target).
     /// Routes through <see cref="_selector"/> when present for per-unit targeting override.
-    /// No fallback to TargetPoint — MoveToTarget/AttackTarget require an explicit transform.
+    /// No fallback to point — entity Engage requires an explicit transform.
     /// </summary>
-    void ApplyTargetOrHold(CombatCommand command)
+    void ApplyTargetOrHold(EntityId targetEntityId)
     {
         // IMPORTANT: EntityId→Transform resolution at Integration boundary
         Transform chosen = _selector != null
-            ? _selector.SelectTarget(command)
-            : (command.HasEntityTarget ? EntityTransformResolver.Resolve(command.TargetEntityId) : null);
-
-        if (chosen != null)
-            _unit.SetTarget(chosen);
-        else
-            ApplyHold();
-    }
-
-    /// <summary>
-    /// Conservative fallback for commands that need planner support (KeepDistance,
-    /// HideBehind, Assist). Routes through <see cref="_selector"/> when present.
-    /// </summary>
-    void ApplyFallback(CombatCommand command)
-    {
-        Transform chosen = _selector != null
-            ? _selector.SelectTarget(command)
-            : (command.HasEntityTarget ? EntityTransformResolver.Resolve(command.TargetEntityId) : null);
+            ? _selector.SelectTarget(targetEntityId)
+            : (!targetEntityId.IsNone ? EntityTransformResolver.Resolve(targetEntityId) : null);
 
         if (chosen != null)
             _unit.SetTarget(chosen);
@@ -326,21 +312,21 @@ public sealed class UnitCombatCommandExecutor2D : MonoBehaviour, ICombatCommandR
     //  the original unconstrained methods with no side effects.
     // ──────────────────────────────────────────────────────────────────
 
-    void ApplyMoveToPointConstrained(CombatCommand command)
+    void ApplyMoveToPointConstrained(Float2 targetPoint)
     {
         bool constrainedActive = _constraints != null && _constraints.leashRadius > 0f && _world != null;
         if (!constrainedActive)
         {
-            ApplyMoveToPoint(command);
+            ApplyMoveToPoint(targetPoint);
             return;
         }
 
-        Vector2 targetPoint = command.TargetPoint.ToVector2();
-        Vector2 clamped = ClampToLeash(targetPoint, out bool wasClamped);
+        Vector2 point = targetPoint.ToVector2();
+        Vector2 clamped = ClampToLeash(point, out bool wasClamped);
 
         if (!wasClamped)
         {
-            ApplyMoveToPoint(command);
+            ApplyMoveToPoint(targetPoint);
             return;
         }
 
@@ -348,20 +334,20 @@ public sealed class UnitCombatCommandExecutor2D : MonoBehaviour, ICombatCommandR
         ApplyConstrainedWaypoint(clamped);
     }
 
-    void ApplyTargetOrHoldConstrained(CombatCommand command)
+    void ApplyTargetOrHoldConstrained(EntityId targetEntityId)
     {
         bool constrainedActive = _constraints != null && _constraints.leashRadius > 0f && _world != null;
         if (!constrainedActive)
         {
-            ApplyTargetOrHold(command);
+            ApplyTargetOrHold(targetEntityId);
             return;
         }
 
         // Resolve target via selector (policy already injected by arbiter)
         // IMPORTANT: EntityId→Transform resolution at Integration boundary
         Transform chosen = _selector != null
-            ? _selector.SelectTarget(command)
-            : (command.HasEntityTarget ? EntityTransformResolver.Resolve(command.TargetEntityId) : null);
+            ? _selector.SelectTarget(targetEntityId)
+            : (!targetEntityId.IsNone ? EntityTransformResolver.Resolve(targetEntityId) : null);
 
         if (chosen == null)
         {
@@ -593,19 +579,34 @@ public sealed class UnitCombatCommandExecutor2D : MonoBehaviour, ICombatCommandR
     //  Debug
     // ──────────────────────────────────────────────────────────────────
 
-    void LogCommand(CombatCommand command)
+    void LogCommand(OrchestrationCommand command)
     {
-        string target;
-        if (command.HasEntityTarget)
+        string target = "None";
+        if (command.Type == OrchestrationCommandType.Cancel)
         {
-            Transform resolved = EntityTransformResolver.Resolve(command.TargetEntityId);
-            target = resolved != null ? resolved.name : command.TargetEntityId.ToStableInt().ToString();
+            target = "Cancel";
         }
-        else
+        else if (command.Type == OrchestrationCommandType.Engage)
         {
-            target = command.TargetPoint.ToString();
+            switch (command.Target.Kind)
+            {
+                case OrchestrationTargetKind.Entity:
+                    Transform resolved = EntityTransformResolver.Resolve(command.Target.TargetEntityId);
+                    target = resolved != null ? resolved.name : command.Target.TargetEntityId.ToStableInt().ToString();
+                    break;
+                case OrchestrationTargetKind.Point:
+                    if (OrchestrationTargetPointRegistry.TryGetPointTarget(command.Target.TargetEntityId, out Float2 point))
+                        target = point.ToString();
+                    else
+                        target = command.Target.TargetEntityId.ToStableInt().ToString();
+                    break;
+                default:
+                    target = command.Target.Kind.ToString();
+                    break;
+            }
         }
-        Debug.Log($"[UnitCombatCommandExecutor2D] {command.Type} → {target}" +
+
+        Debug.Log($"[UnitCombatCommandExecutor2D] {command.Type}/{command.Target.Kind} → {target}" +
                   (string.IsNullOrEmpty(command.DebugLabel) ? "" : $" ({command.DebugLabel})"),
                   this);
     }

@@ -18,7 +18,7 @@ using UnityEngine;
 /// The executor does NOT enforce distance checks. No Update loop. No per-frame work.
 /// </para>
 /// </summary>
-public sealed class UnitIdleCommandExecutor2D : MonoBehaviour, IIdleCommandReceiver, IFactionAssetProvider, IOrchestrationActor, IRoleContextProvider
+public sealed class UnitIdleCommandExecutor2D : MonoBehaviour, IFactionAssetProvider, IOrchestrationActor, IRoleContextProvider
 {
     [SerializeField] Unit _unit;
     [SerializeField] UnitOrchestrationIdentity _identity;
@@ -72,16 +72,14 @@ public sealed class UnitIdleCommandExecutor2D : MonoBehaviour, IIdleCommandRecei
         _nextResolveTime = 0f;
         _resolveAttempts = 0;
 
-        OrchestrationRegistry.Register((IIdleCommandReceiver)this);
     }
 
     void OnDisable()
     {
-        OrchestrationRegistry.Unregister((IIdleCommandReceiver)this);
     }
 
     // ──────────────────────────────────────────────────────────────────
-    //  IIdleCommandReceiver
+    //  Legacy idle command application helper (no direct registry dispatch in C06A)
     // ──────────────────────────────────────────────────────────────────
 
     public void ApplyIdleCommand(IdleCommand command)

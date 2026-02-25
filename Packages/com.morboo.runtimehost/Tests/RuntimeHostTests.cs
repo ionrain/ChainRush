@@ -98,7 +98,7 @@ public sealed class RuntimeHostTests
             ArbiterDecision d = arbiter.Arbitrate(proposals, true, 1f);
 
             Assert.That(d.DomainKey, Is.EqualTo(OrchestrationDomainKeys.Combat));
-            Assert.That(d.ProposalKey, Is.EqualTo(OrchestrationProposalKeys.CombatPrimary));
+            Assert.That(d.ProposalKey, Is.EqualTo(OrchestrationProposalKeys.DomainDefault));
         }
         finally { DestroyArbiter(arbiter); }
     }
@@ -114,7 +114,7 @@ public sealed class RuntimeHostTests
             ArbiterDecision d = arbiter.Arbitrate(proposals, false, 100f); // Far future, no lock
 
             Assert.That(d.DomainKey, Is.EqualTo(OrchestrationDomainKeys.Idle));
-            Assert.That(d.ProposalKey, Is.EqualTo(OrchestrationProposalKeys.IdleDefault));
+            Assert.That(d.ProposalKey, Is.EqualTo(OrchestrationProposalKeys.DomainDefault));
         }
         finally { DestroyArbiter(arbiter); }
     }
@@ -247,33 +247,30 @@ public sealed class RuntimeHostTests
         var router = CreateRouterWithBuiltInRoutes(bus);
         var world = new OrchestrationWorldCache();
 
-        // Populate minimal receiver snapshot data
-        // Add 2 combat receivers with EntityIds
-        AddCombatReceiverSnapshot(world, new EntityId(1), new RoleId(10));
-        AddCombatReceiverSnapshot(world, new EntityId(2), new RoleId(20));
+        // Populate minimal operator snapshot data
+        AddOperatorSnapshot(world, new EntityId(1), new RoleId(10));
+        AddOperatorSnapshot(world, new EntityId(2), new RoleId(20));
         world.Freeze();
 
         var decision = new ArbiterDecision
         {
             DomainKey = OrchestrationDomainKeys.Combat,
-            ProposalKey = OrchestrationProposalKeys.CombatPrimary,
+            ProposalKey = OrchestrationProposalKeys.DomainDefault,
             ModeChanged = false
         };
 
-        CombatCommand cmd = CombatCommand.Create(CombatCommandType.Hold);
-        var ctx = new ExecutionContext { CombatCommand = cmd };
+        var ctx = new ExecutionContext { Command = OrchestrationCommand.Cancel("Test=Combat") };
 
         router.Execute(decision, world, ctx);
 
         // Collect dispatched commands
-        var dispatched = new List<DispatchCombatCommand>();
-        bus.Subscribe<DispatchCombatCommand>(c => dispatched.Add(c));
+        var dispatched = new List<DispatchOrchestrationCommand>();
+        bus.Subscribe<DispatchOrchestrationCommand>(c => dispatched.Add(c));
         bus.Flush();
 
         Assert.That(dispatched.Count, Is.EqualTo(2));
         Assert.That(dispatched[0].ReceiverEntityId, Is.EqualTo(new EntityId(1)));
-        Assert.That(dispatched[0].ReceiverRoleId, Is.EqualTo(new RoleId(10)));
-        Assert.That(dispatched[0].Payload.Type, Is.EqualTo(CombatCommandType.Hold));
+        Assert.That(dispatched[0].Payload.Type, Is.EqualTo(OrchestrationCommandType.Cancel));
         Assert.That(dispatched[1].ReceiverEntityId, Is.EqualTo(new EntityId(2)));
     }
 
@@ -284,8 +281,7 @@ public sealed class RuntimeHostTests
         var router = CreateRouterWithBuiltInRoutes(bus);
         var world = new OrchestrationWorldCache();
 
-        // Add idle receiver
-        AddIdleReceiverSnapshot(world, new EntityId(5), new RoleId(15));
+        AddOperatorSnapshot(world, new EntityId(5), new RoleId(15));
         world.Freeze();
 
         // Mode change from combat → idle triggers DispatchCombatHoldAll (empty) + DispatchIdlePerUnit
@@ -301,21 +297,21 @@ public sealed class RuntimeHostTests
 
         router.Execute(decision, world, ctx);
 
-        var idleDispatched = new List<DispatchIdleCommand>();
-        bus.Subscribe<DispatchIdleCommand>(c => idleDispatched.Add(c));
+        var idleDispatched = new List<DispatchOrchestrationCommand>();
+        bus.Subscribe<DispatchOrchestrationCommand>(c => idleDispatched.Add(c));
         bus.Flush();
 
         Assert.That(idleDispatched.Count, Is.EqualTo(1));
         Assert.That(idleDispatched[0].ReceiverEntityId, Is.EqualTo(new EntityId(5)));
-        Assert.That(idleDispatched[0].Payload.Type, Is.EqualTo(IdleCommandType.Hold));
+        Assert.That(idleDispatched[0].Payload.Type, Is.EqualTo(OrchestrationCommandType.Cancel));
     }
 
     [Test]
     public void StrategyCombatNoneRoute_RouteExecutionPolicy_CanDisableModeChangeHoldAll()
     {
         var world = new OrchestrationWorldCache();
-        AddCombatReceiverSnapshot(world, new EntityId(11), new RoleId(101));
-        AddIdleReceiverSnapshot(world, new EntityId(22), new RoleId(202));
+        AddOperatorSnapshot(world, new EntityId(11), new RoleId(101));
+        AddOperatorSnapshot(world, new EntityId(22), new RoleId(202));
         world.Freeze();
 
         var decision = new ArbiterDecision
@@ -327,27 +323,24 @@ public sealed class RuntimeHostTests
 
         var ctx = new ExecutionContext();
 
-        // Baseline (null policy) preserves legacy behavior: emit hold-all for both combat and idle.
+        // Baseline (null policy) emits unified cancel-all for all operators on mode change.
         var baselineBus = new InProcessCommandBus();
         var baselineRouter = new ExecutionRouter(baselineBus);
         baselineRouter.RegisterRoute(new ExecutionRouteRegistration(
             OrchestrationDomainId.None,
             new StrategyCombatNoneExecutionRoute().Execute));
 
-        var baselineCombat = new List<DispatchCombatCommand>();
-        var baselineIdle = new List<DispatchIdleCommand>();
-        baselineBus.Subscribe<DispatchCombatCommand>(c => baselineCombat.Add(c));
-        baselineBus.Subscribe<DispatchIdleCommand>(c => baselineIdle.Add(c));
+        var baselineCommands = new List<DispatchOrchestrationCommand>();
+        baselineBus.Subscribe<DispatchOrchestrationCommand>(c => baselineCommands.Add(c));
 
         baselineRouter.Execute(decision, world, ctx);
         baselineBus.Flush();
 
-        Assert.That(baselineCombat.Count, Is.EqualTo(1),
-            "Legacy/default StrategyCombat none-route behavior should emit combat hold-all on mode change.");
-        Assert.That(baselineIdle.Count, Is.EqualTo(1),
-            "Legacy/default StrategyCombat none-route behavior should emit idle hold-all on mode change.");
+        Assert.That(baselineCommands.Count, Is.EqualTo(2),
+            "Default StrategyCombat none-route behavior should emit cancel-all for all operators on mode change.");
+        Assert.That(baselineCommands[0].Payload.Type, Is.EqualTo(OrchestrationCommandType.Cancel));
 
-        // Policy override disables both hold-all emissions for None route.
+        // Policy override disables cancel-all emission for None route.
         StrategyCombatRouteExecutionPolicyAsset policy = ScriptableObject.CreateInstance<StrategyCombatRouteExecutionPolicyAsset>();
         try
         {
@@ -359,18 +352,14 @@ public sealed class RuntimeHostTests
                 OrchestrationDomainId.None,
                 new StrategyCombatNoneExecutionRoute(policy).Execute));
 
-            var policyCombat = new List<DispatchCombatCommand>();
-            var policyIdle = new List<DispatchIdleCommand>();
-            policyBus.Subscribe<DispatchCombatCommand>(c => policyCombat.Add(c));
-            policyBus.Subscribe<DispatchIdleCommand>(c => policyIdle.Add(c));
+            var policyCommands = new List<DispatchOrchestrationCommand>();
+            policyBus.Subscribe<DispatchOrchestrationCommand>(c => policyCommands.Add(c));
 
             policyRouter.Execute(decision, world, ctx);
             policyBus.Flush();
 
-            Assert.That(policyCombat.Count, Is.EqualTo(0),
-                "None-route policy should be able to disable combat hold-all emission on mode change.");
-            Assert.That(policyIdle.Count, Is.EqualTo(0),
-                "None-route policy should be able to disable idle hold-all emission on mode change.");
+            Assert.That(policyCommands.Count, Is.EqualTo(0),
+                "None-route policy should be able to disable cancel-all emission on mode change.");
         }
         finally
         {
@@ -382,14 +371,14 @@ public sealed class RuntimeHostTests
     public void CommandBus_Flush_ClearsQueue()
     {
         var bus = new InProcessCommandBus();
-        bus.Publish(new DispatchCombatCommand
+        bus.Publish(new DispatchOrchestrationCommand
         {
             ReceiverEntityId = new EntityId(1),
-            Payload = CombatCommand.Create(CombatCommandType.Hold)
+            Payload = OrchestrationCommand.Cancel("Test")
         });
 
         int count = 0;
-        bus.Subscribe<DispatchCombatCommand>(_ => count++);
+        bus.Subscribe<DispatchOrchestrationCommand>(_ => count++);
         bus.Flush();
         Assert.That(count, Is.EqualTo(1));
 
@@ -469,9 +458,9 @@ public sealed class RuntimeHostTests
         if (host == null)
             return;
 
-        PublishCombatCommandForAll(host, ctx.CombatCommand, world);
+        PublishOrchestrationCommandForAll(host, ctx.Command, world);
         if (decision.ModeChanged)
-            PublishIdleHoldForAll(host, world);
+            PublishCancelForAll(host, world, "Test=CombatModeChanged");
     }
 
     static void TestIdleRoute(IExecutionRouteHost host, ArbiterDecision decision, OrchestrationWorldCache world, ExecutionContext ctx)
@@ -479,9 +468,9 @@ public sealed class RuntimeHostTests
         if (host == null)
             return;
 
-        PublishIdleHoldForAll(host, world);
+        PublishCancelForAll(host, world, "Test=Idle");
         if (decision.ModeChanged)
-            PublishCombatCommandForAll(host, CombatCommand.Create(CombatCommandType.Hold, debugLabel: "Test=IdleActive"), world);
+            PublishCancelForAll(host, world, "Test=IdleActive");
     }
 
     static void TestNoneRoute(IExecutionRouteHost host, ArbiterDecision decision, OrchestrationWorldCache world, ExecutionContext ctx)
@@ -490,65 +479,35 @@ public sealed class RuntimeHostTests
             return;
 
         if (decision.ModeChanged)
-        {
-            PublishCombatCommandForAll(host, CombatCommand.Create(CombatCommandType.Hold, debugLabel: "Test=None"), world);
-            PublishIdleHoldForAll(host, world);
-        }
+            PublishCancelForAll(host, world, "Test=None");
     }
 
-    static void PublishCombatCommandForAll(IExecutionRouteHost host, CombatCommand cmd, OrchestrationWorldCache world)
+    static void PublishOrchestrationCommandForAll(IExecutionRouteHost host, OrchestrationCommand cmd, OrchestrationWorldCache world)
     {
-        int count = world.CombatReceiverCount;
+        int count = world.OperatorCount;
         for (int i = 0; i < count; i++)
         {
-            EntityId eid = world.GetCombatReceiverEntityId(i);
+            EntityId eid = world.GetOperatorEntityId(i);
             if (eid.IsNone)
                 continue;
 
-            host.PublishCommand(new DispatchCombatCommand
+            host.PublishCommand(new DispatchOrchestrationCommand
             {
                 ReceiverEntityId = eid,
-                Payload = cmd,
-                ReceiverRoleId = world.GetCombatReceiverRoleId(i)
+                Payload = cmd
             });
         }
     }
 
-    static void PublishIdleHoldForAll(IExecutionRouteHost host, OrchestrationWorldCache world)
+    static void PublishCancelForAll(IExecutionRouteHost host, OrchestrationWorldCache world, string debugLabel)
     {
-        IdleCommand hold = IdleCommand.Hold();
-        int count = world.IdleReceiverCount;
-        for (int i = 0; i < count; i++)
-        {
-            EntityId eid = world.GetIdleReceiverEntityId(i);
-            if (eid.IsNone)
-                continue;
-
-            host.PublishCommand(new DispatchIdleCommand
-            {
-                ReceiverEntityId = eid,
-                Payload = hold,
-                ReceiverRoleId = world.GetIdleReceiverRoleId(i)
-            });
-        }
+        PublishOrchestrationCommandForAll(host, OrchestrationCommand.Cancel(debugLabel), world);
     }
 
-    /// <summary>
-    /// Adds a combat receiver snapshot entry to the world cache via reflection.
-    /// IMPORTANT: For tests only — bypasses normal SnapshotReceivers flow.
-    /// </summary>
-    static void AddCombatReceiverSnapshot(OrchestrationWorldCache world, EntityId entityId, RoleId roleId)
+    static void AddOperatorSnapshot(OrchestrationWorldCache world, EntityId entityId, RoleId roleId)
     {
-        var eids = GetField<List<EntityId>>(world, "_combatReceiverEntityIds");
-        var rids = GetField<List<RoleId>>(world, "_combatReceiverRoleIds");
-        eids.Add(entityId);
-        rids.Add(roleId);
-    }
-
-    static void AddIdleReceiverSnapshot(OrchestrationWorldCache world, EntityId entityId, RoleId roleId)
-    {
-        var eids = GetField<List<EntityId>>(world, "_idleReceiverEntityIds");
-        var rids = GetField<List<RoleId>>(world, "_idleReceiverRoleIds");
+        var eids = GetField<List<EntityId>>(world, "_operatorEntityIds");
+        var rids = GetField<List<RoleId>>(world, "_operatorRoleIds");
         eids.Add(entityId);
         rids.Add(roleId);
     }
@@ -587,12 +546,12 @@ public sealed class RuntimeHostTests
         {
             new Proposal(
                 OrchestrationDomainKeys.Combat,
-                OrchestrationProposalKeys.CombatPrimary,
+                OrchestrationProposalKeys.DomainDefault,
                 priority: 100,
                 score: 1f),
             new Proposal(
                 OrchestrationDomainKeys.Idle,
-                OrchestrationProposalKeys.IdleDefault,
+                OrchestrationProposalKeys.DomainDefault,
                 priority: 10,
                 score: 0f),
         };

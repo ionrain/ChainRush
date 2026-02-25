@@ -34,7 +34,7 @@ public sealed class UnitCombatTargetSelector2D : MonoBehaviour, ICombatTargetPol
     [SerializeField] CombatTargetingPolicyAsset overridePolicy;
 
     [Tooltip("Scene/prefab default policy. If both policy and defaultPolicy are null, " +
-             "resolves command.TargetEntityId via EntityTransformResolver (PrimaryTarget equivalent).")]
+             "resolves the primary target EntityId via EntityTransformResolver (PrimaryTarget equivalent).")]
     [SerializeField] CombatTargetingPolicyAsset defaultPolicy;
 
     [Header("World Query")]
@@ -128,14 +128,14 @@ public sealed class UnitCombatTargetSelector2D : MonoBehaviour, ICombatTargetPol
     }
 
     /// <summary>
-    /// Selects the target transform this unit should pursue for the given command.
+    /// Selects the target transform this unit should pursue for the given primary target entity.
     /// IMPORTANT: Policies return EntityId. This method resolves EntityId → Transform
     /// via <see cref="EntityTransformResolver"/> at the Integration boundary.
-    /// Returns null to indicate "no target" (executor will fall back to Hold).
+    /// Returns null to indicate "no target" (executor will fall back to Cancel/Hold behavior).
     /// </summary>
-    public Transform SelectTarget(in CombatCommand command)
+    public Transform SelectTarget(EntityId primaryTargetEntityId)
     {
-        if (command.IsNone || command.Type == CombatCommandType.Hold)
+        if (primaryTargetEntityId.IsNone)
             return null;
 
         CombatTargetingPolicyAsset active = ResolvePolicy();
@@ -154,7 +154,7 @@ public sealed class UnitCombatTargetSelector2D : MonoBehaviour, ICombatTargetPol
             string debugInfo;
             EntityId resultId = active.ChooseTarget(
                 selfId, selfPos,
-                command.TargetEntityId,
+                primaryTargetEntityId,
                 targetSet,
                 Time.time,
                 world,
@@ -175,9 +175,7 @@ public sealed class UnitCombatTargetSelector2D : MonoBehaviour, ICombatTargetPol
         }
 
         // No policy assigned: passthrough — resolve EntityId → Transform directly.
-        return command.HasEntityTarget
-            ? EntityTransformResolver.Resolve(command.TargetEntityId)
-            : null;
+        return EntityTransformResolver.Resolve(primaryTargetEntityId);
     }
 
 }

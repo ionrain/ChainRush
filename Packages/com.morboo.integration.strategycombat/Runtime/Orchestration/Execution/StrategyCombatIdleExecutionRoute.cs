@@ -1,8 +1,8 @@
 using UnityEngine;
 
 /// <summary>
-/// Transitional StrategyCombat idle route executor.
-/// Owns the idle per-unit policy-driven dispatch body during C04A.
+/// StrategyCombat idle route executor.
+/// Builds per-operator idle intent and emits unified <see cref="DispatchOrchestrationCommand"/>.
 /// </summary>
 public sealed class StrategyCombatIdleExecutionRoute
 {
@@ -27,7 +27,7 @@ public sealed class StrategyCombatIdleExecutionRoute
             DomainTargetProviderValidation.Validate(_idleTargetProvider, OrchestrationDomainId.Idle);
         if (targetProviderValidation != DomainTargetProviderValidationFailure.None)
         {
-            EmitIdleHoldAllWithMissingTargetProvider(host, world);
+            PublishCancelForAll(host, world, "Router=IdleMissingTargetProvider");
             DomainTargetProviderValidation.LogFailureOnce(
                 ref _targetProviderValidationWarnings,
                 targetProviderValidation,
@@ -37,23 +37,17 @@ public sealed class StrategyCombatIdleExecutionRoute
                 "[StrategyCombatIdleExecutionRoute] Missing IdleTargetProvider. " +
                 "Legacy self-position fallback path was removed. Assign IdleTargetProvider explicitly on IdleDomainComponent.",
                 null);
-
-            if (decision.ModeChanged && _profile.Idle.EmitCombatHoldOnModeChange)
-                PublishCombatCommandForAll(host, CombatCommand.Create(
-                    CombatCommandType.Hold,
-                    debugLabel: ResolveDebugLabel(
-                        _profile.Idle.CombatHoldDebugLabelOverride,
-                        "Router=IdleActive")), world);
             return;
         }
 
-        EmitIdlePerUnit(host, world, ctx);
-        if (decision.ModeChanged && _profile.Idle.EmitCombatHoldOnModeChange)
-            PublishCombatCommandForAll(host, CombatCommand.Create(
-                CombatCommandType.Hold,
-                debugLabel: ResolveDebugLabel(
-                    _profile.Idle.CombatHoldDebugLabelOverride,
-                    "Router=IdleActive")), world);
+        EmitIdlePerOperator(
+            host,
+            world,
+            ctx,
+            emitCancelForNoRoleMatch: decision.ModeChanged && _profile.Idle.EmitCombatHoldOnModeChange,
+            noRoleMatchCancelLabel: ResolveDebugLabel(
+                _profile.Idle.CombatHoldDebugLabelOverride,
+                "Router=IdleActive"));
     }
 
     static string ResolveDebugLabel(string overrideLabel, string fallback)
@@ -61,141 +55,124 @@ public sealed class StrategyCombatIdleExecutionRoute
         return string.IsNullOrEmpty(overrideLabel) ? fallback : overrideLabel;
     }
 
-    void PublishCombatCommandForAll(IExecutionRouteHost host, CombatCommand cmd, OrchestrationWorldCache world)
+    static void PublishCancelForAll(IExecutionRouteHost host, OrchestrationWorldCache world, string debugLabel)
     {
-        int count = world.CombatReceiverCount;
+        OrchestrationCommand cancel = OrchestrationCommand.Cancel(debugLabel);
+        int count = world.OperatorCount;
         for (int i = 0; i < count; i++)
         {
-            EntityId eid = world.GetCombatReceiverEntityId(i);
+            EntityId eid = world.GetOperatorEntityId(i);
             if (eid.IsNone)
                 continue;
 
-            host.PublishCommand(new DispatchCombatCommand
+            host.PublishCommand(new DispatchOrchestrationCommand
             {
                 ReceiverEntityId = eid,
-                Payload = cmd,
-                ReceiverRoleId = world.GetCombatReceiverRoleId(i)
+                Payload = cancel
             });
         }
     }
 
-    void EmitIdlePerUnit(IExecutionRouteHost host, OrchestrationWorldCache world, ExecutionContext ctx)
+    void EmitIdlePerOperator(
+        IExecutionRouteHost host,
+        OrchestrationWorldCache world,
+        ExecutionContext ctx,
+        bool emitCancelForNoRoleMatch,
+        string noRoleMatchCancelLabel)
     {
-        int count = world.IdleReceiverCount;
-        ctx.TryGetBinding<IdleRolePolicyMapAsset>(out IdleRolePolicyMapAsset idleRolePolicyMap);
+        int count = world.OperatorCount;
+        ctx.TryGetBinding(out IdleRolePolicyMapAsset idleRolePolicyMap);
 
         if (idleRolePolicyMap == null)
         {
             if (!_warnedNoIdleMap && _profile.Idle.WarnWhenRolePolicyMapMissing)
             {
                 _warnedNoIdleMap = true;
-                Debug.LogWarning("[ExecutionRouter] Idle domain active but no idle role policy map bound. All idlers will Hold.");
+                Debug.LogWarning("[ExecutionRouter] Idle domain active but no idle role policy map bound. Operators will Cancel.");
             }
 
-            IdleCommand holdCmd = IdleCommand.Hold();
-            for (int i = 0; i < count; i++)
-            {
-                EntityId eid = world.GetIdleReceiverEntityId(i);
-                if (eid.IsNone)
-                    continue;
-
-                host.PublishCommand(new DispatchIdleCommand
-                {
-                    ReceiverEntityId = eid,
-                    Payload = holdCmd,
-                    ReceiverRoleId = world.GetIdleReceiverRoleId(i)
-                });
-            }
+            PublishCancelForAll(host, world, "Router=IdleNoMap");
             return;
         }
 
         for (int i = 0; i < count; i++)
         {
-            EntityId eid = world.GetIdleReceiverEntityId(i);
+            EntityId eid = world.GetOperatorEntityId(i);
             if (eid.IsNone)
                 continue;
 
-            RoleId roleId = world.GetIdleReceiverRoleId(i);
+            RoleId roleId = world.GetOperatorRoleId(i);
             int entitySeed = eid.ToStableInt();
 
-            IdlePolicyAsset policy;
-            IdleCommand cmd;
+            OrchestrationCommand orchCmd;
 
+            IdlePolicyAsset policy;
             if (!roleId.IsNone && idleRolePolicyMap.TryGet(roleId, out policy) && policy != null)
             {
-                // C06: Capability gate — skip policy if actor lacks required capabilities
-                IActorCapabilityQuery capQuery = world as IActorCapabilityQuery;
-                if (policy is IActorCapabilityGatedPolicy gated && capQuery != null)
-                {
-                    ActorCapabilitySnapshot actorCaps;
-                    capQuery.TryGetActorCapabilities(eid, out actorCaps);
-                    if (!ActorCapabilityPolicyGate.CanApply(gated, actorCaps))
-                    {
-                        cmd = IdleCommand.Hold();
-                        if (ctx.DebugLog)
-                            cmd.DebugLabel = "Router=CapabilityGated";
-                        goto publishIdle;
-                    }
-                }
-
-                int roleSeed = roleId.ToStableInt();
-
-                Float2 selfPos = _idleTargetProvider.ResolveSelfPosition(eid, world, ctx);
-
-                string dbg;
-                cmd = policy.ChooseCommand(selfPos, eid, ctx.Anchor, ctx.Now, roleSeed, entitySeed, world, out dbg);
-
-                if (ctx.DebugLog)
-                {
-                    cmd.DebugLabel = string.Concat("Idle=", policy.Id, ":", roleId.ToString());
-                    if (dbg != null && _profile.Idle.LogPolicyDecisionTraceWhenDebugLog)
-                        Debug.Log(string.Concat("[Router] role=", roleId.ToString(), " policy=", policy.Id, " dbg=", dbg));
-                }
+                orchCmd = BuildIdleCommandForPolicy(policy, roleId, eid, entitySeed, world, ctx);
             }
             else
             {
-                cmd = IdleCommand.Hold();
-                if (ctx.DebugLog)
-                    cmd.DebugLabel = ResolveDebugLabel(
-                        _profile.Idle.NoRoleMatchDebugLabelOverride,
-                        "Router=NoRoleMatch");
-
                 if (roleId.IsNone && !_warnedMissingRoleIdle && _profile.Idle.WarnWhenRoleMissing)
                 {
                     _warnedMissingRoleIdle = true;
-                    Debug.LogWarning("[ExecutionRouter] Unit missing RoleId; idle will Hold.");
+                    Debug.LogWarning("[ExecutionRouter] Unit missing RoleId; idle command cannot be resolved.");
                 }
 
                 if (ctx.DebugLog && _profile.Idle.LogNoRoleMatchTraceWhenDebugLog)
-                    Debug.Log(string.Concat("[Router] No role match for '", roleId.ToString(), "'"));
+                    Debug.Log(string.Concat("[Router] No idle role match for '", roleId.ToString(), "'"));
+
+                orchCmd = emitCancelForNoRoleMatch
+                    ? OrchestrationCommand.Cancel(noRoleMatchCancelLabel)
+                    : OrchestrationCommand.None;
             }
 
-            publishIdle:
-            host.PublishCommand(new DispatchIdleCommand
+            if (orchCmd.IsNone)
+                continue;
+
+            host.PublishCommand(new DispatchOrchestrationCommand
             {
                 ReceiverEntityId = eid,
-                Payload = cmd,
-                ReceiverRoleId = roleId
+                Payload = orchCmd
             });
         }
     }
 
-    void EmitIdleHoldAllWithMissingTargetProvider(IExecutionRouteHost host, OrchestrationWorldCache world)
+    OrchestrationCommand BuildIdleCommandForPolicy(
+        IdlePolicyAsset policy,
+        RoleId roleId,
+        EntityId eid,
+        int entitySeed,
+        OrchestrationWorldCache world,
+        ExecutionContext ctx)
     {
-        IdleCommand holdCmd = IdleCommand.Hold();
-        int count = world.IdleReceiverCount;
-        for (int i = 0; i < count; i++)
+        IActorCapabilityQuery capQuery = world as IActorCapabilityQuery;
+        if (policy is IActorCapabilityGatedPolicy gated && capQuery != null)
         {
-            EntityId eid = world.GetIdleReceiverEntityId(i);
-            if (eid.IsNone)
-                continue;
-
-            host.PublishCommand(new DispatchIdleCommand
+            ActorCapabilitySnapshot actorCaps;
+            capQuery.TryGetActorCapabilities(eid, out actorCaps);
+            if (!ActorCapabilityPolicyGate.CanApply(gated, actorCaps))
             {
-                ReceiverEntityId = eid,
-                Payload = holdCmd,
-                ReceiverRoleId = world.GetIdleReceiverRoleId(i)
-            });
+                OrchestrationCommand gatedCmd = OrchestrationCommand.Cancel();
+                if (ctx.DebugLog)
+                    gatedCmd.DebugLabel = "Router=CapabilityGated";
+                return gatedCmd;
+            }
         }
+
+        int roleSeed = roleId.ToStableInt();
+        Float2 selfPos = _idleTargetProvider.ResolveSelfPosition(eid, world, ctx);
+
+        string dbg;
+        OrchestrationCommand cmd = policy.ChooseCommand(selfPos, eid, ctx.Anchor, ctx.Now, roleSeed, entitySeed, world, out dbg);
+
+        if (ctx.DebugLog)
+        {
+            cmd.DebugLabel = string.Concat("Idle=", policy.Id, ":", roleId.ToString());
+            if (dbg != null && _profile.Idle.LogPolicyDecisionTraceWhenDebugLog)
+                Debug.Log(string.Concat("[Router] role=", roleId.ToString(), " policy=", policy.Id, " dbg=", dbg));
+        }
+
+        return cmd;
     }
 }

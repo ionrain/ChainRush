@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -18,9 +19,15 @@ using UnityEngine;
 /// (UnitCombatTargetSelector2D).
 /// </para>
 /// </summary>
-public abstract class CombatTargetingPolicyAsset : ScriptableObject
+public abstract class CombatTargetingPolicyAsset : ScriptableObject, IActorCapabilityGatedPolicy
 {
     [SerializeField] string id = "PrimaryTarget";
+
+    [Tooltip("C06: Actor must have all of these capabilities for this policy to apply. Empty = no gate.")]
+    [SerializeField] List<ActorCapability> requiredCapabilities;
+
+    /// <summary>C06: Capability gate — empty list means no restriction.</summary>
+    public IReadOnlyList<ActorCapability> RequiredCapabilities => requiredCapabilities;
 
     /// <summary>
     /// Display/log identifier. Falls back to asset name if <see cref="id"/> is empty.

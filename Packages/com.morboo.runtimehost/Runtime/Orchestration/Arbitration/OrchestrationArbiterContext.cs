@@ -11,4 +11,5 @@ public struct OrchestrationArbiterContext
     public float Now;
     public bool DebugLog;
     public IWorldQuery World;
+    public IActorCapabilityQuery ActorCapabilities;
 }

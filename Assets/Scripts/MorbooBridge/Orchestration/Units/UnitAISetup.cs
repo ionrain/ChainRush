@@ -24,7 +24,7 @@ public sealed class UnitAISetup : MonoBehaviour, IPostSpawnSetup
     [Header("Components")]
     [SerializeField] Unit unit;
     [SerializeField] UnitOrchestrationIdentity identity;
-    [SerializeField] UnitCapabilityProvider capabilityProvider;
+    [SerializeField] UnitActorCapabilityProvider capabilityProvider;
     [SerializeField] UnitIdlePolicySelector idlePolicySelector;
     [SerializeField] UnitCombatTargetSelector2D combatTargetSelector;
 
@@ -36,8 +36,8 @@ public sealed class UnitAISetup : MonoBehaviour, IPostSpawnSetup
     [Tooltip("UnitClass → RoleAsset. Single source of role truth.")]
     [SerializeField] UnitRoleMapAssetBase roleMap;
 
-    [Tooltip("RoleAsset → CapabilitiesProfile. Resolved via unit's role identity.")]
-    [SerializeField] RoleCapabilitiesMapAssetBase roleCapabilitiesMap;
+    [Tooltip("RoleAsset → ActorCapabilityProfile. Resolved via unit's role identity.")]
+    [SerializeField] RoleActorCapabilitiesMapAssetBase roleCapabilitiesMap;
 
     // ──────────────────────────────────────────────────────────────────
     //  Serialized — Faction
@@ -77,7 +77,7 @@ public sealed class UnitAISetup : MonoBehaviour, IPostSpawnSetup
     {
         unit = GetComponent<Unit>();
         identity = GetComponent<UnitOrchestrationIdentity>();
-        capabilityProvider = GetComponent<UnitCapabilityProvider>();
+        capabilityProvider = GetComponent<UnitActorCapabilityProvider>();
         idlePolicySelector = GetComponent<UnitIdlePolicySelector>();
         combatTargetSelector = GetComponent<UnitCombatTargetSelector2D>();
     }

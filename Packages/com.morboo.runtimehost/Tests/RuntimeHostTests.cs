@@ -634,4 +634,236 @@ public sealed class RuntimeHostTests
         Assert.That(fi, Is.Not.Null, $"Field '{fieldName}' not found on {target.GetType().Name}");
         return (T)fi.GetValue(target);
     }
+
+    // ──────────────────────────────────────────────────────────────────
+    //  C06 — ActorCapabilitySnapshot
+    // ──────────────────────────────────────────────────────────────────
+
+    static ActorCapability CreateCapability(string capName)
+    {
+        var cap = ScriptableObject.CreateInstance<ActorCapability>();
+        cap.name = capName;
+        return cap;
+    }
+
+    [Test]
+    public void ActorCapabilitySnapshot_Has_ReturnsTrueForPresentCapability()
+    {
+        var melee = CreateCapability("Melee");
+        try
+        {
+            var snap = new ActorCapabilitySnapshot { Base = new List<ActorCapability> { melee } };
+            Assert.That(snap.Has(melee), Is.True);
+        }
+        finally { Object.DestroyImmediate(melee); }
+    }
+
+    [Test]
+    public void ActorCapabilitySnapshot_Has_ReturnsFalseForAbsentCapability()
+    {
+        var melee = CreateCapability("Melee");
+        var ranged = CreateCapability("Ranged");
+        try
+        {
+            var snap = new ActorCapabilitySnapshot { Base = new List<ActorCapability> { melee } };
+            Assert.That(snap.Has(ranged), Is.False);
+        }
+        finally
+        {
+            Object.DestroyImmediate(melee);
+            Object.DestroyImmediate(ranged);
+        }
+    }
+
+    [Test]
+    public void ActorCapabilitySnapshot_HasAny_ReturnsTrueWhenOnePresent()
+    {
+        var melee = CreateCapability("Melee");
+        var ranged = CreateCapability("Ranged");
+        var fly = CreateCapability("Fly");
+        try
+        {
+            var snap = new ActorCapabilitySnapshot { Base = new List<ActorCapability> { melee } };
+            var query = new List<ActorCapability> { ranged, melee, fly };
+            Assert.That(snap.HasAny(query), Is.True);
+        }
+        finally
+        {
+            Object.DestroyImmediate(melee);
+            Object.DestroyImmediate(ranged);
+            Object.DestroyImmediate(fly);
+        }
+    }
+
+    [Test]
+    public void ActorCapabilitySnapshot_MergeFrom_UnionsCapabilities()
+    {
+        var melee = CreateCapability("Melee");
+        var ranged = CreateCapability("Ranged");
+        try
+        {
+            var a = new ActorCapabilitySnapshot { Base = new List<ActorCapability> { melee } };
+            var b = new ActorCapabilitySnapshot { Base = new List<ActorCapability> { ranged } };
+            a.MergeFrom(b);
+            Assert.That(a.Has(melee), Is.True, "Original capability should be retained.");
+            Assert.That(a.Has(ranged), Is.True, "Merged capability should be present.");
+        }
+        finally
+        {
+            Object.DestroyImmediate(melee);
+            Object.DestroyImmediate(ranged);
+        }
+    }
+
+    // ──────────────────────────────────────────────────────────────────
+    //  C06 — ActorCapabilityEngagementPolicy
+    // ──────────────────────────────────────────────────────────────────
+
+    [Test]
+    public void EngagementPolicy_CanEngage_SourceHasRequired_ReturnsTrue()
+    {
+        var fly = CreateCapability("Fly");
+        var ranged = CreateCapability("Ranged");
+        var policy = ScriptableObject.CreateInstance<ActorCapabilityEngagementPolicy>();
+        try
+        {
+            var rules = new List<ActorCapabilityEngagementPolicy.EngagementRule>
+            {
+                new ActorCapabilityEngagementPolicy.EngagementRule
+                {
+                    targetCapability = fly,
+                    sourceRequiresAny = new List<ActorCapability> { ranged }
+                }
+            };
+            SetField(policy, "rules", rules);
+
+            var source = new ActorCapabilitySnapshot { Base = new List<ActorCapability> { ranged } };
+            var target = new ActorCapabilitySnapshot { Base = new List<ActorCapability> { fly } };
+            Assert.That(policy.CanEngage(source, target), Is.True);
+        }
+        finally
+        {
+            Object.DestroyImmediate(fly);
+            Object.DestroyImmediate(ranged);
+            Object.DestroyImmediate(policy);
+        }
+    }
+
+    [Test]
+    public void EngagementPolicy_CanEngage_SourceLacksRequired_ReturnsFalse()
+    {
+        var fly = CreateCapability("Fly");
+        var ranged = CreateCapability("Ranged");
+        var melee = CreateCapability("Melee");
+        var policy = ScriptableObject.CreateInstance<ActorCapabilityEngagementPolicy>();
+        try
+        {
+            var rules = new List<ActorCapabilityEngagementPolicy.EngagementRule>
+            {
+                new ActorCapabilityEngagementPolicy.EngagementRule
+                {
+                    targetCapability = fly,
+                    sourceRequiresAny = new List<ActorCapability> { ranged }
+                }
+            };
+            SetField(policy, "rules", rules);
+
+            var source = new ActorCapabilitySnapshot { Base = new List<ActorCapability> { melee } };
+            var target = new ActorCapabilitySnapshot { Base = new List<ActorCapability> { fly } };
+            Assert.That(policy.CanEngage(source, target), Is.False);
+        }
+        finally
+        {
+            Object.DestroyImmediate(fly);
+            Object.DestroyImmediate(ranged);
+            Object.DestroyImmediate(melee);
+            Object.DestroyImmediate(policy);
+        }
+    }
+
+    [Test]
+    public void EngagementPolicy_CanEngage_NoRulesForTarget_ReturnsTrue()
+    {
+        var fly = CreateCapability("Fly");
+        var melee = CreateCapability("Melee");
+        var ranged = CreateCapability("Ranged");
+        var policy = ScriptableObject.CreateInstance<ActorCapabilityEngagementPolicy>();
+        try
+        {
+            var rules = new List<ActorCapabilityEngagementPolicy.EngagementRule>
+            {
+                new ActorCapabilityEngagementPolicy.EngagementRule
+                {
+                    targetCapability = fly,
+                    sourceRequiresAny = new List<ActorCapability> { ranged }
+                }
+            };
+            SetField(policy, "rules", rules);
+
+            var source = new ActorCapabilitySnapshot { Base = new List<ActorCapability> { melee } };
+            var target = new ActorCapabilitySnapshot { Base = new List<ActorCapability> { melee } };
+            Assert.That(policy.CanEngage(source, target), Is.True);
+        }
+        finally
+        {
+            Object.DestroyImmediate(fly);
+            Object.DestroyImmediate(melee);
+            Object.DestroyImmediate(ranged);
+            Object.DestroyImmediate(policy);
+        }
+    }
+
+    // ──────────────────────────────────────────────────────────────────
+    //  C06 — ActorCapabilityPolicyGate
+    // ──────────────────────────────────────────────────────────────────
+
+    sealed class TestGatedPolicy : IActorCapabilityGatedPolicy
+    {
+        public List<ActorCapability> Caps = new List<ActorCapability>();
+        public IReadOnlyList<ActorCapability> RequiredCapabilities => Caps;
+    }
+
+    [Test]
+    public void PolicyGate_CanApply_ActorHasAllRequired_ReturnsTrue()
+    {
+        var melee = CreateCapability("Melee");
+        var ranged = CreateCapability("Ranged");
+        try
+        {
+            var gated = new TestGatedPolicy { Caps = new List<ActorCapability> { melee, ranged } };
+            var snap = new ActorCapabilitySnapshot { Base = new List<ActorCapability> { melee, ranged } };
+            Assert.That(ActorCapabilityPolicyGate.CanApply(gated, snap), Is.True);
+        }
+        finally
+        {
+            Object.DestroyImmediate(melee);
+            Object.DestroyImmediate(ranged);
+        }
+    }
+
+    [Test]
+    public void PolicyGate_CanApply_ActorLacksRequired_ReturnsFalse()
+    {
+        var melee = CreateCapability("Melee");
+        var ranged = CreateCapability("Ranged");
+        try
+        {
+            var gated = new TestGatedPolicy { Caps = new List<ActorCapability> { melee, ranged } };
+            var snap = new ActorCapabilitySnapshot { Base = new List<ActorCapability> { melee } };
+            Assert.That(ActorCapabilityPolicyGate.CanApply(gated, snap), Is.False);
+        }
+        finally
+        {
+            Object.DestroyImmediate(melee);
+            Object.DestroyImmediate(ranged);
+        }
+    }
+
+    [Test]
+    public void PolicyGate_CanApply_EmptyRequirements_ReturnsTrue()
+    {
+        var gated = new TestGatedPolicy();
+        var snap = new ActorCapabilitySnapshot();
+        Assert.That(ActorCapabilityPolicyGate.CanApply(gated, snap), Is.True);
+    }
 }

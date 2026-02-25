@@ -1,21 +1,20 @@
 using UnityEngine;
 
 /// <summary>
-/// Reports a <see cref="CapabilitySnapshot"/> for an enemy to the orchestration layer.
+/// Reports an <see cref="ActorCapabilitySnapshot"/> for an enemy to the orchestration layer.
 /// IMPORTANT: Read-only, data-driven provider. No gameplay control, no Update loop.
 /// Resolves capabilities from a type-to-capabilities map or a default profile.
-/// Will be extended later to include dynamic capabilities.
 /// </summary>
-public sealed class EnemyCapabilityProvider : MonoBehaviour, ICapabilityProvider
+public sealed class EnemyActorCapabilityProvider : MonoBehaviour, IActorCapabilityProvider
 {
     [SerializeField] Enemy _enemy;
 
     [Header("Capabilities Source")]
-    [SerializeField] CapabilitiesProfile defaultCapabilities;
-    [SerializeField] EnemyCapabilitiesMapAssetBase typeMap;
+    [SerializeField] ActorCapabilityProfile defaultCapabilities;
+    [SerializeField] EnemyActorCapabilitiesMapAssetBase typeMap;
 
-    void OnEnable() => OrchestrationRegistry.Register((ICapabilityProvider)this);
-    void OnDisable() => OrchestrationRegistry.Unregister((ICapabilityProvider)this);
+    void OnEnable() => OrchestrationRegistry.Register((IActorCapabilityProvider)this);
+    void OnDisable() => OrchestrationRegistry.Unregister((IActorCapabilityProvider)this);
 
     void Reset()
     {
@@ -28,9 +27,9 @@ public sealed class EnemyCapabilityProvider : MonoBehaviour, ICapabilityProvider
     /// RATIONALE: If the map exists but has no entry for this enemy's type, we fall
     /// back to defaultCapabilities rather than returning empty.
     /// </summary>
-    public CapabilitySnapshot ReportCapabilities()
+    public ActorCapabilitySnapshot ReportCapabilities()
     {
-        CapabilitiesProfile profile = null;
+        ActorCapabilityProfile profile = null;
 
         if (typeMap != null && _enemy != null)
             typeMap.TryGetProfile(_enemy.Type, out profile);

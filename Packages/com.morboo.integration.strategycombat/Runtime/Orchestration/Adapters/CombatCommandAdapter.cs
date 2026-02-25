@@ -76,10 +76,26 @@ public sealed class CombatCommandAdapter : MonoBehaviour
             CombatTargetingPolicyAsset policyAsset;
             if (combatRolePolicyMap.TryGet(cmd.ReceiverRoleId, out policyAsset))
             {
+                // C06: Capability gate — skip policy injection if actor lacks required capabilities
+                if (policyAsset is IActorCapabilityGatedPolicy gated)
+                {
+                    IActorCapabilityQuery capQuery = world as IActorCapabilityQuery;
+                    if (capQuery != null)
+                    {
+                        ActorCapabilitySnapshot actorCaps;
+                        capQuery.TryGetActorCapabilities(cmd.ReceiverEntityId, out actorCaps);
+                        if (!ActorCapabilityPolicyGate.CanApply(gated, actorCaps))
+                            policyAsset = null;
+                    }
+                }
+
                 // PERF: GetComponentInParent — selector may be on parent GO
-                ICombatTargetPolicySelector selector = t.GetComponentInParent<ICombatTargetPolicySelector>();
-                if (selector != null)
-                    selector.SetRuntimeDefaultPolicy(policyAsset);
+                if (policyAsset != null)
+                {
+                    ICombatTargetPolicySelector selector = t.GetComponentInParent<ICombatTargetPolicySelector>();
+                    if (selector != null)
+                        selector.SetRuntimeDefaultPolicy(policyAsset);
+                }
             }
         }
         else if (cmd.ReceiverRoleId.IsNone && !_warnedMissingRoleCombat)

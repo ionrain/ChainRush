@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -14,9 +15,15 @@ using UnityEngine;
 /// to Core types.
 /// </para>
 /// </summary>
-public abstract class IdlePolicyAsset : ScriptableObject
+public abstract class IdlePolicyAsset : ScriptableObject, IActorCapabilityGatedPolicy
 {
     [SerializeField] string id;
+
+    [Tooltip("C06: Actor must have all of these capabilities for this policy to apply. Empty = no gate.")]
+    [SerializeField] List<ActorCapability> requiredCapabilities;
+
+    /// <summary>C06: Capability gate — empty list means no restriction.</summary>
+    public IReadOnlyList<ActorCapability> RequiredCapabilities => requiredCapabilities;
 
     /// <summary>
     /// Display/log identifier. Falls back to asset name if <see cref="id"/> is empty.

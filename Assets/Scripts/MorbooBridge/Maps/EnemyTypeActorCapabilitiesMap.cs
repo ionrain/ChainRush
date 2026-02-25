@@ -3,27 +3,27 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Data-driven mapping from <see cref="EnemyType"/> to <see cref="CapabilitiesProfile"/>.
-/// Used by <see cref="EnemyCapabilityProvider"/> to resolve capabilities per enemy type.
+/// Data-driven mapping from <see cref="EnemyType"/> to <see cref="ActorCapabilityProfile"/>.
+/// Used by <see cref="EnemyActorCapabilityProvider"/> to resolve capabilities per enemy type.
 /// PERF: Linear scan over a small list; no LINQ, no allocations.
 /// </summary>
-[CreateAssetMenu(fileName = "EnemyTypeCapabilitiesMap", menuName = "Game/Orchestration/Enemy Type Capabilities Map")]
-public class EnemyTypeCapabilitiesMap : EnemyCapabilitiesMapAssetBase
+[CreateAssetMenu(fileName = "EnemyTypeActorCapabilitiesMap", menuName = "Game/Orchestration/Enemy Type Actor Capabilities Map")]
+public class EnemyTypeActorCapabilitiesMap : EnemyActorCapabilitiesMapAssetBase
 {
     [Serializable]
     public struct Entry
     {
         public EnemyType Type;
-        public CapabilitiesProfile Profile;
+        public ActorCapabilityProfile Profile;
     }
 
     public List<Entry> Entries;
 
     /// <summary>
-    /// Looks up the <see cref="CapabilitiesProfile"/> for the given enemy type.
+    /// Looks up the <see cref="ActorCapabilityProfile"/> for the given enemy type.
     /// Returns false if no matching entry is found or Entries is null/empty.
     /// </summary>
-    public override bool TryGetProfile(EnemyType type, out CapabilitiesProfile profile)
+    public override bool TryGetProfile(EnemyType type, out ActorCapabilityProfile profile)
     {
         profile = null;
         if (Entries == null || Entries.Count == 0) return false;

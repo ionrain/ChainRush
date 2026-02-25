@@ -123,6 +123,21 @@ public sealed class StrategyCombatIdleExecutionRoute
 
             if (!roleId.IsNone && idleRolePolicyMap.TryGet(roleId, out policy) && policy != null)
             {
+                // C06: Capability gate — skip policy if actor lacks required capabilities
+                IActorCapabilityQuery capQuery = world as IActorCapabilityQuery;
+                if (policy is IActorCapabilityGatedPolicy gated && capQuery != null)
+                {
+                    ActorCapabilitySnapshot actorCaps;
+                    capQuery.TryGetActorCapabilities(eid, out actorCaps);
+                    if (!ActorCapabilityPolicyGate.CanApply(gated, actorCaps))
+                    {
+                        cmd = IdleCommand.Hold();
+                        if (ctx.DebugLog)
+                            cmd.DebugLabel = "Router=CapabilityGated";
+                        goto publishIdle;
+                    }
+                }
+
                 int roleSeed = roleId.ToStableInt();
 
                 Float2 selfPos = _idleTargetProvider.ResolveSelfPosition(eid, world, ctx);
@@ -155,6 +170,7 @@ public sealed class StrategyCombatIdleExecutionRoute
                     Debug.Log(string.Concat("[Router] No role match for '", roleId.ToString(), "'"));
             }
 
+            publishIdle:
             host.PublishCommand(new DispatchIdleCommand
             {
                 ReceiverEntityId = eid,

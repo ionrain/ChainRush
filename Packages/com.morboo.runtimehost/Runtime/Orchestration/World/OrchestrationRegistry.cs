@@ -11,12 +11,12 @@ using UnityEngine;
 public static class OrchestrationRegistry
 {
     static readonly List<IStateReporter> _stateReporters = new List<IStateReporter>(256);
-    static readonly List<ICapabilityProvider> _capabilityProviders = new List<ICapabilityProvider>(256);
+    static readonly List<IActorCapabilityProvider> _capabilityProviders = new List<IActorCapabilityProvider>(256);
     static readonly List<ICombatCommandReceiver> _combatReceivers = new List<ICombatCommandReceiver>(64);
     static readonly List<IIdleCommandReceiver> _idleReceivers = new List<IIdleCommandReceiver>(64);
 
     public static IReadOnlyList<IStateReporter> StateReporters => _stateReporters;
-    public static IReadOnlyList<ICapabilityProvider> CapabilityProviders => _capabilityProviders;
+    public static IReadOnlyList<IActorCapabilityProvider> CapabilityProviders => _capabilityProviders;
     public static IReadOnlyList<ICombatCommandReceiver> CombatReceivers => _combatReceivers;
     public static IReadOnlyList<IIdleCommandReceiver> IdleReceivers => _idleReceivers;
 
@@ -36,14 +36,14 @@ public static class OrchestrationRegistry
         _stateReporters.Remove(reporter);
     }
 
-    public static void Register(ICapabilityProvider provider)
+    public static void Register(IActorCapabilityProvider provider)
     {
         if (provider == null) return;
         if (!_capabilityProviders.Contains(provider))
             _capabilityProviders.Add(provider);
     }
 
-    public static void Unregister(ICapabilityProvider provider)
+    public static void Unregister(IActorCapabilityProvider provider)
     {
         if (provider == null) return;
         _capabilityProviders.Remove(provider);

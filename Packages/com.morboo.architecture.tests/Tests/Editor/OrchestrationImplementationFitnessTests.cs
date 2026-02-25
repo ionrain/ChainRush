@@ -168,10 +168,13 @@ public sealed class OrchestrationImplementationFitnessTests
             $"Missing file: {StrategyCombatArbiterPath}");
 
         string stripped = StripCommentsAndStrings(File.ReadAllText(StrategyCombatArbiterPath));
-        Match m = PublishCallRegex.Match(stripped);
 
-        Assert.That(m.Success, Is.False,
-            $"OrchestrationArbiter must not publish commands directly: {m.Value}");
+        // IMPORTANT: _eventBus.Publish is allowed (mode-changed events).
+        // Only command-bus publishing (PublishCommand, _commandBus.Publish) is prohibited.
+        Match cmdPublish = Regex.Match(stripped, @"\b(PublishCommand|_commandBus\s*\.\s*Publish)\s*\(");
+
+        Assert.That(cmdPublish.Success, Is.False,
+            $"OrchestrationArbiter must not publish commands directly: {cmdPublish.Value}");
     }
 
     [Test]
@@ -830,7 +833,7 @@ public sealed class OrchestrationImplementationFitnessTests
 
         Assert.That(string.IsNullOrEmpty(buildPipelinesBody), Is.False,
             "Could not extract OrchestrationLoop.BuildAndApplyConfiguredPipelines() body.");
-        Assert.That(Regex.IsMatch(buildPipelinesBody, @"new\s+OrchestrationPipeline\s*\(\s*pipelineArbiter\s*,\s*_commandBus\s*\)"), Is.True,
+        Assert.That(Regex.IsMatch(buildPipelinesBody, @"new\s+OrchestrationPipeline\s*\(\s*pipelineArbiter\s*,\s*_commandBus\b"), Is.True,
             "B7 host/path migration should inject the shared loop command bus into every runtime pipeline so existing adapters can consume commands from all pipelines.");
         Assert.That(Regex.IsMatch(buildPipelinesBody, @"\bpipeline\s*\.\s*SetDispatchContextSink\s*\(\s*SetCurrentDispatchContext\s*\)"), Is.True,
             "Loop should register a dispatch-context sink on each pipeline so loop-level CurrentWorld/CurrentExecContext point at the pipeline currently flushing commands.");
@@ -1408,6 +1411,89 @@ public sealed class OrchestrationImplementationFitnessTests
 
         Assert.That(hardcodedBranchCount, Is.EqualTo(0),
             $"Host pipeline still contains hardcoded Combat/Idle branching tokens. Count={hardcodedBranchCount}.");
+    }
+
+    // ──────────────────────────────────────────────────────────────────
+    //  C06 — Actor Capability Architecture Tests
+    // ──────────────────────────────────────────────────────────────────
+
+    const string RuntimeHostActorCapabilitiesRoot = "Packages/com.morboo.runtimehost/Runtime/Orchestration/ActorCapabilities";
+    const string RuntimeHostIActorCapabilityQueryPath = "Packages/com.morboo.runtimehost/Runtime/Orchestration/ActorCapabilities/IActorCapabilityQuery.cs";
+    const string RuntimeHostWorldCachePath = "Packages/com.morboo.runtimehost/Runtime/Orchestration/Arbitration/OrchestrationWorldCache.cs";
+    const string RuntimeHostArbiterContextPath = "Packages/com.morboo.runtimehost/Runtime/Orchestration/Arbitration/OrchestrationArbiterContext.cs";
+    const string RuntimeHostCombatTargetingPolicyAssetPath = "Packages/com.morboo.runtimehost/Runtime/Orchestration/Domains/Combat/Targeting/CombatTargetingPolicyAsset.cs";
+    const string RuntimeHostIdlePolicyAssetPath = "Packages/com.morboo.runtimehost/Runtime/Orchestration/Domains/Idle/IdlePolicyAsset.cs";
+
+    [Test]
+    public void C06_RuntimeHost_IActorCapabilityQuery_Exists()
+    {
+        Assert.That(File.Exists(RuntimeHostIActorCapabilityQueryPath), Is.True,
+            $"Missing IActorCapabilityQuery interface: {RuntimeHostIActorCapabilityQueryPath}");
+
+        string content = File.ReadAllText(RuntimeHostIActorCapabilityQueryPath);
+        Assert.That(content.Contains("interface IActorCapabilityQuery"), Is.True,
+            "IActorCapabilityQuery interface declaration not found.");
+        Assert.That(content.Contains("GetActorCapabilities"), Is.True,
+            "IActorCapabilityQuery must declare GetActorCapabilities method.");
+        Assert.That(content.Contains("TryGetActorCapabilities"), Is.True,
+            "IActorCapabilityQuery must declare TryGetActorCapabilities method.");
+    }
+
+    [Test]
+    public void C06_RuntimeHost_WorldCache_Implements_IActorCapabilityQuery()
+    {
+        Assert.That(File.Exists(RuntimeHostWorldCachePath), Is.True,
+            $"Missing file: {RuntimeHostWorldCachePath}");
+
+        string content = File.ReadAllText(RuntimeHostWorldCachePath);
+        Assert.That(Regex.IsMatch(content, @"class\s+OrchestrationWorldCache\b[^{]*\bIActorCapabilityQuery\b"), Is.True,
+            "OrchestrationWorldCache must implement IActorCapabilityQuery.");
+        Assert.That(content.Contains("SnapshotActorCapabilities"), Is.True,
+            "WorldCache must provide SnapshotActorCapabilities method.");
+    }
+
+    [Test]
+    public void C06_RuntimeHost_ArbiterContext_Has_ActorCapabilities_Field()
+    {
+        Assert.That(File.Exists(RuntimeHostArbiterContextPath), Is.True,
+            $"Missing file: {RuntimeHostArbiterContextPath}");
+
+        string content = File.ReadAllText(RuntimeHostArbiterContextPath);
+        Assert.That(Regex.IsMatch(content, @"\bIActorCapabilityQuery\s+ActorCapabilities\b"), Is.True,
+            "OrchestrationArbiterContext must have an IActorCapabilityQuery ActorCapabilities field.");
+    }
+
+    [Test]
+    public void C06_StrategyCombat_CombatDomainComponent_References_EngagementPolicy()
+    {
+        Assert.That(File.Exists(CombatDomainComponentPath), Is.True,
+            $"Missing file: {CombatDomainComponentPath}");
+
+        string content = File.ReadAllText(CombatDomainComponentPath);
+        Assert.That(Regex.IsMatch(content, @"\bActorCapabilityEngagementPolicy\b.*\bengagementPolicy\b"), Is.True,
+            "CombatDomainComponent must reference ActorCapabilityEngagementPolicy.");
+    }
+
+    [Test]
+    public void C06_RuntimeHost_CombatTargetingPolicyAsset_Implements_IActorCapabilityGatedPolicy()
+    {
+        Assert.That(File.Exists(RuntimeHostCombatTargetingPolicyAssetPath), Is.True,
+            $"Missing file: {RuntimeHostCombatTargetingPolicyAssetPath}");
+
+        string content = File.ReadAllText(RuntimeHostCombatTargetingPolicyAssetPath);
+        Assert.That(Regex.IsMatch(content, @"class\s+CombatTargetingPolicyAsset\b[^{]*\bIActorCapabilityGatedPolicy\b"), Is.True,
+            "CombatTargetingPolicyAsset must implement IActorCapabilityGatedPolicy.");
+    }
+
+    [Test]
+    public void C06_RuntimeHost_IdlePolicyAsset_Implements_IActorCapabilityGatedPolicy()
+    {
+        Assert.That(File.Exists(RuntimeHostIdlePolicyAssetPath), Is.True,
+            $"Missing file: {RuntimeHostIdlePolicyAssetPath}");
+
+        string content = File.ReadAllText(RuntimeHostIdlePolicyAssetPath);
+        Assert.That(Regex.IsMatch(content, @"class\s+IdlePolicyAsset\b[^{]*\bIActorCapabilityGatedPolicy\b"), Is.True,
+            "IdlePolicyAsset must implement IActorCapabilityGatedPolicy.");
     }
 
     static int CountMatchesInRoots(IEnumerable<string> roots, Regex regex)

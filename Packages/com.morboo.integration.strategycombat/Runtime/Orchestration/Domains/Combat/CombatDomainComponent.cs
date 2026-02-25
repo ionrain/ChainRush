@@ -80,6 +80,10 @@ public sealed class CombatDomainComponent : DomainComponent
     [Tooltip("Shared route-execution policy provider component (optional; null preserves current behavior).")]
     [SerializeField] DomainRouteExecutionPolicyProvider routeExecutionPolicyProvider;
 
+    [Header("Engagement Policy")]
+    [Tooltip("Optional cross-capability matching. Null = passthrough (all hostiles engageable).")]
+    [SerializeField] ActorCapabilityEngagementPolicy engagementPolicy;
+
     [Header("Debug")]
     [SerializeField] bool debugLog;
 
@@ -90,6 +94,12 @@ public sealed class CombatDomainComponent : DomainComponent
     EntityId[] _topKEntityIds;
     float[] _topKScores;
     int _topKCount;
+
+    /// <summary>
+    /// C06: Per-tick friendly aggregate used for engagement policy checks.
+    /// Built from all alive friendly actors' capability snapshots.
+    /// </summary>
+    ActorCapabilitySnapshot _friendlyAggregate;
 
     bool _warnedNoCamera;
     DomainTargetProviderValidationWarningState _targetProviderValidationWarnings;
@@ -162,6 +172,18 @@ public sealed class CombatDomainComponent : DomainComponent
     public override void EvaluateDomain(OrchestrationArbiterContext ctx, OrchestrationArbiterProposals proposals)
     {
         IWorldQuery world = ctx.World;
+
+        // ── C06: Build friendly capability aggregate for engagement policy ──
+        _friendlyAggregate = default;
+        if (engagementPolicy != null && ctx.ActorCapabilities != null)
+        {
+            for (int i = 0; i < world.ActorCount; i++)
+            {
+                if (world.GetActorIsHostile(i)) continue;
+                if (!world.GetActorIsAlive(i)) continue;
+                _friendlyAggregate.MergeFrom(ctx.ActorCapabilities.GetActorCapabilities(i));
+            }
+        }
 
         // ── Find closest hostile from IWorldQuery ────────────────
         int bestIndex = FindClosestHostileIndex(world, ctx);
@@ -253,6 +275,14 @@ public sealed class CombatDomainComponent : DomainComponent
             if (!world.GetActorIsHostile(i))
                 continue;
 
+            // C06: Engagement policy — skip targets our friendlies cannot engage
+            if (engagementPolicy != null && ctx.ActorCapabilities != null)
+            {
+                var targetCaps = ctx.ActorCapabilities.GetActorCapabilities(i);
+                if (!engagementPolicy.CanEngage(_friendlyAggregate, targetCaps))
+                    continue;
+            }
+
             Float2 actorPos = world.GetActorPosition(i);
 
             bool qualifies;
@@ -313,6 +343,14 @@ public sealed class CombatDomainComponent : DomainComponent
             // IMPORTANT: alive check via IWorldQuery — no Transform/gameObject needed
             if (!world.GetActorIsAlive(i))
                 continue;
+
+            // C06: Engagement policy — skip targets our friendlies cannot engage
+            if (engagementPolicy != null && ctx.ActorCapabilities != null)
+            {
+                var targetCaps = ctx.ActorCapabilities.GetActorCapabilities(i);
+                if (!engagementPolicy.CanEngage(_friendlyAggregate, targetCaps))
+                    continue;
+            }
 
             Float2 actorPos = world.GetActorPosition(i);
 

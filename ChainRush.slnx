@@ -14,10 +14,10 @@
   <Project Path="Morboo.Systems.csproj" />
   <Project Path="Assembly-CSharp-firstpass.csproj" />
   <Project Path="Morboo.Core.csproj" />
-  <Project Path="Morboo.Bridge.csproj" />
   <Project Path="Lofelt.NiceVibrations.csproj" />
   <Project Path="Morboo.Integration.StrategyCombat.csproj" />
   <Project Path="MoreMountains.InventoryEngine.Editor.csproj" />
+  <Project Path="Morboo.Bridge.csproj" />
   <Project Path="Sirenix.OdinInspector.Modules.Unity.Addressables.csproj" />
   <Project Path="MoreMountains.TopDownEngine.InputSystem.csproj" />
   <Project Path="Assembly-CSharp-Editor.csproj" />

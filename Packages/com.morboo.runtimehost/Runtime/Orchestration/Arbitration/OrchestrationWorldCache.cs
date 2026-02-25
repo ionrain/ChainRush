@@ -20,7 +20,7 @@ using UnityEngine;
 /// RuntimeHost-internal fields (receiver lists, RoleByTransform) are NOT exposed via IWorldQuery.
 /// </para>
 /// </summary>
-public sealed class OrchestrationWorldCache : IWorldQuery, IWorldQuery3D, IActorReadProjectionQuery
+public sealed class OrchestrationWorldCache : IWorldQuery, IWorldQuery3D, IActorReadProjectionQuery, IActorCapabilityQuery
 {
     // ──────────────────────────────────────────────────────────────────
     //  RuntimeHost-internal — Receiver and actor lists (NOT in IWorldQuery)
@@ -90,6 +90,9 @@ public sealed class OrchestrationWorldCache : IWorldQuery, IWorldQuery3D, IActor
     readonly List<EntityId> _actorEntityIds = new List<EntityId>(256);
     readonly List<bool> _actorHostile = new List<bool>(256);
     readonly List<EntityLifecycleState> _actorLifecycleStates = new List<EntityLifecycleState>(256);
+
+    // Actor capability snapshots (parallel to Actors, built by SnapshotActorCapabilities)
+    readonly List<ActorCapabilitySnapshot> _actorCapabilitySnapshots = new List<ActorCapabilitySnapshot>(256);
 
     // Crowd snapshots (IWorldQuery-visible, parallel to FriendlyCrowdTransforms)
     readonly List<Float2> _crowdPositions = new List<Float2>(128);
@@ -224,6 +227,25 @@ public sealed class OrchestrationWorldCache : IWorldQuery, IWorldQuery3D, IActor
             // Build O(1) EntityId → index lookup for TryGetActorPosition
             if (!eid.IsNone)
                 _actorIndexByEntityId[eid] = i;
+        }
+    }
+
+    /// <summary>
+    /// Snapshots per-actor capabilities into a parallel list for IActorCapabilityQuery consumption.
+    /// IMPORTANT: Must be called after SnapshotActors (requires Actors list to be populated).
+    /// PERF: One GetComponent per actor per tick. Acceptable for N ≤ 256 at 5–20 Hz.
+    /// </summary>
+    public void SnapshotActorCapabilities()
+    {
+#if DEBUG
+        Debug.Assert(!_frozen, "[OrchestrationWorldCache] SnapshotActorCapabilities called after Freeze.");
+#endif
+        _actorCapabilitySnapshots.Clear();
+        for (int i = 0; i < Actors.Count; i++)
+        {
+            Transform t = Actors[i].GetTransform();
+            IActorCapabilityProvider provider = t != null ? t.GetComponent<IActorCapabilityProvider>() : null;
+            _actorCapabilitySnapshots.Add(provider != null ? provider.ReportCapabilities() : default);
         }
     }
 
@@ -376,6 +398,23 @@ public sealed class OrchestrationWorldCache : IWorldQuery, IWorldQuery3D, IActor
     public CombatTargetSet GetCombatTargetSetInternal() => ResolvedCombatTargetSet;
 
     // ──────────────────────────────────────────────────────────────────
+    //  IActorCapabilityQuery
+    // ──────────────────────────────────────────────────────────────────
+
+    public ActorCapabilitySnapshot GetActorCapabilities(int index) => _actorCapabilitySnapshots[index];
+
+    public bool TryGetActorCapabilities(EntityId entityId, out ActorCapabilitySnapshot snapshot)
+    {
+        if (!entityId.IsNone && _actorIndexByEntityId.TryGetValue(entityId, out int idx))
+        {
+            snapshot = _actorCapabilitySnapshots[idx];
+            return true;
+        }
+        snapshot = default;
+        return false;
+    }
+
+    // ──────────────────────────────────────────────────────────────────
     //  Receiver identity snapshot — for ExecutionRouter command emission
     //  IMPORTANT: Router iterates these instead of MonoBehaviour receiver lists.
     // ──────────────────────────────────────────────────────────────────
@@ -468,6 +507,7 @@ public sealed class OrchestrationWorldCache : IWorldQuery, IWorldQuery3D, IActor
         _actorEntityIds.Clear();
         _actorHostile.Clear();
         _actorLifecycleStates.Clear();
+        _actorCapabilitySnapshots.Clear();
         _actorIndexByEntityId.Clear();
         _crowdPositions.Clear();
         _crowdPositionsWorld.Clear();

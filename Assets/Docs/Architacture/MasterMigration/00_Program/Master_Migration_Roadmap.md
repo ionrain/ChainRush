@@ -344,6 +344,11 @@ Backlog links:
 10. `C04C` -> explicit convergence of legacy per-domain orchestrator entrypoint classes toward shared/composable `StrategyCombatDomainOrchestrator` + domain-components/providers/data form in `Morboo.Integration.StrategyCombat` (closed in code/scene).
 11. `Assets/Docs/Architacture/MasterMigration/04_Phase4_Orchestration/C04D_Generic_Orchestration_Composition_Extraction_2026-02-23.md` -> closed (generic orchestration composition abstractions extracted to `Morboo.RuntimeHost`; monolith policy split deferred).
 12. `Assets/Docs/Architacture/MasterMigration/04_Phase4_Orchestration/C05_Event_Pipeline_Activation_2026-02-24.md` -> closed (domain event pipeline activation + bus provider decoupling + subscriber infrastructure; `IEventBusProvider`/`ICommandBusProvider` in Framework; `EventBusSubscriber` universal base in RuntimeHost; command adapter refactor deferred — needs `IOrchestrationContextProvider`).
+13. `Assets/Docs/Architacture/MasterMigration/04_Phase4_Orchestration/C06_Capabilities_Integration_Into_Decision_Execution_2026-02-24.md` -> planned/active capability integration (`ActorCapability`, `IActorCapabilityQuery`, engagement policy, unified policy gating).
+14. `Assets/Docs/Architacture/MasterMigration/04_Phase4_Orchestration/C06A_Universal_Command_System_Target_Search_2026-02-25.md` -> planned structural step: intent-only unified command/dispatch/receiver with universal `TargetRef` payload + operator-level addressing via `EntityId` (actors/groups are operator entities) + shared target search extraction (command payload explicitly excludes actor/group spacing/range/urgency preferences; group behavior semantics deferred).
+15. `C06B` -> planned follow-up: target reservations/slots + `DomainComponent`/`TargetProvider` convergence around generic targets on top of `C06A` `TargetRef`.
+16. `C06C` -> planned follow-up: group commanding / formations / slot assignment / cohesion policies on top of `C06A` operator addressing.
+17. `C06D` -> planned follow-up: game-owned actor/group brain seam parallel to TDE/AIBrain (policy-driven intent interpretation via orchestration buses).
 
 Execution order inside phase:
 
@@ -366,9 +371,14 @@ Execution order inside phase:
    - event dispatch rule: `EventBus.Flush()` strictly after `CommandBus.Flush()` — subscribers react after commands are dispatched.
    - route executor rule: route executors are NOT migrated to EventBus — they receive `ArbiterDecision` + `world` + `ctx` directly for same-tick cross-domain Hold emission.
 11. `C06` connect capabilities to runtime decisions.
-12. `C07` remove domain downcasts to concrete world cache.
-13. `C07A` post-refactor cleanup: remove Actor boundary hard links to Combat/Idle and compact domain onboarding structure.
-14. `C07B` shrink spatial dual-representation allowlist to zero (remove temporary `Float2` + `Float3` duplication from package public contracts).
+12. `C06A` unify command/dispatch/receiver shape around intent-only `OrchestrationCommand` + operator-level addressing via `EntityId` (actors/groups as operator entities) and extract shared target search.
+   - command-scope rule for this step: `OrchestrationCommand` carries intent + target only; actor/group execution preferences (range/spacing/stop-distance/anti-clump/urgency) stay out of the payload.
+13. `C06B` expand `TargetRef` producer/resolver usage across domains and converge target selection/provider seams; add reservations/slots for contested targets.
+14. `C06C` introduce group commanding on top of `C06A` operator addressing (`GroupBrainPolicy`, formation/cohesion/sync/role-slot rules, member fan-out).
+15. `C06D` introduce game-owned actor/group brain seam parallel to TDE/AIBrain; move local execution behavior interpretation behind policies while preserving compatibility rollout.
+16. `C07` remove domain downcasts to concrete world cache.
+17. `C07A` post-refactor cleanup: remove Actor boundary hard links to Combat/Idle and compact domain onboarding structure.
+18. `C07B` shrink spatial dual-representation allowlist to zero (remove temporary `Float2` + `Float3` duplication from package public contracts).
 
 `C01A` scope (must be done before C02):
 

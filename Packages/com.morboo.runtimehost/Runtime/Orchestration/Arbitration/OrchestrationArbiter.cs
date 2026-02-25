@@ -585,6 +585,7 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter, IDomainArbit
 
         // ── Snapshot IWorldQuery data and freeze ─────────────────────
         _world.SnapshotActors(ctx.OrchestratorFaction, ctx.Relations);
+        _world.SnapshotActorCapabilities();
         _world.SnapshotCrowd();
         _world.BuildRoleByEntityId();
         _world.SnapshotReceivers();
@@ -732,6 +733,7 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter, IDomainArbit
 
         // ── Build world cache (one registry scan per tick) ──────────
         BuildWorldCache(_ctx);
+        _ctx.ActorCapabilities = _world;
 
         // ── Clear and poll domains ──────────────────────────────────
         _proposalCollector.Clear();

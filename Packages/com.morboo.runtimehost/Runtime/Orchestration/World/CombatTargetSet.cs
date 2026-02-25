@@ -1,113 +1,23 @@
 using UnityEngine;
 
 /// <summary>
-/// Read-only carrier of Top-K hostile candidates, updated once per orchestrator tick.
-/// Units reference this via <see cref="UnitCombatTargetSelector2D"/> to pick per-unit
-/// targets from the candidate pool without re-scanning the world.
+/// StrategyCombat-specific extension of <see cref="DomainTargetSet"/> that carries combat-only
+/// metadata (currently faction ownership). The generic target-candidate carrier behavior
+/// lives in <see cref="DomainTargetSet"/>.
 /// <para>
-/// IMPORTANT — This component holds no gameplay logic. It is a shared data buffer:
-/// - Written by <see cref="CombatDomainComponent"/> each tick (via <see cref="DomainOrchestratorComponent"/>).
-/// - Read by <see cref="UnitCombatTargetSelector2D"/> on demand.
-/// - Without it, selectors fall back to the orchestrator-chosen primary target.
-/// </para>
-/// <para>
-/// IMPORTANT — Stores EntityId[], not Transform[]. Consumers resolve EntityId → Transform
-/// at the Integration boundary via <see cref="EntityTransformResolver"/>.
-/// </para>
-/// <para>
-/// No Update loop. TTL is checked lazily in <see cref="TryGetTargets"/>.
-/// No allocations after the first <see cref="SetTargets"/> call.
+/// IMPORTANT: New orchestration code should prefer <see cref="DomainTargetSet"/> contracts.
+/// This class remains as a domain extension/seam while C06B resolves final target-set ownership.
 /// </para>
 /// </summary>
-public sealed class CombatTargetSet : MonoBehaviour, IFactionAssetProvider
+public class CombatTargetSet : DomainTargetSet, IFactionAssetProvider
 {
-    // ──────────────────────────────────────────────────────────────────
-    //  Serialized
-    // ──────────────────────────────────────────────────────────────────
-
-    [Tooltip("Maximum number of candidates stored. Orchestrator may push fewer.")]
-    [SerializeField] int capacity = 6;
-
-    [Tooltip("How long the set remains valid after being written. " +
-             "Should be >= orchestrator tickInterval to avoid inter-tick expiry.")]
-    [SerializeField] float ttlSeconds = 0.9f;
-
     [SerializeField] FactionAsset faction;
-
-    // ──────────────────────────────────────────────────────────────────
-    //  Runtime
-    // ──────────────────────────────────────────────────────────────────
-
-    EntityId[] _targets;
-    int _count;
-    float _expiresAt;
-
-    // ──────────────────────────────────────────────────────────────────
-    //  Public API
-    // ──────────────────────────────────────────────────────────────────
-
-    /// <summary>Effective capacity (always >= 1).</summary>
-    public int Capacity => capacity > 1 ? capacity : 1;
-
-    /// <summary>Effective TTL (always >= 0.1s).</summary>
-    public float TtlSeconds => ttlSeconds > 0.1f ? ttlSeconds : 0.1f;
 
     /// <summary>
     /// Returns the typed faction asset, or null if not assigned.
     /// IMPORTANT: Metadata only; target-set ownership is resolved explicitly by combat-domain providers.
     /// </summary>
     public FactionAsset GetFactionAsset() => faction;
-
-    /// <summary>
-    /// Overwrites the candidate set from a raw array.
-    /// Called by <see cref="CombatDomainComponent"/> each tick.
-    /// <paramref name="count"/> is the number of valid entries in <paramref name="src"/>
-    /// (starting at index 0). Entries beyond <paramref name="count"/> are ignored.
-    /// <paramref name="now"/> is the current tick time from <see cref="IWorldQuery.Now"/> or
-    /// <see cref="TickContext.Now"/>.
-    /// </summary>
-    public void SetTargets(EntityId[] src, int count, float now)
-    {
-        int cap = Capacity;
-        if (_targets == null || _targets.Length < cap)
-            _targets = new EntityId[cap];
-
-        int toCopy = count < cap ? count : cap;
-        if (toCopy > src.Length) toCopy = src.Length;
-
-        for (int i = 0; i < toCopy; i++)
-            _targets[i] = src[i];
-
-        // Clear leftover slots to avoid stale refs
-        for (int i = toCopy; i < _targets.Length; i++)
-            _targets[i] = EntityId.None;
-
-        _count = toCopy;
-        _expiresAt = now + TtlSeconds;
-    }
-
-    /// <summary>
-    /// Tries to retrieve the current candidate set.
-    /// Returns false if expired or empty. Callers should fall back to primary target.
-    /// <paramref name="now"/> is the current time for TTL check.
-    /// <para>
-    /// IMPORTANT: The returned array is internal storage — do not cache or mutate it.
-    /// Only indices 0..<paramref name="count"/> are valid.
-    /// </para>
-    /// </summary>
-    public bool TryGetTargets(out EntityId[] targets, out int count, float now)
-    {
-        if (_count == 0 || now > _expiresAt)
-        {
-            targets = null;
-            count = 0;
-            return false;
-        }
-
-        targets = _targets;
-        count = _count;
-        return true;
-    }
 
     void OnValidate()
     {

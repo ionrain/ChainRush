@@ -552,9 +552,6 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter, IDomainArbit
         // ── Resolve idle bounds per role ────────────────────────────
         IdleBoundsRegistry.FillResolvedBounds(_world.ResolvedIdleBounds);
 
-        // ── Resolve combat target set ───────────────────────────────
-        _world.ResolvedCombatTargetSet = null;
-
         // ── Snapshot IWorldQuery data and freeze ─────────────────────
         _world.SnapshotActors(ctx.OrchestratorFaction, ctx.Relations);
         _world.SnapshotActorCapabilities();

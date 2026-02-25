@@ -12,4 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fe2c5a623054476eb5a76029fc25136, type: 3}
   m_Name: RoleCapabilitiesMap
   m_EditorClassIdentifier: Assembly-CSharp::RoleCapabilitiesMapAsset
-  entries: []
+  entries:
+  - Role: {fileID: 11400000, guid: 19dd534fc277d4de896d3cfbe1c7f807, type: 2}
+    Profile: {fileID: 0}

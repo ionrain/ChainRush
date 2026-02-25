@@ -11,7 +11,7 @@ public sealed class PrimaryTargetPolicyAsset : CombatTargetingPolicyAsset
         EntityId selfEntityId,
         Float2 selfPosition,
         EntityId primaryTarget,
-        CombatTargetSet targetSet,
+        DomainTargetSet targetSet,
         float now,
         IWorldQueryBase world,
         out string debugInfo)

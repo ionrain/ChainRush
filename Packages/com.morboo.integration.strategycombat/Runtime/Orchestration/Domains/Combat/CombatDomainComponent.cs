@@ -38,7 +38,7 @@ public enum TargetSearchMode
 /// </para>
 /// <para>
 /// IMPORTANT — OrchestrationCommand/OrchestrationTargetRef use EntityId for targets (no Transform).
-/// CombatTargetSet stores EntityId[]. No OrchestrationWorldCache dependency
+/// DomainTargetSet stores EntityId[] candidates. No OrchestrationWorldCache dependency
 /// in FillTargetSet (uses IWorldQuery only).
 /// </para>
 /// </summary>
@@ -63,9 +63,9 @@ public sealed class CombatDomainComponent : DomainComponent
     [SerializeField] float viewportMargin = 0f;
 
     [Header("Target Set")]
-    [Tooltip("Domain-owned combat target provider. Owns CombatTargetSet resolution/selection carrier for this combat domain.")]
+    [Tooltip("Domain-owned combat target provider. Owns DomainTargetSet resolution/selection carrier for this combat domain.")]
     [SerializeField] CombatTargetProvider combatTargetProvider;
-    [Tooltip("Number of Top-K hostile candidates to store (clamped to provider-resolved CombatTargetSet.Capacity).")]
+    [Tooltip("Number of Top-K hostile candidates to store (clamped to provider-resolved DomainTargetSet.Capacity).")]
     [SerializeField] int targetSetSize = 4;
 
     [Header("Role Policies")]
@@ -198,7 +198,7 @@ public sealed class CombatDomainComponent : DomainComponent
                 debugLabel: "Domain=Combat");
 
         // ── Fill Top-K target set (optional, domain-owned provider) ──
-        CombatTargetSet resolvedTargetSet = null;
+        DomainTargetSet resolvedTargetSet = null;
         DomainTargetProviderValidationFailure targetProviderValidation =
             DomainTargetProviderValidation.Validate(combatTargetProvider, DomainId);
         if (targetProviderValidation == DomainTargetProviderValidationFailure.None)
@@ -318,7 +318,7 @@ public sealed class CombatDomainComponent : DomainComponent
     //  (faction Hostile, Radius/ScreenViewport). No LINQ, no allocations.
     // ──────────────────────────────────────────────────────────────────
 
-    void FillTargetSet(CombatTargetSet targetSet, IWorldQuery world, OrchestrationArbiterContext ctx)
+    void FillTargetSet(DomainTargetSet targetSet, IWorldQuery world, OrchestrationArbiterContext ctx)
     {
         int k = targetSetSize > 0 ? targetSetSize : 1;
         if (k > targetSet.Capacity) k = targetSet.Capacity;

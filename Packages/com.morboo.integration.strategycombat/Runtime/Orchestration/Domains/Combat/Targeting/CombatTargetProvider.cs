@@ -1,19 +1,19 @@
 using UnityEngine;
 
 /// <summary>
-/// Domain-owned Combat target-set provider (StrategyCombat).
-/// Keeps CombatTargetSet ownership/resolution out of RuntimeHost pipeline composition.
+/// Domain-owned combat target-set provider (StrategyCombat).
+/// Keeps target-set ownership/resolution out of RuntimeHost pipeline composition.
 /// </summary>
 public sealed class CombatTargetProvider : DomainTargetProvider
 {
-    [Tooltip("Optional explicit CombatTargetSet owned by this combat domain.")]
-    [SerializeField] CombatTargetSet targetSet;
+    [Tooltip("Optional explicit DomainTargetSet owned by this combat domain (CombatTargetSet or another domain-target carrier component).")]
+    [SerializeField] DomainTargetSet targetSet;
     bool _warnedMissingTargetSet;
 
     public override OrchestrationDomainId DomainId => OrchestrationDomainId.Combat;
     public override bool IsConfiguredForOrchestration => targetSet != null;
 
-    public CombatTargetSet ResolveTargetSet()
+    public DomainTargetSet ResolveTargetSet()
     {
         if (targetSet != null)
             return targetSet;
@@ -22,9 +22,9 @@ public sealed class CombatTargetProvider : DomainTargetProvider
         {
             _warnedMissingTargetSet = true;
             Debug.LogError(
-                "[CombatTargetProvider] Missing explicit CombatTargetSet. " +
+                "[CombatTargetProvider] Missing explicit DomainTargetSet. " +
                 "Legacy auto-resolve/registry fallback was removed by architecture rule " +
-                "(no parallel legacy fallback paths). Assign CombatTargetSet explicitly.",
+                "(no parallel legacy fallback paths). Assign a target-set carrier explicitly.",
                 this);
         }
 
@@ -34,7 +34,7 @@ public sealed class CombatTargetProvider : DomainTargetProvider
     /// <summary>
     /// Optional bridge/composition seam for explicit runtime assignment.
     /// </summary>
-    public void SetExplicitTargetSet(CombatTargetSet set)
+    public void SetExplicitTargetSet(DomainTargetSet set)
     {
         targetSet = set;
         _warnedMissingTargetSet = false;

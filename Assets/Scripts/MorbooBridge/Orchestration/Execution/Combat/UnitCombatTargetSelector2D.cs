@@ -25,8 +25,8 @@ public sealed class UnitCombatTargetSelector2D : MonoBehaviour, ICombatTargetPol
     [SerializeField] UnitOrchestrationIdentity _identity;
 
     [Header("Target Set")]
-    [Tooltip("Optional explicit shared Top-K hostile candidates. Must be assigned explicitly; legacy auto-resolve fallback was removed.")]
-    [SerializeField] CombatTargetSet targetSet;
+    [Tooltip("Optional explicit shared Top-K candidates. Domain-neutral carrier; combat policies may use it as a hostile candidate pool.")]
+    [SerializeField] DomainTargetSet targetSet;
 
     [Header("Typed Policy")]
     [Tooltip("Per-unit targeting policy override. Takes priority over runtime default and defaultPolicy.")]

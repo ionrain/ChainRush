@@ -41,7 +41,7 @@ public abstract class CombatTargetingPolicyAsset : ScriptableObject, IActorCapab
     /// <param name="selfEntityId">The unit's own EntityId.</param>
     /// <param name="selfPosition">The unit's current position.</param>
     /// <param name="primaryTarget">The orchestrator-chosen primary target EntityId.</param>
-    /// <param name="targetSet">Shared Top-K candidate set (may be null).</param>
+    /// <param name="targetSet">Shared Top-K candidate set (domain-neutral carrier, may be null).</param>
     /// <param name="now">Current time for TTL checks on <paramref name="targetSet"/>.</param>
     /// <param name="world">Read-only world snapshot for position lookups.</param>
     /// <param name="debugInfo">Short debug string for logging (no allocations besides the literal).</param>
@@ -50,7 +50,7 @@ public abstract class CombatTargetingPolicyAsset : ScriptableObject, IActorCapab
         EntityId selfEntityId,
         Float2 selfPosition,
         EntityId primaryTarget,
-        CombatTargetSet targetSet,
+        DomainTargetSet targetSet,
         float now,
         IWorldQueryBase world,
         out string debugInfo);

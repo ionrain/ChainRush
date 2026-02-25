@@ -57,12 +57,6 @@ public sealed class OrchestrationWorldCache : IWorldQuery, IWorldQuery3D, IActor
     /// </summary>
     public readonly Dictionary<RoleId, AABB2D> ResolvedIdleBounds = new Dictionary<RoleId, AABB2D>(4);
 
-    /// <summary>
-    /// Combat target set resolved from OrchestrationRegistry once per tick.
-    /// RuntimeHost-internal only.
-    /// </summary>
-    public CombatTargetSet ResolvedCombatTargetSet;
-
     // ──────────────────────────────────────────────────────────────────
     //  Operator identity snapshots — parallel to FriendlyOperators
     //  IMPORTANT: The ExecutionRouter iterates these instead of touching MonoBehaviour receivers.
@@ -391,8 +385,6 @@ public sealed class OrchestrationWorldCache : IWorldQuery, IWorldQuery3D, IActor
         return _idleBoundsByRoleId.TryGetValue(roleId, out bounds);
     }
 
-    public CombatTargetSet GetCombatTargetSetInternal() => ResolvedCombatTargetSet;
-
     // ──────────────────────────────────────────────────────────────────
     //  IActorCapabilityQuery
     // ──────────────────────────────────────────────────────────────────
@@ -461,7 +453,6 @@ public sealed class OrchestrationWorldCache : IWorldQuery, IWorldQuery3D, IActor
         CrowdDedup.Clear();
         RoleByTransform.Clear();
         ResolvedIdleBounds.Clear();
-        ResolvedCombatTargetSet = null;
 
         _actorPositions.Clear();
         _actorPositionsWorld.Clear();

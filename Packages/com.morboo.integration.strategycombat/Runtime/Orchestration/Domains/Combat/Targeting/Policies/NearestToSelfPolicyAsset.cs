@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Picks the closest alive candidate from <see cref="CombatTargetSet"/> to the unit's
+/// Picks the closest alive candidate from <see cref="DomainTargetSet"/> to the unit's
 /// own position. Falls back to <paramref name="primaryTarget"/> if the set is
 /// null, expired, empty, or all candidates are dead/missing.
 /// <para>
@@ -16,7 +16,7 @@ public sealed class NearestToSelfPolicyAsset : CombatTargetingPolicyAsset
         EntityId selfEntityId,
         Float2 selfPosition,
         EntityId primaryTarget,
-        CombatTargetSet targetSet,
+        DomainTargetSet targetSet,
         float now,
         IWorldQueryBase world,
         out string debugInfo)

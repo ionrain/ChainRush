@@ -1,0 +1,53 @@
+1) ActorReadProjection vs IStateReporter, StateSnapshot, UnitStateReporter, EnemyStateReporter похожие данные, много данных отпарвляется, но по факту ничего не читается. Не дубляж ли?
+
+2) ArbitrationInput, IArbiter (ThreatPresent)
+
+3) IDomainEvent, IDomainEventHandler почему в названии Domain?
+
+4) IWorldQuery. Это лежит в Framework!!!
+- ICrowdQuery3D, ICrowdQuery
+- IIdleBoundsQuery - это вообще как?
+
+  IWorldQueryBase
+- EntityId GetActorEntityId(int index); - только акторов?
+- Float2 GetActorPosition(int index); - позиции в флоат2, их кто-то читает?
+- bool GetActorIsAlive(int index);
+- bool GetActorIsHostile(int index); - мы точно здесь должны врагов отмечать?
+
+5) WorldSnapshot тут вообще винегрет. Это важные данные? Кому они нужны?
+
+- public readonly Float2 Anchor;
+- public readonly Float3 WorldAnchor;
+- public readonly float Now;
+- public readonly int ActorCount;
+
+6) BehaviorProfile. Мы это где-нидь используем?
+
+7) OrchestrationCommandAdapter 
+- явная ссылка на OrchestrationLoop. Нельзя как-то получать это другим способом?
+- OrchestrationCommand RecomputeIdleCommandIfOverridden. Почему это тут?
+- InjectCombatPolicyIfApplicable. Почему это тут?
+- InjectConstraintsIfApplicable. Почему это тут?
+
+8) StrategyCombatArbiterBindingAppliers, StrategyCombatArbiterBindingKeys
+Тут просто цирк. Якобы убрали доменозависимость.
+
+9)ICombatTargetPolicySelector, IConstrainedCombatReceiver, IIdlePolicySelector и связанные с этим 
+UnitIdlePolicySelector, UnitCombatTargetSelector2D, UnitCombatCommandExecutor2D
+Это всё нужно? Как будто бы это можно либо убрать, либо сильно упростить.
+CombatTargetSelector как соотносится с выбором целей в оркестраторе
+CommandExecutor основной функционал передать в AIBRain?
+IdlePolicySelector по виду почти ничего не делает. Класс ради класса
+И самое главное, что это всё винегрет: куча разных интерфейсов и политик, которые совмещают разный функционал из разных слоёв несовместимыми способами (кроме того, что это типа всё политики и данные, для галочки)
+
+10) CombatDomainComponent, IdleDomainComponent нужен рефактор
+
+11) CombatTargetProvider очередной почти пустой класс-прокладка ради прокладки и ленивая абстракция, чтобы не думать
+IdleTargetProvider - вообще ни о чем
+
+12) NearestToSelfPolicyAsset, PrimaryTargetPolicyAsset политики ради политик? Нужен рефактор и перенос в Brain?
+
+13) IdleFillAreaPolicy2DAsset, IdleHoldPolicy2DAsset, IdleRingSlotPolicy2DAsset рефакор и перенос в GroupBrain?
+
+14) 
+

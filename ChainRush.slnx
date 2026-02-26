@@ -1,5 +1,6 @@
 ﻿<Solution>
   <Project Path="MoreMountains.Tools.csproj" />
+  <Project Path="Morboo.RuntimeHost.csproj" />
   <Project Path="Lofelt.NiceVibrations.Demo.csproj" />
   <Project Path="Game.Runtime.csproj" />
   <Project Path="MoreMountains.Tools.Editor.csproj" />
@@ -10,7 +11,6 @@
   <Project Path="Morboo.Framework.csproj" />
   <Project Path="Morboo.Architecture.Tests.csproj" />
   <Project Path="MoreMountains.Interface.csproj" />
-  <Project Path="Morboo.RuntimeHost.csproj" />
   <Project Path="Morboo.Systems.csproj" />
   <Project Path="Assembly-CSharp-firstpass.csproj" />
   <Project Path="Morboo.Core.csproj" />

@@ -10757,6 +10757,7 @@ MonoBehaviour:
   rolePolicyMap: {fileID: 11400000, guid: bbdd1192619974b96ae0c37c2a1af824, type: 2}
   roleConstraintsMap: {fileID: 11400000, guid: 36710e6c9d9294b01872a62bf549b82b, type: 2}
   routeExecutionPolicyProvider: {fileID: 258903850}
+  engagementPolicy: {fileID: 0}
   debugLog: 0
 --- !u!1 &350431856
 GameObject:
@@ -43264,6 +43265,7 @@ MonoBehaviour:
   rolePolicyMap: {fileID: 11400000, guid: bbdd1192619974b96ae0c37c2a1af824, type: 2}
   roleConstraintsMap: {fileID: 11400000, guid: 36710e6c9d9294b01872a62bf549b82b, type: 2}
   routeExecutionPolicyProvider: {fileID: 258903850}
+  engagementPolicy: {fileID: 0}
   debugLog: 0
 --- !u!1 &1001967109
 GameObject:

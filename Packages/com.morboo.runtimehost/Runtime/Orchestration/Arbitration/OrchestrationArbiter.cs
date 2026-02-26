@@ -489,7 +489,6 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter, IDomainArbit
     {
         _world.Clear();
         _world.ProjectionPlane = projectionPlane;
-        _world.WorldAnchor = ctx.WorldAnchor;
         _world.Anchor = ctx.Anchor;
         _world.Now = ctx.Now;
 
@@ -692,10 +691,9 @@ public sealed class OrchestrationArbiter : MonoBehaviour, IArbiter, IDomainArbit
         // ── Fill context ────────────────────────────────────────────
         _ctx.OrchestratorFaction = effectiveOrchestratorFaction;
         _ctx.Relations = effectiveRelations;
-        _ctx.WorldAnchor = anchorOverride != null
+        _ctx.Anchor = anchorOverride != null
             ? anchorOverride.position.ToFloat3()
             : transform.position.ToFloat3();
-        _ctx.Anchor = _ctx.WorldAnchor.ProjectToFloat2(projectionPlane);
         _ctx.Now = now;
         _ctx.DebugLog = debugLog;
         _ctx.World = _world;

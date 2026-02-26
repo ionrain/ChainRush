@@ -48,7 +48,7 @@ public abstract class CombatTargetingPolicyAsset : ScriptableObject, IActorCapab
     /// <returns>The chosen target EntityId, or EntityId.None to indicate "no target".</returns>
     public abstract EntityId ChooseTarget(
         EntityId selfEntityId,
-        Float2 selfPosition,
+        Float3 selfPosition,
         EntityId primaryTarget,
         DomainTargetSet targetSet,
         float now,

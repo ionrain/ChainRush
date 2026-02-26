@@ -21,16 +21,16 @@ using UnityEngine;
 /// the commanded point. The waypoint is never destroyed (pooling-friendly).
 /// </para>
 /// </summary>
-public class AIActionSetBrainTargetFromExternal2D : AIAction
+public class AIActionSetBrainTargetFromExternal : AIAction
 {
-    [SerializeField] EnemyCombatCommandExecutor2D executor;
+    [SerializeField] EnemyCombatCommandExecutor executor;
 
     public override void Initialization()
     {
         if (!ShouldInitialize) return;
         base.Initialization();
         if (executor == null)
-            executor = GetComponentInParent<EnemyCombatCommandExecutor2D>();
+            executor = GetComponentInParent<EnemyCombatCommandExecutor>();
     }
 
     public override void PerformAction()

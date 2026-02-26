@@ -11,21 +11,22 @@ using UnityEngine;
 /// (deterministic, with warning).
 /// </para>
 /// </summary>
-public sealed class UnitIdleBoundsProvider2D : MonoBehaviour, IIdleBoundsProvider, IRoleAssetProvider
+public sealed class UnitIdleBoundsProvider : MonoBehaviour, IIdleBoundsProvider, IRoleAssetProvider
 {
     [Header("Role")]
     [Tooltip("Role this zone provides bounds for. Must match a RoleAsset used by units.")]
     [SerializeField] RoleAsset role;
 
     [Header("Bounds Source")]
-    [Tooltip("Preferred bounds source. Drag a Collider2D from the scene/prefab.")]
-    [SerializeField] Collider2D boundsCollider;
+    [Tooltip("Preferred bounds source. Drag a Collider2D or Collider3D from the scene/prefab.")]
+    [SerializeField] Collider2D boundsCollider2D;
+    [SerializeField] Collider boundsCollider3D;
 
     [Tooltip("When true, uses boundsCollider.bounds if collider is valid and non-degenerate.")]
     [SerializeField] bool useColliderBounds = true;
 
     [Tooltip("Fallback size used when collider is missing, disabled, or degenerate.")]
-    [SerializeField] Vector2 fallbackSize = new Vector2(6f, 3f);
+    [SerializeField] Vector3 fallbackSize = new Vector3(6f, 3f, 0);
 
     [Header("Anchor")]
     [Tooltip("If assigned, anchor is this transform's position. Otherwise anchor = bounds.center.")]
@@ -50,7 +51,7 @@ public sealed class UnitIdleBoundsProvider2D : MonoBehaviour, IIdleBoundsProvide
 
     void Reset()
     {
-        boundsCollider = GetComponentInParent<Collider2D>();
+        boundsCollider2D = GetComponentInParent<Collider2D>();
     }
 
 #if UNITY_EDITOR
@@ -60,12 +61,15 @@ public sealed class UnitIdleBoundsProvider2D : MonoBehaviour, IIdleBoundsProvide
             Debug.LogWarning($"[{name}] UnitIdleBoundsProvider2D has no RoleAsset assigned. " +
                              "It will not register in IdleBoundsRegistry.", this);
 
-        if (useColliderBounds && boundsCollider == null)
+        if (useColliderBounds && boundsCollider2D == null && boundsCollider3D == null)
             Debug.LogWarning($"[{name}] UnitIdleBoundsProvider2D: useColliderBounds is true but " +
-                             "boundsCollider is null. Will use fallbackSize.", this);
+                             "boundsCollider2D and boundsCollider3D are both null. Will use fallbackSize.", this);
 
-        if (boundsCollider != null && boundsCollider.bounds.size.sqrMagnitude <= 0.01f)
-            Debug.LogWarning($"[{name}] UnitIdleBoundsProvider2D: boundsCollider has near-zero size. " +
+        if (boundsCollider2D != null && boundsCollider2D.bounds.size.sqrMagnitude <= 0.01f)
+            Debug.LogWarning($"[{name}] UnitIdleBoundsProvider2D: boundsCollider2D has near-zero size. " +
+                             "May cause degenerate idle behavior.", this);
+        if (boundsCollider3D != null && boundsCollider3D.bounds.size.sqrMagnitude <= 0.01f)
+            Debug.LogWarning($"[{name}] UnitIdleBoundsProvider3D: boundsCollider3D has near-zero size. " +
                              "May cause degenerate idle behavior.", this);
     }
 #endif
@@ -82,9 +86,10 @@ public sealed class UnitIdleBoundsProvider2D : MonoBehaviour, IIdleBoundsProvide
     /// </summary>
     public bool TryGetIdleBounds(out Bounds bounds)
     {
-        if (useColliderBounds && boundsCollider != null && boundsCollider.enabled)
+        if (useColliderBounds && ((boundsCollider2D != null && boundsCollider2D.enabled) || 
+        (boundsCollider3D != null && boundsCollider3D.enabled)))
         {
-            Bounds cb = boundsCollider.bounds;
+            Bounds cb = boundsCollider2D != null ? boundsCollider2D.bounds : boundsCollider3D.bounds;
             // Guard against degenerate/zero-size collider bounds
             if (cb.size.sqrMagnitude > 0.01f)
             {
@@ -94,7 +99,7 @@ public sealed class UnitIdleBoundsProvider2D : MonoBehaviour, IIdleBoundsProvide
         }
 
         // Fallback: build from transform position + fallbackSize
-        bounds = new Bounds(transform.position, new Vector3(fallbackSize.x, fallbackSize.y, 1f));
+        bounds = new Bounds(transform.position, new Vector3(fallbackSize.x, fallbackSize.y, fallbackSize.z));
         return true;
     }
 
@@ -103,17 +108,17 @@ public sealed class UnitIdleBoundsProvider2D : MonoBehaviour, IIdleBoundsProvide
     /// uses its position. Otherwise derives anchor from <see cref="TryGetIdleBounds"/>
     /// to ensure anchor is always consistent with the bounds source.
     /// </summary>
-    public bool TryGetIdleAnchor(out Vector2 anchor)
+    public bool TryGetIdleAnchor(out Vector3 anchor)
     {
         if (anchorOverride != null)
         {
-            anchor = (Vector2)anchorOverride.position;
+            anchor = anchorOverride.position;
             return true;
         }
 
         Bounds b;
         TryGetIdleBounds(out b);
-        anchor = (Vector2)b.center;
+        anchor = b.center;
         return true;
     }
 }

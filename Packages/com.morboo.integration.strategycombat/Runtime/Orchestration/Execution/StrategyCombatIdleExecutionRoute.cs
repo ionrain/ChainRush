@@ -6,13 +6,13 @@ using UnityEngine;
 /// </summary>
 public sealed class StrategyCombatIdleExecutionRoute
 {
-    readonly IdleTargetProvider _idleTargetProvider;
+    readonly IDomainTargetProvider _idleTargetProvider;
     readonly StrategyCombatRouteExecutionProfile _profile;
     bool _warnedMissingRoleIdle;
     bool _warnedNoIdleMap;
     DomainTargetProviderValidationWarningState _targetProviderValidationWarnings;
 
-    public StrategyCombatIdleExecutionRoute(IdleTargetProvider idleTargetProvider, StrategyCombatRouteExecutionPolicyAsset policy = null)
+    public StrategyCombatIdleExecutionRoute(IDomainTargetProvider idleTargetProvider, StrategyCombatRouteExecutionPolicyAsset policy = null)
     {
         _idleTargetProvider = idleTargetProvider;
         _profile = new StrategyCombatRouteExecutionProfile(policy);
@@ -23,8 +23,12 @@ public sealed class StrategyCombatIdleExecutionRoute
         if (host == null)
             return;
 
+        IDomainOperatorPositionProvider operatorPositionProvider;
         DomainTargetProviderValidationFailure targetProviderValidation =
-            DomainTargetProviderValidation.Validate(_idleTargetProvider, OrchestrationDomainId.Idle);
+            DomainTargetProviderValidation.Validate<IDomainOperatorPositionProvider>(
+                _idleTargetProvider,
+                OrchestrationDomainId.Idle,
+                out operatorPositionProvider);
         if (targetProviderValidation != DomainTargetProviderValidationFailure.None)
         {
             PublishCancelForAll(host, world, "Router=IdleMissingTargetProvider");
@@ -36,7 +40,8 @@ public sealed class StrategyCombatIdleExecutionRoute
                 "StrategyCombatIdleExecutionRoute",
                 "[StrategyCombatIdleExecutionRoute] Missing IdleTargetProvider. " +
                 "Legacy self-position fallback path was removed. Assign IdleTargetProvider explicitly on IdleDomainComponent.",
-                null);
+                null,
+                requiredCapabilityLabel: nameof(IDomainOperatorPositionProvider));
             return;
         }
 
@@ -44,6 +49,7 @@ public sealed class StrategyCombatIdleExecutionRoute
             host,
             world,
             ctx,
+            operatorPositionProvider,
             emitCancelForNoRoleMatch: decision.ModeChanged && _profile.Idle.EmitCombatHoldOnModeChange,
             noRoleMatchCancelLabel: ResolveDebugLabel(
                 _profile.Idle.CombatHoldDebugLabelOverride,
@@ -77,6 +83,7 @@ public sealed class StrategyCombatIdleExecutionRoute
         IExecutionRouteHost host,
         OrchestrationWorldCache world,
         ExecutionContext ctx,
+        IDomainOperatorPositionProvider operatorPositionProvider,
         bool emitCancelForNoRoleMatch,
         string noRoleMatchCancelLabel)
     {
@@ -109,7 +116,7 @@ public sealed class StrategyCombatIdleExecutionRoute
             IdlePolicyAsset policy;
             if (!roleId.IsNone && idleRolePolicyMap.TryGet(roleId, out policy) && policy != null)
             {
-                orchCmd = BuildIdleCommandForPolicy(policy, roleId, eid, entitySeed, world, ctx);
+                orchCmd = BuildIdleCommandForPolicy(policy, roleId, eid, entitySeed, world, ctx, operatorPositionProvider);
             }
             else
             {
@@ -144,7 +151,8 @@ public sealed class StrategyCombatIdleExecutionRoute
         EntityId eid,
         int entitySeed,
         OrchestrationWorldCache world,
-        ExecutionContext ctx)
+        ExecutionContext ctx,
+        IDomainOperatorPositionProvider operatorPositionProvider)
     {
         IActorCapabilityQuery capQuery = world as IActorCapabilityQuery;
         if (policy is IActorCapabilityGatedPolicy gated && capQuery != null)
@@ -161,7 +169,14 @@ public sealed class StrategyCombatIdleExecutionRoute
         }
 
         int roleSeed = roleId.ToStableInt();
-        Float2 selfPos = _idleTargetProvider.ResolveSelfPosition(eid, world, ctx);
+        Float3 selfPos;
+        if (!operatorPositionProvider.TryResolveOperatorPosition(eid, world, ctx, out selfPos))
+        {
+            OrchestrationCommand failedResolveCmd = OrchestrationCommand.Cancel();
+            if (ctx.DebugLog)
+                failedResolveCmd.DebugLabel = "Router=IdleTargetResolveFailed";
+            return failedResolveCmd;
+        }
 
         string dbg;
         OrchestrationCommand cmd = policy.ChooseCommand(selfPos, eid, ctx.Anchor, ctx.Now, roleSeed, entitySeed, world, out dbg);

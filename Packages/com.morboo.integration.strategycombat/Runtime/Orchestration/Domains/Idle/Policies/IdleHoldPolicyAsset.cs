@@ -7,7 +7,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "IdleHoldPolicy", menuName = "Game/Orchestration/Idle/Policies/Hold")]
 public sealed class IdleHoldPolicy2DAsset : IdlePolicyAsset
 {
-    public override OrchestrationCommand ChooseCommand(Transform self, Vector2 anchor, float now, out string debugInfo)
+    public override OrchestrationCommand ChooseCommand(Transform self, Vector3 anchor, float now, out string debugInfo)
     {
         debugInfo = null;
         return OrchestrationCommand.Cancel();

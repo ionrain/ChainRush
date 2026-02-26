@@ -18,15 +18,15 @@ using UnityEngine;
 /// stays in / falls back to its default state, preserving normal enemy AI.
 /// </para>
 /// </summary>
-public class AIDecisionHasExternalCommand2D : AIDecision
+public class AIDecisionHasExternalCommand : AIDecision
 {
-    [SerializeField] EnemyCombatCommandExecutor2D executor;
+    [SerializeField] EnemyCombatCommandExecutor executor;
 
     public override void Initialization()
     {
         base.Initialization();
         if (executor == null)
-            executor = GetComponentInParent<EnemyCombatCommandExecutor2D>();
+            executor = GetComponentInParent<EnemyCombatCommandExecutor>();
     }
 
     public override bool Decide()

@@ -15,7 +15,7 @@ using UnityEngine.Serialization;
 /// This component resolves the returned EntityId → Transform at the Integration boundary.
 /// </para>
 /// </summary>
-public sealed class UnitCombatTargetSelector2D : MonoBehaviour, ICombatTargetPolicySelector
+public sealed class UnitCombatTargetSelector : MonoBehaviour, ICombatTargetPolicySelector
 {
     // ──────────────────────────────────────────────────────────────────
     //  Serialized
@@ -144,7 +144,7 @@ public sealed class UnitCombatTargetSelector2D : MonoBehaviour, ICombatTargetPol
         {
             // Build policy inputs at Integration boundary
             EntityId selfId = _identity != null ? _identity.GetEntityId() : EntityId.None;
-            Float2 selfPos = ((Vector2)transform.position).ToFloat2();
+            Float3 selfPos = transform.position.ToFloat3();
 
             // Resolve world query: injected > inspector provider
             IWorldQueryBase world = _worldQuery;

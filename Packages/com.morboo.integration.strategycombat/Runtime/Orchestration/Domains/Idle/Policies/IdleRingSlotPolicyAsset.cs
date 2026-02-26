@@ -34,7 +34,7 @@ public sealed class IdleRingSlotPolicy2DAsset : IdlePolicyAsset
     /// with <c>roleSeed=0</c> and <c>entitySeed=self.GetInstanceID()</c> to ensure
     /// identical determinism in both code paths.
     /// </summary>
-    public override OrchestrationCommand ChooseCommand(Transform self, Vector2 anchor, float now, out string debugInfo)
+    public override OrchestrationCommand ChooseCommand(Transform self, Vector3 anchor, float now, out string debugInfo)
     {
         int entitySeed = self != null ? self.GetInstanceID() : 0;
         return ChooseCommand(self, anchor, now, 0, entitySeed, out debugInfo);
@@ -46,7 +46,7 @@ public sealed class IdleRingSlotPolicy2DAsset : IdlePolicyAsset
     /// PERF: No allocations. Pure math.
     /// </summary>
     public override OrchestrationCommand ChooseCommand(
-        Transform self, Vector2 anchor, float now,
+        Transform self, Vector3 anchor, float now,
         int roleSeed, int entitySeed,
         out string debugInfo)
     {
@@ -57,16 +57,16 @@ public sealed class IdleRingSlotPolicy2DAsset : IdlePolicyAsset
         float jitter = (Hash01(seed * 48611) * 2f - 1f) * angleJitterDegrees;
         float angleRad = (baseAngle + jitter) * Mathf.Deg2Rad;
 
-        Float2 dir = new Float2(Mathf.Cos(angleRad), Mathf.Sin(angleRad));
-        Float2 point = anchor.ToFloat2() + dir * radius;
+        Float3 dir = new Float3(Mathf.Cos(angleRad), Mathf.Sin(angleRad), 0);
+        Float3 point = anchor.ToFloat3() + dir * radius;
 
         debugInfo = null;
         return BuildPointCommand(self, point);
     }
 
     public override OrchestrationCommand ChooseCommand(
-        Float2 selfPosition, EntityId selfId,
-        Float2 anchor, float now,
+        Float3 selfPosition, EntityId selfId,
+        Float3 anchor, float now,
         int roleSeed, int entitySeed,
         IWorldQuery world,
         out string debugInfo)
@@ -77,8 +77,8 @@ public sealed class IdleRingSlotPolicy2DAsset : IdlePolicyAsset
         float jitter = (Hash01(seed * 48611) * 2f - 1f) * angleJitterDegrees;
         float angleRad = (baseAngle + jitter) * Mathf.Deg2Rad;
 
-        Float2 dir = new Float2(Mathf.Cos(angleRad), Mathf.Sin(angleRad));
-        Float2 point = anchor + dir * radius;
+        Float3 dir = new Float3(Mathf.Cos(angleRad), Mathf.Sin(angleRad), 0);
+        Float3 point = anchor + dir * radius;
 
         debugInfo = null;
 
@@ -106,7 +106,7 @@ public sealed class IdleRingSlotPolicy2DAsset : IdlePolicyAsset
         }
     }
 
-    static OrchestrationCommand BuildPointCommand(Transform self, in Float2 point)
+    static OrchestrationCommand BuildPointCommand(Transform self, in Float3 point)
     {
         if (self == null)
             return OrchestrationCommand.Cancel();

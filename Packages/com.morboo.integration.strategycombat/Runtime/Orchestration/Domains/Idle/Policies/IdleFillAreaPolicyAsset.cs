@@ -14,7 +14,7 @@ using UnityEngine;
 /// </para>
 /// </summary>
 [CreateAssetMenu(fileName = "IdleFillAreaPolicy", menuName = "Game/Orchestration/Idle/Fill Area Policy")]
-public sealed class IdleFillAreaPolicy2DAsset : IdlePolicyAsset
+public sealed class IdleFillAreaPolicyAsset : IdlePolicyAsset
 {
     // ──────────────────────────────────────────────────────────────────
     //  Serialized — Sampling
@@ -60,13 +60,13 @@ public sealed class IdleFillAreaPolicy2DAsset : IdlePolicyAsset
     /// <summary>
     /// Fallback bounds size when no bounds provider is available.
     /// </summary>
-    static readonly Float2 FallbackBoundsSize = new Float2(6f, 3f);
+    static readonly Float3 FallbackBoundsSize = new Float3(6f, 3f, 0f);
 
     // ──────────────────────────────────────────────────────────────────
     //  Base overload — Hold (requires world context to function)
     // ──────────────────────────────────────────────────────────────────
 
-    public override OrchestrationCommand ChooseCommand(Transform self, Vector2 anchor, float now, out string debugInfo)
+    public override OrchestrationCommand ChooseCommand(Transform self, Vector3 anchor, float now, out string debugInfo)
     {
         debugInfo = null;
         return OrchestrationCommand.Cancel();
@@ -79,8 +79,8 @@ public sealed class IdleFillAreaPolicy2DAsset : IdlePolicyAsset
     // ──────────────────────────────────────────────────────────────────
 
     public override OrchestrationCommand ChooseCommand(
-        Float2 selfPosition, EntityId selfId,
-        Float2 anchor, float now,
+        Float3 selfPosition, EntityId selfId,
+        Float3 anchor, float now,
         int roleSeed, int entitySeed,
         IWorldQuery world,
         out string debugInfo)
@@ -88,7 +88,7 @@ public sealed class IdleFillAreaPolicy2DAsset : IdlePolicyAsset
         debugInfo = null;
 
         // ── Determine bounds ──────────────────────────────────────────
-        AABB2D bounds;
+        AABB3D bounds;
         bool hasBounds = false;
 
         // IMPORTANT: Policy reads world only via IWorldQuery. No GetComponent.
@@ -99,29 +99,29 @@ public sealed class IdleFillAreaPolicy2DAsset : IdlePolicyAsset
             bounds = default;
 
         if (!hasBounds)
-            bounds = AABB2D.FromCenterSize(anchor, FallbackBoundsSize);
+            bounds = AABB3D.FromCenterSize(anchor, FallbackBoundsSize);
 
         // ── Pre-compute squared thresholds ──────────────────────────────
         float personalSpaceSqr = personalSpace * personalSpace;
         float crowdRadiusSqr = crowdPenaltyRadius * crowdPenaltyRadius;
 
         // ── Sample and score candidates ───────────────────────────────
-        Float2 bestPoint = anchor;
+        Float3 bestPoint = anchor;
         float bestScore = float.MaxValue;
         int sampleCount = samples > 0 ? samples : 10;
 
         for (int i = 0; i < sampleCount; i++)
         {
             int seed = roleSeed ^ entitySeed ^ (i * SAMPLE_SEED_PRIME);
-            Float2 candidate = CrowdScoringUtility2D.RandomPointInBounds(bounds, seed);
+            Float3 candidate = CrowdScoringUtility.RandomPointInBounds(bounds, seed);
 
             // Crowd penalty via shared utility (soft penalty, never rejects)
-            float score = CrowdScoringUtility2D.ScoreCrowdPenalty(
+            float score = CrowdScoringUtility.ScoreCrowdPenalty(
                 world, selfId, candidate,
                 personalSpaceSqr, crowdRadiusSqr, PERSONAL_SPACE_PENALTY);
 
             // Penalty for distance from anchor (keeps units generally around anchor)
-            float anchorSqrDist = Float2.DistanceSqr(candidate, anchor);
+            float anchorSqrDist = Float3.DistanceSqr(candidate, anchor);
             score += anchorSqrDist * ANCHOR_DISTANCE_WEIGHT;
 
             if (score < bestScore)

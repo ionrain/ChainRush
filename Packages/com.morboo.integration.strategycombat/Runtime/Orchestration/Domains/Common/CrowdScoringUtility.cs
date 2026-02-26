@@ -14,7 +14,7 @@
 /// No Transform references. All positions are <see cref="Float2"/>.
 /// </para>
 /// </summary>
-public static class CrowdScoringUtility2D
+public static class CrowdScoringUtility
 {
     // ──────────────────────────────────────────────────────────────────
     //  Constants
@@ -64,16 +64,18 @@ public static class CrowdScoringUtility2D
     /// Returns a deterministic random point within the XY extents of the bounds.
     /// Handles zero-size axes safely (clamps to center on that axis).
     /// </summary>
-    public static Float2 RandomPointInBounds(AABB2D b, int seed)
+    public static Float3 RandomPointInBounds(AABB3D b, int seed)
     {
         float tx = Hash01(seed);
         float ty = Hash01(seed ^ 0x6C62272E);
-        Float2 size = b.Size;
-        Float2 min = b.Min;
-        Float2 center = b.Center;
+        float tz = Hash01(seed ^ 0x6C62272F);
+        Float3 size = b.Size;
+        Float3 min = b.Min;
+        Float3 center = b.Center;
         float x = size.X > 0f ? min.X + tx * size.X : center.X;
         float y = size.Y > 0f ? min.Y + ty * size.Y : center.Y;
-        return new Float2(x, y);
+        float z = size.Z > 0f ? min.Z + tz * size.Z : center.Z;
+        return new Float3(x, y, z);
     }
 
     // ──────────────────────────────────────────────────────────────────
@@ -91,7 +93,7 @@ public static class CrowdScoringUtility2D
     public static float ScoreCrowdPenalty(
         ICrowdQuery crowd,
         EntityId selfId,
-        Float2 candidatePosition,
+        Float3 candidatePosition,
         float personalSpaceSqr,
         float crowdRadiusSqr,
         float personalSpacePenalty = 1000f)
@@ -103,8 +105,8 @@ public static class CrowdScoringUtility2D
             EntityId eid = crowd.GetCrowdEntityId(i);
             if (!selfId.IsNone && eid == selfId) continue;
 
-            Float2 crowdPos = crowd.GetCrowdPosition(i);
-            float sqrDist = Float2.DistanceSqr(crowdPos, candidatePosition);
+            Float3 crowdPos = crowd.GetCrowdPosition(i);
+            float sqrDist = Float3.DistanceSqr(crowdPos, candidatePosition);
 
             if (sqrDist < personalSpaceSqr)
                 score += personalSpacePenalty;
@@ -122,7 +124,7 @@ public static class CrowdScoringUtility2D
     public static int CountNear(
         ICrowdQuery crowd,
         EntityId selfId,
-        Float2 position,
+        Float3 position,
         float radiusSqr)
     {
         int count = 0;
@@ -132,7 +134,7 @@ public static class CrowdScoringUtility2D
             EntityId eid = crowd.GetCrowdEntityId(i);
             if (!selfId.IsNone && eid == selfId) continue;
 
-            float sqr = Float2.DistanceSqr(crowd.GetCrowdPosition(i), position);
+            float sqr = Float3.DistanceSqr(crowd.GetCrowdPosition(i), position);
             if (sqr <= radiusSqr)
                 count++;
         }
@@ -146,7 +148,7 @@ public static class CrowdScoringUtility2D
     public static bool IsCrowded(
         ICrowdQuery crowd,
         EntityId selfId,
-        Float2 position,
+        Float3 position,
         float personalSpaceSqr,
         int minNeighbors = 2)
     {
@@ -157,7 +159,7 @@ public static class CrowdScoringUtility2D
             EntityId eid = crowd.GetCrowdEntityId(i);
             if (!selfId.IsNone && eid == selfId) continue;
 
-            float sqr = Float2.DistanceSqr(crowd.GetCrowdPosition(i), position);
+            float sqr = Float3.DistanceSqr(crowd.GetCrowdPosition(i), position);
             if (sqr <= personalSpaceSqr)
             {
                 count++;

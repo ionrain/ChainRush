@@ -18,12 +18,35 @@ public interface IDomainTargetProvider
     bool IsConfiguredForOrchestration { get; }
 }
 
+/// <summary>
+/// Provider capability: resolves the domain-owned candidate carrier (<see cref="DomainTargetSet"/>).
+/// Used by domains that publish reusable candidate sets (Combat now, other domains later).
+/// </summary>
+public interface IDomainTargetSetProvider
+{
+    bool TryResolveTargetSet(out DomainTargetSet targetSet);
+}
+
+/// <summary>
+/// Provider capability: resolves the current operator position used for per-operator policy evaluation.
+/// Used by Idle today and reusable by future non-combat domains.
+/// </summary>
+public interface IDomainOperatorPositionProvider
+{
+    bool TryResolveOperatorPosition(
+        EntityId operatorEntityId,
+        OrchestrationWorldCache world,
+        ExecutionContext ctx,
+        out Float3 position);
+}
+
 public enum DomainTargetProviderValidationFailure
 {
     None = 0,
     MissingProvider = 1,
     DomainMismatch = 2,
     NotConfigured = 3,
+    MissingCapability = 4,
 }
 
 public struct DomainTargetProviderValidationWarningState
@@ -50,6 +73,24 @@ public static class DomainTargetProviderValidation
         return DomainTargetProviderValidationFailure.None;
     }
 
+    public static DomainTargetProviderValidationFailure Validate<TCapability>(
+        IDomainTargetProvider provider,
+        OrchestrationDomainId expectedDomainId,
+        out TCapability capability)
+        where TCapability : class
+    {
+        capability = null;
+
+        DomainTargetProviderValidationFailure baseFailure = Validate(provider, expectedDomainId);
+        if (baseFailure != DomainTargetProviderValidationFailure.None)
+            return baseFailure;
+
+        capability = provider as TCapability;
+        return capability != null
+            ? DomainTargetProviderValidationFailure.None
+            : DomainTargetProviderValidationFailure.MissingCapability;
+    }
+
     public static void LogFailureOnce(
         ref DomainTargetProviderValidationWarningState warningState,
         DomainTargetProviderValidationFailure failure,
@@ -57,7 +98,8 @@ public static class DomainTargetProviderValidation
         OrchestrationDomainId expectedDomainId,
         string ownerLabel,
         string missingProviderMessage,
-        UnityEngine.Object logContext)
+        UnityEngine.Object logContext,
+        string requiredCapabilityLabel = null)
     {
         switch (failure)
         {
@@ -74,12 +116,16 @@ public static class DomainTargetProviderValidation
 
             case DomainTargetProviderValidationFailure.DomainMismatch:
             case DomainTargetProviderValidationFailure.NotConfigured:
+            case DomainTargetProviderValidationFailure.MissingCapability:
                 if (warningState.InvalidLogged)
                     return;
 
                 warningState.InvalidLogged = true;
                 string actualDomain = provider != null ? provider.DomainId.ToString() : "null";
                 string configured = (provider != null && provider.IsConfiguredForOrchestration) ? "true" : "false";
+                string capabilitySuffix = failure == DomainTargetProviderValidationFailure.MissingCapability
+                    ? string.Concat(", capability=", string.IsNullOrEmpty(requiredCapabilityLabel) ? "missing" : requiredCapabilityLabel)
+                    : string.Empty;
                 Debug.LogError(
                     string.Concat(
                         "[", ownerLabel, "] Invalid target-provider wiring (expected DomainId=",
@@ -88,6 +134,7 @@ public static class DomainTargetProviderValidation
                         actualDomain,
                         ", configured=",
                         configured,
+                        capabilitySuffix,
                         ")."),
                     logContext);
                 return;

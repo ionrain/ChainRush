@@ -181,7 +181,7 @@ public sealed class OrchestrationCommandAdapter : MonoBehaviour
         if (effectivePolicy == rolePolicy)
             return cmd;
 
-        Float2 selfPos = ((Vector2)t.position).ToFloat2();
+        Float3 selfPos = t.position.ToFloat3();
         int roleSeed = roleId.ToStableInt();
         int entitySeed = receiverEntityId.ToStableInt();
         string dbg;

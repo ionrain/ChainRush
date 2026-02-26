@@ -14,7 +14,7 @@ public sealed class NearestToSelfPolicyAsset : CombatTargetingPolicyAsset
 {
     public override EntityId ChooseTarget(
         EntityId selfEntityId,
-        Float2 selfPosition,
+        Float3 selfPosition,
         EntityId primaryTarget,
         DomainTargetSet targetSet,
         float now,
@@ -39,11 +39,11 @@ public sealed class NearestToSelfPolicyAsset : CombatTargetingPolicyAsset
             EntityId eid = candidates[i];
             if (eid.IsNone) continue;
 
-            Float2 pos;
+            Float3 pos;
             if (!world.TryGetActorPosition(eid, out pos))
                 continue;
 
-            float sqr = Float2.DistanceSqr(pos, selfPosition);
+            float sqr = Float3.DistanceSqr(pos, selfPosition);
             if (sqr < bestSqr)
             {
                 bestSqr = sqr;

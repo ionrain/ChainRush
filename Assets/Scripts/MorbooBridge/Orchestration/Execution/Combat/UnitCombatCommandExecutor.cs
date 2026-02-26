@@ -22,7 +22,7 @@ using UnityEngine;
 /// </para>
 /// </summary>
 [RequireComponent(typeof(Unit))]
-public sealed class UnitCombatCommandExecutor2D : MonoBehaviour, IOrchestrationCommandReceiver, IConstrainedCombatReceiver, IOrchestrationActor, IRoleAssetProvider, IEntityIdProvider
+public sealed class UnitCombatCommandExecutor : MonoBehaviour, IOrchestrationCommandReceiver, IConstrainedCombatReceiver, IOrchestrationActor, IRoleAssetProvider, IEntityIdProvider
 {
     // ──────────────────────────────────────────────────────────────────
     //  Serialized
@@ -30,7 +30,7 @@ public sealed class UnitCombatCommandExecutor2D : MonoBehaviour, IOrchestrationC
 
     [SerializeField] Unit _unit;
     [SerializeField] UnitOrchestrationIdentity _identity;
-    [SerializeField] UnitCombatTargetSelector2D _selector;
+    [SerializeField] UnitCombatTargetSelector _selector;
 
     [Header("Waypoint")]
     [Tooltip("When true, Reset/OnValidate will create a child waypoint for editor convenience.")]
@@ -64,7 +64,7 @@ public sealed class UnitCombatCommandExecutor2D : MonoBehaviour, IOrchestrationC
     ConstrainedMoveMode _constrainedMode;
     float _modeEnteredTime;
     float _lastRepathTime;
-    Vector2 _lastClampedTarget;
+    Vector3 _lastClampedTarget;
 
     // ──────────────────────────────────────────────────────────────────
     //  Constants — Spread sampling
@@ -87,7 +87,7 @@ public sealed class UnitCombatCommandExecutor2D : MonoBehaviour, IOrchestrationC
     {
         _unit = GetComponent<Unit>();
         _identity = GetComponent<UnitOrchestrationIdentity>();
-        _selector = GetComponent<UnitCombatTargetSelector2D>();
+        _selector = GetComponent<UnitCombatTargetSelector>();
         if (createWaypointOnReset)
             FindOrCreateWaypointEditor();
     }
@@ -99,7 +99,7 @@ public sealed class UnitCombatCommandExecutor2D : MonoBehaviour, IOrchestrationC
         if (_identity == null)
             _identity = GetComponent<UnitOrchestrationIdentity>();
         if (_selector == null)
-            _selector = GetComponent<UnitCombatTargetSelector2D>();
+            _selector = GetComponent<UnitCombatTargetSelector>();
         if (createWaypointOnReset)
             FindOrCreateWaypointEditor();
     }
@@ -132,7 +132,7 @@ public sealed class UnitCombatCommandExecutor2D : MonoBehaviour, IOrchestrationC
         if (_identity == null)
             _identity = GetComponent<UnitOrchestrationIdentity>();
         if (_selector == null)
-            _selector = GetComponent<UnitCombatTargetSelector2D>();
+            _selector = GetComponent<UnitCombatTargetSelector>();
 
         if (_waypoint == null)
             _waypoint = FindWaypointChild();
@@ -245,7 +245,7 @@ public sealed class UnitCombatCommandExecutor2D : MonoBehaviour, IOrchestrationC
                         break;
 
                     case OrchestrationTargetKind.Point:
-                        if (OrchestrationTargetPointRegistry.TryGetPointTarget(command.Target.TargetEntityId, out Float2 point))
+                        if (OrchestrationTargetPointRegistry.TryGetPointTarget(command.Target.TargetEntityId, out Float3 point))
                             ApplyMoveToPointConstrained(point);
                         else
                             ApplyHold();
@@ -281,10 +281,10 @@ public sealed class UnitCombatCommandExecutor2D : MonoBehaviour, IOrchestrationC
     /// Positions the cached waypoint at the given point
     /// and sets it as the AIBrain target.
     /// </summary>
-    void ApplyMoveToPoint(Float2 targetPoint)
+    void ApplyMoveToPoint(Float3 targetPoint)
     {
         EnsureWaypoint();
-        _waypoint.position = new Vector3(targetPoint.X, targetPoint.Y, 0f);
+        _waypoint.position = targetPoint.ToVector3();
         _unit.SetTarget(_waypoint);
     }
 
@@ -312,16 +312,17 @@ public sealed class UnitCombatCommandExecutor2D : MonoBehaviour, IOrchestrationC
     //  the original unconstrained methods with no side effects.
     // ──────────────────────────────────────────────────────────────────
 
-    void ApplyMoveToPointConstrained(Float2 targetPoint)
+    void ApplyMoveToPointConstrained(Float3 targetPoint)
     {
         bool constrainedActive = _constraints != null && _constraints.leashRadius > 0f && _world != null;
         if (!constrainedActive)
         {
             ApplyMoveToPoint(targetPoint);
+
             return;
         }
 
-        Vector2 point = targetPoint.ToVector2();
+        Vector3 point = targetPoint.ToVector3();
         Vector2 clamped = ClampToLeash(point, out bool wasClamped);
 
         if (!wasClamped)
@@ -380,7 +381,7 @@ public sealed class UnitCombatCommandExecutor2D : MonoBehaviour, IOrchestrationC
                 break;
 
             case OutOfBoundsMode.SpreadNearBoundary:
-                Vector2 spread = ComputeSpreadPoint(clamped, _world.Anchor.ToVector2());
+                Vector3 spread = ComputeSpreadPoint(clamped, _world.Anchor.ToVector3());
                 ApplyConstrainedWaypoint(spread);
                 break;
         }
@@ -408,7 +409,7 @@ public sealed class UnitCombatCommandExecutor2D : MonoBehaviour, IOrchestrationC
         ApplyHold();
     }
 
-    void ApplyConstrainedWaypoint(Vector2 point)
+    void ApplyConstrainedWaypoint(Vector3 point)
     {
         float now = _world.Now;
 
@@ -454,10 +455,10 @@ public sealed class UnitCombatCommandExecutor2D : MonoBehaviour, IOrchestrationC
     /// Clamps target to leash circle around <c>_world.Anchor</c>.
     /// Pure geometry, no crowd logic.
     /// </summary>
-    Vector2 ClampToLeash(Vector2 target, out bool clamped)
+    Vector3 ClampToLeash(Vector3 target, out bool clamped)
     {
-        Vector2 anchor = _world.Anchor.ToVector2();
-        Vector2 toTarget = target - anchor;
+        Vector3 anchor = _world.Anchor.ToVector3();
+        Vector3 toTarget = target - anchor;
         float distSqr = toTarget.sqrMagnitude;
         float leashSqr = _constraints.leashRadius * _constraints.leashRadius;
 
@@ -469,7 +470,7 @@ public sealed class UnitCombatCommandExecutor2D : MonoBehaviour, IOrchestrationC
 
         clamped = true;
         float dist = Mathf.Sqrt(distSqr);
-        Vector2 dir = toTarget / dist;
+        Vector3 dir = toTarget / dist;
         return anchor + dir * _constraints.leashRadius;
     }
 
@@ -482,7 +483,7 @@ public sealed class UnitCombatCommandExecutor2D : MonoBehaviour, IOrchestrationC
     /// Self-skip via <see cref="EntityId"/>. No allocations, no <c>UnityEngine.Random</c>.
     /// </para>
     /// </summary>
-    Vector2 ComputeSpreadPoint(Vector2 boundaryPoint, Vector2 anchor)
+    Vector3 ComputeSpreadPoint(Vector3 boundaryPoint, Vector3 anchor)
     {
         int sampleCount = _constraints.samples > 0 ? _constraints.samples : 8;
         float personalSpace = _constraints.personalSpace;
@@ -499,7 +500,7 @@ public sealed class UnitCombatCommandExecutor2D : MonoBehaviour, IOrchestrationC
         int entitySeed = selfId.ToStableInt();
         int qx = Mathf.RoundToInt(boundaryPoint.x * BOUNDARY_QUANT);
         int qy = Mathf.RoundToInt(boundaryPoint.y * BOUNDARY_QUANT);
-        int baseSeed = entitySeed ^ CrowdScoringUtility2D.Hash01ToInt(qx ^ (qy * 0x6C62272E));
+        int baseSeed = entitySeed ^ CrowdScoringUtility.Hash01ToInt(qx ^ (qy * 0x6C62272E));
 
         Vector2 bestPoint = boundaryPoint;
         float bestScore = float.MaxValue;
@@ -507,19 +508,19 @@ public sealed class UnitCombatCommandExecutor2D : MonoBehaviour, IOrchestrationC
         for (int i = 0; i < sampleCount; i++)
         {
             int sampleSeed = baseSeed ^ (i * SAMPLE_SEED_PRIME);
-            float angle = CrowdScoringUtility2D.Hash01(sampleSeed) * 360f;
-            float dist = personalSpace + CrowdScoringUtility2D.Hash01(sampleSeed ^ 0x1B873) * (maxOffset - personalSpace);
+            float angle = CrowdScoringUtility.Hash01(sampleSeed) * 360f;
+            float dist = personalSpace + CrowdScoringUtility.Hash01(sampleSeed ^ 0x1B873) * (maxOffset - personalSpace);
 
             float rad = angle * Mathf.Deg2Rad;
-            Vector2 candidate = boundaryPoint + new Vector2(Mathf.Cos(rad), Mathf.Sin(rad)) * dist;
+            Vector3 candidate = boundaryPoint + new Vector3(Mathf.Cos(rad), Mathf.Sin(rad), 0) * dist;
 
             // Hard reject: outside leash
             if ((candidate - anchor).sqrMagnitude > leashSqr)
                 continue;
 
             // Score: crowd penalty via IWorldQuery (soft — never rejects, self-skip via EntityId)
-            float score = CrowdScoringUtility2D.ScoreCrowdPenalty(
-                _world, selfId, candidate.ToFloat2(),
+            float score = CrowdScoringUtility.ScoreCrowdPenalty(
+                _world, selfId, candidate.ToFloat3(),
                 personalSpaceSqr, crowdRadiusSqr);
 
             // Score: anchor distance preference
@@ -595,7 +596,7 @@ public sealed class UnitCombatCommandExecutor2D : MonoBehaviour, IOrchestrationC
                     target = resolved != null ? resolved.name : command.Target.TargetEntityId.ToStableInt().ToString();
                     break;
                 case OrchestrationTargetKind.Point:
-                    if (OrchestrationTargetPointRegistry.TryGetPointTarget(command.Target.TargetEntityId, out Float2 point))
+                    if (OrchestrationTargetPointRegistry.TryGetPointTarget(command.Target.TargetEntityId, out Float3 point))
                         target = point.ToString();
                     else
                         target = command.Target.TargetEntityId.ToStableInt().ToString();

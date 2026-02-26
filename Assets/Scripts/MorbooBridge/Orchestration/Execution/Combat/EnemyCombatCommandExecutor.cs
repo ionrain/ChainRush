@@ -17,7 +17,7 @@ using UnityEngine;
 /// includes the matching decision/action nodes.
 /// </para>
 /// </summary>
-public sealed class EnemyCombatCommandExecutor2D : MonoBehaviour, IOrchestrationCommandReceiver, IOrchestrationActor, IEntityIdProvider
+public sealed class EnemyCombatCommandExecutor : MonoBehaviour, IOrchestrationCommandReceiver, IOrchestrationActor, IEntityIdProvider
 {
     // ──────────────────────────────────────────────────────────────────
     //  Serialized
@@ -181,8 +181,8 @@ public sealed class EnemyCombatCommandExecutor2D : MonoBehaviour, IOrchestration
                     }
 
                     case OrchestrationTargetKind.Point:
-                        if (OrchestrationTargetPointRegistry.TryGetPointTarget(command.Target.TargetEntityId, out Float2 point))
-                            SetExternalPoint(point.ToVector2());
+                        if (OrchestrationTargetPointRegistry.TryGetPointTarget(command.Target.TargetEntityId, out Float3 point))
+                            SetExternalPoint(point.ToVector3());
                         else
                             ClearExternal();
                         break;
@@ -292,7 +292,7 @@ public sealed class EnemyCombatCommandExecutor2D : MonoBehaviour, IOrchestration
                     target = resolved != null ? resolved.name : command.Target.TargetEntityId.ToStableInt().ToString();
                     break;
                 case OrchestrationTargetKind.Point:
-                    if (OrchestrationTargetPointRegistry.TryGetPointTarget(command.Target.TargetEntityId, out Float2 point))
+                    if (OrchestrationTargetPointRegistry.TryGetPointTarget(command.Target.TargetEntityId, out Float3 point))
                         target = point.ToString();
                     else
                         target = command.Target.TargetEntityId.ToStableInt().ToString();

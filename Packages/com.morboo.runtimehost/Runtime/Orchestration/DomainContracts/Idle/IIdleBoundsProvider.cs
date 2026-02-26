@@ -24,7 +24,7 @@ public interface IIdleBoundsProvider
     /// Anchor is always inside or at center of bounds for debuggability.
     /// </para>
     /// </summary>
-    /// <param name="anchor">The 2D anchor point.</param>
+    /// <param name="anchor">The 3D anchor point.</param>
     /// <returns>True if anchor is valid.</returns>
-    bool TryGetIdleAnchor(out Vector2 anchor);
+    bool TryGetIdleAnchor(out Vector3 anchor);
 }

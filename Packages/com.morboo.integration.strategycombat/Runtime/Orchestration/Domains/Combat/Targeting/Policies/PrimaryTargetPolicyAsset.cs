@@ -9,7 +9,7 @@ public sealed class PrimaryTargetPolicyAsset : CombatTargetingPolicyAsset
 {
     public override EntityId ChooseTarget(
         EntityId selfEntityId,
-        Float2 selfPosition,
+        Float3 selfPosition,
         EntityId primaryTarget,
         DomainTargetSet targetSet,
         float now,

@@ -199,11 +199,15 @@ public sealed class CombatDomainComponent : DomainComponent
 
         // ── Fill Top-K target set (optional, domain-owned provider) ──
         DomainTargetSet resolvedTargetSet = null;
+        IDomainTargetSetProvider targetSetProvider;
         DomainTargetProviderValidationFailure targetProviderValidation =
-            DomainTargetProviderValidation.Validate(combatTargetProvider, DomainId);
+            DomainTargetProviderValidation.Validate<IDomainTargetSetProvider>(
+                combatTargetProvider,
+                DomainId,
+                out targetSetProvider);
         if (targetProviderValidation == DomainTargetProviderValidationFailure.None)
         {
-            resolvedTargetSet = combatTargetProvider.ResolveTargetSet();
+            targetSetProvider.TryResolveTargetSet(out resolvedTargetSet);
         }
         else
         {
@@ -215,7 +219,8 @@ public sealed class CombatDomainComponent : DomainComponent
                 "CombatDomainComponent",
                 "[CombatDomainComponent] Missing CombatTargetProvider. " +
                 "Combat target-set ownership must be provided explicitly by the domain.",
-                this);
+                this,
+                requiredCapabilityLabel: nameof(IDomainTargetSetProvider));
         }
 
         if (resolvedTargetSet != null)
@@ -264,7 +269,7 @@ public sealed class CombatDomainComponent : DomainComponent
             }
         }
 
-        Float2 anchor = ctx.Anchor;
+        Float3 anchor = ctx.Anchor;
         float aggroSqr = aggroRadius * aggroRadius;
         float bestDistSqr = float.MaxValue;
         int bestIndex = -1;
@@ -284,7 +289,7 @@ public sealed class CombatDomainComponent : DomainComponent
                     continue;
             }
 
-            Float2 actorPos = world.GetActorPosition(i);
+            Float3 actorPos = world.GetActorPosition(i);
 
             bool qualifies;
             switch (searchMode)
@@ -294,14 +299,14 @@ public sealed class CombatDomainComponent : DomainComponent
                     break;
 
                 default: // Radius
-                    float distToAnchor = Float2.DistanceSqr(actorPos, anchor);
+                    float distToAnchor = Float3.DistanceSqr(actorPos, anchor);
                     qualifies = distToAnchor <= aggroSqr;
                     break;
             }
 
             if (!qualifies) continue;
 
-            float distSqr = Float2.DistanceSqr(actorPos, anchor);
+            float distSqr = Float3.DistanceSqr(actorPos, anchor);
             if (distSqr < bestDistSqr)
             {
                 bestDistSqr = distSqr;
@@ -332,7 +337,7 @@ public sealed class CombatDomainComponent : DomainComponent
             if (cam == null) return;
         }
 
-        Float2 anchor = ctx.Anchor;
+        Float3 anchor = ctx.Anchor;
         float aggroSqr = aggroRadius * aggroRadius;
 
         int actorCount = world.ActorCount;
@@ -353,7 +358,7 @@ public sealed class CombatDomainComponent : DomainComponent
                     continue;
             }
 
-            Float2 actorPos = world.GetActorPosition(i);
+            Float3 actorPos = world.GetActorPosition(i);
 
             bool qualifies;
             switch (searchMode)
@@ -362,7 +367,7 @@ public sealed class CombatDomainComponent : DomainComponent
                     qualifies = IsOnScreen(actorPos, cam);
                     break;
                 default:
-                    qualifies = Float2.DistanceSqr(actorPos, anchor) <= aggroSqr;
+                    qualifies = Float3.DistanceSqr(actorPos, anchor) <= aggroSqr;
                     break;
             }
 
@@ -371,7 +376,7 @@ public sealed class CombatDomainComponent : DomainComponent
             EntityId eid = world.GetActorEntityId(i);
             if (eid.IsNone) continue;
 
-            float distSqr = Float2.DistanceSqr(actorPos, anchor);
+            float distSqr = Float3.DistanceSqr(actorPos, anchor);
             InsertTopK(eid, distSqr, k);
         }
 
@@ -419,9 +424,9 @@ public sealed class CombatDomainComponent : DomainComponent
     //  Screen visibility helper
     // ──────────────────────────────────────────────────────────────────
 
-    bool IsOnScreen(Float2 worldPos, Camera cam)
+    bool IsOnScreen(Float3 worldPos, Camera cam)
     {
-        Vector3 vp = cam.WorldToViewportPoint(new Vector3(worldPos.X, worldPos.Y, 0f));
+        Vector3 vp = cam.WorldToViewportPoint(new Vector3(worldPos.X, worldPos.Y, worldPos.Z));
         if (vp.z <= 0f) return false;
         float m = Mathf.Max(0f, viewportMargin);
         return vp.x >= -m && vp.x <= 1f + m && vp.y >= -m && vp.y <= 1f + m;

@@ -40,7 +40,7 @@ public abstract class IdlePolicyAsset : ScriptableObject, IActorCapabilityGatedP
     /// <param name="now">Current time from <see cref="TickContext.Now"/> or <see cref="IWorldQuery.Now"/>.</param>
     /// <param name="debugInfo">Short debug string for logging (null is fine; avoid allocations).</param>
     /// <returns>The orchestration command to apply.</returns>
-    public abstract OrchestrationCommand ChooseCommand(Transform self, Vector2 anchor, float now, out string debugInfo);
+    public abstract OrchestrationCommand ChooseCommand(Transform self, Vector3 anchor, float now, out string debugInfo);
 
     /// <summary>
     /// Per-role dispatch overload used by <see cref="OrchestrationArbiter"/>.
@@ -53,7 +53,7 @@ public abstract class IdlePolicyAsset : ScriptableObject, IActorCapabilityGatedP
     /// </para>
     /// </summary>
     public virtual OrchestrationCommand ChooseCommand(
-        Transform self, Vector2 anchor, float now,
+        Transform self, Vector3 anchor, float now,
         int roleSeed, int entitySeed,
         out string debugInfo)
     {
@@ -77,14 +77,14 @@ public abstract class IdlePolicyAsset : ScriptableObject, IActorCapabilityGatedP
     /// <param name="world">Read-only world snapshot for crowd scoring and role lookups.</param>
     /// <param name="debugInfo">Short debug string (null is fine; avoid allocations).</param>
     public virtual OrchestrationCommand ChooseCommand(
-        Float2 selfPosition, EntityId selfId,
-        Float2 anchor, float now,
+        Float3 selfPosition, EntityId selfId,
+        Float3 anchor, float now,
         int roleSeed, int entitySeed,
         IWorldQuery world,
         out string debugInfo)
     {
         // Default: delegate to seed-based overload (ignores world).
         // Policies that need crowd data override this directly.
-        return ChooseCommand(null, anchor.ToVector2(), now, roleSeed, entitySeed, out debugInfo);
+        return ChooseCommand(null, anchor.ToVector3(), now, roleSeed, entitySeed, out debugInfo);
     }
 }

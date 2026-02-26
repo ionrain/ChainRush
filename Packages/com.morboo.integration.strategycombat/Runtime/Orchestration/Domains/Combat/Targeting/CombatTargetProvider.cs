@@ -4,7 +4,7 @@ using UnityEngine;
 /// Domain-owned combat target-set provider (StrategyCombat).
 /// Keeps target-set ownership/resolution out of RuntimeHost pipeline composition.
 /// </summary>
-public sealed class CombatTargetProvider : DomainTargetProvider
+public sealed class CombatTargetProvider : DomainTargetProvider, IDomainTargetSetProvider
 {
     [Tooltip("Optional explicit DomainTargetSet owned by this combat domain (CombatTargetSet or another domain-target carrier component).")]
     [SerializeField] DomainTargetSet targetSet;
@@ -13,10 +13,13 @@ public sealed class CombatTargetProvider : DomainTargetProvider
     public override OrchestrationDomainId DomainId => OrchestrationDomainId.Combat;
     public override bool IsConfiguredForOrchestration => targetSet != null;
 
-    public DomainTargetSet ResolveTargetSet()
+    public bool TryResolveTargetSet(out DomainTargetSet set)
     {
         if (targetSet != null)
-            return targetSet;
+        {
+            set = targetSet;
+            return true;
+        }
 
         if (!_warnedMissingTargetSet)
         {
@@ -28,7 +31,14 @@ public sealed class CombatTargetProvider : DomainTargetProvider
                 this);
         }
 
-        return null;
+        set = null;
+        return false;
+    }
+
+    public DomainTargetSet ResolveTargetSet()
+    {
+        DomainTargetSet set;
+        return TryResolveTargetSet(out set) ? set : null;
     }
 
     /// <summary>

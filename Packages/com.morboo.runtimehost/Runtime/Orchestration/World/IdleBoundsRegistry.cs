@@ -178,7 +178,7 @@ public static class IdleBoundsRegistry
     /// PERF: One pass over _entries (typically 1-4). Skips destroyed providers.
     /// Last wins on duplicate roles; warns once per duplicate.
     /// </summary>
-    public static void FillResolvedBounds(Dictionary<RoleId, AABB2D> target)
+    public static void FillResolvedBounds(Dictionary<RoleId, AABB3D> target)
     {
         target.Clear();
         for (int i = 0; i < _entries.Count; i++)
@@ -194,7 +194,7 @@ public static class IdleBoundsRegistry
                         "[IdleBoundsRegistry] Duplicate bounds for role '", e.RoleId.ToString(),
                         "'; last wins. Check scene for conflicting providers."));
                 }
-                target[e.RoleId] = b.ToAABB2D();
+                target[e.RoleId] = b.ToAABB3D();
             }
         }
     }

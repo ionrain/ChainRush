@@ -14,9 +14,9 @@ public static class OrchestrationTargetPointRegistry
     // Synthetic point-target namespace bit. Assumes gameplay entity ids are non-negative.
     const int PointNamespaceMask = unchecked((int)0x80000000);
 
-    static readonly Dictionary<EntityId, Float2> _pointsByTargetId = new Dictionary<EntityId, Float2>(256);
+    static readonly Dictionary<EntityId, Float3> _pointsByTargetId = new Dictionary<EntityId, Float3>(256);
 
-    public static EntityId SetOperatorPointTarget(EntityId operatorEntityId, in Float2 point)
+    public static EntityId SetOperatorPointTarget(EntityId operatorEntityId, in Float3 point)
     {
         EntityId targetId = GetPointTargetEntityId(operatorEntityId);
         if (targetId.IsNone)
@@ -38,7 +38,7 @@ public static class OrchestrationTargetPointRegistry
         return new EntityId(raw | PointNamespaceMask);
     }
 
-    public static bool TryGetPointTarget(EntityId targetEntityId, out Float2 point)
+    public static bool TryGetPointTarget(EntityId targetEntityId, out Float3 point)
     {
         return _pointsByTargetId.TryGetValue(targetEntityId, out point);
     }

@@ -19592,9 +19592,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitIdleBoundsProvider
   role: {fileID: 11400000, guid: c6736ecf493644fbe97d5d9c082c9155, type: 2}
-  boundsCollider: {fileID: 523975914}
+  boundsCollider2D: {fileID: 523975914}
+  boundsCollider3D: {fileID: 0}
   useColliderBounds: 1
-  fallbackSize: {x: 6, y: 3}
+  fallbackSize: {x: 6, y: 3, z: 0}
   anchorOverride: {fileID: 523975915}
 --- !u!1 &524261698
 GameObject:
@@ -113415,9 +113416,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitIdleBoundsProvider
   role: {fileID: 11400000, guid: 19dd534fc277d4de896d3cfbe1c7f807, type: 2}
-  boundsCollider: {fileID: 2136636755}
+  boundsCollider2D: {fileID: 2136636755}
+  boundsCollider3D: {fileID: 0}
   useColliderBounds: 1
-  fallbackSize: {x: 6, y: 3}
+  fallbackSize: {x: 6, y: 3, z: 0}
   anchorOverride: {fileID: 2136636754}
 --- !u!1 &2137977733
 GameObject:

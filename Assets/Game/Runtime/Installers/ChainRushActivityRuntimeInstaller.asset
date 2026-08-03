@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37037df87af154569910410e1ce7618b, type: 3}
+  m_Name: ChainRushActivityRuntimeInstaller
+  m_EditorClassIdentifier: Core::Core.Activities.GameRuntime.Installers.ActivityRuntimeInstallerData
+  clearExistingDefinitionsOnInstall: 1
+  resetRuntimeOnInstall: 1
+  activities:
+  - {fileID: 11400000, guid: 47ae82ad7cab24d298ee11e58cf69538, type: 2}
+  - {fileID: 11400000, guid: 52202b07403a0478c9c2d7bd5648035b, type: 2}

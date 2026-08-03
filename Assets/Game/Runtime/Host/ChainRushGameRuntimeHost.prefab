@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8413035143465012615
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4408501798901975401}
+  - component: {fileID: 2293196357597022119}
+  m_Layer: 0
+  m_Name: ChainRushGameRuntimeHost
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4408501798901975401
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8413035143465012615}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2293196357597022119
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8413035143465012615}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f12f091aa81a04fde9e123c5f0197550, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Core::Core.GameRuntime.GameRuntimeHost
+  profile: {fileID: 11400000, guid: 0b6864bbf1e364d49a6f81c3b62d939e, type: 2}
+  startupPlan: {fileID: 11400000, guid: 9507f70848d0a4bc39d8d869802d3536, type: 2}
+  determinism: {fileID: 11400000, guid: 6ba224284014d4d88a90ab17240db609, type: 2}
+  owner: {fileID: 11400000, guid: 97e9ee6284cd14460961d53ac3b9c613, type: 2}
+  startPoolSession: 0
+  initializeOnAwake: 1
+  failFast: 1
+  unlockFrameRate: 0
+  unlockedTargetFrameRate: 60
+  useSerializedSeedOverride: 1
+  serializedSeedOverride: 12345
+  uiPopupRoot: {fileID: 0}
+  onInitialized:
+    m_PersistentCalls:
+      m_Calls: []

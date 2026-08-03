@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a068a65e44054e6a9cafb11589bc128, type: 3}
+  m_Name: ChainRushGameRuntimeProfile
+  m_EditorClassIdentifier: Core::Core.GameRuntime.GameRuntimeProfileData
+  installers:
+  - {fileID: 11400000, guid: c72736d20df6d4620a703d4514f0ca49, type: 2}
+  - {fileID: 11400000, guid: 5efc7a7b31fb64e17851e522b7fcdb7e, type: 2}
+  - {fileID: 11400000, guid: aa208c759b06d4628b7df8afcc9e941c, type: 2}
+  - {fileID: 11400000, guid: f5a237547bfe243ce82cc5b6aa6afc75, type: 2}
+  - {fileID: 11400000, guid: 6d2cecba651be4e6793b10786e1f57ef, type: 2}
+  - {fileID: 11400000, guid: 39009af7c7f5d4ddbb7ae0e75d00484e, type: 2}
+  - {fileID: 11400000, guid: 213350a9a5480427cadcc77098966051, type: 2}
+  - {fileID: 11400000, guid: 67b80436d85d844e8b95cd6fc92ec23a, type: 2}
+  diagnostics:
+    determinismStart: 0
+    aiBrain: 0
+    skill: 0
+    movement: 0
+    groupRuntime: 0
+    groupFormation: 0
+    groupPriority: 0
+    fog: 0
+    fogMemory: 0
+    economySpendTrace: 0
+    economyTransactionTrace: 0
+    orchestrationFailures: 0
+    orchestrationTrace: 0
+    orchestrationFacts: 0
+    orchestrationOperators: 0
+    orchestrationMaxRows: 0

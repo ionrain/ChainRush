@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 949a57bb5a5c444ca8ed065556158e4f, type: 3}
+  m_Name: ChainRushTaxonomyRuntimeInstaller
+  m_EditorClassIdentifier: Core::Core.GameRuntime.Installers.TaxonomyRuntimeInstallerData
+  clearExistingDefinitionsOnInstall: 1
+  families:
+  - {fileID: 11400000, guid: 338f62cee888b4adbb35cf988a520470, type: 2}
+  - {fileID: 11400000, guid: b84e82c1d663f4eccbfff8bae2597760, type: 2}
+  terms:
+  - {fileID: 11400000, guid: c44a7831da1204e789b4239312234587, type: 2}
+  - {fileID: 11400000, guid: 1d56d6d471e9643298aa95ba74ca0c9a, type: 2}
+  - {fileID: 11400000, guid: 4ceffc5ec75d94a00b7a7b29748493b2, type: 2}
+  - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}

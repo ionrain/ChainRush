@@ -1,0 +1,93 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 266d0f8e0e1234f37b4c6ebbe34dd917, type: 3}
+  m_Name: ChainRushAutobattleActivity
+  m_EditorClassIdentifier: Core::Core.Activities.ActivityData
+  domainTypePreview: 0
+  id: chainrush.activity.autobattle
+  title:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  description:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  icon: {fileID: 0}
+  precision: 0
+  allowedOperations: 15
+  tags: []
+  slotFootprint: 1
+  stackCapacity: 0
+  activityType: {fileID: 11400000, guid: cf8ca0552267b47088289853db8427dd, type: 2}
+  schedule:
+    scheduleType: 0
+    tickDelta: 0.033333335
+    checkInterval: 0
+    trackDay: 0
+    trackWeek: 0
+    trackMonth: 0
+    catchUpPolicyType: 1
+    maxStepsPerFrame: 1
+  simulation:
+    bindingType: 1
+    scope: 2
+  topology: {fileID: 11400000, guid: 64b411877f1d6404986bcbf65d4212ef, type: 2}
+  space:
+    rid: 2807516141394329705
+  teams:
+  - slotCount: 1
+    entryRules: []
+    objectives: []
+    wallets:
+    - wallet: {fileID: 11400000, guid: 16da9107fd104467980bd94f53e0f9e1, type: 2}
+      seed: []
+    features: []
+  - slotCount: 1
+    entryRules: []
+    objectives: []
+    wallets:
+    - wallet: {fileID: 11400000, guid: 16da9107fd104467980bd94f53e0f9e1, type: 2}
+      seed: []
+    features: []
+  activityContextTag: {fileID: 11400000, guid: 1d56d6d471e9643298aa95ba74ca0c9a, type: 2}
+  allowBots: 1
+  result:
+    endMode: 1
+    successThreshold: 1
+    failThreshold: -1
+    autoEndAfterSeconds: 0
+  completionReward: {fileID: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: 2807516141394329705
+      type: {class: ActivityPrefabSpaceData, ns: Core.Activities, asm: Core}
+      data:
+        prefabReference:
+          m_AssetGUID: 5e3230375bf51449684beaac86fe4f8b
+          m_SubObjectName: 
+          m_SubObjectType: 
+          m_SubObjectGUID: 
+          m_EditorAssetChanged: 0
+        origin: {x: 0, y: 0, z: 0}
+        rotationDegrees: {x: 0, y: 0, z: 0}

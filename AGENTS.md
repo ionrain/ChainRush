@@ -117,3 +117,8 @@ These rules are strict for project-owned code and naming.
 22. Never use Unity MCP for this project in any task.
    Do not call Unity MCP tools, Unity MCP skills, or `unity-mcp-cli` for inspection, asset editing, logs, tests, play mode, scene work, or any other project operation.
    Use repository files, standard command-line tools, Unity batchmode commands when explicitly appropriate, and direct code/build/test inspection instead.
+
+23. When asking the user a question, stop and wait for their explicit answer for as long as necessary.
+   Never silently choose a recommended option, infer an answer from missing input, continue after a timeout, or apply any default on the user's behalf.
+   Never enable an auto-resolution timer for a user question. When using `request_user_input`, always omit `autoResolutionMs`.
+   Resume the affected work only after the user has explicitly answered the question.

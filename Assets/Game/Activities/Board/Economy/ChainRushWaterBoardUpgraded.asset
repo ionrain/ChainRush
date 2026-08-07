@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9969bb010093e43c6993c07d9c072f75, type: 3}
+  m_Name: ChainRushWaterBoardUpgraded
+  m_EditorClassIdentifier: Core::Core.CapabilityHosts.CapabilityHostData
+  domainTypePreview: 3
+  id: chainrush.board.water.upgraded
+  title: {m_TableReference: {m_TableCollectionName: }, m_TableEntryReference: {m_KeyId: 0, m_Key: }, m_FallbackState: 0, m_WaitForCompletion: 0, m_LocalVariables: []}
+  description: {m_TableReference: {m_TableCollectionName: }, m_TableEntryReference: {m_KeyId: 0, m_Key: }, m_FallbackState: 0, m_WaitForCompletion: 0, m_LocalVariables: []}
+  icon: {fileID: 0}
+  precision: 0
+  allowedOperations: 31
+  tags: []
+  slotFootprint: 1
+  stackCapacity: 0
+  capabilities: []
+  walletEntries: []
+  usagePolicy:
+    accessType: 0
+    diplomacyCompareOperation: 3
+    diplomacyScoreThreshold: -100
+  projectionPrefabReference:
+    m_AssetGUID: 7180864eeeff84107a4fc1d76280a902
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  projectionPool:
+    demandModeType: 0
+    demandValue: 1
+    expandable: 1
+    maxCapacity: 36
+  references:
+    version: 2
+    RefIds: []

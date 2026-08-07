@@ -74,13 +74,22 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 2807516141394329704
-      type: {class: ActivityPrefabSpaceData, ns: Core.Activities, asm: Core}
+      type: {class: ActivityUISpaceData, ns: Core.Activities, asm: Core}
       data:
-        prefabReference:
-          m_AssetGUID: e9c8261180b05449fafdea2a1c5976a3
-          m_SubObjectName: 
-          m_SubObjectType: 
-          m_SubObjectGUID: 
-          m_EditorAssetChanged: 0
-        origin: {x: 0, y: 0, z: 0}
-        rotationDegrees: {x: 0, y: 0, z: 0}
+        presentation:
+          rid: 2807516141394329705
+        grid:
+          size: {x: 6, y: 6}
+          origin: {x: 0, y: 0}
+          cellTags: []
+          markerUsagePolicy:
+            selectionType: 0
+            reusePolicyType: 1
+        projectionSettings:
+          cellSize: {x: 88, y: 88}
+          spacing: {x: 6, y: 6}
+    - rid: 2807516141394329705
+      type: {class: UIPopupPresentationData, ns: Core.UI.Flow, asm: Core}
+      data:
+        popupPrefab: {fileID: 400000, guid: 0642783c541484a2fb866b3ec16863c6, type: 3}
+        isModal: 1

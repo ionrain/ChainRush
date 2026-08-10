@@ -1,15 +1,24 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Core;
 using Core.Activities;
+using Core.CapabilityHosts;
+using Core.Economy;
 using Core.Activities.GameRuntime.Installers;
 using Core.GameFlow;
 using Core.GameFlow.GameRuntime;
 using Core.GameFlow.GameRuntime.Installers;
 using Core.GameRuntime;
 using Core.GameRuntime.Installers;
+using Core.Objectives;
+using Core.Orchestration;
+using Core.Production.Authoring;
+using Core.Projection;
 using Core.Scheduling;
 using Core.Simulation;
+using Core.Skills;
+using Core.Taxonomy;
 using Core.World;
 using NUnit.Framework;
 using UnityEditor;
@@ -36,16 +45,47 @@ namespace ChainRush.Tests.EditMode
             BoardRoot + "/GameFlow/ChainRushBoardFlow.asset";
         const string AutobattleSpacePath =
             AutobattleRoot + "/Space/ChainRushAutobattleSpace.prefab";
-        const string BoardSpacePath =
-            BoardRoot + "/Space/ChainRushBoardSpace.prefab";
+        const string BoardWaterProjectionPath =
+            BoardRoot + "/Projection/ChainRushWaterBoardBase.prefab";
         const string RuntimeProfilePath =
             "Assets/Game/Runtime/Host/ChainRushGameRuntimeProfile.asset";
         const string StartupPlanPath =
             "Assets/Game/Runtime/Startup/ChainRushGameStartupPlan.asset";
+        const string BoardObjectivePath =
+            BoardRoot + "/Objectives/ChainRushBoardPopulationObjective.asset";
+        const string BoardPopulationAgentPath =
+            BoardRoot + "/Agents/ChainRushBoardPopulationAgent.asset";
+        const string BoardPopulationProducerPath =
+            BoardRoot + "/Economy/ChainRushBoardPopulationProducer.asset";
+        const string BoardWaterBasePath =
+            BoardRoot + "/Economy/ChainRushWaterBoardBase.asset";
+        const string BoardRefreshRecipePath =
+            BoardRoot + "/Production/ChainRushBoardRefreshRecipe.asset";
+        const string BoardWaterBaseRecipePath =
+            BoardRoot + "/Production/ChainRushWaterBoardBaseRecipe.asset";
+        const string BoardPopulationProductionPath =
+            BoardRoot + "/Production/ChainRushBoardPopulationProduction.asset";
+        const string BoardMergeProductionPath =
+            BoardRoot + "/Production/ChainRushBoardProduction.asset";
+        const string BoardMergeRecipePath =
+            BoardRoot + "/Production/ChainRushBoardMergeRecipe.asset";
+        const string BoardMergeSkillPath =
+            BoardRoot + "/Skills/ChainRushBoardMergeSkill.asset";
+        const string BoardOrchestrationPath =
+            BoardRoot + "/Orchestration/ChainRushBoardOrchestration.asset";
+        const string SharedWalletTagPath =
+            SharedRoot + "/Economy/ChainRushActivityWalletTag.asset";
+        const string BoardWalletTagPath =
+            BoardRoot + "/Economy/ChainRushBoardWalletTag.asset";
+        const string BoardTurnTokenPath =
+            SharedRoot + "/Economy/ChainRushBoardTurnToken.asset";
+        const string WaterUnitPath =
+            SharedRoot + "/Units/Water/ChainRushWaterUnit.asset";
 
         const string AutobattleActivityTypeId = "chainrush.activity-type.autobattle";
         const string BoardActivityTypeId = "chainrush.activity-type.board";
         const string BoardActivationTermId = "chainrush.activity.activation.board";
+        const string BoardCellTagId = "chainrush.board.cell";
 
         [Test]
         public void ActivityAssets_ReferenceOnlyTheirOwnerOrSharedAssets()
@@ -92,8 +132,8 @@ namespace ChainRush.Tests.EditMode
             Assert.AreEqual(1, board.Teams[0].SlotCount);
             Assert.IsFalse(board.AllowBots);
             Assert.AreEqual(ActivityEndMode.Manual, board.Result.EndMode);
-            Assert.AreEqual(0, board.Teams[0].Objectives.Count);
-            Assert.AreEqual(0, board.Teams[0].Features.Count);
+            Assert.AreEqual(1, board.Teams[0].Objectives.Count);
+            Assert.AreEqual(1, board.Teams[0].Features.Count);
             AssertTopology(
                 board.Topology,
                 TopologyType.Grid,
@@ -101,7 +141,7 @@ namespace ChainRush.Tests.EditMode
 
             Assert.AreEqual(1, autobattle.Teams[0].Wallets.Count);
             Assert.AreEqual(1, autobattle.Teams[1].Wallets.Count);
-            Assert.AreEqual(1, board.Teams[0].Wallets.Count);
+            Assert.AreEqual(2, board.Teams[0].Wallets.Count);
             Assert.AreSame(
                 autobattle.Teams[0].Wallets[0].Wallet,
                 autobattle.Teams[1].Wallets[0].Wallet);
@@ -110,9 +150,165 @@ namespace ChainRush.Tests.EditMode
                 board.Teams[0].Wallets[0].Wallet);
 
             Assert.IsInstanceOf<ActivityPrefabSpaceData>(autobattle.Space);
-            Assert.IsInstanceOf<ActivityPrefabSpaceData>(board.Space);
-            Assert.IsTrue(((ActivityPrefabSpaceData)autobattle.Space).PrefabReference.RuntimeKeyIsValid());
-            Assert.IsTrue(((ActivityPrefabSpaceData)board.Space).PrefabReference.RuntimeKeyIsValid());
+            var autobattleSpace = (ActivityPrefabSpaceData)autobattle.Space;
+            Assert.IsTrue(autobattleSpace.PrefabReference.RuntimeKeyIsValid());
+            Assert.AreEqual(0, autobattleSpace.MarkerProviders.Count);
+
+            Assert.IsInstanceOf<ActivityUISpaceData>(board.Space);
+            var boardSpace = (ActivityUISpaceData)board.Space;
+            Assert.NotNull(boardSpace.Presentation);
+            Assert.AreEqual(1, boardSpace.MarkerProviders.Count);
+            Assert.IsInstanceOf<SpatialGridProviderData>(boardSpace.MarkerProviders[0]);
+            var boardGrid = (SpatialGridProviderData)boardSpace.MarkerProviders[0];
+            Assert.AreEqual(new Vector2Int(4, 4), boardGrid.Size);
+            Assert.AreEqual(Vector2Int.zero, boardGrid.Origin);
+            Assert.AreEqual(1, boardGrid.MarkerTags.Count);
+            Assert.AreEqual(BoardCellTagId, boardGrid.MarkerTags[0].Id);
+            Assert.AreEqual(1, boardSpace.ProjectionMarkerTags.Count);
+            Assert.AreSame(boardGrid.MarkerTags[0], boardSpace.ProjectionMarkerTags[0]);
+            Assert.NotNull(boardSpace.ProjectionSettings);
+            Assert.IsTrue(boardSpace.ProjectionSettings.IsValid);
+        }
+
+        [Test]
+        public void BoardVerticalSlice_WiresObjectivePopulationAndMergeProduction()
+        {
+            ActivityData board = LoadRequiredAsset<ActivityData>(BoardActivityPath);
+            ObjectiveTemplateData objective =
+                LoadRequiredAsset<ObjectiveTemplateData>(BoardObjectivePath);
+            ActivityAgentDefinitionData populationAgent =
+                LoadRequiredAsset<ActivityAgentDefinitionData>(BoardPopulationAgentPath);
+            CapabilityHostData populationProducer =
+                LoadRequiredAsset<CapabilityHostData>(BoardPopulationProducerPath);
+            CapabilityHostData waterBase =
+                LoadRequiredAsset<CapabilityHostData>(BoardWaterBasePath);
+            CapabilityHostData waterUnit = LoadRequiredAsset<CapabilityHostData>(WaterUnitPath);
+            EconomyAssetData turnToken = LoadRequiredAsset<EconomyAssetData>(BoardTurnTokenPath);
+            TaxonomyTermData sharedWalletTag =
+                LoadRequiredAsset<TaxonomyTermData>(SharedWalletTagPath);
+            TaxonomyTermData boardWalletTag =
+                LoadRequiredAsset<TaxonomyTermData>(BoardWalletTagPath);
+            ProductionRecipeData refreshRecipe =
+                LoadRequiredAsset<ProductionRecipeData>(BoardRefreshRecipePath);
+            ProductionRecipeData waterBaseRecipe =
+                LoadRequiredAsset<ProductionRecipeData>(BoardWaterBaseRecipePath);
+            ProductionData populationProduction =
+                LoadRequiredAsset<ProductionData>(BoardPopulationProductionPath);
+            ProductionData mergeProduction =
+                LoadRequiredAsset<ProductionData>(BoardMergeProductionPath);
+            ProductionRecipeData mergeRecipe =
+                LoadRequiredAsset<ProductionRecipeData>(BoardMergeRecipePath);
+            SkillData mergeSkill = LoadRequiredAsset<SkillData>(BoardMergeSkillPath);
+            ActivityOrchestrationConfigData orchestration =
+                LoadRequiredAsset<ActivityOrchestrationConfigData>(BoardOrchestrationPath);
+            TaxonomyTermData waterTag = waterBase.Tags.Single();
+            TaxonomyRuntimeInstallerData taxonomyInstaller =
+                LoadRequiredAsset<TaxonomyRuntimeInstallerData>(
+                    "Assets/Game/Runtime/Installers/ChainRushTaxonomyRuntimeInstaller.asset");
+
+            Assert.AreSame(objective, board.Teams[0].Objectives.Single().Template);
+            Assert.AreSame(orchestration, board.Teams[0].Features.Single());
+            CollectionAssert.Contains(
+                ReadObjectReferences<TaxonomyTermData>(taxonomyInstaller, "terms"),
+                waterTag,
+                "The taxonomy installer must register the Water Board item term before economy queries run.");
+
+            Assert.AreEqual(1, objective.Root.ActivateConditions.Count);
+            var activation = objective.Root.ActivateConditions.Single()
+                as ObjectiveConditionEconomyMetric;
+            Assert.NotNull(activation);
+            Assert.AreSame(turnToken, activation.Asset);
+            Assert.AreEqual(EconomyFormType.Stack, activation.FormType);
+            Assert.AreEqual(CompareOperation.GreaterOrEqual, activation.CompareOperation);
+            Assert.AreEqual(1L, activation.TargetValue);
+            Assert.AreEqual(1, activation.WalletTags.Count);
+            Assert.AreSame(sharedWalletTag, activation.WalletTags[0]);
+
+            Assert.AreEqual(1, objective.Root.SuccessConditions.Count);
+            var success = objective.Root.SuccessConditions.Single()
+                as ObjectiveConditionMarkerAvailability;
+            Assert.NotNull(success);
+            Assert.IsNull(success.EconomyAsset);
+            Assert.AreEqual(EconomyFormType.Token, success.EconomyFormType);
+            Assert.AreEqual(CompareOperation.Equal, success.CompareOperation);
+            Assert.AreEqual(0L, success.TargetValue);
+            Assert.AreEqual(BoardCellTagId, success.MarkerTags.Single().Id);
+
+            Assert.AreEqual(2, orchestration.Modules.Count);
+            Assert.IsInstanceOf<ProductionStateOrchestrationModuleData>(orchestration.Modules[0]);
+            Assert.IsInstanceOf<ProjectionStateOrchestrationModuleData>(orchestration.Modules[1]);
+
+            Assert.IsInstanceOf<PopulationActivityOrchestrationAgentData>(populationAgent.Agent);
+            var population = (PopulationActivityOrchestrationAgentData)populationAgent.Agent;
+            Assert.NotNull(population.Planner);
+            Assert.AreSame(refreshRecipe, population.CompletionRecipe);
+            Assert.AreEqual(BoardCellTagId, population.MarkerTags.Single().Id);
+            var producerCriterion = populationAgent.ExecutorSelectionCriteria
+                .OfType<MaterializedEntitySelectionCriterionData>()
+                .Single();
+            Assert.AreSame(populationProducer, producerCriterion.EconomyAsset);
+            Assert.Contains(CapabilityHostType.ProductionOwner, populationProducer.Capabilities
+                .Select(entry => entry.CapabilityType)
+                .ToList());
+            Assert.IsTrue(populationProducer.WalletEntries
+                .SelectMany(entry => entry.Seed)
+                .Any(seed => seed.Asset == populationProduction
+                    && seed.FormType == EconomyFormType.Stack
+                    && seed.Amount == 1L));
+
+            Assert.AreEqual(1, refreshRecipe.Inputs.Count);
+            AssertEconomyOperation(
+                refreshRecipe.Inputs[0].Operation,
+                turnToken,
+                EconomyFormType.Stack,
+                1L,
+                sharedWalletTag);
+            Assert.AreEqual(0, refreshRecipe.Outputs.Count);
+
+            Assert.AreEqual(0, waterBaseRecipe.Inputs.Count);
+            Assert.AreEqual(1, waterBaseRecipe.Outputs.Count);
+            AssertEconomyOutput(
+                waterBaseRecipe.Outputs[0].Output,
+                waterBase,
+                EconomyFormType.Token,
+                1L,
+                boardWalletTag);
+            Assert.AreEqual(BoardCellTagId, populationProduction.MaterializationProviderType.Id);
+
+            Assert.AreEqual(3, mergeRecipe.Inputs.Count);
+            for (int inputIndex = 0; inputIndex < mergeRecipe.Inputs.Count; inputIndex++)
+            {
+                AssertEconomyOperation(
+                    mergeRecipe.Inputs[inputIndex].Operation,
+                    waterBase,
+                    EconomyFormType.Token,
+                    1L,
+                    boardWalletTag);
+            }
+
+            Assert.AreEqual(1, mergeRecipe.Outputs.Count);
+            AssertEconomyOutput(
+                mergeRecipe.Outputs[0].Output,
+                waterUnit,
+                EconomyFormType.Token,
+                1L,
+                sharedWalletTag);
+            Assert.IsNull(mergeProduction.MaterializationProviderType);
+
+            Assert.AreEqual(SkillTargetType.Entities, mergeSkill.TargetType);
+            Assert.AreEqual(3, mergeSkill.TargetCount.Min);
+            Assert.AreEqual(3, mergeSkill.TargetCount.Max);
+            var productionEffect = mergeSkill.Effects.OfType<SkillProductionEffectData>().Single();
+            Assert.AreSame(mergeRecipe, productionEffect.Recipe);
+            Assert.AreEqual(3, productionEffect.InputMappings.Count);
+            for (int mappingIndex = 0; mappingIndex < productionEffect.InputMappings.Count; mappingIndex++)
+            {
+                Assert.AreEqual(mappingIndex, productionEffect.InputMappings[mappingIndex].RecipeInputIndex);
+                Assert.AreEqual(mappingIndex, productionEffect.InputMappings[mappingIndex].TargetIndex);
+            }
+
+            Assert.IsEmpty(waterUnit.Capabilities);
+            Assert.IsFalse(waterUnit.ProjectionPrefabReference.RuntimeKeyIsValid());
         }
 
         [Test]
@@ -175,6 +371,11 @@ namespace ChainRush.Tests.EditMode
                 typeof(PlayerDefinitionsInstallerData),
                 typeof(ActivityRuntimeInstallerData),
                 typeof(GameFlowDefinitionsInstallerData),
+                typeof(GameplayFoundationInstallerData),
+                typeof(GameplaySkillsInstallerData),
+                typeof(ProductionRuntimeInstallerData),
+                typeof(SimulationControlRuntimeInstallerData),
+                typeof(ProjectionServiceRuntimeData),
             };
 
             CollectionAssert.AreEqual(
@@ -193,7 +394,7 @@ namespace ChainRush.Tests.EditMode
         }
 
         [Test]
-        public void ActivitySpaces_AreAddressableInSeparateGroups()
+        public void AutobattleWorldSpace_IsAddressable()
         {
             AddressableAssetSettings settings = AddressableAssetSettingsDefaultObject.Settings;
             Assert.NotNull(settings, "AddressableAssetSettings are not configured.");
@@ -202,9 +403,17 @@ namespace ChainRush.Tests.EditMode
                 settings,
                 AutobattleSpacePath,
                 "ChainRush-Activity-Autobattle");
+        }
+
+        [Test]
+        public void BoardWaterProjection_IsAddressable()
+        {
+            AddressableAssetSettings settings = AddressableAssetSettingsDefaultObject.Settings;
+            Assert.NotNull(settings, "AddressableAssetSettings are not configured.");
+
             AssertAddressableGroup(
                 settings,
-                BoardSpacePath,
+                BoardWaterProjectionPath,
                 "ChainRush-Activity-Board");
         }
 
@@ -223,6 +432,35 @@ namespace ChainRush.Tests.EditMode
         {
             Assert.AreEqual(ActivitySimulationBindingType.OwnContext, activity.Simulation.BindingType);
             Assert.AreEqual(SimulationScope.Activity, activity.Simulation.Scope);
+        }
+
+        static void AssertEconomyOperation(
+            Core.Economy.Authoring.EconomyOperationData operation,
+            EconomyAssetData asset,
+            EconomyFormType formType,
+            long amount,
+            TaxonomyTermData walletTag)
+        {
+            Assert.AreEqual(EconomyOperation.Consume, operation.Operation);
+            Assert.AreSame(asset, operation.Asset);
+            Assert.AreEqual(formType, operation.FormType);
+            Assert.AreEqual(amount, operation.Amount);
+            Assert.AreEqual(1, operation.WalletTags.Count);
+            Assert.AreSame(walletTag, operation.WalletTags[0]);
+        }
+
+        static void AssertEconomyOutput(
+            EconomyOutputEntry output,
+            EconomyAssetData asset,
+            EconomyFormType formType,
+            long amount,
+            TaxonomyTermData walletTag)
+        {
+            Assert.AreSame(asset, output.Entry.Asset);
+            Assert.AreEqual(formType, output.Entry.FormType);
+            Assert.AreEqual(amount, output.Entry.Amount);
+            Assert.AreEqual(1, output.WalletTags.Count);
+            Assert.AreSame(walletTag, output.WalletTags[0]);
         }
 
         static void AssertTopology(
@@ -273,6 +511,22 @@ namespace ChainRush.Tests.EditMode
             T asset = AssetDatabase.LoadAssetAtPath<T>(path);
             Assert.NotNull(asset, $"Missing {typeof(T).Name} at {path}");
             return asset;
+        }
+
+        static List<T> ReadObjectReferences<T>(UnityEngine.Object owner, string fieldName)
+            where T : UnityEngine.Object
+        {
+            var serialized = new SerializedObject(owner);
+            SerializedProperty property = serialized.FindProperty(fieldName);
+            Assert.NotNull(property, $"Missing serialized field '{fieldName}' on {owner.name}.");
+            Assert.IsTrue(property.isArray, $"Serialized field '{fieldName}' is not an array.");
+            var values = new List<T>(property.arraySize);
+            for (int index = 0; index < property.arraySize; index++)
+            {
+                values.Add(property.GetArrayElementAtIndex(index).objectReferenceValue as T);
+            }
+
+            return values;
         }
 
         static void AssertFolderDependenciesStayWithinBoundary(

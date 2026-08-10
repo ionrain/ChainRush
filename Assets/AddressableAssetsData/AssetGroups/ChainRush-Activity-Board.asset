@@ -15,11 +15,10 @@ MonoBehaviour:
   m_GroupName: ChainRush-Activity-Board
   m_GUID: 80d3bbb64a3094b6db045491dcd4e9c6
   m_SerializeEntries:
-  - m_GUID: e9c8261180b05449fafdea2a1c5976a3
-    m_Address: chainrush.activity.board.space
+  - m_GUID: 975b5009d17ee45ddaf26f1364a4ee50
+    m_Address: Assets/Game/Activities/Board/Projection/ChainRushWaterBoardBase.prefab
     m_ReadOnly: 0
-    m_SerializedLabels:
-    - activity-space
+    m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 263693b897da14307a031f1497d2d347, type: 2}

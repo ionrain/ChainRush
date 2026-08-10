@@ -1,0 +1,79 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03518e4a6879b4f1bb2580fdad128b19, type: 3}
+  m_Name: ChainRushBoardPlanner
+  m_EditorClassIdentifier: Assembly-CSharp::ChainRush.Board.ProgressivePlannerData
+  patternRules:
+  - patternType: 1
+    size:
+      rid: 2807516289745289315
+    weight:
+      rid: 2807516289745289316
+    minimumCount:
+      rid: 2807516289745289317
+  - patternType: 0
+    size:
+      rid: 2807516289745289318
+    weight:
+      rid: 2807516289745289319
+    minimumCount:
+      rid: 2807516289745289320
+  contentRules:
+  - asset: {fileID: 11400000, guid: 1116b7b9d35a249b18741b1309a53cd1, type: 2}
+    weight:
+      rid: 2807516289745289321
+    minimumPatternCount:
+      rid: 2807516289745289322
+    guaranteedCellShare: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: 2807516289745289315
+      type: {class: LongLinearProgressionData, ns: Core, asm: Core}
+      data:
+        baseValue: 3
+        step: 0
+    - rid: 2807516289745289316
+      type: {class: LongLinearProgressionData, ns: Core, asm: Core}
+      data:
+        baseValue: 1
+        step: 0
+    - rid: 2807516289745289317
+      type: {class: LongLinearProgressionData, ns: Core, asm: Core}
+      data:
+        baseValue: 1
+        step: 0
+    - rid: 2807516289745289318
+      type: {class: LongLinearProgressionData, ns: Core, asm: Core}
+      data:
+        baseValue: 1
+        step: 0
+    - rid: 2807516289745289319
+      type: {class: LongLinearProgressionData, ns: Core, asm: Core}
+      data:
+        baseValue: 1
+        step: 0
+    - rid: 2807516289745289320
+      type: {class: LongLinearProgressionData, ns: Core, asm: Core}
+      data:
+        baseValue: 0
+        step: 0
+    - rid: 2807516289745289321
+      type: {class: LongLinearProgressionData, ns: Core, asm: Core}
+      data:
+        baseValue: 1
+        step: 0
+    - rid: 2807516289745289322
+      type: {class: LongLinearProgressionData, ns: Core, asm: Core}
+      data:
+        baseValue: 0
+        step: 0

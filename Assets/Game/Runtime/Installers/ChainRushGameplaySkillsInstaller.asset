@@ -13,5 +13,7 @@ MonoBehaviour:
   m_Name: ChainRushGameplaySkillsInstaller
   m_EditorClassIdentifier: Core::Core.GameRuntime.Installers.GameplaySkillsInstallerData
   resetRuntimeOnInstall: 1
-  effectAdapterCatalog: {fileID: 11400000, guid: 27cc343285e59416d84bd6a38342fb52, type: 2}
-  skills: []
+  effectAdapterCatalog: {fileID: 11400000, guid: 27cc343285e59416d84bd6a38342fb52,
+    type: 2}
+  skills:
+  - {fileID: 11400000, guid: 384559014fe26497ba1433dd486c2ea9, type: 2}

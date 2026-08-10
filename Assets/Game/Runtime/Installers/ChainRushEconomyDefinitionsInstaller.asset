@@ -17,6 +17,20 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f0f133b904705464a9da7ffa48f12fb2, type: 2}
   - {fileID: 11400000, guid: 47ae82ad7cab24d298ee11e58cf69538, type: 2}
   - {fileID: 11400000, guid: 52202b07403a0478c9c2d7bd5648035b, type: 2}
+  - {fileID: 11400000, guid: 854a0cd2c05d9443ead51a662d4966bf, type: 2}
+  - {fileID: 11400000, guid: ba6dc7b2969654c0c96dd451c9a18987, type: 2}
+  - {fileID: 11400000, guid: 98384777501f34b01bdb949ca92adda2, type: 2}
+  - {fileID: 11400000, guid: d4e9db74d23374f1ca87f95dcf69864a, type: 2}
+  - {fileID: 11400000, guid: e30a05f8fdca94b2ab5d68d244faaa83, type: 2}
+  - {fileID: 11400000, guid: 891bc062b36a640c69e28e62afba7a65, type: 2}
+  - {fileID: 11400000, guid: 1d5a88be6035845348142a2d07f8fa08, type: 2}
+  - {fileID: 11400000, guid: d998acfcc5fb2426387891c381d11387, type: 2}
+  - {fileID: 11400000, guid: 1116b7b9d35a249b18741b1309a53cd1, type: 2}
+  - {fileID: 11400000, guid: 966ef9627543e4c4ea4a17a87d24d095, type: 2}
+  - {fileID: 11400000, guid: 6e7ef418bd659426e8ea6665ce3857e1, type: 2}
+  - {fileID: 11400000, guid: 0f9a4709ca7b14fb9bba701cb139e6aa, type: 2}
+  - {fileID: 11400000, guid: 384559014fe26497ba1433dd486c2ea9, type: 2}
   wallets:
   - {fileID: 11400000, guid: 16da9107fd104467980bd94f53e0f9e1, type: 2}
+  - {fileID: 11400000, guid: 5e352fdca6ae04c9b931f9fd2bd9519d, type: 2}
   walletSizeAsset: {fileID: 11400000, guid: f0f133b904705464a9da7ffa48f12fb2, type: 2}

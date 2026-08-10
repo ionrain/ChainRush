@@ -83,6 +83,7 @@ MonoBehaviour:
     - rid: 2807516141394329705
       type: {class: ActivityPrefabSpaceData, ns: Core.Activities, asm: Core}
       data:
+        markerProviders: []
         prefabReference:
           m_AssetGUID: 5e3230375bf51449684beaac86fe4f8b
           m_SubObjectName: 

@@ -14,8 +14,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: Core::Core.Skills.SkillData
   domainTypePreview: 10
   id: chainrush.skill.board.merge
-  title: {m_TableReference: {m_TableCollectionName: }, m_TableEntryReference: {m_KeyId: 0, m_Key: }, m_FallbackState: 0, m_WaitForCompletion: 0, m_LocalVariables: []}
-  description: {m_TableReference: {m_TableCollectionName: }, m_TableEntryReference: {m_KeyId: 0, m_Key: }, m_FallbackState: 0, m_WaitForCompletion: 0, m_LocalVariables: []}
+  title:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  description:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   icon: {fileID: 0}
   precision: 0
   allowedOperations: 3
@@ -54,7 +70,11 @@ MonoBehaviour:
     - rid: 940010003
       type: {class: SkillProductionEffectData, ns: Core.Skills, asm: Core}
       data:
-        recipe: {fileID: 0}
+        recipient: 0
+        requiredTags: []
+        value: 0
+        multiplier: {fileID: 0}
+        recipe: {fileID: 11400000, guid: 966ef9627543e4c4ea4a17a87d24d095, type: 2}
         requestedYields: 1
         inputMappings:
         - recipeInputIndex: 0

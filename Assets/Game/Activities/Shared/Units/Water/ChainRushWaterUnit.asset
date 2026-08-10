@@ -10,12 +10,28 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9969bb010093e43c6993c07d9c072f75, type: 3}
-  m_Name: ChainRushWaterBoardUpgraded
+  m_Name: ChainRushWaterUnit
   m_EditorClassIdentifier: Core::Core.CapabilityHosts.CapabilityHostData
   domainTypePreview: 3
-  id: chainrush.board.water.upgraded
-  title: {m_TableReference: {m_TableCollectionName: }, m_TableEntryReference: {m_KeyId: 0, m_Key: }, m_FallbackState: 0, m_WaitForCompletion: 0, m_LocalVariables: []}
-  description: {m_TableReference: {m_TableCollectionName: }, m_TableEntryReference: {m_KeyId: 0, m_Key: }, m_FallbackState: 0, m_WaitForCompletion: 0, m_LocalVariables: []}
+  id: chainrush.unit.water
+  title:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  description:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   icon: {fileID: 0}
   precision: 0
   allowedOperations: 31
@@ -29,16 +45,16 @@ MonoBehaviour:
     diplomacyCompareOperation: 3
     diplomacyScoreThreshold: -100
   projectionPrefabReference:
-    m_AssetGUID: 7180864eeeff84107a4fc1d76280a902
+    m_AssetGUID: 
     m_SubObjectName: 
     m_SubObjectType: 
     m_SubObjectGUID: 
     m_EditorAssetChanged: 0
   projectionPool:
     demandModeType: 0
-    demandValue: 1
+    demandValue: 0
     expandable: 1
-    maxCapacity: 36
+    maxCapacity: 32
   references:
     version: 2
     RefIds: []

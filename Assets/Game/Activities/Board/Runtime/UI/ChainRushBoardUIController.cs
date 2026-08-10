@@ -27,7 +27,7 @@ namespace ChainRush.Board
         [SerializeField] CapabilityHostBaseData boardHostDefinition;
         [SerializeField] FrameworkSkillData mergeSkill;
 
-        readonly List<ChainRushBoardCellView> _cells = new List<ChainRushBoardCellView>(36);
+        readonly List<ChainRushBoardCellView> _cells = new List<ChainRushBoardCellView>();
         readonly List<ChainRushBoardCellView> _selectedCells = new List<ChainRushBoardCellView>(4);
         readonly List<EntityId> _selectedEntities = new List<EntityId>(4);
 
@@ -35,6 +35,7 @@ namespace ChainRush.Board
         EntityId _boardHostEntityId;
         bool _isSelecting;
         bool _selectionLocked;
+        bool _awaitingBoardRefresh;
 
         void OnEnable()
         {
@@ -74,6 +75,8 @@ namespace ChainRush.Board
             ReleaseGrid();
             _context = activityUIContext;
             ConfigureGrid(activityUIContext);
+            _selectionLocked = true;
+            _awaitingBoardRefresh = true;
 
             for (int i = 0; i < activityUIContext.Cells.Count; i++)
             {
@@ -90,6 +93,7 @@ namespace ChainRush.Board
                 _cells.Add(cell);
             }
 
+            TryUnlockAfterRefresh();
             return true;
         }
 
@@ -128,6 +132,7 @@ namespace ChainRush.Board
 
             _boardHostEntityId = EntityId.Invalid;
             _selectionLocked = false;
+            _awaitingBoardRefresh = false;
             _isSelecting = false;
             ClearSelection();
         }
@@ -173,9 +178,28 @@ namespace ChainRush.Board
             if (!_selectionLocked || !_selectedEntities.Contains(entityId))
                 return;
 
-            _selectionLocked = false;
             _isSelecting = false;
             ClearSelection();
+        }
+
+        internal void OnCellEntityAdded()
+        {
+            if (!_selectionLocked || !_awaitingBoardRefresh)
+                return;
+
+            TryUnlockAfterRefresh();
+        }
+
+        void TryUnlockAfterRefresh()
+        {
+            for (int i = 0; i < _cells.Count; i++)
+            {
+                if (_cells[i] == null || !_cells[i].EntityId.IsValid)
+                    return;
+            }
+
+            _awaitingBoardRefresh = false;
+            _selectionLocked = false;
         }
 
         bool TrySubmitSelection()
@@ -190,6 +214,7 @@ namespace ChainRush.Board
             }
 
             _selectionLocked = true;
+            _awaitingBoardRefresh = true;
             EventBus.Trigger(SimulationControlIntentEvent.ActivateSkillEntities(
                 _context.ActivityId,
                 _boardHostEntityId,
@@ -240,6 +265,7 @@ namespace ChainRush.Board
             ClearSelection();
             _isSelecting = false;
             _selectionLocked = false;
+            _awaitingBoardRefresh = false;
             _boardHostEntityId = EntityId.Invalid;
 
             for (int i = 0; i < _cells.Count; i++)

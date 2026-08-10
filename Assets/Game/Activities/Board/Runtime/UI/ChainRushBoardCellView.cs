@@ -60,6 +60,7 @@ namespace ChainRush.Board
 
             _itemView = itemView;
             _entityId = entityId;
+            _controller?.OnCellEntityAdded();
             return true;
         }
 

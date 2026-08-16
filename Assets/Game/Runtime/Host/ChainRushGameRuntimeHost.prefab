@@ -50,7 +50,7 @@ MonoBehaviour:
   determinism: {fileID: 11400000, guid: 6ba224284014d4d88a90ab17240db609, type: 2}
   owner: {fileID: 11400000, guid: 97e9ee6284cd14460961d53ac3b9c613, type: 2}
   startPoolSession: 0
-  initializeOnAwake: 1
+  autoInitialize: 1
   failFast: 1
   unlockFrameRate: 0
   unlockedTargetFrameRate: 60

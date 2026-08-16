@@ -20,7 +20,10 @@ using Core.Taxonomy;
 using Core.World;
 using NUnit.Framework;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
 namespace ChainRush.Tests.PlayMode
@@ -32,26 +35,26 @@ namespace ChainRush.Tests.PlayMode
             "ChainRush.Tests.ActivityComposition.HadPlayMainEditorPref";
         const string PlayMainEditorPrefValueSessionKey =
             "ChainRush.Tests.ActivityComposition.PlayMainEditorPrefValue";
-        const string RuntimeHostPrefabPath =
-            "Assets/Game/Runtime/Host/ChainRushGameRuntimeHost.prefab";
+        const string IntegrationScenePath =
+            "Assets/Game/Scenes/Integration/ChainRushFrameworkIntegration.unity";
         const string BoardActivityPath =
-            "Assets/Game/Activities/Board/Definition/ChainRushBoardActivity.asset";
+            "Assets/Game/Activities/Board/Definition/BoardActivity.asset";
         const string BoardActivationTermPath =
-            "Assets/Game/Activities/Shared/Taxonomy/ChainRushBoardActivationTerm.asset";
+            "Assets/Game/Activities/Shared/Taxonomy/BoardActivationTerm.asset";
         const string BoardCellTagPath =
-            "Assets/Game/Activities/Board/Taxonomy/ChainRushBoardCellTag.asset";
+            "Assets/Game/Activities/Board/Taxonomy/BoardCellTag.asset";
         const string BoardWaterBasePath =
-            "Assets/Game/Activities/Board/Economy/ChainRushWaterBoardBase.asset";
+            "Assets/Game/Activities/Board/Economy/WaterBoardBase.asset";
         const string BoardHostPath =
-            "Assets/Game/Activities/Board/Economy/ChainRushBoardHost.asset";
+            "Assets/Game/Activities/Board/Economy/BoardHost.asset";
         const string BoardMergeSkillPath =
-            "Assets/Game/Activities/Board/Skills/ChainRushBoardMergeSkill.asset";
+            "Assets/Game/Activities/Board/Skills/BoardMergeSkill.asset";
         const string BoardTurnTokenPath =
-            "Assets/Game/Activities/Shared/Economy/ChainRushBoardTurnToken.asset";
+            "Assets/Game/Activities/Shared/Economy/BoardTurnToken.asset";
         const string WaterUnitPath =
-            "Assets/Game/Activities/Shared/Units/Water/ChainRushWaterUnit.asset";
+            "Assets/Game/Activities/Shared/Units/Water/WaterUnit.asset";
         const string SharedWalletTagPath =
-            "Assets/Game/Activities/Shared/Economy/ChainRushActivityWalletTag.asset";
+            "Assets/Game/Activities/Shared/Economy/ActivityWalletTag.asset";
         const string AutobattleActivityTypeId = "chainrush.activity-type.autobattle";
         const string BoardActivityTypeId = "chainrush.activity-type.board";
         const float StartupTimeoutSeconds = 10f;
@@ -86,11 +89,17 @@ namespace ChainRush.Tests.PlayMode
         [UnityTest]
         public IEnumerator RuntimeComposition_LaunchesBoardOnceAndParentCloseClosesIt()
         {
-            GameObject hostPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(RuntimeHostPrefabPath);
-            Assert.NotNull(hostPrefab, "Runtime host prefab is missing.");
-            GameObject hostInstance = Object.Instantiate(hostPrefab);
-            GameRuntimeHost host = hostInstance.GetComponent<GameRuntimeHost>();
-            Assert.NotNull(host, "Runtime host prefab does not contain GameRuntimeHost.");
+            Scene integrationScene = EditorSceneManager.LoadSceneInPlayMode(
+                IntegrationScenePath,
+                new LoadSceneParameters(LoadSceneMode.Single));
+            Assert.IsTrue(integrationScene.IsValid(), "Integration scene did not load.");
+            Assert.IsTrue(integrationScene.isLoaded, "Integration scene is not marked as loaded.");
+
+            yield return null;
+
+            GameRuntimeHost host = Object.FindFirstObjectByType<GameRuntimeHost>(
+                FindObjectsInactive.Include);
+            Assert.NotNull(host, "Integration scene does not contain GameRuntimeHost.");
 
             float startupDeadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
             while (Time.realtimeSinceStartup < startupDeadline)
@@ -137,6 +146,7 @@ namespace ChainRush.Tests.PlayMode
                     board.ActivityRootEntityId,
                     new List<TaxonomyTermData> { boardCellTag }).Count);
             Assert.AreEqual(16, CountBoardUICells());
+            AssertBoardUIVisible(host);
 
             CapabilityHostData waterBase =
                 AssetDatabase.LoadAssetAtPath<CapabilityHostData>(BoardWaterBasePath);
@@ -188,11 +198,13 @@ namespace ChainRush.Tests.PlayMode
                 waterBase);
             Assert.AreEqual(3, selectedEntities.Count);
 
-            EventBus.Trigger(SimulationControlIntentEvent.ActivateSkillEntities(
+            SimulationControlIntentEvent mergeRequest = SimulationControlIntentEvent.ActivateSkillEntities(
                 board.Id,
                 boardHostEntityId,
                 mergeSkill,
-                selectedEntities));
+                selectedEntities);
+            Assert.IsTrue(mergeRequest.RequestId.IsValid);
+            EventBus.Trigger(mergeRequest);
 
             float mergeDeadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
             while (Time.realtimeSinceStartup < mergeDeadline
@@ -244,7 +256,7 @@ namespace ChainRush.Tests.PlayMode
                 if (behaviour == null
                     || !string.Equals(
                         behaviour.GetType().FullName,
-                        "ChainRush.Board.ChainRushBoardUIController",
+                        "ChainRush.Board.BoardUIController",
                         System.StringComparison.Ordinal))
                 {
                     continue;
@@ -267,6 +279,69 @@ namespace ChainRush.Tests.PlayMode
             }
 
             return 0;
+        }
+
+        static void AssertBoardUIVisible(GameRuntimeHost host)
+        {
+            EventSystem eventSystem = Object.FindFirstObjectByType<EventSystem>(
+                FindObjectsInactive.Include);
+            Assert.NotNull(eventSystem, "Integration scene does not contain an EventSystem.");
+            Assert.IsTrue(eventSystem.gameObject.activeInHierarchy, "EventSystem is inactive.");
+
+            BaseInputModule inputModule = eventSystem.currentInputModule;
+            if (inputModule == null)
+                inputModule = eventSystem.GetComponent<BaseInputModule>();
+
+            Assert.NotNull(inputModule, "EventSystem does not contain an input module.");
+            Assert.IsTrue(inputModule.isActiveAndEnabled, "EventSystem input module is inactive.");
+            Assert.AreEqual(
+                "UnityEngine.InputSystem.UI.InputSystemUIInputModule",
+                inputModule.GetType().FullName,
+                "Integration scene must use InputSystemUIInputModule.");
+
+            Transform uiPopupRoot = host.transform.Find("UIPopupRoot");
+            Assert.NotNull(uiPopupRoot, "GameRuntimeHost does not contain UIPopupRoot.");
+            Assert.IsTrue(uiPopupRoot.gameObject.activeInHierarchy, "UIPopupRoot is inactive.");
+            Assert.Greater(Mathf.Abs(uiPopupRoot.lossyScale.x), Mathf.Epsilon, "UIPopupRoot scale X is zero.");
+            Assert.Greater(Mathf.Abs(uiPopupRoot.lossyScale.y), Mathf.Epsilon, "UIPopupRoot scale Y is zero.");
+            Assert.Greater(Mathf.Abs(uiPopupRoot.lossyScale.z), Mathf.Epsilon, "UIPopupRoot scale Z is zero.");
+
+            Canvas.ForceUpdateCanvases();
+            MonoBehaviour[] behaviours = uiPopupRoot.GetComponentsInChildren<MonoBehaviour>(true);
+            MonoBehaviour boardController = null;
+            for (int i = 0; i < behaviours.Length; i++)
+            {
+                if (behaviours[i] != null
+                    && string.Equals(
+                        behaviours[i].GetType().FullName,
+                        "ChainRush.Board.BoardUIController",
+                        System.StringComparison.Ordinal))
+                {
+                    boardController = behaviours[i];
+                    break;
+                }
+            }
+
+            Assert.NotNull(boardController, "Board UI controller is missing under UIPopupRoot.");
+            Assert.IsTrue(boardController.gameObject.activeInHierarchy, "Board UI controller is inactive.");
+
+            bool hasVisibleCell = false;
+            RectTransform[] rectTransforms = boardController.GetComponentsInChildren<RectTransform>(true);
+            for (int i = 0; i < rectTransforms.Length; i++)
+            {
+                RectTransform rectTransform = rectTransforms[i];
+                if (rectTransform == null
+                    || !rectTransform.name.StartsWith("BoardCell_", System.StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                Assert.IsTrue(rectTransform.gameObject.activeInHierarchy, "A Board UI cell is inactive.");
+                if (rectTransform.rect.width > 0f && rectTransform.rect.height > 0f)
+                    hasVisibleCell = true;
+            }
+
+            Assert.IsTrue(hasVisibleCell, "Board UI cells have no visible layout area.");
         }
 
         static int CountMaterializedBoardAssets(

@@ -122,3 +122,7 @@ These rules are strict for project-owned code and naming.
    Never silently choose a recommended option, infer an answer from missing input, continue after a timeout, or apply any default on the user's behalf.
    Never enable an auto-resolution timer for a user question. When using `request_user_input`, always omit `autoResolutionMs`.
    Resume the affected work only after the user has explicitly answered the question.
+
+24. Do not prefix files under `Assets/Game/Activities` with the project name `ChainRush`.
+   Activity folders already provide the project and domain context, so use names such as `BoardActivity.asset`, `BoardUI.prefab`, and `BoardUIController.cs`.
+   This rule applies to activity assets, prefabs, and scripts; globally scoped runtime identifiers and C# namespaces remain project-qualified where needed to prevent collisions.

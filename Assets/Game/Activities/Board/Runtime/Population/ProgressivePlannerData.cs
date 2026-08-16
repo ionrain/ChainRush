@@ -251,7 +251,7 @@ namespace ChainRush.Board
                 var cell = new ResolvedCell(snapshot, gridCoordinate);
                 cells.Add(cell);
                 cellsByCoordinate.Add(gridCoordinate, cell);
-                if (!snapshot.IsOccupied)
+                if (snapshot.AvailableForPlacement)
                     remaining.Add(gridCoordinate);
             }
 
@@ -762,7 +762,8 @@ namespace ChainRush.Board
             for (int ruleIndex = 0; ruleIndex < contentRules.Count; ruleIndex++)
             {
                 ResolvedContentRule rule = contentRules[ruleIndex];
-                int targetCellCount = Mathf.CeilToInt(cells.Count * rule.GuaranteedCellShare);
+                int targetCellCount = Mathf.CeilToInt(
+                    CountContentShareCells(cells) * rule.GuaranteedCellShare);
                 int assignedCellCount = CountExistingCells(cells, rule.Asset)
                     + CountAssignedCells(assigned, rule);
                 while (assignedCellCount < targetCellCount)
@@ -811,6 +812,19 @@ namespace ChainRush.Board
             }
 
             return true;
+        }
+
+        static int CountContentShareCells(List<ResolvedCell> cells)
+        {
+            int count = 0;
+            for (int i = 0; i < cells.Count; i++)
+            {
+                PopulationCellSnapshot snapshot = cells[i].Snapshot;
+                if (snapshot.IsOccupied || snapshot.AvailableForPlacement)
+                    count++;
+            }
+
+            return count;
         }
 
         static bool TryChooseWeightedPatternRule(

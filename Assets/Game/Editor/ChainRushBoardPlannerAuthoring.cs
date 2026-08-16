@@ -28,6 +28,7 @@ namespace ChainRush.Editor
 {
     public static class ChainRushBoardPlannerAuthoring
     {
+        const string AutobattleRoot = "Assets/Game/Activities/Autobattle";
         const string BoardRoot = "Assets/Game/Activities/Board";
         const string SharedRoot = "Assets/Game/Activities/Shared";
         const string PopulationRoot = BoardRoot + "/Population";
@@ -40,45 +41,48 @@ namespace ChainRush.Editor
         const string SharedUnitsRoot = SharedRoot + "/Units";
         const string SharedWaterRoot = SharedUnitsRoot + "/Water";
 
-        const string PlannerPath = PlannerRoot + "/ChainRushBoardPlanner.asset";
-        const string BoardActivityPath = BoardRoot + "/Definition/ChainRushBoardActivity.asset";
-        const string BoardHostPath = BoardRoot + "/Economy/ChainRushBoardHost.asset";
-        const string BoardWalletPath = BoardRoot + "/Economy/ChainRushBoardWallet.asset";
-        const string BoardWalletTagPath = BoardRoot + "/Economy/ChainRushBoardWalletTag.asset";
-        const string WaterPath = BoardRoot + "/Economy/ChainRushWaterBoardBase.asset";
-        const string WaterTagPath = BoardRoot + "/Taxonomy/ChainRushWaterBoardItem.asset";
-        const string BoardCellTagPath = BoardRoot + "/Taxonomy/ChainRushBoardCellTag.asset";
-        const string MergeRecipePath = BoardRoot + "/Production/ChainRushBoardMergeRecipe.asset";
-        const string MergeProductionPath = BoardRoot + "/Production/ChainRushBoardProduction.asset";
-        const string MergeCatalogPath = BoardRoot + "/Production/ChainRushBoardProductionCatalog.asset";
-        const string MergeSkillPath = BoardRoot + "/Skills/ChainRushBoardMergeSkill.asset";
-        const string BoardUIPrefabPath = BoardRoot + "/UI/ChainRushBoardUI.prefab";
+        const string PlannerPath = PlannerRoot + "/BoardPlanner.asset";
+        const string BoardActivityPath = BoardRoot + "/Definition/BoardActivity.asset";
+        const string BoardHostPath = BoardRoot + "/Economy/BoardHost.asset";
+        const string BoardWalletPath = BoardRoot + "/Economy/BoardWallet.asset";
+        const string BoardWalletTagPath = BoardRoot + "/Economy/BoardWalletTag.asset";
+        const string WaterPath = BoardRoot + "/Economy/WaterBoardBase.asset";
+        const string WaterTagPath = BoardRoot + "/Taxonomy/WaterBoardItem.asset";
+        const string BoardCellTagPath = BoardRoot + "/Taxonomy/BoardCellTag.asset";
+        const string MergeRecipePath = BoardRoot + "/Production/BoardMergeRecipe.asset";
+        const string MergeProductionPath = BoardRoot + "/Production/BoardProduction.asset";
+        const string MergeCatalogPath = BoardRoot + "/Production/BoardProductionCatalog.asset";
+        const string MergeSkillPath = BoardRoot + "/Skills/BoardMergeSkill.asset";
+        const string BoardUIPrefabPath = BoardRoot + "/UI/BoardUI.prefab";
         const string WaterProjectionPrefabPath =
-            BoardRoot + "/Projection/ChainRushWaterBoardBase.prefab";
-        const string SharedWalletPath = SharedRoot + "/Economy/ChainRushActivityWallet.asset";
-        const string SharedWalletTagPath = SharedRoot + "/Economy/ChainRushActivityWalletTag.asset";
+            BoardRoot + "/Projection/WaterBoardBase.prefab";
+        const string SharedWalletPath = SharedRoot + "/Economy/ActivityWallet.asset";
+        const string SharedWalletTagPath = SharedRoot + "/Economy/ActivityWalletTag.asset";
+        const string ExperiencePath = SharedRoot + "/Economy/Experience.asset";
+        const string ExperienceToTurnTokenRecipePath =
+            AutobattleRoot + "/Production/ExperienceToTurnTokenRecipe.asset";
 
-        const string TurnTokenPath = SharedRoot + "/Economy/ChainRushBoardTurnToken.asset";
-        const string WaterUnitPath = SharedWaterRoot + "/ChainRushWaterUnit.asset";
-        const string PopulationProducerPath = BoardRoot + "/Economy/ChainRushBoardPopulationProducer.asset";
-        const string RefreshRecipePath = BoardRoot + "/Production/ChainRushBoardRefreshRecipe.asset";
-        const string WaterRecipePath = BoardRoot + "/Production/ChainRushWaterBoardBaseRecipe.asset";
-        const string PopulationProductionPath = BoardRoot + "/Production/ChainRushBoardPopulationProduction.asset";
-        const string PopulationCatalogPath = BoardRoot + "/Production/ChainRushBoardPopulationCatalog.asset";
-        const string PopulationAgentPath = AgentsRoot + "/ChainRushBoardPopulationAgent.asset";
-        const string ProductionAgentPath = AgentsRoot + "/ChainRushBoardProductionAgent.asset";
-        const string PopulationObjectivePath = ObjectivesRoot + "/ChainRushBoardPopulationObjective.asset";
-        const string OperatorFamilyPath = OrchestrationTaxonomyRoot + "/ChainRushBoardOperatorFamily.asset";
-        const string PopulationAgentOperatorPath = OrchestrationTaxonomyRoot + "/ChainRushBoardPopulationAgentOperator.asset";
-        const string ProductionAgentOperatorPath = OrchestrationTaxonomyRoot + "/ChainRushBoardProductionAgentOperator.asset";
-        const string ProductionYieldOperatorPath = OrchestrationTaxonomyRoot + "/ChainRushBoardProductionYieldOperator.asset";
-        const string ProductionAvailableOperatorPath = OrchestrationTaxonomyRoot + "/ChainRushBoardProductionAvailableOperator.asset";
-        const string MaterializedProductionOperatorPath = OrchestrationTaxonomyRoot + "/ChainRushBoardMaterializedProductionOperator.asset";
-        const string EconomyStateModulePath = OrchestrationModulesRoot + "/ChainRushBoardEconomyState.asset";
-        const string ProductionStateModulePath = OrchestrationModulesRoot + "/ChainRushBoardProductionState.asset";
-        const string ProjectionStateModulePath = OrchestrationModulesRoot + "/ChainRushBoardProjectionState.asset";
-        const string BrainPath = OrchestrationRoot + "/ChainRushBoardBrain.asset";
-        const string OrchestrationPath = OrchestrationRoot + "/ChainRushBoardOrchestration.asset";
+        const string TurnTokenPath = SharedRoot + "/Economy/BoardTurnToken.asset";
+        const string WaterUnitPath = SharedWaterRoot + "/WaterUnit.asset";
+        const string PopulationProducerPath = BoardRoot + "/Economy/BoardPopulationProducer.asset";
+        const string RefreshRecipePath = BoardRoot + "/Production/BoardRefreshRecipe.asset";
+        const string WaterRecipePath = BoardRoot + "/Production/WaterBoardBaseRecipe.asset";
+        const string PopulationProductionPath = BoardRoot + "/Production/BoardPopulationProduction.asset";
+        const string PopulationCatalogPath = BoardRoot + "/Production/BoardPopulationCatalog.asset";
+        const string PopulationAgentPath = AgentsRoot + "/BoardPopulationAgent.asset";
+        const string ProductionAgentPath = AgentsRoot + "/BoardProductionAgent.asset";
+        const string PopulationObjectivePath = ObjectivesRoot + "/BoardPopulationObjective.asset";
+        const string OperatorFamilyPath = OrchestrationTaxonomyRoot + "/BoardOperatorFamily.asset";
+        const string PopulationAgentOperatorPath = OrchestrationTaxonomyRoot + "/BoardPopulationAgentOperator.asset";
+        const string ProductionAgentOperatorPath = OrchestrationTaxonomyRoot + "/BoardProductionAgentOperator.asset";
+        const string ProductionYieldOperatorPath = OrchestrationTaxonomyRoot + "/BoardProductionYieldOperator.asset";
+        const string ProductionAvailableOperatorPath = OrchestrationTaxonomyRoot + "/BoardProductionAvailableOperator.asset";
+        const string MaterializedProductionOperatorPath = OrchestrationTaxonomyRoot + "/BoardMaterializedProductionOperator.asset";
+        const string EconomyStateModulePath = OrchestrationModulesRoot + "/BoardEconomyState.asset";
+        const string ProductionStateModulePath = OrchestrationModulesRoot + "/BoardProductionState.asset";
+        const string ProjectionStateModulePath = OrchestrationModulesRoot + "/BoardProjectionState.asset";
+        const string BrainPath = OrchestrationRoot + "/BoardBrain.asset";
+        const string OrchestrationPath = OrchestrationRoot + "/BoardOrchestration.asset";
 
         const string RuntimeProfilePath = "Assets/Game/Runtime/Host/ChainRushGameRuntimeProfile.asset";
         const string EconomyDefinitionsInstallerPath = "Assets/Game/Runtime/Installers/ChainRushEconomyDefinitionsInstaller.asset";
@@ -89,8 +93,8 @@ namespace ChainRush.Editor
         const string SimulationControlInstallerPath = "Assets/Game/Runtime/Installers/ChainRushSimulationControlInstaller.asset";
         const string ProjectionInstallerPath = "Assets/Game/Runtime/Installers/ChainRushProjectionRuntimeInstaller.asset";
 
-        const string UpgradedAssetPath = BoardRoot + "/Economy/ChainRushWaterBoardUpgraded.asset";
-        const string UpgradedPrefabPath = BoardRoot + "/Projection/ChainRushWaterBoardUpgraded.prefab";
+        const string UpgradedAssetPath = BoardRoot + "/Economy/WaterBoardUpgraded.asset";
+        const string UpgradedPrefabPath = BoardRoot + "/Projection/WaterBoardUpgraded.prefab";
 
         static readonly string[] VerticalSliceCreatedPaths =
         {
@@ -117,6 +121,66 @@ namespace ChainRush.Editor
             OrchestrationPath,
         };
 
+        [MenuItem("ChainRush/Activities/Autobattle/Create Experience To Turn Token Recipe")]
+        public static void CreateExperienceToTurnTokenRecipe()
+        {
+            EnsureAssetDoesNotExist(ExperiencePath);
+            EnsureAssetDoesNotExist(ExperienceToTurnTokenRecipePath);
+
+            FrameworkResourceData turnToken =
+                LoadRequired<FrameworkResourceData>(TurnTokenPath);
+            TaxonomyTermData sharedWalletTag =
+                LoadRequired<TaxonomyTermData>(SharedWalletTagPath);
+            EconomyDefinitionsInstallerData economyInstaller =
+                LoadRequired<EconomyDefinitionsInstallerData>(EconomyDefinitionsInstallerPath);
+            var originalAssets = new List<EconomyAssetData>(
+                GetField<List<EconomyAssetData>>(economyInstaller, "assets"));
+            var createdPaths = new List<string>(2);
+
+            EnsureFolder(AutobattleRoot + "/Production");
+            try
+            {
+                FrameworkResourceData experience = CreateEconomyAsset<FrameworkResourceData>(
+                    ExperiencePath,
+                    "Experience",
+                    "chainrush.resource.experience",
+                    EconomyOperation.Require | EconomyOperation.Issue | EconomyOperation.Consume,
+                    createdPaths);
+                ProductionRecipeData recipe = CreateEconomyAsset<ProductionRecipeData>(
+                    ExperienceToTurnTokenRecipePath,
+                    "ExperienceToTurnTokenRecipe",
+                    "chainrush.production.autobattle.experience-to-turn-token.recipe",
+                    EconomyOperation.Require | EconomyOperation.Issue,
+                    createdPaths);
+
+                ConfigureExperienceToTurnTokenRecipe(
+                    recipe,
+                    experience,
+                    turnToken,
+                    sharedWalletTag);
+
+                var assets = new List<EconomyAssetData>(originalAssets);
+                AddUnique(assets, experience, recipe);
+                SetField(economyInstaller, "assets", assets);
+                EditorUtility.SetDirty(economyInstaller);
+
+                AssetDatabase.SaveAssets();
+                Selection.activeObject = recipe;
+                EditorGUIUtility.PingObject(recipe);
+                Debug.Log(
+                    "[ChainRush] Created Experience and ExperienceToTurnTokenRecipe authoring assets.");
+            }
+            catch
+            {
+                SetField(economyInstaller, "assets", originalAssets);
+                EditorUtility.SetDirty(economyInstaller);
+                for (int i = createdPaths.Count - 1; i >= 0; i--)
+                    AssetDatabase.DeleteAsset(createdPaths[i]);
+                AssetDatabase.SaveAssets();
+                throw;
+            }
+        }
+
         [MenuItem("ChainRush/Activities/Board/Create Population Planner Assets")]
         public static void CreatePopulationPlannerAssets()
         {
@@ -127,7 +191,7 @@ namespace ChainRush.Editor
             try
             {
                 ProgressivePlannerData planner = ScriptableObject.CreateInstance<ProgressivePlannerData>();
-                planner.name = "ChainRushBoardPlanner";
+                planner.name = "BoardPlanner";
                 ConfigurePlanner(planner, water);
                 AssetDatabase.CreateAsset(planner, PlannerPath);
 
@@ -178,20 +242,20 @@ namespace ChainRush.Editor
             {
                 FrameworkResourceData turnToken = CreateEconomyAsset<FrameworkResourceData>(
                     TurnTokenPath,
-                    "ChainRushBoardTurnToken",
+                    "BoardTurnToken",
                     "chainrush.resource.board-turn-token",
                     EconomyOperation.Require | EconomyOperation.Issue | EconomyOperation.Consume,
                     createdPaths);
                 CapabilityHostData waterUnit = CreateCapabilityHost(
                     WaterUnitPath,
-                    "ChainRushWaterUnit",
+                    "WaterUnit",
                     "chainrush.unit.water",
                     new List<CapabilityEntry>(0),
                     new List<WalletEntry>(0),
                     createdPaths);
                 CapabilityHostData populationProducer = CreateCapabilityHost(
                     PopulationProducerPath,
-                    "ChainRushBoardPopulationProducer",
+                    "BoardPopulationProducer",
                     "chainrush.board.population-producer",
                     new List<CapabilityEntry>
                     {
@@ -202,25 +266,25 @@ namespace ChainRush.Editor
 
                 ProductionRecipeData refreshRecipe = CreateEconomyAsset<ProductionRecipeData>(
                     RefreshRecipePath,
-                    "ChainRushBoardRefreshRecipe",
+                    "BoardRefreshRecipe",
                     "chainrush.production.board.refresh.recipe",
                     EconomyOperation.Require | EconomyOperation.Issue,
                     createdPaths);
                 ProductionRecipeData waterRecipe = CreateEconomyAsset<ProductionRecipeData>(
                     WaterRecipePath,
-                    "ChainRushWaterBoardBaseRecipe",
+                    "WaterBoardBaseRecipe",
                     "chainrush.production.board.water-base.recipe",
                     EconomyOperation.Require | EconomyOperation.Issue,
                     createdPaths);
                 ProductionCatalogData populationCatalog = CreateEconomyAsset<ProductionCatalogData>(
                     PopulationCatalogPath,
-                    "ChainRushBoardPopulationCatalog",
+                    "BoardPopulationCatalog",
                     "chainrush.production.board.population.catalog",
                     EconomyOperation.Require | EconomyOperation.Issue,
                     createdPaths);
                 ProductionData populationProduction = CreateEconomyAsset<ProductionData>(
                     PopulationProductionPath,
-                    "ChainRushBoardPopulationProduction",
+                    "BoardPopulationProduction",
                     "chainrush.production.board.population",
                     EconomyOperation.Require | EconomyOperation.Issue,
                     createdPaths);
@@ -245,13 +309,13 @@ namespace ChainRush.Editor
 
                 TaxonomyFamilyData operatorFamily = CreateTaxonomyFamily(
                     OperatorFamilyPath,
-                    "ChainRushBoardOperatorFamily",
+                    "BoardOperatorFamily",
                     "chainrush.orchestration.board.operator",
                     "ChainRush Board Operator",
                     createdPaths);
                 TaxonomyTermData populationAgentOperator = CreateTaxonomyTerm(
                     PopulationAgentOperatorPath,
-                    "ChainRushBoardPopulationAgentOperator",
+                    "BoardPopulationAgentOperator",
                     "chainrush.orchestration.board.agent.population",
                     "Board Population Agent",
                     operatorFamily,
@@ -259,7 +323,7 @@ namespace ChainRush.Editor
                     createdPaths);
                 TaxonomyTermData productionAgentOperator = CreateTaxonomyTerm(
                     ProductionAgentOperatorPath,
-                    "ChainRushBoardProductionAgentOperator",
+                    "BoardProductionAgentOperator",
                     "chainrush.orchestration.board.agent.production",
                     "Board Production Agent",
                     operatorFamily,
@@ -267,7 +331,7 @@ namespace ChainRush.Editor
                     createdPaths);
                 TaxonomyTermData productionYieldOperator = CreateTaxonomyTerm(
                     ProductionYieldOperatorPath,
-                    "ChainRushBoardProductionYieldOperator",
+                    "BoardProductionYieldOperator",
                     "chainrush.orchestration.board.production-yield",
                     "Board Production Yield",
                     operatorFamily,
@@ -275,7 +339,7 @@ namespace ChainRush.Editor
                     createdPaths);
                 TaxonomyTermData productionAvailableOperator = CreateTaxonomyTerm(
                     ProductionAvailableOperatorPath,
-                    "ChainRushBoardProductionAvailableOperator",
+                    "BoardProductionAvailableOperator",
                     "chainrush.orchestration.board.production-available",
                     "Board Production Available",
                     operatorFamily,
@@ -283,7 +347,7 @@ namespace ChainRush.Editor
                     createdPaths);
                 TaxonomyTermData materializedProductionOperator = CreateTaxonomyTerm(
                     MaterializedProductionOperatorPath,
-                    "ChainRushBoardMaterializedProductionOperator",
+                    "BoardMaterializedProductionOperator",
                     "chainrush.orchestration.board.production-materialized",
                     "Board Materialized Production",
                     operatorFamily,
@@ -306,15 +370,15 @@ namespace ChainRush.Editor
                     createdPaths);
                 EconomyStateOrchestrationModuleData economyState = CreateAsset<EconomyStateOrchestrationModuleData>(
                     EconomyStateModulePath,
-                    "ChainRushBoardEconomyState",
+                    "BoardEconomyState",
                     createdPaths);
                 ProductionStateOrchestrationModuleData productionState = CreateAsset<ProductionStateOrchestrationModuleData>(
                     ProductionStateModulePath,
-                    "ChainRushBoardProductionState",
+                    "BoardProductionState",
                     createdPaths);
                 ProjectionStateOrchestrationModuleData projectionState = CreateAsset<ProjectionStateOrchestrationModuleData>(
                     ProjectionStateModulePath,
-                    "ChainRushBoardProjectionState",
+                    "BoardProjectionState",
                     createdPaths);
                 OrchestratorAIBrainData brain = CreateBrain(
                     populationAgent,
@@ -458,7 +522,7 @@ namespace ChainRush.Editor
                 }
 
                 materializedProductionOperator = ScriptableObject.CreateInstance<TaxonomyTermData>();
-                materializedProductionOperator.name = "ChainRushBoardMaterializedProductionOperator";
+                materializedProductionOperator.name = "BoardMaterializedProductionOperator";
                 AssetDatabase.CreateAsset(
                     materializedProductionOperator,
                     MaterializedProductionOperatorPath);
@@ -476,7 +540,7 @@ namespace ChainRush.Editor
                 }
 
                 economyState = ScriptableObject.CreateInstance<EconomyStateOrchestrationModuleData>();
-                economyState.name = "ChainRushBoardEconomyState";
+                economyState.name = "BoardEconomyState";
                 AssetDatabase.CreateAsset(economyState, EconomyStateModulePath);
             }
             ConfigureOrchestrationModules(
@@ -684,6 +748,26 @@ namespace ChainRush.Editor
             EditorUtility.SetDirty(recipe);
         }
 
+        static void ConfigureExperienceToTurnTokenRecipe(
+            ProductionRecipeData recipe,
+            EconomyAssetData experience,
+            EconomyAssetData turnToken,
+            TaxonomyTermData sharedWalletTag)
+        {
+            recipe.Inputs.Clear();
+            recipe.Inputs.Add(new ProductionInputData(
+                new EconomyOperationData(
+                    EconomyOperation.Consume,
+                    new EconomyAssetAmountEntry(experience, 1L, EconomyFormType.Stack),
+                    new List<TaxonomyTermData> { sharedWalletTag }),
+                new LongStepProgressionData(6L, 2L, 1L)));
+            recipe.Outputs.Clear();
+            recipe.Outputs.Add(new ProductionOutputData(new EconomyOutputEntry(
+                new EconomyAssetAmountEntry(turnToken, 1L, EconomyFormType.Stack),
+                new List<TaxonomyTermData> { sharedWalletTag })));
+            EditorUtility.SetDirty(recipe);
+        }
+
         static void ConfigureWaterRecipe(
             ProductionRecipeData recipe,
             CapabilityHostData water,
@@ -761,7 +845,7 @@ namespace ChainRush.Editor
                 || effect.InputMappings.Count != 3)
             {
                 throw new InvalidOperationException(
-                    "ChainRushBoardMergeSkill must contain exactly one Production effect with three input mappings.");
+                    "BoardMergeSkill must contain exactly one Production effect with three input mappings.");
             }
 
             SetField(effect, "recipe", mergeRecipe);
@@ -866,8 +950,9 @@ namespace ChainRush.Editor
                 new List<ObjectiveCondition> { success },
                 new List<ObjectiveCondition>(0));
             ObjectiveTemplateData objective = ScriptableObject.CreateInstance<ObjectiveTemplateData>();
-            objective.name = "ChainRushBoardPopulationObjective";
+            objective.name = "BoardPopulationObjective";
             SetField(objective, "root", root);
+            SetField(objective, "completionPolicyType", ObjectiveCompletionPolicyType.Reset);
             AssetDatabase.CreateAsset(objective, PopulationObjectivePath);
             createdPaths.Add(PopulationObjectivePath);
             return objective;
@@ -893,9 +978,10 @@ namespace ChainRush.Editor
                 CompareOperation.Equal);
             return CreateAgentDefinition(
                 PopulationAgentPath,
-                "ChainRushBoardPopulationAgent",
+                "BoardPopulationAgent",
                 "chainrush-board-population",
                 100,
+                ObjectiveCommandFailurePolicyType.FailObjective,
                 new List<ObjectiveCondition> { match },
                 new List<ActivityAgentSelectionCriterionData>
                 {
@@ -952,9 +1038,10 @@ namespace ChainRush.Editor
                 SpatialMarkerRef.Invalid);
             return CreateAgentDefinition(
                 ProductionAgentPath,
-                "ChainRushBoardProductionAgent",
+                "BoardProductionAgent",
                 "chainrush-board-production",
                 90,
+                ObjectiveCommandFailurePolicyType.Replan,
                 new List<ObjectiveCondition> { match },
                 new List<ActivityAgentSelectionCriterionData>
                 {
@@ -972,6 +1059,7 @@ namespace ChainRush.Editor
             string name,
             string id,
             int priority,
+            ObjectiveCommandFailurePolicyType commandFailurePolicyType,
             List<ObjectiveCondition> matchConditions,
             List<ActivityAgentSelectionCriterionData> executorCriteria,
             ActivityOrchestrationAgentData agent,
@@ -982,6 +1070,7 @@ namespace ChainRush.Editor
             SetField(definition, "agentId", id);
             SetField(definition, "basePriority", priority);
             SetField(definition, "updateInterval", 1);
+            SetField(definition, "commandFailurePolicyType", commandFailurePolicyType);
             SetField(definition, "matchConditions", matchConditions);
             SetField(definition, "executorSelectionCriteria", executorCriteria);
             SetField(definition, "targetSelectionCriteria", new List<ActivityAgentSelectionCriterionData>(0));
@@ -1034,7 +1123,7 @@ namespace ChainRush.Editor
             List<string> createdPaths)
         {
             OrchestratorAIBrainData brain = ScriptableObject.CreateInstance<OrchestratorAIBrainData>();
-            brain.name = "ChainRushBoardBrain";
+            brain.name = "BoardBrain";
             ConfigureBrain(
                 brain,
                 populationAgent,
@@ -1158,7 +1247,7 @@ namespace ChainRush.Editor
         {
             ActivityOrchestrationConfigData orchestration =
                 ScriptableObject.CreateInstance<ActivityOrchestrationConfigData>();
-            orchestration.name = "ChainRushBoardOrchestration";
+            orchestration.name = "BoardOrchestration";
             SetField(orchestration, "orchestratorBrain", brain);
             ConfigureOrchestrationModules(
                 orchestration,
@@ -1234,7 +1323,7 @@ namespace ChainRush.Editor
                 || !(activity.Space.MarkerProviders[0] is SpatialGridProviderData grid))
             {
                 throw new InvalidOperationException(
-                    "ChainRushBoardActivity must contain exactly one SpatialGridProviderData.");
+                    "BoardActivity must contain exactly one SpatialGridProviderData.");
             }
 
             SetField(grid, "providerType", boardCellTag);
@@ -1392,12 +1481,12 @@ namespace ChainRush.Editor
             GameObject root = PrefabUtility.LoadPrefabContents(BoardUIPrefabPath);
             try
             {
-                ChainRushBoardUIController controller =
-                    root.GetComponent<ChainRushBoardUIController>();
+                BoardUIController controller =
+                    root.GetComponent<BoardUIController>();
                 if (controller == null)
                 {
                     throw new InvalidOperationException(
-                        "ChainRushBoardUI prefab has no ChainRushBoardUIController.");
+                        "BoardUI prefab has no BoardUIController.");
                 }
 
                 var serialized = new SerializedObject(controller);

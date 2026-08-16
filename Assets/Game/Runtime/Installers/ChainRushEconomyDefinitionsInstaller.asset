@@ -30,6 +30,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 6e7ef418bd659426e8ea6665ce3857e1, type: 2}
   - {fileID: 11400000, guid: 0f9a4709ca7b14fb9bba701cb139e6aa, type: 2}
   - {fileID: 11400000, guid: 384559014fe26497ba1433dd486c2ea9, type: 2}
+  - {fileID: 11400000, guid: 299c3a99cfebc4f69b92d177ccbb8cef, type: 2}
+  - {fileID: 11400000, guid: 12901f89cec45450d878321220736744, type: 2}
   wallets:
   - {fileID: 11400000, guid: 16da9107fd104467980bd94f53e0f9e1, type: 2}
   - {fileID: 11400000, guid: 5e352fdca6ae04c9b931f9fd2bd9519d, type: 2}

@@ -120,6 +120,27 @@ namespace ChainRush.Tests.EditMode
             Assert.IsTrue(plan.Entries.All(entry => entry.FormType == EconomyFormType.Token));
         }
 
+        [Test]
+        public void TemporarilyUnavailableMarker_RemainsInSnapshotButIsNotPlanned()
+        {
+            OpenGridTopology(TopologyUpAxisType.Y);
+            CapabilityHostData water = CreateHost("planner-water");
+            PopulationPlannerData planner = CreatePlanner(
+                new[] { Pattern(PatternType.Single, 1L, 1L, 0L) },
+                new[] { Content(water, 1L, 0L, 1f) });
+            List<PopulationCellSnapshot> cells = CreateGridCells(3, 2);
+            cells[2] = MakeUnavailable(cells[2]);
+
+            Assert.IsTrue(
+                planner.TryBuild(CreateContext(1L, cells), out PopulationPlan plan, out string failure),
+                failure);
+
+            Assert.AreEqual(5, plan.Entries.Count);
+            Assert.IsFalse(cells[2].IsOccupied);
+            Assert.IsFalse(cells[2].AvailableForPlacement);
+            Assert.IsFalse(plan.Entries.Any(entry => entry.Marker == cells[2].Marker));
+        }
+
         [TestCase(PatternType.Single)]
         [TestCase(PatternType.Line)]
         [TestCase(PatternType.Corner)]
@@ -468,6 +489,7 @@ namespace ChainRush.Tests.EditMode
                 new SpatialMarkerRef(ActivityId, MarkerScopeEntityId, "planner-grid", index),
                 WorldPosition.Invalid,
                 topologyCoordinates,
+                true,
                 EntityId.Invalid,
                 null,
                 EconomyFormType.Token);
@@ -481,8 +503,21 @@ namespace ChainRush.Tests.EditMode
                 cell.Marker,
                 cell.Position,
                 cell.Coordinates,
+                false,
                 new EntityId(9000 + cell.Marker.LocalIndex),
                 asset,
+                EconomyFormType.Token);
+        }
+
+        static PopulationCellSnapshot MakeUnavailable(PopulationCellSnapshot cell)
+        {
+            return new PopulationCellSnapshot(
+                cell.Marker,
+                cell.Position,
+                cell.Coordinates,
+                false,
+                EntityId.Invalid,
+                null,
                 EconomyFormType.Token);
         }
 

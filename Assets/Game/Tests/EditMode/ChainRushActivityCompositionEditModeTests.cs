@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Core;
 using Core.Activities;
 using Core.CapabilityHosts;
@@ -17,6 +19,7 @@ using Core.Production.Authoring;
 using Core.Projection;
 using Core.Scheduling;
 using Core.Simulation;
+using Core.SimulationControl;
 using Core.Skills;
 using Core.Taxonomy;
 using Core.World;
@@ -36,51 +39,61 @@ namespace ChainRush.Tests.EditMode
         const string BoardRoot = ActivitiesRoot + "/Board";
 
         const string AutobattleActivityPath =
-            AutobattleRoot + "/Definition/ChainRushAutobattleActivity.asset";
+            AutobattleRoot + "/Definition/AutobattleActivity.asset";
         const string BoardActivityPath =
-            BoardRoot + "/Definition/ChainRushBoardActivity.asset";
+            BoardRoot + "/Definition/BoardActivity.asset";
         const string AutobattleFlowPath =
-            AutobattleRoot + "/GameFlow/ChainRushAutobattleFlow.asset";
+            AutobattleRoot + "/GameFlow/AutobattleFlow.asset";
         const string BoardFlowPath =
-            BoardRoot + "/GameFlow/ChainRushBoardFlow.asset";
+            BoardRoot + "/GameFlow/BoardFlow.asset";
         const string AutobattleSpacePath =
-            AutobattleRoot + "/Space/ChainRushAutobattleSpace.prefab";
+            AutobattleRoot + "/Space/AutobattleSpace.prefab";
         const string BoardWaterProjectionPath =
-            BoardRoot + "/Projection/ChainRushWaterBoardBase.prefab";
+            BoardRoot + "/Projection/WaterBoardBase.prefab";
         const string RuntimeProfilePath =
             "Assets/Game/Runtime/Host/ChainRushGameRuntimeProfile.asset";
         const string StartupPlanPath =
             "Assets/Game/Runtime/Startup/ChainRushGameStartupPlan.asset";
         const string BoardObjectivePath =
-            BoardRoot + "/Objectives/ChainRushBoardPopulationObjective.asset";
+            BoardRoot + "/Objectives/BoardPopulationObjective.asset";
         const string BoardPopulationAgentPath =
-            BoardRoot + "/Agents/ChainRushBoardPopulationAgent.asset";
+            BoardRoot + "/Agents/BoardPopulationAgent.asset";
+        const string BoardProductionAgentPath =
+            BoardRoot + "/Agents/BoardProductionAgent.asset";
         const string BoardPopulationProducerPath =
-            BoardRoot + "/Economy/ChainRushBoardPopulationProducer.asset";
+            BoardRoot + "/Economy/BoardPopulationProducer.asset";
+        const string BoardHostPath =
+            BoardRoot + "/Economy/BoardHost.asset";
         const string BoardWaterBasePath =
-            BoardRoot + "/Economy/ChainRushWaterBoardBase.asset";
+            BoardRoot + "/Economy/WaterBoardBase.asset";
         const string BoardRefreshRecipePath =
-            BoardRoot + "/Production/ChainRushBoardRefreshRecipe.asset";
+            BoardRoot + "/Production/BoardRefreshRecipe.asset";
         const string BoardWaterBaseRecipePath =
-            BoardRoot + "/Production/ChainRushWaterBoardBaseRecipe.asset";
+            BoardRoot + "/Production/WaterBoardBaseRecipe.asset";
         const string BoardPopulationProductionPath =
-            BoardRoot + "/Production/ChainRushBoardPopulationProduction.asset";
+            BoardRoot + "/Production/BoardPopulationProduction.asset";
         const string BoardMergeProductionPath =
-            BoardRoot + "/Production/ChainRushBoardProduction.asset";
+            BoardRoot + "/Production/BoardProduction.asset";
         const string BoardMergeRecipePath =
-            BoardRoot + "/Production/ChainRushBoardMergeRecipe.asset";
+            BoardRoot + "/Production/BoardMergeRecipe.asset";
         const string BoardMergeSkillPath =
-            BoardRoot + "/Skills/ChainRushBoardMergeSkill.asset";
+            BoardRoot + "/Skills/BoardMergeSkill.asset";
+        const string BoardUIPrefabPath =
+            BoardRoot + "/UI/BoardUI.prefab";
         const string BoardOrchestrationPath =
-            BoardRoot + "/Orchestration/ChainRushBoardOrchestration.asset";
+            BoardRoot + "/Orchestration/BoardOrchestration.asset";
         const string SharedWalletTagPath =
-            SharedRoot + "/Economy/ChainRushActivityWalletTag.asset";
+            SharedRoot + "/Economy/ActivityWalletTag.asset";
         const string BoardWalletTagPath =
-            BoardRoot + "/Economy/ChainRushBoardWalletTag.asset";
+            BoardRoot + "/Economy/BoardWalletTag.asset";
         const string BoardTurnTokenPath =
-            SharedRoot + "/Economy/ChainRushBoardTurnToken.asset";
+            SharedRoot + "/Economy/BoardTurnToken.asset";
+        const string ExperiencePath =
+            SharedRoot + "/Economy/Experience.asset";
+        const string ExperienceToTurnTokenRecipePath =
+            AutobattleRoot + "/Production/ExperienceToTurnTokenRecipe.asset";
         const string WaterUnitPath =
-            SharedRoot + "/Units/Water/ChainRushWaterUnit.asset";
+            SharedRoot + "/Units/Water/WaterUnit.asset";
 
         const string AutobattleActivityTypeId = "chainrush.activity-type.autobattle";
         const string BoardActivityTypeId = "chainrush.activity-type.board";
@@ -178,6 +191,10 @@ namespace ChainRush.Tests.EditMode
                 LoadRequiredAsset<ObjectiveTemplateData>(BoardObjectivePath);
             ActivityAgentDefinitionData populationAgent =
                 LoadRequiredAsset<ActivityAgentDefinitionData>(BoardPopulationAgentPath);
+            ActivityAgentDefinitionData productionAgent =
+                LoadRequiredAsset<ActivityAgentDefinitionData>(BoardProductionAgentPath);
+            CapabilityHostData boardHost =
+                LoadRequiredAsset<CapabilityHostData>(BoardHostPath);
             CapabilityHostData populationProducer =
                 LoadRequiredAsset<CapabilityHostData>(BoardPopulationProducerPath);
             CapabilityHostData waterBase =
@@ -207,6 +224,7 @@ namespace ChainRush.Tests.EditMode
                     "Assets/Game/Runtime/Installers/ChainRushTaxonomyRuntimeInstaller.asset");
 
             Assert.AreSame(objective, board.Teams[0].Objectives.Single().Template);
+            Assert.AreEqual(ObjectiveCompletionPolicyType.Reset, objective.CompletionPolicyType);
             Assert.AreSame(orchestration, board.Teams[0].Features.Single());
             CollectionAssert.Contains(
                 ReadObjectReferences<TaxonomyTermData>(taxonomyInstaller, "terms"),
@@ -234,11 +252,18 @@ namespace ChainRush.Tests.EditMode
             Assert.AreEqual(0L, success.TargetValue);
             Assert.AreEqual(BoardCellTagId, success.MarkerTags.Single().Id);
 
-            Assert.AreEqual(2, orchestration.Modules.Count);
-            Assert.IsInstanceOf<ProductionStateOrchestrationModuleData>(orchestration.Modules[0]);
-            Assert.IsInstanceOf<ProjectionStateOrchestrationModuleData>(orchestration.Modules[1]);
+            Assert.AreEqual(3, orchestration.Modules.Count);
+            Assert.IsInstanceOf<EconomyStateOrchestrationModuleData>(orchestration.Modules[0]);
+            Assert.IsInstanceOf<ProductionStateOrchestrationModuleData>(orchestration.Modules[1]);
+            Assert.IsInstanceOf<ProjectionStateOrchestrationModuleData>(orchestration.Modules[2]);
 
             Assert.IsInstanceOf<PopulationActivityOrchestrationAgentData>(populationAgent.Agent);
+            Assert.AreEqual(
+                ObjectiveCommandFailurePolicyType.FailObjective,
+                populationAgent.CommandFailurePolicyType);
+            Assert.AreEqual(
+                ObjectiveCommandFailurePolicyType.Replan,
+                productionAgent.CommandFailurePolicyType);
             var population = (PopulationActivityOrchestrationAgentData)populationAgent.Agent;
             Assert.NotNull(population.Planner);
             Assert.AreSame(refreshRecipe, population.CompletionRecipe);
@@ -246,7 +271,7 @@ namespace ChainRush.Tests.EditMode
             var producerCriterion = populationAgent.ExecutorSelectionCriteria
                 .OfType<MaterializedEntitySelectionCriterionData>()
                 .Single();
-            Assert.AreSame(populationProducer, producerCriterion.EconomyAsset);
+            Assert.AreSame(boardHost, producerCriterion.EconomyAsset);
             Assert.Contains(CapabilityHostType.ProductionOwner, populationProducer.Capabilities
                 .Select(entry => entry.CapabilityType)
                 .ToList());
@@ -309,6 +334,61 @@ namespace ChainRush.Tests.EditMode
 
             Assert.IsEmpty(waterUnit.Capabilities);
             Assert.IsFalse(waterUnit.ProjectionPrefabReference.RuntimeKeyIsValid());
+        }
+
+        [Test]
+        public void ExperienceToTurnTokenRecipe_UsesSharedWalletAndStepProgression()
+        {
+            EconomyAssetData experience = LoadRequiredAsset<EconomyAssetData>(ExperiencePath);
+            EconomyAssetData turnToken =
+                LoadRequiredAsset<EconomyAssetData>(BoardTurnTokenPath);
+            TaxonomyTermData sharedWalletTag =
+                LoadRequiredAsset<TaxonomyTermData>(SharedWalletTagPath);
+            ProductionRecipeData recipe =
+                LoadRequiredAsset<ProductionRecipeData>(ExperienceToTurnTokenRecipePath);
+            EconomyDefinitionsInstallerData economyInstaller =
+                LoadRequiredAsset<EconomyDefinitionsInstallerData>(
+                    "Assets/Game/Runtime/Installers/ChainRushEconomyDefinitionsInstaller.asset");
+
+            List<EconomyAssetData> registeredAssets =
+                ReadObjectReferences<EconomyAssetData>(economyInstaller, "assets");
+            CollectionAssert.Contains(registeredAssets, experience);
+            CollectionAssert.Contains(registeredAssets, recipe);
+
+            Assert.AreEqual(1, recipe.Inputs.Count);
+            ProductionInputData input = recipe.Inputs[0];
+            AssertEconomyOperation(
+                input.Operation,
+                experience,
+                EconomyFormType.Stack,
+                1L,
+                sharedWalletTag);
+            Assert.IsInstanceOf<LongStepProgressionData>(input.AmountProgression);
+            var progression = (LongStepProgressionData)input.AmountProgression;
+            Assert.AreEqual(6L, progression.BaseValue);
+            Assert.AreEqual(2L, progression.FirstStep);
+            Assert.AreEqual(1L, progression.StepDelta);
+
+            long[] expectedAmounts = { 6L, 8L, 11L, 15L, 20L };
+            for (int index = 0; index < expectedAmounts.Length; index++)
+            {
+                Assert.IsTrue(
+                    recipe.TryResolveInputs(
+                        index + 1L,
+                        out List<Core.Economy.Authoring.EconomyOperationData> resolved,
+                        out string failure),
+                    failure);
+                Assert.AreEqual(1, resolved.Count);
+                Assert.AreEqual(expectedAmounts[index], resolved[0].Amount);
+            }
+
+            Assert.AreEqual(1, recipe.Outputs.Count);
+            AssertEconomyOutput(
+                recipe.Outputs[0].Output,
+                turnToken,
+                EconomyFormType.Stack,
+                1L,
+                sharedWalletTag);
         }
 
         [Test]
@@ -417,6 +497,147 @@ namespace ChainRush.Tests.EditMode
                 "ChainRush-Activity-Board");
         }
 
+        [Test]
+        public void BoardUI_MatchingControlRejection_UnlocksAndClearsSelection()
+        {
+            GameObject instance = InstantiateBoardUI(out MonoBehaviour controller);
+            try
+            {
+                SkillData skill = LoadRequiredAsset<SkillData>(BoardMergeSkillPath);
+                var activityId = new ActivityId(31);
+                var hostEntityId = new Core.Entities.EntityId(47);
+                SimulationControlIntentEvent request = SimulationControlIntentEvent.ActivateSkillEntities(
+                    activityId,
+                    hostEntityId,
+                    skill,
+                    new List<Core.Entities.EntityId>());
+                PrepareBoardControlState(controller, activityId, hostEntityId, skill, request.RequestId);
+
+                InvokeControlResult(controller, new SimulationControlResultEvent(
+                    request.RequestId,
+                    activityId,
+                    hostEntityId,
+                    skill,
+                    SimulationControlResultType.Rejected,
+                    SimulationErrorCode.InvalidIntent,
+                    "Rejected by test setup.",
+                    SkillExecutionStatus.Failed,
+                    SkillExecutionRef.Invalid));
+
+                Assert.IsFalse(ReadField<bool>(controller, "_selectionLocked"));
+                Assert.IsFalse(ReadField<bool>(controller, "_awaitingBoardRefresh"));
+                Assert.IsFalse(ReadField<bool>(controller, "_isSelecting"));
+                Assert.IsFalse(ReadField<SimulationControlRequestId>(controller, "_pendingRequestId").IsValid);
+                Assert.AreEqual(0, ReadListField(controller, "_selectedEntities").Count);
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(instance);
+            }
+        }
+
+        [Test]
+        public void BoardUI_UnrelatedControlResult_DoesNotChangePendingSelection()
+        {
+            GameObject instance = InstantiateBoardUI(out MonoBehaviour controller);
+            try
+            {
+                SkillData skill = LoadRequiredAsset<SkillData>(BoardMergeSkillPath);
+                var activityId = new ActivityId(32);
+                var hostEntityId = new Core.Entities.EntityId(48);
+                SimulationControlIntentEvent pending = SimulationControlIntentEvent.ActivateSkillEntities(
+                    activityId,
+                    hostEntityId,
+                    skill,
+                    new List<Core.Entities.EntityId>());
+                SimulationControlIntentEvent unrelated = SimulationControlIntentEvent.ActivateSkillEntities(
+                    activityId,
+                    hostEntityId,
+                    skill,
+                    new List<Core.Entities.EntityId>());
+                PrepareBoardControlState(controller, activityId, hostEntityId, skill, pending.RequestId);
+
+                InvokeControlResult(controller, new SimulationControlResultEvent(
+                    unrelated.RequestId,
+                    activityId,
+                    hostEntityId,
+                    skill,
+                    SimulationControlResultType.Rejected,
+                    SimulationErrorCode.InvalidIntent,
+                    "Unrelated rejection.",
+                    SkillExecutionStatus.Failed,
+                    SkillExecutionRef.Invalid));
+
+                Assert.IsTrue(ReadField<bool>(controller, "_selectionLocked"));
+                Assert.IsTrue(ReadField<bool>(controller, "_awaitingBoardRefresh"));
+                Assert.AreEqual(
+                    pending.RequestId,
+                    ReadField<SimulationControlRequestId>(controller, "_pendingRequestId"));
+                Assert.AreEqual(1, ReadListField(controller, "_selectedEntities").Count);
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(instance);
+            }
+        }
+
+        [Test]
+        public void BoardUI_AcceptedRunningRequest_StaysLockedUntilAuthoritativeRefresh()
+        {
+            GameObject instance = InstantiateBoardUI(out MonoBehaviour controller);
+            try
+            {
+                SkillData skill = LoadRequiredAsset<SkillData>(BoardMergeSkillPath);
+                var activityId = new ActivityId(33);
+                var hostEntityId = new Core.Entities.EntityId(49);
+                SimulationControlIntentEvent request = SimulationControlIntentEvent.ActivateSkillEntities(
+                    activityId,
+                    hostEntityId,
+                    skill,
+                    new List<Core.Entities.EntityId>());
+                var executionRef = new SkillExecutionRef(
+                    hostEntityId,
+                    new SkillId(5),
+                    8L);
+                PrepareBoardControlState(controller, activityId, hostEntityId, skill, request.RequestId);
+
+                InvokeControlResult(controller, new SimulationControlResultEvent(
+                    request.RequestId,
+                    activityId,
+                    hostEntityId,
+                    skill,
+                    SimulationControlResultType.Accepted,
+                    SimulationErrorCode.None,
+                    null,
+                    SkillExecutionStatus.Running,
+                    executionRef));
+
+                Assert.IsTrue(ReadField<bool>(controller, "_selectionLocked"));
+                Assert.IsTrue(ReadField<bool>(controller, "_awaitingBoardRefresh"));
+                Assert.IsFalse(ReadField<SimulationControlRequestId>(controller, "_pendingRequestId").IsValid);
+                Assert.AreEqual(
+                    executionRef.ExecutionId,
+                    ReadField<SkillExecutionRef>(controller, "_pendingExecutionRef").ExecutionId);
+
+                InvokeSkillTerminated(controller, new SkillExecutionTerminatedEvent(
+                    executionRef,
+                    hostEntityId,
+                    skill,
+                    SkillExecutionObservation.Terminal(
+                        SkillExecutionStatus.Completed,
+                        SkillActivationFailureReason.None),
+                    null));
+
+                Assert.IsTrue(ReadField<bool>(controller, "_selectionLocked"));
+                Assert.IsTrue(ReadField<bool>(controller, "_awaitingBoardRefresh"));
+                Assert.IsFalse(ReadField<SkillExecutionRef>(controller, "_pendingExecutionRef").IsValid);
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(instance);
+            }
+        }
+
         static void AssertActivitySchedule(ActivityData activity)
         {
             Assert.IsTrue(
@@ -426,6 +647,99 @@ namespace ChainRush.Tests.EditMode
             Assert.AreEqual(1f / 30f, request.TickDelta, 0.0001f);
             Assert.AreEqual(RealtimeCatchUpPolicyType.Budgeted, request.CatchUpPolicyType);
             Assert.AreEqual(1, request.MaxStepsPerFrame);
+        }
+
+        static GameObject InstantiateBoardUI(out MonoBehaviour controller)
+        {
+            GameObject prefab = LoadRequiredAsset<GameObject>(BoardUIPrefabPath);
+            GameObject instance = UnityEngine.Object.Instantiate(prefab);
+            controller = instance
+                .GetComponentsInChildren<MonoBehaviour>(true)
+                .FirstOrDefault(component => component != null
+                    && string.Equals(
+                        component.GetType().FullName,
+                        "ChainRush.Board.BoardUIController",
+                        StringComparison.Ordinal));
+            Assert.NotNull(controller, "BoardUI prefab does not contain BoardUIController.");
+            return instance;
+        }
+
+        static void PrepareBoardControlState(
+            MonoBehaviour controller,
+            ActivityId activityId,
+            Core.Entities.EntityId hostEntityId,
+            SkillData skill,
+            SimulationControlRequestId requestId)
+        {
+            SetField(controller, "_context", new ActivityUIContext(
+                activityId,
+                default,
+                new List<ActivityUICell>(),
+                null,
+                null));
+            SetField(controller, "_boardHostEntityId", hostEntityId);
+            SetField(controller, "mergeSkill", skill);
+            SetField(controller, "_selectionLocked", true);
+            SetField(controller, "_awaitingBoardRefresh", true);
+            SetField(controller, "_boardRefreshObserved", false);
+            SetField(controller, "_isSelecting", true);
+            SetField(controller, "_pendingRequestId", requestId);
+            SetField(controller, "_pendingExecutionRef", SkillExecutionRef.Invalid);
+            ReadListField(controller, "_selectedEntities").Add(hostEntityId);
+        }
+
+        static void InvokeControlResult(MonoBehaviour controller, SimulationControlResultEvent result)
+        {
+            MethodInfo method = controller.GetType().GetMethod(
+                "OnEvent",
+                BindingFlags.Instance | BindingFlags.Public,
+                null,
+                new[] { typeof(SimulationControlResultEvent) },
+                null);
+            Assert.NotNull(method, "BoardUIController does not handle SimulationControlResultEvent.");
+            method.Invoke(controller, new object[] { result });
+        }
+
+        static void InvokeSkillTerminated(MonoBehaviour controller, SkillExecutionTerminatedEvent result)
+        {
+            MethodInfo method = controller.GetType().GetMethod(
+                "OnEvent",
+                BindingFlags.Instance | BindingFlags.Public,
+                null,
+                new[] { typeof(SkillExecutionTerminatedEvent) },
+                null);
+            Assert.NotNull(method, "BoardUIController does not handle SkillExecutionTerminatedEvent.");
+            method.Invoke(controller, new object[] { result });
+        }
+
+        static IList ReadListField(object owner, string fieldName)
+        {
+            object value = ReadField(owner, fieldName);
+            Assert.IsInstanceOf<IList>(value, string.Concat("Field is not an IList: ", fieldName));
+            return (IList)value;
+        }
+
+        static T ReadField<T>(object owner, string fieldName)
+        {
+            return (T)ReadField(owner, fieldName);
+        }
+
+        static object ReadField(object owner, string fieldName)
+        {
+            FieldInfo field = owner.GetType().GetField(
+                fieldName,
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            Assert.NotNull(field, string.Concat("Missing field: ", owner.GetType().Name, ".", fieldName));
+            return field.GetValue(owner);
+        }
+
+        static void SetField(object owner, string fieldName, object value)
+        {
+            FieldInfo field = owner.GetType().GetField(
+                fieldName,
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            Assert.NotNull(field, string.Concat("Missing field: ", owner.GetType().Name, ".", fieldName));
+            field.SetValue(owner, value);
         }
 
         static void AssertSimulationPolicy(ActivityData activity)

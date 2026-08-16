@@ -16,7 +16,7 @@ MonoBehaviour:
   m_GUID: 80d3bbb64a3094b6db045491dcd4e9c6
   m_SerializeEntries:
   - m_GUID: 975b5009d17ee45ddaf26f1364a4ee50
-    m_Address: Assets/Game/Activities/Board/Projection/ChainRushWaterBoardBase.prefab
+    m_Address: Assets/Game/Activities/Board/Projection/WaterBoardBase.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

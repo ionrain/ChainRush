@@ -31,10 +31,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 29e7260b10fe64f24a0c760ac0537596, type: 2}
   diagnostics:
     determinismStart: 0
-    aiBrain: 1
-    drop: 1
-    skill: 1
-    movement: 1
+    aiBrain: 0
+    drop: 0
+    skill: 0
+    movement: 0
     groupRuntime: 0
     groupFormation: 0
     groupPriority: 0
@@ -42,8 +42,8 @@ MonoBehaviour:
     fogMemory: 0
     economySpendTrace: 0
     economyTransactionTrace: 0
-    orchestrationFailures: 1
-    orchestrationTrace: 1
-    orchestrationFacts: 1
-    orchestrationOperators: 1
+    orchestrationFailures: 0
+    orchestrationTrace: 0
+    orchestrationFacts: 0
+    orchestrationOperators: 0
     orchestrationMaxRows: 128

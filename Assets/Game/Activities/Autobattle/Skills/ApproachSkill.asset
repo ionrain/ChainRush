@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b65a5bf3374d4d3597b95a983d584f0b, type: 3}
   m_Name: ApproachSkill
   m_EditorClassIdentifier: Core::Core.Skills.SkillData
-  domainTypePreview: 0
+  domainTypePreview: 10
   id: chainrush.skill.autobattle.approach
   title:
     m_TableReference:
@@ -63,7 +63,7 @@ MonoBehaviour:
       data:
         recipient: 0
         requiredTags: []
-        value: 650
+        value: 100
         multiplier: {fileID: 0}
         targetTrackingMode: 1
         repathDistanceThreshold: 250

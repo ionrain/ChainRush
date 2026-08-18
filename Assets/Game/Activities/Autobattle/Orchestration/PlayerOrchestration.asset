@@ -1,0 +1,85 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a84e82ad44c14f19b95c9fb0d7b6fe79, type: 3}
+  m_Name: PlayerOrchestration
+  m_EditorClassIdentifier: Core::Core.Activities.ActivityOrchestrationConfigData
+  orchestratorBrain: {fileID: 11400000, guid: 411bb169ab4c04fb9af738a3ece5ef6a, type: 2}
+  modules:
+  - {fileID: 11400000, guid: 54ec0421507ed4859af6d1804be2cdb1, type: 2}
+  - {fileID: 11400000, guid: 33fa94332bba34e0dabec047098c201a, type: 2}
+  - {fileID: 11400000, guid: 8974d6cf7f4404d8b91c628df01306c8, type: 2}
+  tierPolicy:
+    tiers:
+    - tier: 2
+      minRecomputeInterval: 150
+      invalidateOnObjectiveStateChanged: 1
+      minPlanningDepth: 1
+      maxPlanningDepth: 2
+      escalationFailureThreshold: 0
+    - tier: 3
+      minRecomputeInterval: 30
+      invalidateOnObjectiveStateChanged: 1
+      minPlanningDepth: 3
+      maxPlanningDepth: 4
+      escalationFailureThreshold: 0
+    - tier: 4
+      minRecomputeInterval: 8
+      invalidateOnObjectiveStateChanged: 1
+      minPlanningDepth: 5
+      maxPlanningDepth: 6
+      escalationFailureThreshold: 0
+    - tier: 5
+      minRecomputeInterval: 0
+      invalidateOnObjectiveStateChanged: 1
+      minPlanningDepth: 7
+      maxPlanningDepth: -1
+      escalationFailureThreshold: 0
+  planningBudget:
+    maxDependencyDepth: 4
+    maxGeneratedNodes: 64
+    maxResolverExpansions: 128
+    maxBranchesPerRequirement: 4
+    maxPlanningWorkItemsPerPass: 128
+  utilityProfile:
+    successProgressSensitivity: 1
+    failureAvoidanceSensitivity: 1
+    otherSuccessSuppressionSensitivity: 0.75
+    otherFailureProgressSensitivity: 1
+    durationSensitivity: 0.1
+    resourceSensitivity: 0.1
+    switchingSensitivity: 0.25
+    uncertaintySensitivity: 0.25
+    downsideSensitivity: 0.5
+  portfolioPolicy:
+    scoreDeltaSensitivity: 1
+    thresholdDistanceSensitivity: 1
+    terminalObjectivePriority: 2
+    objectiveStateSensitivity: 1
+  strategicAllocationPolicy:
+    cooperativeShare: 0
+    activeShare: 0.5
+    riskShare: 0.5
+  coordinationPolicy:
+    groupDefinition: {fileID: 0}
+    targetNodeTag: {fileID: 0}
+    targetStateTag: {fileID: 0}
+    targetResetType: 3
+    maxExplorationFrontierCells: 64
+    maxExplorationCandidates: 8
+    maxExplorationRouteNodeExpansions: 64
+  invalidationPolicy:
+    factFreshnessDuration: 0.25
+    replanUtilityImprovementThreshold: 0.1
+    activePlanProtectionDuration: 0.5
+    maxPlanningContinuationDuration: 300
+    maxDirtyBranchesPerPass: 16
+  debugName: Autobattle Player

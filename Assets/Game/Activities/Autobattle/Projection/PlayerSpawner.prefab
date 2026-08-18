@@ -1,0 +1,84 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6858691733481192598
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4796992942970916923}
+  - component: {fileID: 3129569822636427163}
+  - component: {fileID: 8825342738596575882}
+  m_Layer: 0
+  m_Name: PlayerSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4796992942970916923
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6858691733481192598}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3129569822636427163
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6858691733481192598}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98617caacf99c41c8bce03f9ab420f59, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Core::Core.Projection.ProjectionBindingController
+  poolKey: chainrush.autobattle.player-spawner
+  autoReturnOnDisable: 0
+  onBound:
+    m_PersistentCalls:
+      m_Calls: []
+  onUnbound:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &8825342738596575882
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6858691733481192598}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e3e1a375262d490dbc37cd0dd0f25a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Core::Core.World.GeneratedMarkerProviderController
+  providerId: playerspawner-spawn-provider
+  providerType: {fileID: 11400000, guid: 498ad0925a24645cba6ef1cfe6b35b4c, type: 2}
+  usagePolicy:
+    selectionType: 0
+    reusePolicyType: 0
+  patterns:
+  - tags:
+    - {fileID: 11400000, guid: 498ad0925a24645cba6ef1cfe6b35b4c, type: 2}
+    refreshPolicyType: 1
+    count: 1
+    shapeType: 3
+    boundaryType: 0
+    minimumDistance: 0
+    size: {x: 4000, y: 0, z: 8000}
+    offset: {x: 2000, y: 0, z: 0}
+    rotationDegrees: {x: 0, y: 0, z: 0}
+  markerViewPrefab: {fileID: 0}

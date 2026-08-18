@@ -17,6 +17,6 @@ MonoBehaviour:
   topologyType: 0
   navigationFrameType: 0
   navigationAlgorithmType: 0
-  coordinateOccupationPolicy: 1
+  coordinateOccupationPolicy: 0
   topologyUnitsPerUnityUnit: 1000
   topologyCoordinateSize: 1000

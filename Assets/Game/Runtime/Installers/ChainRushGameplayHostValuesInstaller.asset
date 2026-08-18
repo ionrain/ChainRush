@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 400555560d9924f3896217317afcd9cd, type: 3}
+  m_Name: ChainRushGameplayHostValuesInstaller
+  m_EditorClassIdentifier: Core::Core.GameRuntime.Installers.GameplayHostValuesInstallerData
+  clearExistingDefinitionsOnInstall: 1
+  values:
+  - {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
+  definitions:
+  - value: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
+    initializationType: 0
+    minCap:
+      value: 0
+      capAttribute:
+        attribute: {fileID: 0}
+        qualifiers: []
+      boundryPolicy: 0
+    maxCap:
+      value: 0
+      capAttribute:
+        attribute: {fileID: 0}
+        qualifiers: []
+      boundryPolicy: 1

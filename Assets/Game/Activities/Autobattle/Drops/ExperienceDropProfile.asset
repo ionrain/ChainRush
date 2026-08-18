@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad9bfef89598f473eb60ca14e798ccc1, type: 3}
+  m_Name: ExperienceDropProfile
+  m_EditorClassIdentifier: Core::Core.Drops.DropProfileData
+  automaticSelectionCriteria:
+    walletTags:
+    - {fileID: 11400000, guid: 16f36e1393e474476a6758136c43b6c2, type: 2}
+    formTypes: 00000000
+    exactAsset: {fileID: 11400000, guid: 299c3a99cfebc4f69b92d177ccbb8cef, type: 2}
+    requiredAssetTags: []
+    excludedAssetTags: []
+    requiredRuntimeTags: []
+    excludedRuntimeTags: []
+  preparations:
+  - rid: 2807516363299750108
+  worldWalletTags:
+  - {fileID: 11400000, guid: 27077fc2f01864a96bd57fd170714ad9, type: 2}
+  placementRules:
+  - requiredMarkerTags:
+    - {fileID: 11400000, guid: 7412542253ee74df7bf36fcf72679248, type: 2}
+    excludedMarkerTags: []
+    providerType: {fileID: 11400000, guid: 7412542253ee74df7bf36fcf72679248, type: 2}
+    providerId: 
+  reservationPriority: 100
+  references:
+    version: 2
+    RefIds:
+    - rid: 2807516363299750108
+      type: {class: ContainerDropPreparationData, ns: Core.Drops, asm: Core}
+      data:
+        selectionCriteria:
+          walletTags:
+          - {fileID: 11400000, guid: 16f36e1393e474476a6758136c43b6c2, type: 2}
+          formTypes: 00000000
+          exactAsset: {fileID: 11400000, guid: 299c3a99cfebc4f69b92d177ccbb8cef, type: 2}
+          requiredAssetTags: []
+          excludedAssetTags: []
+          requiredRuntimeTags: []
+          excludedRuntimeTags: []
+        containerRecipe: {fileID: 11400000, guid: 8b2dd114e687346adbc66b95081ea9a3,
+          type: 2}
+        targetLocalWalletTags:
+        - {fileID: 11400000, guid: 21722dfe6449d46f2bc8ed6823dca3ef, type: 2}

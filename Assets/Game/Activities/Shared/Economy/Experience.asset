@@ -34,7 +34,7 @@ MonoBehaviour:
     m_LocalVariables: []
   icon: {fileID: 0}
   precision: 0
-  allowedOperations: 7
+  allowedOperations: 31
   tags: []
   slotFootprint: 1
   stackCapacity: 0

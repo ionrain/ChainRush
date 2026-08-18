@@ -20,27 +20,31 @@ MonoBehaviour:
   - rid: 930010005
   - rid: 930010006
   - rid: 930010007
+  - rid: 2807516363299750066
   references:
     version: 2
     RefIds:
     - rid: 930010001
       type: {class: SkillHostValueEffectAdapterData, ns: Core.Skills, asm: Core}
-      data: {}
+      data: 
     - rid: 930010002
       type: {class: SkillAttributeModifierEffectAdapterData, ns: Core.Skills, asm: Core}
-      data: {}
+      data: 
     - rid: 930010003
       type: {class: SkillRuntimeTagEffectAdapterData, ns: Core.Skills, asm: Core}
-      data: {}
+      data: 
     - rid: 930010004
       type: {class: SkillEconomyEffectAdapterData, ns: Core.Skills, asm: Core}
-      data: {}
+      data: 
     - rid: 930010005
       type: {class: SkillMoveToTargetEffectAdapterData, ns: Core.Skills, asm: Core}
-      data: {}
+      data: 
     - rid: 930010006
       type: {class: SkillSpawnCarrierEffectAdapterData, ns: Core.Skills, asm: Core}
-      data: {}
+      data: 
     - rid: 930010007
       type: {class: SkillProductionEffectAdapterData, ns: Core.Skills, asm: Core}
-      data: {}
+      data: 
+    - rid: 2807516363299750066
+      type: {class: SkillEconomyEntryEffectAdapterData, ns: Core.Skills, asm: Core}
+      data: 

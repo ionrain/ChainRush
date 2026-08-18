@@ -4,10 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Core;
+using Core.AI;
+using Core.AI.Actions;
 using Core.Activities;
 using Core.CapabilityHosts;
 using Core.Economy;
 using Core.Activities.GameRuntime.Installers;
+using Core.Drops;
+using Core.Drops.GameRuntime.Installers;
 using Core.GameFlow;
 using Core.GameFlow.GameRuntime;
 using Core.GameFlow.GameRuntime.Installers;
@@ -52,6 +56,10 @@ namespace ChainRush.Tests.EditMode
             BoardRoot + "/Projection/WaterBoardBase.prefab";
         const string RuntimeProfilePath =
             "Assets/Game/Runtime/Host/ChainRushGameRuntimeProfile.asset";
+        const string ActivityDiplomacyModulePath =
+            "Assets/Game/Runtime/Diplomacy/ActivityDiplomacyModule.asset";
+        const string CapabilityHostDiplomacyModulePath =
+            "Assets/Game/Runtime/Diplomacy/CapabilityHostDiplomacyModule.asset";
         const string StartupPlanPath =
             "Assets/Game/Runtime/Startup/ChainRushGameStartupPlan.asset";
         const string BoardObjectivePath =
@@ -94,6 +102,28 @@ namespace ChainRush.Tests.EditMode
             AutobattleRoot + "/Production/ExperienceToTurnTokenRecipe.asset";
         const string WaterUnitPath =
             SharedRoot + "/Units/Water/WaterUnit.asset";
+        const string PlayerSpawnerPath =
+            AutobattleRoot + "/Economy/PlayerSpawner.asset";
+        const string EnemySpawnerPath =
+            AutobattleRoot + "/Economy/EnemySpawner.asset";
+        const string EnemyPath =
+            AutobattleRoot + "/Economy/BugBrownSmall.asset";
+        const string ExperienceDropPath =
+            AutobattleRoot + "/Economy/ExperienceDrop.asset";
+        const string DeploymentRecipePath =
+            AutobattleRoot + "/Production/WaterUnitDeploymentRecipe.asset";
+        const string EnemyWaveRecipePath =
+            AutobattleRoot + "/Production/EnemyWaveRecipe.asset";
+        const string PlayerProductionPath =
+            AutobattleRoot + "/Production/PlayerProduction.asset";
+        const string EnemyProductionPath =
+            AutobattleRoot + "/Production/EnemyWaveProduction.asset";
+        const string DropProfilePath =
+            AutobattleRoot + "/Drops/ExperienceDropProfile.asset";
+        const string AlliedCombatBrainPath = AutobattleRoot + "/AI/AlliedCombatBrain.asset";
+        const string EnemyCombatBrainPath = AutobattleRoot + "/AI/EnemyCombatBrain.asset";
+        const string CollectionBrainPath =
+            AutobattleRoot + "/AI/ExperienceCollectionBrain.asset";
 
         const string AutobattleActivityTypeId = "chainrush.activity-type.autobattle";
         const string BoardActivityTypeId = "chainrush.activity-type.board";
@@ -130,14 +160,15 @@ namespace ChainRush.Tests.EditMode
             Assert.AreEqual(1, autobattle.Teams[1].SlotCount);
             Assert.IsTrue(autobattle.AllowBots);
             Assert.AreEqual(ActivityEndMode.Manual, autobattle.Result.EndMode);
-            Assert.AreEqual(0, autobattle.Teams[0].Objectives.Count);
-            Assert.AreEqual(0, autobattle.Teams[1].Objectives.Count);
-            Assert.AreEqual(0, autobattle.Teams[0].Features.Count);
-            Assert.AreEqual(0, autobattle.Teams[1].Features.Count);
+            Assert.AreEqual(2, autobattle.Teams[0].Objectives.Count);
+            Assert.AreEqual(1, autobattle.Teams[1].Objectives.Count);
+            Assert.AreEqual(1, autobattle.Teams[0].Features.Count);
+            Assert.AreEqual(1, autobattle.Teams[1].Features.Count);
+            Assert.AreEqual(1, autobattle.WorldWallets.Count);
             AssertTopology(
                 autobattle.Topology,
                 TopologyType.Free,
-                TopologyCoordinateOccupationPolicy.MultipleOccupants);
+                TopologyCoordinateOccupationPolicy.SingleOccupant);
 
             Assert.NotNull(board.ActivityType);
             Assert.AreEqual(BoardActivityTypeId, board.ActivityType.Id);
@@ -315,7 +346,7 @@ namespace ChainRush.Tests.EditMode
             AssertEconomyOutput(
                 mergeRecipe.Outputs[0].Output,
                 waterUnit,
-                EconomyFormType.Token,
+                EconomyFormType.Stack,
                 1L,
                 sharedWalletTag);
             Assert.IsNull(mergeProduction.MaterializationProviderType);
@@ -332,8 +363,15 @@ namespace ChainRush.Tests.EditMode
                 Assert.AreEqual(mappingIndex, productionEffect.InputMappings[mappingIndex].TargetIndex);
             }
 
-            Assert.IsEmpty(waterUnit.Capabilities);
-            Assert.IsFalse(waterUnit.ProjectionPrefabReference.RuntimeKeyIsValid());
+            CollectionAssert.AreEquivalent(
+                new[]
+                {
+                    CapabilityHostType.SkillOwner,
+                    CapabilityHostType.MovementOwner,
+                    CapabilityHostType.AIBrainOwner,
+                },
+                waterUnit.Capabilities.Select(entry => entry.CapabilityType));
+            Assert.IsTrue(waterUnit.ProjectionPrefabReference.RuntimeKeyIsValid());
         }
 
         [Test]
@@ -389,6 +427,168 @@ namespace ChainRush.Tests.EditMode
                 EconomyFormType.Stack,
                 1L,
                 sharedWalletTag);
+        }
+
+        [Test]
+        public void AutobattleVerticalSlice_WiresWavesDeploymentDropsAndBoardOutput()
+        {
+            ActivityData activity = LoadRequiredAsset<ActivityData>(AutobattleActivityPath);
+            ActivityData board = LoadRequiredAsset<ActivityData>(BoardActivityPath);
+            CapabilityHostData playerSpawner =
+                LoadRequiredAsset<CapabilityHostData>(PlayerSpawnerPath);
+            CapabilityHostData enemySpawner =
+                LoadRequiredAsset<CapabilityHostData>(EnemySpawnerPath);
+            CapabilityHostData enemy = LoadRequiredAsset<CapabilityHostData>(EnemyPath);
+            CapabilityHostData experienceDrop =
+                LoadRequiredAsset<CapabilityHostData>(ExperienceDropPath);
+            CapabilityHostData waterUnit = LoadRequiredAsset<CapabilityHostData>(WaterUnitPath);
+            EconomyAssetData experience = LoadRequiredAsset<EconomyAssetData>(ExperiencePath);
+            EconomyAssetData turnToken = LoadRequiredAsset<EconomyAssetData>(BoardTurnTokenPath);
+            TaxonomyTermData sharedWalletTag =
+                LoadRequiredAsset<TaxonomyTermData>(SharedWalletTagPath);
+            ProductionRecipeData deployment =
+                LoadRequiredAsset<ProductionRecipeData>(DeploymentRecipePath);
+            ProductionRecipeData wave =
+                LoadRequiredAsset<ProductionRecipeData>(EnemyWaveRecipePath);
+            ProductionData playerProduction =
+                LoadRequiredAsset<ProductionData>(PlayerProductionPath);
+            ProductionData enemyProduction =
+                LoadRequiredAsset<ProductionData>(EnemyProductionPath);
+            ProductionRecipeData merge =
+                LoadRequiredAsset<ProductionRecipeData>(BoardMergeRecipePath);
+            DropProfileData dropProfile = LoadRequiredAsset<DropProfileData>(DropProfilePath);
+            AIBrainData alliedCombatBrain =
+                LoadRequiredAsset<AIBrainData>(AlliedCombatBrainPath);
+            AIBrainData enemyCombatBrain =
+                LoadRequiredAsset<AIBrainData>(EnemyCombatBrainPath);
+            AIBrainData collectionBrain = LoadRequiredAsset<AIBrainData>(CollectionBrainPath);
+
+            Assert.AreEqual(2, activity.Teams[0].Objectives.Count);
+            Assert.AreEqual(1, activity.Teams[1].Objectives.Count);
+            Assert.IsTrue(activity.Teams
+                .SelectMany(team => team.Objectives)
+                .All(entry => entry.Template.CompletionPolicyType == ObjectiveCompletionPolicyType.Reset));
+            Assert.AreEqual(1, activity.Teams[0].Features.Count);
+            Assert.AreEqual(1, activity.Teams[1].Features.Count);
+            Assert.AreEqual(1, activity.WorldWallets.Count);
+
+            ActivityTeamWalletData playerWallet = activity.Teams[0].Wallets.Single();
+            Assert.IsTrue(playerWallet.Seed.Any(seed =>
+                seed.Seed.Asset == playerSpawner
+                && seed.Seed.FormType == EconomyFormType.Token
+                && seed.MaterializationType == ActivitySeedMaterializationType.Spatial));
+            Assert.IsTrue(playerWallet.Seed.Any(seed =>
+                seed.Seed.Asset == waterUnit
+                && seed.Seed.FormType == EconomyFormType.Stack
+                && seed.Seed.Amount == 1L
+                && seed.MaterializationType == ActivitySeedMaterializationType.None));
+            ActivityTeamWalletData enemyWallet = activity.Teams[1].Wallets.Single();
+            Assert.IsTrue(enemyWallet.Seed.Any(seed =>
+                seed.Seed.Asset == enemySpawner
+                && seed.Seed.FormType == EconomyFormType.Token
+                && seed.MaterializationType == ActivitySeedMaterializationType.Spatial));
+
+            Assert.AreEqual(1, deployment.Inputs.Count);
+            AssertEconomyOperation(
+                deployment.Inputs[0].Operation,
+                waterUnit,
+                EconomyFormType.Stack,
+                1L,
+                sharedWalletTag);
+            Assert.AreEqual(1, deployment.Outputs.Count);
+            AssertEconomyOutput(
+                deployment.Outputs[0].Output,
+                waterUnit,
+                EconomyFormType.Token,
+                1L,
+                sharedWalletTag);
+
+            Assert.AreEqual(1, wave.Outputs.Count);
+            Assert.AreSame(enemy, wave.Outputs[0].Output.Entry.Asset);
+            Assert.AreEqual(EconomyFormType.Token, wave.Outputs[0].Output.Entry.FormType);
+            Assert.IsInstanceOf<LongCappedProgressionData>(wave.Outputs[0].AmountProgression);
+            var capped = (LongCappedProgressionData)wave.Outputs[0].AmountProgression;
+            Assert.AreEqual(20L, capped.Maximum);
+            Assert.IsInstanceOf<LongLinearProgressionData>(capped.Source);
+            long[] ordinals = { 1L, 2L, 19L, 20L };
+            long[] amounts = { 2L, 3L, 20L, 20L };
+            for (int i = 0; i < ordinals.Length; i++)
+            {
+                Assert.IsTrue(wave.Outputs[0].TryResolveAmount(
+                    ordinals[i], out long amount, out string failure), failure);
+                Assert.AreEqual(amounts[i], amount);
+            }
+
+            Assert.NotNull(playerProduction.MaterializationProviderType);
+            Assert.AreEqual(
+                "chainrush.autobattle.marker.allied-spawn",
+                playerProduction.MaterializationProviderType.Id);
+            Assert.NotNull(enemyProduction.MaterializationProviderType);
+            Assert.AreEqual(
+                "chainrush.autobattle.marker.enemy-spawn",
+                enemyProduction.MaterializationProviderType.Id);
+
+            Assert.IsTrue(enemy.WalletEntries
+                .SelectMany(entry => entry.Seed)
+                .Any(seed => seed.Asset == experience
+                    && seed.FormType == EconomyFormType.Stack
+                    && seed.Amount == 3L));
+            Assert.AreEqual(1, dropProfile.Preparations.Count);
+            Assert.IsInstanceOf<ContainerDropPreparationData>(dropProfile.Preparations[0]);
+            Assert.AreEqual(1, dropProfile.WorldWalletTags.Count);
+            Assert.IsTrue(experienceDrop.WalletEntries
+                .SelectMany(entry => entry.Seed)
+                .Any(seed => seed.Asset is SkillData));
+            AssertAIBrainBinding(waterUnit, alliedCombatBrain);
+            AssertAIBrainBinding(enemy, enemyCombatBrain);
+            AssertAIBrainBinding(experienceDrop, collectionBrain);
+            AssertCombatDefeatActions(
+                alliedCombatBrain,
+                typeof(RemoveEntityAIBrainActionData));
+            AssertCombatDefeatActions(
+                enemyCombatBrain,
+                typeof(DropAIBrainActionData),
+                typeof(RemoveEntityAIBrainActionData));
+
+            string[] projectionPaths =
+            {
+                AutobattleRoot + "/Projection/PlayerSpawner.prefab",
+                AutobattleRoot + "/Projection/EnemySpawner.prefab",
+                AutobattleRoot + "/Projection/WaterUnit.prefab",
+                AutobattleRoot + "/Projection/BugBrownSmall.prefab",
+                AutobattleRoot + "/Projection/ExperienceDrop.prefab",
+            };
+            GameObject enemyProjection = LoadRequiredAsset<GameObject>(
+                AutobattleRoot + "/Projection/BugBrownSmall.prefab");
+            PrefabMarkerCollectorController enemyDropProvider =
+                enemyProjection.GetComponent<PrefabMarkerCollectorController>();
+            Assert.NotNull(enemyDropProvider);
+            Assert.AreEqual(
+                SpatialMarkerRefreshPolicyType.OnUse,
+                enemyDropProvider.RefreshPolicyType);
+            List<string> poolKeys = projectionPaths
+                .Select(path => LoadRequiredAsset<GameObject>(path)
+                    .GetComponent<ProjectionBindingController>())
+                .Select(binding =>
+                {
+                    Assert.NotNull(binding);
+                    return binding.PoolKey.Value;
+                })
+                .ToList();
+            Assert.AreEqual(poolKeys.Count, poolKeys.Distinct(StringComparer.Ordinal).Count());
+            Assert.IsFalse(poolKeys.Any(key => string.Equals(
+                key, "pool.default", StringComparison.Ordinal)));
+
+            Assert.AreEqual(1, merge.Outputs.Count);
+            AssertEconomyOutput(
+                merge.Outputs[0].Output,
+                waterUnit,
+                EconomyFormType.Stack,
+                1L,
+                sharedWalletTag);
+            Assert.IsFalse(board.Teams[0].Wallets
+                .SelectMany(wallet => wallet.Seed)
+                .Any(seed => seed.Seed.Asset == turnToken));
         }
 
         [Test]
@@ -456,11 +656,30 @@ namespace ChainRush.Tests.EditMode
                 typeof(ProductionRuntimeInstallerData),
                 typeof(SimulationControlRuntimeInstallerData),
                 typeof(ProjectionServiceRuntimeData),
+                typeof(GameplayHostValuesInstallerData),
+                typeof(DropRuntimeInstallerData),
+                typeof(DiplomacyRuntimeInstallerData),
             };
 
             CollectionAssert.AreEqual(
                 expectedInstallerTypes,
                 profile.Installers.Select(installer => installer.GetType()).ToList());
+
+            DiplomacyRuntimeInstallerData diplomacyInstaller = profile.Installers
+                .OfType<DiplomacyRuntimeInstallerData>()
+                .Single();
+            var serializedDiplomacyInstaller = new SerializedObject(diplomacyInstaller);
+            SerializedProperty diplomacyModules =
+                serializedDiplomacyInstaller.FindProperty("modules");
+            Assert.NotNull(diplomacyModules);
+            Assert.AreEqual(2, diplomacyModules.arraySize);
+            Assert.AreSame(
+                LoadRequiredAsset<UnityEngine.Object>(ActivityDiplomacyModulePath),
+                diplomacyModules.GetArrayElementAtIndex(0).objectReferenceValue);
+            Assert.AreSame(
+                LoadRequiredAsset<UnityEngine.Object>(CapabilityHostDiplomacyModulePath),
+                diplomacyModules.GetArrayElementAtIndex(1).objectReferenceValue);
+
             Assert.AreEqual(2, startup.Actions.Length);
             Assert.IsInstanceOf<AddGameFlowRuntimeActionData>(startup.Actions[0]);
             Assert.IsInstanceOf<AddGameFlowRuntimeActionData>(startup.Actions[1]);
@@ -483,6 +702,11 @@ namespace ChainRush.Tests.EditMode
                 settings,
                 AutobattleSpacePath,
                 "ChainRush-Activity-Autobattle");
+
+            GameObject space = LoadRequiredAsset<GameObject>(AutobattleSpacePath);
+            Transform floor = space.transform.Find("Floor");
+            Assert.NotNull(floor);
+            Assert.NotNull(floor.GetComponent<NavigationSurfaceController>());
         }
 
         [Test]
@@ -647,6 +871,29 @@ namespace ChainRush.Tests.EditMode
             Assert.AreEqual(1f / 30f, request.TickDelta, 0.0001f);
             Assert.AreEqual(RealtimeCatchUpPolicyType.Budgeted, request.CatchUpPolicyType);
             Assert.AreEqual(1, request.MaxStepsPerFrame);
+        }
+
+        static void AssertAIBrainBinding(CapabilityHostData host, AIBrainData brain)
+        {
+            CapabilityEntry capability = host.Capabilities
+                .Single(entry => entry.CapabilityType == CapabilityHostType.AIBrainOwner);
+            Assert.AreEqual(1, capability.SelectorTags.Count);
+            SeedEntry seed = host.WalletEntries
+                .SelectMany(entry => entry.Seed)
+                .Single(entry => entry.Asset == brain);
+            Assert.AreEqual(1, seed.RuntimeTags.Count);
+            Assert.AreSame(capability.SelectorTags[0], seed.RuntimeTags[0]);
+        }
+
+        static void AssertCombatDefeatActions(AIBrainData brain, params Type[] actionTypes)
+        {
+            AIBrainStateData defeat = brain.Nodes
+                .SelectMany(node => node.States)
+                .Single(state => state.OnEnterActions.Any(
+                    action => action is RemoveEntityAIBrainActionData));
+            CollectionAssert.AreEqual(
+                actionTypes,
+                defeat.OnEnterActions.Select(action => action.GetType()).ToList());
         }
 
         static GameObject InstantiateBoardUI(out MonoBehaviour controller)

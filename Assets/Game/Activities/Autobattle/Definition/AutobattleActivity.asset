@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 266d0f8e0e1234f37b4c6ebbe34dd917, type: 3}
   m_Name: AutobattleActivity
   m_EditorClassIdentifier: Core::Core.Activities.ActivityData
-  domainTypePreview: 0
+  domainTypePreview: 11
   id: chainrush.activity.autobattle
   title:
     m_TableReference:
@@ -57,19 +57,59 @@ MonoBehaviour:
   teams:
   - slotCount: 1
     entryRules: []
-    objectives: []
+    objectives:
+    - template: {fileID: 11400000, guid: 6d5a77e70f73c43108cf633f3a1092e0, type: 2}
+      successScoreDelta: 0
+      failScoreDelta: 0
+    - template: {fileID: 11400000, guid: 6462f655bcb0c48b1953b7803ffe072b, type: 2}
+      successScoreDelta: 0
+      failScoreDelta: 0
     wallets:
     - wallet: {fileID: 11400000, guid: 16da9107fd104467980bd94f53e0f9e1, type: 2}
-      seed: []
-    features: []
+      seed:
+      - seed:
+          entry:
+            asset: {fileID: 11400000, guid: 5e1ac8a207483462ca756737bc32e363, type: 2}
+            formType: 1
+            amount: 1
+          runtimeTags: []
+        materializationType: 1
+        materializationMarkerTags:
+        - {fileID: 11400000, guid: 450f265c94828495fa654ec2c4ee93a3, type: 2}
+      - seed:
+          entry:
+            asset: {fileID: 11400000, guid: ba6dc7b2969654c0c96dd451c9a18987, type: 2}
+            formType: 0
+            amount: 1
+          runtimeTags: []
+        materializationType: 0
+        materializationMarkerTags: []
+    features:
+    - {fileID: 11400000, guid: 847659956c5e7433da259fcf9cb220da, type: 2}
   - slotCount: 1
     entryRules: []
-    objectives: []
+    objectives:
+    - template: {fileID: 11400000, guid: 7d1c0730e3fb540cdb47545073e0dee1, type: 2}
+      successScoreDelta: 0
+      failScoreDelta: 0
     wallets:
     - wallet: {fileID: 11400000, guid: 16da9107fd104467980bd94f53e0f9e1, type: 2}
-      seed: []
-    features: []
+      seed:
+      - seed:
+          entry:
+            asset: {fileID: 11400000, guid: ac0f603ee0c224c8c825aa40af08b831, type: 2}
+            formType: 1
+            amount: 1
+          runtimeTags: []
+        materializationType: 1
+        materializationMarkerTags:
+        - {fileID: 11400000, guid: ffd72531a038d4e2b9d368cb5752f29a, type: 2}
+    features:
+    - {fileID: 11400000, guid: 7f4894a7a989944bda6a9b6400c4355f, type: 2}
   activityContextTag: {fileID: 11400000, guid: 1d56d6d471e9643298aa95ba74ca0c9a, type: 2}
+  worldWallets:
+  - wallet: {fileID: 11400000, guid: 35daba52fc3bc4c4eb8531b17e4565bc, type: 2}
+    seed: []
   allowBots: 1
   result:
     endMode: 1

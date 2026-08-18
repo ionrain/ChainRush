@@ -73,7 +73,7 @@ MonoBehaviour:
   - output:
       entry:
         asset: {fileID: 11400000, guid: ba6dc7b2969654c0c96dd451c9a18987, type: 2}
-        formType: 1
+        formType: 0
         amount: 1
       walletTags:
       - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}

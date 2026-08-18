@@ -15,11 +15,36 @@ MonoBehaviour:
   m_GroupName: ChainRush-Activity-Autobattle
   m_GUID: 27b10a11b30194cb2a038cd23d02bd61
   m_SerializeEntries:
+  - m_GUID: 22ee9ac4b5fce420f9c56639de2227de
+    m_Address: Assets/Game/Activities/Autobattle/Projection/WaterUnit.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 5e3230375bf51449684beaac86fe4f8b
-    m_Address: chainrush.activity.autobattle.space
+    m_Address: Assets/Game/Activities/Autobattle/Space/AutobattleSpace.prefab
     m_ReadOnly: 0
     m_SerializedLabels:
     - activity-space
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9855d08c0803240c4a870e469bfb2860
+    m_Address: Assets/Game/Activities/Autobattle/Projection/EnemySpawner.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b35c324e789914b05bd57c20e70dbc73
+    m_Address: Assets/Game/Activities/Autobattle/Projection/PlayerSpawner.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c01a0213fd27b4d00a0f90ca1202580f
+    m_Address: Assets/Game/Activities/Autobattle/Projection/BugBrownSmall.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c89cf9c853b49426f8563cd883c00115
+    m_Address: Assets/Game/Activities/Autobattle/Projection/ExperienceDrop.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 263693b897da14307a031f1497d2d347, type: 2}

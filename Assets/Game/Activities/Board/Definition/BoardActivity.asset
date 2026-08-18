@@ -63,15 +63,7 @@ MonoBehaviour:
       failScoreDelta: 0
     wallets:
     - wallet: {fileID: 11400000, guid: 16da9107fd104467980bd94f53e0f9e1, type: 2}
-      seed:
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: 854a0cd2c05d9443ead51a662d4966bf, type: 2}
-            formType: 0
-            amount: 1
-          runtimeTags: []
-        materializationType: 0
-        materializationMarkerTags: []
+      seed: []
     - wallet: {fileID: 11400000, guid: 5e352fdca6ae04c9b931f9fd2bd9519d, type: 2}
       seed:
       - seed:
@@ -93,6 +85,7 @@ MonoBehaviour:
     features:
     - {fileID: 11400000, guid: d1a497a418cfb4c2fa6e709b56630a3f, type: 2}
   activityContextTag: {fileID: 11400000, guid: 4ceffc5ec75d94a00b7a7b29748493b2, type: 2}
+  worldWallets: []
   allowBots: 0
   result:
     endMode: 1

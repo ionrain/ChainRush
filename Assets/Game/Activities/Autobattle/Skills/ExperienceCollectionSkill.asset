@@ -1,0 +1,106 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b65a5bf3374d4d3597b95a983d584f0b, type: 3}
+  m_Name: ExperienceCollectionSkill
+  m_EditorClassIdentifier: Core::Core.Skills.SkillData
+  domainTypePreview: 0
+  id: chainrush.skill.autobattle.experience-collection
+  title:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  description:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  icon: {fileID: 0}
+  precision: 0
+  allowedOperations: 31
+  tags: []
+  slotFootprint: 1
+  stackCapacity: 0
+  targetType: 2
+  targetCount:
+    min: 1
+    max: 1
+  analyticSupposedTarget: 0
+  targetTags:
+  - {fileID: 11400000, guid: 21dd0e09a873844fb9f21d3ce7d47a2a, type: 2}
+  targetSlot: {fileID: 0}
+  executionSlot: {fileID: 0}
+  startDelay: 12
+  endDelay: 0
+  actionInterval: 0
+  actionCount: 1
+  reloadTime: 0
+  requirements: []
+  effects:
+  - rid: 2807516363299750069
+  - rid: 2807516363299750070
+  references:
+    version: 2
+    RefIds:
+    - rid: 2807516363299750069
+      type: {class: SkillEconomyEntryEffectData, ns: Core.Skills, asm: Core}
+      data:
+        recipient: 0
+        requiredTags: []
+        value: 0
+        multiplier: {fileID: 0}
+        sourceType: 0
+        sourceOwnerType: 0
+        selection:
+          walletTags:
+          - {fileID: 11400000, guid: 21722dfe6449d46f2bc8ed6823dca3ef, type: 2}
+          formTypes: 00000000
+          exactAsset: {fileID: 11400000, guid: 299c3a99cfebc4f69b92d177ccbb8cef, type: 2}
+          requiredAssetTags: []
+          excludedAssetTags: []
+          requiredRuntimeTags: []
+          excludedRuntimeTags: []
+        operation: 8
+        destinationRecipient: 1
+        destinationOwnerType: 1
+        destinationWalletTags:
+        - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
+    - rid: 2807516363299750070
+      type: {class: SkillEconomyEntryEffectData, ns: Core.Skills, asm: Core}
+      data:
+        recipient: 0
+        requiredTags: []
+        value: 0
+        multiplier: {fileID: 0}
+        sourceType: 1
+        sourceOwnerType: 0
+        selection:
+          walletTags:
+          - {fileID: 11400000, guid: 27077fc2f01864a96bd57fd170714ad9, type: 2}
+          formTypes: 01000000
+          exactAsset: {fileID: 11400000, guid: 94e3b4832778d4295ac300f3bb307913, type: 2}
+          requiredAssetTags: []
+          excludedAssetTags: []
+          requiredRuntimeTags: []
+          excludedRuntimeTags: []
+        operation: 16
+        destinationRecipient: 0
+        destinationOwnerType: 0
+        destinationWalletTags: []

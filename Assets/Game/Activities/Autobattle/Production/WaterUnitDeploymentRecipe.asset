@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85e184825c3ab43e5a64ac84b7ab1ba9, type: 3}
+  m_Name: WaterUnitDeploymentRecipe
+  m_EditorClassIdentifier: Core::Core.Production.Authoring.ProductionRecipeData
+  domainTypePreview: 0
+  id: chainrush.production.autobattle.water-unit-deployment.recipe
+  title:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  description:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  icon: {fileID: 0}
+  precision: 0
+  allowedOperations: 3
+  tags: []
+  slotFootprint: 1
+  stackCapacity: 0
+  inputs:
+  - operation:
+      operation: 4
+      walletTags:
+      - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
+      entry:
+        asset: {fileID: 11400000, guid: ba6dc7b2969654c0c96dd451c9a18987, type: 2}
+        formType: 0
+        amount: 1
+    amountProgression:
+      rid: -2
+  outputs:
+  - output:
+      entry:
+        asset: {fileID: 11400000, guid: ba6dc7b2969654c0c96dd451c9a18987, type: 2}
+        formType: 1
+        amount: 1
+      walletTags:
+      - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
+    amountProgression:
+      rid: -2
+  limitMode: 0
+  capValue: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }

@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9969bb010093e43c6993c07d9c072f75, type: 3}
+  m_Name: PlayerSpawner
+  m_EditorClassIdentifier: Core::Core.CapabilityHosts.CapabilityHostData
+  domainTypePreview: 0
+  id: chainrush.autobattle.player-spawner
+  title:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  description:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  icon: {fileID: 0}
+  precision: 0
+  allowedOperations: 31
+  tags:
+  - {fileID: 11400000, guid: 21dd0e09a873844fb9f21d3ce7d47a2a, type: 2}
+  slotFootprint: 1
+  stackCapacity: 0
+  capabilities:
+  - capabilityType: 2
+    selectorTags: []
+  walletEntries:
+  - wallet: {fileID: 11400000, guid: b85977be3024f49c889d7fd3baa24634, type: 2}
+    seed:
+    - entry:
+        asset: {fileID: 11400000, guid: 550ba59fa12aa47858d39349a31ded26, type: 2}
+        formType: 0
+        amount: 1
+      runtimeTags: []
+  usagePolicy:
+    accessType: 0
+    diplomacyCompareOperation: 3
+    diplomacyScoreThreshold: -100
+  projectionPrefabReference:
+    m_AssetGUID: b35c324e789914b05bd57c20e70dbc73
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  projectionPool:
+    demandModeType: 0
+    demandValue: 0
+    expandable: 1
+    maxCapacity: 32
+  references:
+    version: 2
+    RefIds: []

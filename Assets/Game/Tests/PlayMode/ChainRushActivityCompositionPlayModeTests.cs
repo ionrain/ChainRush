@@ -7,6 +7,7 @@ using Core.Activities;
 using Core.Activities.Events;
 using Core.CapabilityHosts;
 using Core.CapabilityHosts.Runtime;
+using Core.Diplomacy;
 using Core.Economy;
 using Core.Events;
 using Core.GameRuntime;
@@ -53,6 +54,8 @@ namespace ChainRush.Tests.PlayMode
             "Assets/Game/Activities/Shared/Economy/BoardTurnToken.asset";
         const string WaterUnitPath =
             "Assets/Game/Activities/Shared/Units/Water/WaterUnit.asset";
+        const string EnemyPath =
+            "Assets/Game/Activities/Autobattle/Economy/BugBrownSmall.asset";
         const string SharedWalletTagPath =
             "Assets/Game/Activities/Shared/Economy/ActivityWalletTag.asset";
         const string AutobattleActivityTypeId = "chainrush.activity-type.autobattle";
@@ -147,6 +150,53 @@ namespace ChainRush.Tests.PlayMode
                     new List<TaxonomyTermData> { boardCellTag }).Count);
             Assert.AreEqual(16, CountBoardUICells());
             AssertBoardUIVisible(host);
+
+            CapabilityHostData waterUnitDefinition =
+                AssetDatabase.LoadAssetAtPath<CapabilityHostData>(WaterUnitPath);
+            CapabilityHostData enemyDefinition =
+                AssetDatabase.LoadAssetAtPath<CapabilityHostData>(EnemyPath);
+            Assert.NotNull(waterUnitDefinition);
+            Assert.NotNull(enemyDefinition);
+
+            float combatHostDeadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
+            while (Time.realtimeSinceStartup < combatHostDeadline
+                && (!TryFindActivityHost(
+                        autobattle.Id,
+                        waterUnitDefinition,
+                        out Core.Entities.EntityId waterUnitEntityId)
+                    || !TryFindActivityHost(
+                        autobattle.Id,
+                        enemyDefinition,
+                        out Core.Entities.EntityId enemyEntityId)))
+            {
+                yield return null;
+            }
+
+            Assert.IsTrue(
+                TryFindActivityHost(
+                    autobattle.Id,
+                    waterUnitDefinition,
+                    out Core.Entities.EntityId waterUnitEntity),
+                "Autobattle did not materialize a Water unit.");
+            Assert.IsTrue(
+                TryFindActivityHost(
+                    autobattle.Id,
+                    enemyDefinition,
+                    out Core.Entities.EntityId enemyEntity),
+                "Autobattle did not materialize an enemy.");
+            Assert.IsTrue(
+                DiplomacyService.TryGetRelation(
+                    autobattle.Id,
+                    waterUnitEntity,
+                    enemyEntity,
+                    DiplomacyChannelType.Military,
+                    out DiplomacyRelationSnapshot combatRelation),
+                "Diplomacy relation between materialized opposing units is unavailable.");
+            Assert.AreEqual(
+                DiplomacyDispositionType.Hostile,
+                combatRelation.Disposition,
+                "Materialized opposing units are not hostile.");
+            Assert.AreEqual(autobattle.Id, combatRelation.ActivityId);
 
             CapabilityHostData waterBase =
                 AssetDatabase.LoadAssetAtPath<CapabilityHostData>(BoardWaterBasePath);
@@ -444,6 +494,31 @@ namespace ChainRush.Tests.PlayMode
 
                 entityId = host.EntityId;
                 return true;
+            }
+
+            return false;
+        }
+
+        static bool TryFindActivityHost(
+            ActivityId activityId,
+            CapabilityHostData expectedDefinition,
+            out Core.Entities.EntityId entityId)
+        {
+            entityId = Core.Entities.EntityId.Invalid;
+            List<CapabilityHostSnapshot> hosts = CapabilityHostService.GetAll();
+            hosts.Sort((left, right) => left.EntityId.Value.CompareTo(right.EntityId.Value));
+            for (int i = 0; i < hosts.Count; i++)
+            {
+                CapabilityHostSnapshot host = hosts[i];
+                if (host.ActivityId != activityId
+                    || host.Definition == null
+                    || !host.Definition.Matches(expectedDefinition))
+                {
+                    continue;
+                }
+
+                entityId = host.EntityId;
+                return entityId.IsValid;
             }
 
             return false;

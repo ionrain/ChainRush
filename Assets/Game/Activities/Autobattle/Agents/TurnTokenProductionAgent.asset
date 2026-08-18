@@ -1,0 +1,72 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02d1a3baa20004b4c9af3160993765a5, type: 3}
+  m_Name: TurnTokenProductionAgent
+  m_EditorClassIdentifier: Core::Core.Activities.ActivityAgentDefinitionData
+  agentId: chainrush-autobattle-agent-turn-token
+  basePriority: 100
+  updateInterval: 1
+  matchConditions:
+  - rid: 2807516363299750104
+  executorSelectionCriteria:
+  - rid: 2807516363299750105
+  - rid: 2807516363299750106
+  targetSelectionCriteria: []
+  aiBrainTargetKey: {fileID: 0}
+  controlType: 2
+  agent:
+    rid: 2807516363299750107
+  stopPolicyType: 0
+  timeLimit: 0
+  commandFailurePolicyType: 0
+  tokenReservationPolicyType: 0
+  targetAssignmentPolicyType: 0
+  movementPolicyType: 0
+  executorLossPolicyType: 0
+  executorBusyPolicyType: 1
+  executorReservationPolicyType: 1
+  negativeImpactPolicyType: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: 2807516363299750104
+      type: {class: ObjectiveConditionEconomyMetric, ns: Core.Objectives, asm: Core}
+      data:
+        _targetValue: 1
+        _walletTags:
+        - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
+        _asset: {fileID: 11400000, guid: 854a0cd2c05d9443ead51a662d4966bf, type: 2}
+        _requiredAssetTags: []
+        _formType: 0
+        _compareOperation: 3
+    - rid: 2807516363299750105
+      type: {class: MaterializedEntitySelectionCriterionData, ns: Core.Activities,
+        asm: Core}
+      data:
+        requirementType: 0
+        weight: 1
+        economyAsset: {fileID: 11400000, guid: 5e1ac8a207483462ca756737bc32e363, type: 2}
+        economyFormType: 1
+        requiredAssetTags: []
+        requiredCapabilityTypes: 
+        compareOperation: 3
+        targetValue: 1
+    - rid: 2807516363299750106
+      type: {class: EntityOwnerSelectionCriterionData, ns: Core.Activities, asm: Core}
+      data:
+        requirementType: 0
+        weight: 1
+        ownerSelectionType: 0
+    - rid: 2807516363299750107
+      type: {class: ProductionActivityOrchestrationAgentData, ns: Core.Activities,
+        asm: Core}
+      data: 

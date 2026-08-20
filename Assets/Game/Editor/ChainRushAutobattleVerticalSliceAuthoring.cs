@@ -17,6 +17,7 @@ using Core.Economy;
 using Core.Economy.Authoring;
 using Core.GameRuntime;
 using Core.GameRuntime.Installers;
+using Core.GameFlow;
 using Core.HostValues;
 using Core.Objectives;
 using Core.Orchestration;
@@ -30,10 +31,8 @@ using TMPro;
 using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
-using UnityEditor.Events;
 using UnityEditor.SceneManagement;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 using FrameworkMovementData = Core.World.MovementData;
 using FrameworkResourceData = Core.Economy.Modules.ResourceEconomyModule.ResourceData;
@@ -57,6 +56,8 @@ namespace ChainRush.Editor
         const string SpacePrefabPath = AutobattleRoot + "/Space/AutobattleSpace.prefab";
         const string IntegrationScenePath =
             "Assets/Game/Scenes/Integration/ChainRushFrameworkIntegration.unity";
+        const string AutobattleFlowPath = AutobattleRoot + "/GameFlow/AutobattleFlow.asset";
+        const string BoardFlowPath = BoardRoot + "/GameFlow/BoardFlow.asset";
         const string LegacyEnemyPrefabPath = "Assets/Game/Prefabs/Enemies/BugBrownSmall.prefab";
 
         const string SharedWalletPath = SharedRoot + "/Economy/ActivityWallet.asset";
@@ -64,6 +65,8 @@ namespace ChainRush.Editor
         const string ExperiencePath = SharedRoot + "/Economy/Experience.asset";
         const string TurnTokenPath = SharedRoot + "/Economy/BoardTurnToken.asset";
         const string WaterUnitPath = SharedRoot + "/Units/Water/WaterUnit.asset";
+        const string ActivityTaxonomyFamilyPath =
+            SharedRoot + "/Taxonomy/ActivityTaxonomyFamily.asset";
         const string ExperienceRecipePath =
             AutobattleRoot + "/Production/ExperienceToTurnTokenRecipe.asset";
 
@@ -102,14 +105,17 @@ namespace ChainRush.Editor
         const string UnitWalletPath = EconomyRoot + "/UnitWallet.asset";
         const string DropContentsWalletPath = EconomyRoot + "/DropContentsWallet.asset";
         const string WorldWalletPath = EconomyRoot + "/WorldWallet.asset";
+        const string CollectorWalletPath = EconomyRoot + "/ExperienceCollectorWallet.asset";
         const string UnitWalletTagPath = EconomyRoot + "/UnitWalletTag.asset";
         const string DropContentsWalletTagPath = EconomyRoot + "/DropContentsWalletTag.asset";
         const string WorldWalletTagPath = EconomyRoot + "/WorldWalletTag.asset";
+        const string CollectorWalletTagPath = EconomyRoot + "/ExperienceCollectorWalletTag.asset";
 
         const string PlayerSpawnerPath = EconomyRoot + "/PlayerSpawner.asset";
         const string EnemySpawnerPath = EconomyRoot + "/EnemySpawner.asset";
         const string EnemyPath = EconomyRoot + "/BugBrownSmall.asset";
         const string ExperienceDropPath = EconomyRoot + "/ExperienceDrop.asset";
+        const string ExperienceCollectorPath = EconomyRoot + "/ExperienceCollector.asset";
 
         const string HealthPath = HostValuesRoot + "/Health.asset";
         const string MovementPath = MovementRoot + "/UnitMovement.asset";
@@ -118,7 +124,7 @@ namespace ChainRush.Editor
         const string CollectionSkillPath = SkillsRoot + "/ExperienceCollectionSkill.asset";
         const string AlliedCombatBrainPath = AIRoot + "/AlliedCombatBrain.asset";
         const string EnemyCombatBrainPath = AIRoot + "/EnemyCombatBrain.asset";
-        const string CollectionBrainPath = AIRoot + "/ExperienceCollectionBrain.asset";
+        const string CollectorBrainPath = AIRoot + "/ExperienceCollectorBrain.asset";
         const string DropProfilePath = DropsRoot + "/ExperienceDropProfile.asset";
 
         const string PlayerProductionPath = ProductionRoot + "/PlayerProduction.asset";
@@ -154,6 +160,10 @@ namespace ChainRush.Editor
         const string AlliedUnitRolePath = TaxonomyRoot + "/AlliedUnitRole.asset";
         const string EnemyUnitRolePath = TaxonomyRoot + "/EnemyUnitRole.asset";
         const string ExperienceDropRolePath = TaxonomyRoot + "/ExperienceDropRole.asset";
+        const string ProjectionTargetFamilyPath = TaxonomyRoot + "/ProjectionTargetFamily.asset";
+        const string ExperienceProgressTargetPath = TaxonomyRoot + "/ExperienceProgressTarget.asset";
+        const string IntegrationRuntimeTagPath =
+            AutobattleRoot + "/Definition/IntegrationAutobattle.asset";
 
         const string MarkerFamilyPath = TaxonomyRoot + "/AutobattleMarkerFamily.asset";
         const string PlayerAnchorPath = TaxonomyRoot + "/PlayerSpawnerAnchor.asset";
@@ -170,6 +180,7 @@ namespace ChainRush.Editor
         const string CollectionNodePath = AITaxonomyRoot + "/CollectionNode.asset";
         const string WaitingStatePath = AITaxonomyRoot + "/WaitingState.asset";
         const string CollectStatePath = AITaxonomyRoot + "/CollectState.asset";
+        const string SearchStatePath = AITaxonomyRoot + "/SearchState.asset";
         const string CombatTargetPath = AITaxonomyRoot + "/CombatTarget.asset";
         const string CollectionTargetPath = AITaxonomyRoot + "/CollectionTarget.asset";
 
@@ -185,6 +196,8 @@ namespace ChainRush.Editor
             OrchestrationTaxonomyRoot + "/ProductionInputOperator.asset";
         const string ProductionEconomyOperatorPath =
             OrchestrationTaxonomyRoot + "/ProductionEconomyOperator.asset";
+        const string AwaitFactOperatorPath =
+            OrchestrationTaxonomyRoot + "/AwaitFactOperator.asset";
         const string ProductionMaterializedOperatorPath =
             OrchestrationTaxonomyRoot + "/ProductionMaterializedOperator.asset";
         const string ProductionYieldOperatorPath =
@@ -197,11 +210,13 @@ namespace ChainRush.Editor
         const string WaterUnitPrefabPath = ProjectionRoot + "/WaterUnit.prefab";
         const string EnemyPrefabPath = ProjectionRoot + "/BugBrownSmall.prefab";
         const string ExperienceDropPrefabPath = ProjectionRoot + "/ExperienceDrop.prefab";
+        const string ExperienceCollectorPrefabPath = ProjectionRoot + "/ExperienceCollector.prefab";
         const string PlayerSpawnerPoolKey = "chainrush.autobattle.player-spawner";
         const string EnemySpawnerPoolKey = "chainrush.autobattle.enemy-spawner";
         const string WaterUnitPoolKey = "chainrush.autobattle.water-unit";
         const string EnemyPoolKey = "chainrush.autobattle.enemy.bug-brown-small";
         const string ExperienceDropPoolKey = "chainrush.autobattle.experience-drop";
+        const string ExperienceCollectorPoolKey = "chainrush.autobattle.experience-collector";
         const string AlliedMaterialPath = ProjectionRoot + "/AlliedMaterial.mat";
         const string EnemyMaterialPath = ProjectionRoot + "/EnemyMaterial.mat";
         const string NeutralMaterialPath = ProjectionRoot + "/NeutralMaterial.mat";
@@ -226,13 +241,16 @@ namespace ChainRush.Editor
             UnitWalletPath,
             DropContentsWalletPath,
             WorldWalletPath,
+            CollectorWalletPath,
             UnitWalletTagPath,
             DropContentsWalletTagPath,
             WorldWalletTagPath,
+            CollectorWalletTagPath,
             PlayerSpawnerPath,
             EnemySpawnerPath,
             EnemyPath,
             ExperienceDropPath,
+            ExperienceCollectorPath,
             HealthPath,
             MovementPath,
             ApproachSkillPath,
@@ -240,7 +258,7 @@ namespace ChainRush.Editor
             CollectionSkillPath,
             AlliedCombatBrainPath,
             EnemyCombatBrainPath,
-            CollectionBrainPath,
+            CollectorBrainPath,
             DropProfilePath,
             PlayerProductionPath,
             PlayerCatalogPath,
@@ -271,6 +289,9 @@ namespace ChainRush.Editor
             AlliedUnitRolePath,
             EnemyUnitRolePath,
             ExperienceDropRolePath,
+            ProjectionTargetFamilyPath,
+            ExperienceProgressTargetPath,
+            IntegrationRuntimeTagPath,
             MarkerFamilyPath,
             PlayerAnchorPath,
             EnemyAnchorPath,
@@ -285,6 +306,7 @@ namespace ChainRush.Editor
             CollectionNodePath,
             WaitingStatePath,
             CollectStatePath,
+            SearchStatePath,
             CombatTargetPath,
             CollectionTargetPath,
             OperatorFamilyPath,
@@ -293,6 +315,7 @@ namespace ChainRush.Editor
             EnemyWaveAgentOperatorPath,
             ProductionInputOperatorPath,
             ProductionEconomyOperatorPath,
+            AwaitFactOperatorPath,
             ProductionMaterializedOperatorPath,
             ProductionYieldOperatorPath,
             ProductionAvailableOperatorPath,
@@ -301,6 +324,7 @@ namespace ChainRush.Editor
             WaterUnitPrefabPath,
             EnemyPrefabPath,
             ExperienceDropPrefabPath,
+            ExperienceCollectorPrefabPath,
             AlliedMaterialPath,
             EnemyMaterialPath,
             NeutralMaterialPath,
@@ -325,14 +349,17 @@ namespace ChainRush.Editor
             public EconomyWalletData UnitWallet;
             public EconomyWalletData DropContentsWallet;
             public EconomyWalletData WorldWallet;
+            public EconomyWalletData CollectorWallet;
             public TaxonomyTermData UnitWalletTag;
             public TaxonomyTermData DropContentsWalletTag;
             public TaxonomyTermData WorldWalletTag;
+            public TaxonomyTermData CollectorWalletTag;
 
             public CapabilityHostData PlayerSpawner;
             public CapabilityHostData EnemySpawner;
             public CapabilityHostData Enemy;
             public CapabilityHostData ExperienceDrop;
+            public CapabilityHostData ExperienceCollector;
             public HostValueData Health;
             public FrameworkMovementData Movement;
             public FrameworkSkillData ApproachSkill;
@@ -340,7 +367,7 @@ namespace ChainRush.Editor
             public FrameworkSkillData CollectionSkill;
             public AIBrainData AlliedCombatBrain;
             public AIBrainData EnemyCombatBrain;
-            public AIBrainData CollectionBrain;
+            public AIBrainData CollectorBrain;
             public DropProfileData DropProfile;
 
             public ProductionRecipeData DeploymentRecipe;
@@ -376,6 +403,8 @@ namespace ChainRush.Editor
             public TaxonomyTermData AlliedUnitRole;
             public TaxonomyTermData EnemyUnitRole;
             public TaxonomyTermData ExperienceDropRole;
+            public TaxonomyTermData ExperienceProgressTarget;
+            public TaxonomyTermData IntegrationRuntimeTag;
             public TaxonomyTermData PlayerAnchor;
             public TaxonomyTermData EnemyAnchor;
             public TaxonomyTermData AlliedSpawn;
@@ -388,6 +417,7 @@ namespace ChainRush.Editor
             public TaxonomyTermData CollectionNode;
             public TaxonomyTermData WaitingState;
             public TaxonomyTermData CollectState;
+            public TaxonomyTermData SearchState;
             public TaxonomyTermData CombatTarget;
             public TaxonomyTermData CollectionTarget;
             public TaxonomyTermData DeploymentAgentOperator;
@@ -395,6 +425,7 @@ namespace ChainRush.Editor
             public TaxonomyTermData EnemyWaveAgentOperator;
             public TaxonomyTermData ProductionInputOperator;
             public TaxonomyTermData ProductionEconomyOperator;
+            public TaxonomyTermData AwaitFactOperator;
             public TaxonomyTermData ProductionMaterializedOperator;
             public TaxonomyTermData ProductionYieldOperator;
             public TaxonomyTermData ProductionAvailableOperator;
@@ -462,16 +493,17 @@ namespace ChainRush.Editor
 
             CapabilityHostData waterUnit = LoadRequired<CapabilityHostData>(WaterUnitPath);
             CapabilityHostData enemy = LoadRequired<CapabilityHostData>(EnemyPath);
-            CapabilityHostData experienceDrop = LoadRequired<CapabilityHostData>(ExperienceDropPath);
+            CapabilityHostData experienceCollector =
+                LoadRequired<CapabilityHostData>(ExperienceCollectorPath);
             AIBrainData alliedCombatBrain = LoadRequired<AIBrainData>(AlliedCombatBrainPath);
             AIBrainData enemyCombatBrain = LoadRequired<AIBrainData>(EnemyCombatBrainPath);
-            AIBrainData collectionBrain = LoadRequired<AIBrainData>(CollectionBrainPath);
+            AIBrainData collectorBrain = LoadRequired<AIBrainData>(CollectorBrainPath);
             TaxonomyTermData combatSelector = LoadRequired<TaxonomyTermData>(CombatNodePath);
             TaxonomyTermData collectionSelector = LoadRequired<TaxonomyTermData>(CollectionNodePath);
 
             ConfigureAIBrainBinding(waterUnit, alliedCombatBrain, combatSelector);
             ConfigureAIBrainBinding(enemy, enemyCombatBrain, combatSelector);
-            ConfigureAIBrainBinding(experienceDrop, collectionBrain, collectionSelector);
+            ConfigureAIBrainBinding(experienceCollector, collectorBrain, collectionSelector);
             ConfigureCombatRetryTransitions(alliedCombatBrain);
             ConfigureCombatRetryTransitions(enemyCombatBrain);
 
@@ -480,6 +512,7 @@ namespace ChainRush.Editor
             SetProjectionPoolKey(WaterUnitPrefabPath, WaterUnitPoolKey);
             SetProjectionPoolKey(EnemyPrefabPath, EnemyPoolKey);
             SetProjectionPoolKey(ExperienceDropPrefabPath, ExperienceDropPoolKey);
+            SetProjectionPoolKey(ExperienceCollectorPrefabPath, ExperienceCollectorPoolKey);
             ConfigureSpaceNavigationSurface(SpacePrefabPath);
 
             AssetDatabase.SaveAssets();
@@ -514,6 +547,35 @@ namespace ChainRush.Editor
             content.ExperienceDropRole = CreateTerm(
                 ExperienceDropRolePath, "ExperienceDropRole", "chainrush.autobattle.role.experience-drop",
                 "Experience Drop", roleFamily, 5, content, createdPaths);
+
+            TaxonomyFamilyData projectionTargetFamily = CreateFamily(
+                ProjectionTargetFamilyPath,
+                "ProjectionTargetFamily",
+                "chainrush.autobattle.projection-target",
+                "Autobattle Projection Target",
+                createdPaths);
+            content.Families.Add(projectionTargetFamily);
+            content.ExperienceProgressTarget = CreateTerm(
+                ExperienceProgressTargetPath,
+                "ExperienceProgressTarget",
+                "chainrush.autobattle.projection-target.experience-progress",
+                "Experience Progress",
+                projectionTargetFamily,
+                0,
+                content,
+                createdPaths);
+
+            TaxonomyFamilyData activityFamily =
+                LoadRequired<TaxonomyFamilyData>(ActivityTaxonomyFamilyPath);
+            content.IntegrationRuntimeTag = CreateTerm(
+                IntegrationRuntimeTagPath,
+                "IntegrationAutobattle",
+                "chainrush.activity.runtime.integration-autobattle",
+                "Integration Autobattle",
+                activityFamily,
+                100,
+                content,
+                createdPaths);
 
             TaxonomyFamilyData markerFamily = CreateFamily(
                 MarkerFamilyPath,
@@ -566,12 +628,15 @@ namespace ChainRush.Editor
             content.CollectState = CreateTerm(
                 CollectStatePath, "CollectState", "chainrush.autobattle.ai.collect",
                 "Collect", aiFamily, 6, content, createdPaths);
+            content.SearchState = CreateTerm(
+                SearchStatePath, "SearchState", "chainrush.autobattle.ai.search",
+                "Search", aiFamily, 7, content, createdPaths);
             content.CombatTarget = CreateTerm(
                 CombatTargetPath, "CombatTarget", "chainrush.autobattle.ai.target.combat",
-                "Combat Target", aiFamily, 7, content, createdPaths);
+                "Combat Target", aiFamily, 8, content, createdPaths);
             content.CollectionTarget = CreateTerm(
                 CollectionTargetPath, "CollectionTarget", "chainrush.autobattle.ai.target.collection",
-                "Collection Target", aiFamily, 8, content, createdPaths);
+                "Collection Target", aiFamily, 9, content, createdPaths);
 
             TaxonomyFamilyData operatorFamily = CreateFamily(
                 OperatorFamilyPath,
@@ -612,6 +677,10 @@ namespace ChainRush.Editor
                 ProductionAvailableOperatorPath, "ProductionAvailableOperator",
                 "chainrush.autobattle.operator.production-available", "Production Available",
                 operatorFamily, 7, content, createdPaths);
+            content.AwaitFactOperator = CreateTerm(
+                AwaitFactOperatorPath, "AwaitFactOperator",
+                "chainrush.autobattle.operator.await-fact", "Await Fact",
+                operatorFamily, 8, content, createdPaths);
 
             TaxonomyFamilyData walletFamily = content.SharedWalletTag.Family;
             if (walletFamily == null)
@@ -625,6 +694,15 @@ namespace ChainRush.Editor
             content.WorldWalletTag = CreateTerm(
                 WorldWalletTagPath, "WorldWalletTag", "chainrush.wallet.world.tag",
                 "World Wallet", walletFamily, 102, content, createdPaths);
+            content.CollectorWalletTag = CreateTerm(
+                CollectorWalletTagPath,
+                "ExperienceCollectorWalletTag",
+                "chainrush.wallet.experience-collector.tag",
+                "Experience Collector Wallet",
+                walletFamily,
+                103,
+                content,
+                createdPaths);
         }
 
         static void CreateWallets(Content content, List<string> createdPaths)
@@ -646,6 +724,12 @@ namespace ChainRush.Editor
                 "WorldWallet",
                 "chainrush.wallet.autobattle.world",
                 content.WorldWalletTag,
+                createdPaths);
+            content.CollectorWallet = CreateWallet(
+                CollectorWalletPath,
+                "ExperienceCollectorWallet",
+                "chainrush.wallet.autobattle.experience-collector",
+                content.CollectorWalletTag,
                 createdPaths);
         }
 
@@ -722,8 +806,8 @@ namespace ChainRush.Editor
                 "chainrush.skill.autobattle.experience-collection",
                 SkillTargetType.Entities,
                 DiplomacyDispositionType.Neutral,
-                new List<TaxonomyTermData> { content.PlayerSpawnerRole },
-                startDelay: 12L,
+                new List<TaxonomyTermData> { content.ExperienceDropRole },
+                startDelay: 10L,
                 reloadTime: 0L,
                 createdPaths);
 
@@ -759,6 +843,13 @@ namespace ChainRush.Editor
                 "ExperienceDrop",
                 "chainrush.autobattle.experience-drop",
                 new List<TaxonomyTermData> { content.ExperienceDropRole },
+                new List<CapabilityEntry>(0),
+                createdPaths);
+            content.ExperienceCollector = CreateCapabilityHost(
+                ExperienceCollectorPath,
+                "ExperienceCollector",
+                "chainrush.autobattle.experience-collector",
+                new List<TaxonomyTermData>(0),
                 new List<CapabilityEntry>
                 {
                     CreateCapability(CapabilityHostType.SkillOwner),
@@ -783,6 +874,48 @@ namespace ChainRush.Editor
 
             ConfigureEconomyAsset(content.Experience, "chainrush.resource.experience", AllMutableOperations);
             EditorUtility.SetDirty(content.Experience);
+        }
+
+        static List<AIBrainActionData> CreateExperienceCollectionActions(Content content)
+        {
+            return new List<AIBrainActionData>
+            {
+                CreateUseSkillAction(
+                    content.CollectionSkill,
+                    content.CollectionTarget,
+                    SkillCompletionPolicyType.OnExecutionComplete),
+            };
+        }
+
+        static void ConfigureExperienceCollectionHosts(Content content)
+        {
+            SetField(
+                content.ExperienceDrop,
+                "capabilities",
+                new List<CapabilityEntry>(0));
+            SetField(
+                content.ExperienceDrop,
+                "walletEntries",
+                new List<WalletEntry>
+                {
+                    CreateWalletEntry(content.DropContentsWallet),
+                });
+            SetField(
+                content.ExperienceCollector,
+                "walletEntries",
+                new List<WalletEntry>
+                {
+                    CreateWalletEntry(
+                        content.CollectorWallet,
+                        new SeedEntry(
+                            content.CollectorBrain,
+                            1L,
+                            EconomyFormType.Stack,
+                            new List<TaxonomyTermData> { content.CollectionNode }),
+                        new SeedEntry(content.CollectionSkill, 1L, EconomyFormType.Stack)),
+                });
+            EditorUtility.SetDirty(content.ExperienceDrop);
+            EditorUtility.SetDirty(content.ExperienceCollector);
         }
 
         static void CreateProduction(Content content, List<string> createdPaths)
@@ -934,8 +1067,13 @@ namespace ChainRush.Editor
             SetField(content.DropProfile, "reservationPriority", 100);
             EditorUtility.SetDirty(content.DropProfile);
 
+            ConfigureCollectionSkillEffects(content);
+        }
+
+        static void ConfigureCollectionSkillEffects(Content content)
+        {
             SkillEconomyEntryEffectData transfer = CreateEconomyEntryEffect(
-                EffectRecipient.Owner,
+                EffectRecipient.Target,
                 SkillEconomyEntrySourceType.Wallet,
                 SkillEconomyOwnerType.Host,
                 CreateSelection(
@@ -943,11 +1081,11 @@ namespace ChainRush.Editor
                     EconomyFormType.Stack,
                     content.Experience),
                 EconomyOperation.Transfer,
-                EffectRecipient.Target,
+                EffectRecipient.Owner,
                 SkillEconomyOwnerType.Root,
                 new List<TaxonomyTermData> { content.SharedWalletTag });
             SkillEconomyEntryEffectData destroy = CreateEconomyEntryEffect(
-                EffectRecipient.Owner,
+                EffectRecipient.Target,
                 SkillEconomyEntrySourceType.BackingEntry,
                 SkillEconomyOwnerType.Host,
                 CreateSelection(
@@ -955,7 +1093,7 @@ namespace ChainRush.Editor
                     EconomyFormType.Token,
                     content.ExperienceDrop),
                 EconomyOperation.Destroy,
-                EffectRecipient.Owner,
+                EffectRecipient.Target,
                 SkillEconomyOwnerType.Host,
                 new List<TaxonomyTermData>(0));
             SetField(
@@ -989,65 +1127,13 @@ namespace ChainRush.Editor
                 },
                 createdPaths);
 
-            content.CollectionBrain = CreateEconomyAsset<AIBrainData>(
-                CollectionBrainPath,
-                "ExperienceCollectionBrain",
-                "chainrush.ai.autobattle.experience-collection",
+            content.CollectorBrain = CreateEconomyAsset<AIBrainData>(
+                CollectorBrainPath,
+                "ExperienceCollectorBrain",
+                "chainrush.ai.autobattle.experience-collector",
                 AllMutableOperations,
                 createdPaths);
-            SetField(content.CollectionBrain, "thinkInterval", 1);
-            SetField(content.CollectionBrain, "defaultControlNodeId", content.CollectionNode);
-
-            var waiting = new AIBrainStateData();
-            SetField(waiting, "tag", content.WaitingState);
-            SetField(waiting, "onEnterActions", new List<AIBrainActionData>(0));
-            SetField(waiting, "onTickActions", new List<AIBrainActionData>(0));
-            SetField(waiting, "onExitActions", new List<AIBrainExitActionData>(0));
-
-            var collect = new AIBrainStateData();
-            SetField(collect, "tag", content.CollectState);
-            SetField(
-                collect,
-                "onEnterActions",
-                new List<AIBrainActionData>
-                {
-                    CreateCollectionTargetAction(content),
-                    CreateUseSkillAction(
-                        content.CollectionSkill,
-                        content.CollectionTarget,
-                        SkillCompletionPolicyType.OnExecutionComplete),
-                });
-            SetField(collect, "onTickActions", new List<AIBrainActionData>(0));
-            SetField(collect, "onExitActions", new List<AIBrainExitActionData>(0));
-
-            var collectionNode = new AIBrainNodeData();
-            SetField(collectionNode, "nodeId", content.CollectionNode);
-            SetField(collectionNode, "entryState", content.WaitingState);
-            SetField(
-                collectionNode,
-                "states",
-                new List<AIBrainStateData> { waiting, collect });
-            SetField(content.CollectionBrain, "nodes", new List<AIBrainNodeData> { collectionNode });
-
-            var delay = new TimeInStateAIBrainConditionData();
-            SetField(delay, "minimumStateDuration", 15);
-            var collectionTransition = new AIBrainTransitionData();
-            SetField(
-                collectionTransition,
-                "fromStates",
-                new List<TaxonomyTermData> { content.WaitingState });
-            SetField(collectionTransition, "toNodeId", content.CollectionNode);
-            SetField(collectionTransition, "toState", content.CollectState);
-            SetField(collectionTransition, "exitResult", AIBrainStateResultType.Success);
-            SetField(
-                collectionTransition,
-                "conditions",
-                new List<AIBrainConditionData> { delay });
-            SetField(
-                content.CollectionBrain,
-                "transitions",
-                new List<AIBrainTransitionData> { collectionTransition });
-            EditorUtility.SetDirty(content.CollectionBrain);
+            ConfigureCollectorBrain(content);
 
             SetField(
                 content.WaterUnit,
@@ -1085,23 +1171,91 @@ namespace ChainRush.Editor
                         new SeedEntry(content.Experience, 3L, EconomyFormType.Stack),
                         new SeedEntry(content.DropProduction, 1L, EconomyFormType.Stack)),
                 });
-            SetField(
-                content.ExperienceDrop,
-                "walletEntries",
-                new List<WalletEntry>
-                {
-                    CreateWalletEntry(
-                        content.DropContentsWallet,
-                        new SeedEntry(
-                            content.CollectionBrain,
-                            1L,
-                            EconomyFormType.Stack,
-                            new List<TaxonomyTermData> { content.CollectionNode }),
-                        new SeedEntry(content.CollectionSkill, 1L, EconomyFormType.Stack)),
-                });
+            ConfigureExperienceCollectionHosts(content);
             EditorUtility.SetDirty(content.WaterUnit);
             EditorUtility.SetDirty(content.Enemy);
-            EditorUtility.SetDirty(content.ExperienceDrop);
+        }
+
+        static void ConfigureCollectorBrain(Content content)
+        {
+            SetField(content.CollectorBrain, "thinkInterval", 1);
+            SetField(content.CollectorBrain, "defaultControlNodeId", content.CollectionNode);
+
+            var search = new AIBrainStateData();
+            SetField(search, "tag", content.SearchState);
+            SetField(
+                search,
+                "onEnterActions",
+                new List<AIBrainActionData> { CreateCollectionTargetAction(content) });
+            SetField(search, "onTickActions", new List<AIBrainActionData>(0));
+            SetField(search, "onExitActions", new List<AIBrainExitActionData>(0));
+
+            var waiting = new AIBrainStateData();
+            SetField(waiting, "tag", content.WaitingState);
+            SetField(waiting, "onEnterActions", new List<AIBrainActionData>(0));
+            SetField(waiting, "onTickActions", new List<AIBrainActionData>(0));
+            SetField(waiting, "onExitActions", new List<AIBrainExitActionData>(0));
+
+            var collect = new AIBrainStateData();
+            SetField(collect, "tag", content.CollectState);
+            SetField(
+                collect,
+                "onEnterActions",
+                CreateExperienceCollectionActions(content));
+            SetField(collect, "onTickActions", new List<AIBrainActionData>(0));
+            SetField(collect, "onExitActions", new List<AIBrainExitActionData>(0));
+
+            var collectionNode = new AIBrainNodeData();
+            SetField(collectionNode, "nodeId", content.CollectionNode);
+            SetField(collectionNode, "entryState", content.SearchState);
+            SetField(
+                collectionNode,
+                "states",
+                new List<AIBrainStateData> { search, waiting, collect });
+            SetField(content.CollectorBrain, "nodes", new List<AIBrainNodeData> { collectionNode });
+
+            var delay = new TimeInStateAIBrainConditionData();
+            SetField(delay, "minimumStateDuration", 15);
+            SetField(
+                content.CollectorBrain,
+                "transitions",
+                new List<AIBrainTransitionData>
+                {
+                    CreateBrainTransition(
+                        content.SearchState,
+                        content.CollectionNode,
+                        content.WaitingState,
+                        CreateTargetExistsCondition(content.CollectionTarget, true)),
+                    CreateBrainTransition(
+                        content.SearchState,
+                        content.CollectionNode,
+                        content.WaitingState,
+                        CreateStateResultCondition(
+                            AIBrainStateResultMask.Fail | AIBrainStateResultMask.Interrupted)),
+                    CreateBrainTransition(
+                        content.WaitingState,
+                        content.CollectionNode,
+                        content.SearchState,
+                        CreateTargetExistsCondition(content.CollectionTarget, false)),
+                    CreateBrainTransition(
+                        content.WaitingState,
+                        content.CollectionNode,
+                        content.CollectState,
+                        CreateTargetExistsCondition(content.CollectionTarget, true),
+                        delay),
+                    CreateBrainTransition(
+                        content.CollectState,
+                        content.CollectionNode,
+                        content.SearchState,
+                        CreateTargetExistsCondition(content.CollectionTarget, false)),
+                    CreateBrainTransition(
+                        content.CollectState,
+                        content.CollectionNode,
+                        content.SearchState,
+                        CreateStateResultCondition(
+                            AIBrainStateResultMask.Fail | AIBrainStateResultMask.Interrupted)),
+                });
+            EditorUtility.SetDirty(content.CollectorBrain);
         }
 
         static AIBrainData CreateCombatBrain(
@@ -1313,15 +1467,17 @@ namespace ChainRush.Editor
                 WaterUnitPoolKey,
                 createdPaths);
             CreateEnemyPrefab(content, enemyMaterial, createdPaths);
-            CreateExperienceDropPrefab(content, experienceMaterial, createdPaths);
+            CreateExperienceDropPrefab(experienceMaterial, createdPaths);
+            CreateExperienceCollectorPrefab(content, createdPaths);
 
             SetProjection(content.PlayerSpawner, PlayerSpawnerPrefabPath);
             SetProjection(content.EnemySpawner, EnemySpawnerPrefabPath);
             SetProjection(content.WaterUnit, WaterUnitPrefabPath);
             SetProjection(content.Enemy, EnemyPrefabPath);
             SetProjection(content.ExperienceDrop, ExperienceDropPrefabPath);
+            SetProjection(content.ExperienceCollector, ExperienceCollectorPrefabPath);
 
-            CreateExperienceUIPrefab(content, experienceMaterial, createdPaths);
+            CreateExperienceUIPrefab(content, createdPaths);
             ConfigureSpacePrefab(content);
         }
 
@@ -1343,15 +1499,22 @@ namespace ChainRush.Editor
                 new ActivityWalletSeedEntryData(
                     new SeedEntry(content.PlayerSpawner, 1L, EconomyFormType.Token),
                     ActivitySeedMaterializationType.Spatial,
+                    new List<TaxonomyTermData>(0),
                     new List<TaxonomyTermData> { content.PlayerAnchor }),
                 new ActivityWalletSeedEntryData(
+                    new SeedEntry(content.ExperienceCollector, 1L, EconomyFormType.Token),
+                    ActivitySeedMaterializationType.NonSpatial,
+                    new List<TaxonomyTermData> { content.ExperienceProgressTarget }),
+                new ActivityWalletSeedEntryData(
                     new SeedEntry(content.WaterUnit, 1L, EconomyFormType.Stack),
-                    ActivitySeedMaterializationType.None));
+                    ActivitySeedMaterializationType.None,
+                    new List<TaxonomyTermData>(0)));
             ActivityTeamWalletData enemyWallet = CreateActivityWallet(
                 content.SharedWallet,
                 new ActivityWalletSeedEntryData(
                     new SeedEntry(content.EnemySpawner, 1L, EconomyFormType.Token),
                     ActivitySeedMaterializationType.Spatial,
+                    new List<TaxonomyTermData>(0),
                     new List<TaxonomyTermData> { content.EnemyAnchor }));
 
             ActivityTeamData playerTeam = activity.Teams[0];
@@ -1421,6 +1584,57 @@ namespace ChainRush.Editor
                 new EconomyAssetAmountEntry(content.WaterUnit, 1L, EconomyFormType.Stack),
                 new List<TaxonomyTermData> { content.SharedWalletTag })));
             EditorUtility.SetDirty(boardMergeRecipe);
+
+            ConfigureGameFlowRuntimeTags(content);
+        }
+
+        static void ConfigureGameFlowRuntimeTags(Content content)
+        {
+            GameFlowTemplateData autobattleFlow =
+                LoadRequired<GameFlowTemplateData>(AutobattleFlowPath);
+            ActivityFlowContainerData autobattleContainer =
+                autobattleFlow.Root as ActivityFlowContainerData;
+            if (autobattleContainer == null)
+                throw new InvalidOperationException("AutobattleFlow root is not an Activity flow container.");
+
+            bool rootLaunchFound = false;
+            List<GameFlowStepData> autobattleSteps = autobattleContainer.Steps;
+            for (int i = 0; i < autobattleSteps.Count; i++)
+            {
+                if (!(autobattleSteps[i].Executor is GameFlowLaunchActivityExecutorData launch))
+                    continue;
+
+                SetField(
+                    launch,
+                    "runtimeTags",
+                    new List<TaxonomyTermData> { content.IntegrationRuntimeTag });
+                rootLaunchFound = true;
+            }
+
+            if (!rootLaunchFound)
+                throw new InvalidOperationException("AutobattleFlow has no root Activity launch executor.");
+
+            GameFlowTemplateData boardFlow = LoadRequired<GameFlowTemplateData>(BoardFlowPath);
+            ActivityFlowContainerData boardContainer = boardFlow.Root as ActivityFlowContainerData;
+            if (boardContainer == null)
+                throw new InvalidOperationException("BoardFlow root is not an Activity flow container.");
+
+            bool childLaunchFound = false;
+            List<GameFlowStepData> boardSteps = boardContainer.Steps;
+            for (int i = 0; i < boardSteps.Count; i++)
+            {
+                if (!(boardSteps[i].Executor is GameFlowLaunchChildActivityExecutorData launch))
+                    continue;
+
+                SetField(launch, "runtimeTags", new List<TaxonomyTermData>(0));
+                childLaunchFound = true;
+            }
+
+            if (!childLaunchFound)
+                throw new InvalidOperationException("BoardFlow has no child Activity launch executor.");
+
+            EditorUtility.SetDirty(autobattleFlow);
+            EditorUtility.SetDirty(boardFlow);
         }
 
         static void ConfigureRuntimeInstallers(Content content, List<string> createdPaths)
@@ -1435,6 +1649,7 @@ namespace ChainRush.Editor
                 content.EnemySpawner,
                 content.Enemy,
                 content.ExperienceDrop,
+                content.ExperienceCollector,
                 content.Health,
                 content.Movement,
                 content.ApproachSkill,
@@ -1442,7 +1657,7 @@ namespace ChainRush.Editor
                 content.CollectionSkill,
                 content.AlliedCombatBrain,
                 content.EnemyCombatBrain,
-                content.CollectionBrain,
+                content.CollectorBrain,
                 content.DeploymentRecipe,
                 content.EnemyWaveRecipe,
                 content.DropRecipe,
@@ -1457,7 +1672,12 @@ namespace ChainRush.Editor
             SetField(economyInstaller, "assets", assets);
             var wallets = new List<EconomyWalletData>(
                 GetField<List<EconomyWalletData>>(economyInstaller, "wallets"));
-            AddUnique(wallets, content.UnitWallet, content.DropContentsWallet, content.WorldWallet);
+            AddUnique(
+                wallets,
+                content.UnitWallet,
+                content.DropContentsWallet,
+                content.WorldWallet,
+                content.CollectorWallet);
             SetField(economyInstaller, "wallets", wallets);
             EditorUtility.SetDirty(economyInstaller);
 
@@ -1493,7 +1713,11 @@ namespace ChainRush.Editor
                 LoadRequired<GameplaySkillsInstallerData>(SkillsInstallerPath);
             var skills = new List<FrameworkSkillData>(
                 GetField<List<FrameworkSkillData>>(skillsInstaller, "skills"));
-            AddUnique(skills, content.ApproachSkill, content.AttackSkill, content.CollectionSkill);
+            AddUnique(
+                skills,
+                content.ApproachSkill,
+                content.AttackSkill,
+                content.CollectionSkill);
             SetField(skillsInstaller, "skills", skills);
             EditorUtility.SetDirty(skillsInstaller);
 
@@ -1590,6 +1814,13 @@ namespace ChainRush.Editor
             camera.orthographicSize = 8f;
             camera.clearFlags = CameraClearFlags.SolidColor;
             camera.backgroundColor = new Color(0.035f, 0.045f, 0.06f, 1f);
+            ActivityViewportController viewport =
+                cameraObject.AddComponent<ActivityViewportController>();
+            SetField(
+                viewport,
+                "activitySelector",
+                CreateIntegrationActivitySelector(content));
+            SetField(viewport, "viewport", camera);
 
             GameObject uiPrefab = LoadRequired<GameObject>(ExperienceUIPrefabPath);
             GameObject ui = PrefabUtility.InstantiatePrefab(uiPrefab, scene) as GameObject;
@@ -1952,12 +2183,53 @@ namespace ChainRush.Editor
             SetField(
                 action,
                 "requiredTargetTags",
-                new List<TaxonomyTermData> { content.PlayerSpawnerRole });
+                new List<TaxonomyTermData> { content.ExperienceDropRole });
             SetField(action, "blockedTargetTags", new List<TaxonomyTermData>(0));
             SetField(action, "requiredTargetStates", new List<TaxonomyTermData>(0));
             SetField(action, "blockedTargetStates", new List<TaxonomyTermData>(0));
             SetField(action, "compatibleSkill", content.CollectionSkill);
             return action;
+        }
+
+        static TargetEntityExistsAIBrainConditionData CreateTargetExistsCondition(
+            TaxonomyTermData targetKey,
+            bool targetShouldExist)
+        {
+            var condition = new TargetEntityExistsAIBrainConditionData();
+            SetField(condition, "targetKey", targetKey);
+            SetField(condition, "targetShouldExist", targetShouldExist);
+            return condition;
+        }
+
+        static CurrentStateResultMatchesAIBrainConditionData CreateStateResultCondition(
+            AIBrainStateResultMask resultMask)
+        {
+            var condition = new CurrentStateResultMatchesAIBrainConditionData();
+            SetField(condition, "requiredResults", resultMask);
+            return condition;
+        }
+
+        static AIBrainTransitionData CreateBrainTransition(
+            TaxonomyTermData fromState,
+            TaxonomyTermData nodeId,
+            TaxonomyTermData toState,
+            params AIBrainConditionData[] conditions)
+        {
+            var transition = new AIBrainTransitionData();
+            SetField(
+                transition,
+                "fromStates",
+                new List<TaxonomyTermData> { fromState });
+            SetField(transition, "toNodeId", nodeId);
+            SetField(transition, "toState", toState);
+            SetField(transition, "exitResult", AIBrainStateResultType.Success);
+            SetField(
+                transition,
+                "conditions",
+                conditions == null
+                    ? new List<AIBrainConditionData>(0)
+                    : new List<AIBrainConditionData>(conditions));
+            return transition;
         }
 
         static UseSkillAIBrainActionData CreateUseSkillAction(
@@ -2190,6 +2462,8 @@ namespace ChainRush.Editor
             ProductionEconomyDecompOpData economy =
                 CreateOperation<ProductionEconomyDecompOpData>(
                     content.ProductionEconomyOperator);
+            AwaitFactDecompOpData awaitFact = CreateAwaitFactOperation(
+                content.AwaitFactOperator);
             ProductionMaterializedEntityDecompOpData materialized =
                 CreateOperation<ProductionMaterializedEntityDecompOpData>(
                     content.ProductionMaterializedOperator);
@@ -2218,8 +2492,20 @@ namespace ChainRush.Editor
                         OrchestrationDecompositionScopeType.GlobalObjective,
                         matchAgent: true),
                     CreateEconomyDecision(
+                        "global-production-economy",
+                        content.ProductionEconomyOperator,
+                        OrchestrationDecompositionScopeType.GlobalObjective,
+                        new List<CompareOperation>
+                        {
+                            CompareOperation.Greater,
+                            CompareOperation.GreaterOrEqual,
+                        },
+                        requireZeroTargetForEqual: false),
+                    CreateAwaitFactDecision(content.AwaitFactOperator),
+                    CreateEconomyDecision(
                         "production-input",
                         content.ProductionInputOperator,
+                        OrchestrationDecompositionScopeType.AgentLocal,
                         new List<CompareOperation>
                         {
                             CompareOperation.Equal,
@@ -2230,6 +2516,7 @@ namespace ChainRush.Editor
                     CreateEconomyDecision(
                         "production-economy",
                         content.ProductionEconomyOperator,
+                        OrchestrationDecompositionScopeType.AgentLocal,
                         new List<CompareOperation>
                         {
                             CompareOperation.Greater,
@@ -2265,6 +2552,7 @@ namespace ChainRush.Editor
                     turnTokenAgent,
                     input,
                     economy,
+                    awaitFact,
                     materialized,
                     yield,
                     available,
@@ -2351,6 +2639,19 @@ namespace ChainRush.Editor
             return operation;
         }
 
+        static AwaitFactDecompOpData CreateAwaitFactOperation(TaxonomyTermData operatorId)
+        {
+            AwaitFactDecompOpData operation = CreateOperation<AwaitFactDecompOpData>(operatorId);
+            SetField(
+                operation,
+                "inputFactTypes",
+                new List<OrchestrationPlanningFactType>
+                {
+                    OrchestrationPlanningFactType.EconomyAmount,
+                });
+            return operation;
+        }
+
         static OrchestrationDecisionData CreateDecision(
             string id,
             OrchestrationFactType factType,
@@ -2376,6 +2677,7 @@ namespace ChainRush.Editor
         static OrchestrationDecisionData CreateEconomyDecision(
             string id,
             TaxonomyTermData operatorId,
+            OrchestrationDecompositionScopeType scopeType,
             List<CompareOperation> compareOperations,
             bool requireZeroTargetForEqual)
         {
@@ -2383,7 +2685,7 @@ namespace ChainRush.Editor
                 id,
                 OrchestrationFactType.EconomyAmount,
                 operatorId,
-                OrchestrationDecompositionScopeType.AgentLocal,
+                scopeType,
                 matchAgent: false);
             List<OrchestrationDecisionConditionData> conditions =
                 GetField<List<OrchestrationDecisionConditionData>>(decision, "conditions");
@@ -2391,6 +2693,30 @@ namespace ChainRush.Editor
             SetField(comparison, "compareOperations", compareOperations);
             SetField(comparison, "requireZeroTargetForEqual", requireZeroTargetForEqual);
             conditions.Add(comparison);
+            return decision;
+        }
+
+        static OrchestrationDecisionData CreateAwaitFactDecision(
+            TaxonomyTermData operatorId)
+        {
+            OrchestrationDecisionData decision = CreateDecision(
+                "await-external-economy",
+                OrchestrationFactType.EconomyAmount,
+                operatorId,
+                OrchestrationDecompositionScopeType.GlobalObjective,
+                matchAgent: false);
+            List<OrchestrationDecisionConditionData> conditions =
+                GetField<List<OrchestrationDecisionConditionData>>(decision, "conditions");
+            var planIntent = new PlanIntentDecisionConditionData();
+            SetField(
+                planIntent,
+                "actionTypes",
+                new List<PlanActionType>
+                {
+                    PlanActionType.Push,
+                });
+            SetField(planIntent, "requirePlanningEnabled", true);
+            conditions.Add(planIntent);
             return decision;
         }
 
@@ -2567,7 +2893,6 @@ namespace ChainRush.Editor
         }
 
         static void CreateExperienceDropPrefab(
-            Content content,
             Material material,
             List<string> createdPaths)
         {
@@ -2575,6 +2900,7 @@ namespace ChainRush.Editor
             try
             {
                 ConfigureProjectionBinding(root, ExperienceDropPoolKey);
+                root.AddComponent<ProjectionMovementController>();
                 GameObject visual = CreatePrimitiveVisual(
                     root.transform,
                     "Visual",
@@ -2583,24 +2909,30 @@ namespace ChainRush.Editor
                     Vector3.one * 0.38f);
                 visual.transform.localPosition = new Vector3(0f, 0.4f, 0f);
 
-                ExperienceDropView view = root.AddComponent<ExperienceDropView>();
-                SetField(view, "visualRoot", visual);
-                AIBrainTransitionUnityEventController transitionController =
-                    root.AddComponent<AIBrainTransitionUnityEventController>();
-                var binding = new AIBrainTransitionUnityEventBinding();
-                SetField(binding, "fromNode", content.CollectionNode);
-                SetField(binding, "fromState", content.WaitingState);
-                SetField(binding, "toNode", content.CollectionNode);
-                SetField(binding, "toState", content.CollectState);
-                UnityEventTools.AddPersistentListener(
-                    binding.Action,
-                    view.PublishCollectionStarted);
-                SetField(
-                    transitionController,
-                    "bindings",
-                    new List<AIBrainTransitionUnityEventBinding> { binding });
-
                 SavePrefab(root, ExperienceDropPrefabPath, createdPaths);
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(root);
+            }
+        }
+
+        static void CreateExperienceCollectorPrefab(
+            Content content,
+            List<string> createdPaths)
+        {
+            var root = new GameObject("ExperienceCollector");
+            try
+            {
+                ConfigureProjectionBinding(root, ExperienceCollectorPoolKey);
+                SkillTargetProjectionController transition =
+                    root.AddComponent<SkillTargetProjectionController>();
+                SetField(transition, "skill", content.CollectionSkill);
+                SetField(
+                    transition,
+                    "curve",
+                    AnimationCurve.EaseInOut(0f, 0f, 1f, 1f));
+                SavePrefab(root, ExperienceCollectorPrefabPath, createdPaths);
             }
             finally
             {
@@ -2773,10 +3105,8 @@ namespace ChainRush.Editor
 
         static void CreateExperienceUIPrefab(
             Content content,
-            Material experienceMaterial,
             List<string> createdPaths)
         {
-            _ = experienceMaterial;
             var root = new GameObject("ExperienceUI");
             try
             {
@@ -2786,6 +3116,13 @@ namespace ChainRush.Editor
                 canvas.sortingOrder = 50;
                 root.AddComponent<CanvasScaler>().uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
                 root.AddComponent<GraphicRaycaster>();
+                UIProjectionContextController projectionContext =
+                    root.AddComponent<UIProjectionContextController>();
+                SetField(
+                    projectionContext,
+                    "activitySelector",
+                    CreateIntegrationActivitySelector(content));
+                SetField(projectionContext, "canvas", canvas);
 
                 RectTransform panel = CreateUIRect(
                     rootRect,
@@ -2844,19 +3181,13 @@ namespace ChainRush.Editor
                 slider.fillRect = fill;
                 slider.targetGraphic = fillImage;
                 slider.direction = Slider.Direction.LeftToRight;
-
-                RectTransform collectionLayer = CreateStretchedUIRect(rootRect, "CollectionLayer", 0f);
-                collectionLayer.SetAsFirstSibling();
-                RectTransform icon = CreateUIRect(
-                    collectionLayer,
-                    "CollectionIcon",
-                    new Vector2(0.5f, 0.5f),
-                    new Vector2(0.5f, 0.5f),
-                    Vector2.zero,
-                    new Vector2(22f, 22f));
-                Image iconImage = icon.gameObject.AddComponent<Image>();
-                iconImage.color = new Color(0.3f, 1f, 0.45f, 1f);
-                icon.gameObject.SetActive(false);
+                UIProjectionTargetController projectionTarget =
+                    sliderRect.gameObject.AddComponent<UIProjectionTargetController>();
+                SetField(
+                    projectionTarget,
+                    "targetTags",
+                    new List<TaxonomyTermData> { content.ExperienceProgressTarget });
+                SetField(projectionTarget, "target", sliderRect);
 
                 ExperienceUIController controller = root.AddComponent<ExperienceUIController>();
                 SetField(controller, "playerSpawnerDefinition", content.PlayerSpawner);
@@ -2864,11 +3195,6 @@ namespace ChainRush.Editor
                 SetField(controller, "turnTokenRecipe", content.ExperienceRecipe);
                 SetField(controller, "progressBar", slider);
                 SetField(controller, "valueLabel", value);
-                SetField(controller, "collectionLayer", collectionLayer);
-                SetField(controller, "collectionTarget", sliderRect);
-                SetField(controller, "collectionIconPrefab", icon);
-                SetField(controller, "flightDuration", 0.4f);
-                SetField(controller, "flightCurve", AnimationCurve.EaseInOut(0f, 0f, 1f, 1f));
 
                 GameObject prefab = PrefabUtility.SaveAsPrefabAsset(root, ExperienceUIPrefabPath);
                 if (prefab == null)
@@ -2879,6 +3205,13 @@ namespace ChainRush.Editor
             {
                 UnityEngine.Object.DestroyImmediate(root);
             }
+        }
+
+        static ActivityRuntimeSelectorData CreateIntegrationActivitySelector(Content content)
+        {
+            return new ActivityRuntimeSelectorData(
+                LoadRequired<ActivityData>(ActivityPath),
+                new List<TaxonomyTermData> { content.IntegrationRuntimeTag });
         }
 
         static RectTransform CreateUIRect(

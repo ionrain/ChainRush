@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9969bb010093e43c6993c07d9c072f75, type: 3}
-  m_Name: ExperienceDrop
+  m_Name: ExperienceCollector
   m_EditorClassIdentifier: Core::Core.CapabilityHosts.CapabilityHostData
-  domainTypePreview: 3
-  id: chainrush.autobattle.experience-drop
+  domainTypePreview: 0
+  id: chainrush.autobattle.experience-collector
   title:
     m_TableReference:
       m_TableCollectionName: 
@@ -35,20 +35,35 @@ MonoBehaviour:
   icon: {fileID: 0}
   precision: 0
   allowedOperations: 31
-  tags:
-  - {fileID: 11400000, guid: dbbed6d69bfb64f2681885eff3a7271a, type: 2}
+  tags: []
   slotFootprint: 1
   stackCapacity: 0
-  capabilities: []
+  capabilities:
+  - capabilityType: 0
+    selectorTags: []
+  - capabilityType: 1
+    selectorTags:
+    - {fileID: 11400000, guid: a8f21a653d4844293a575427553c005c, type: 2}
   walletEntries:
-  - wallet: {fileID: 11400000, guid: 7e3980739fa284298b54f579bcdc610c, type: 2}
-    seed: []
+  - wallet: {fileID: 11400000, guid: f9475e4e935e44a0a94eed6b1f165c81, type: 2}
+    seed:
+    - entry:
+        asset: {fileID: 11400000, guid: a635411a4dd36476cb45c858bd90cede, type: 2}
+        formType: 0
+        amount: 1
+      runtimeTags:
+      - {fileID: 11400000, guid: a8f21a653d4844293a575427553c005c, type: 2}
+    - entry:
+        asset: {fileID: 11400000, guid: 30080af789ba3432b9b8308ad9595703, type: 2}
+        formType: 0
+        amount: 1
+      runtimeTags: []
   usagePolicy:
     accessType: 0
     diplomacyCompareOperation: 3
     diplomacyScoreThreshold: -100
   projectionPrefabReference:
-    m_AssetGUID: c89cf9c853b49426f8563cd883c00115
+    m_AssetGUID: a824171a1aa8c40229ba58439fdf1333
     m_SubObjectName: 
     m_SubObjectType: 
     m_SubObjectGUID: 

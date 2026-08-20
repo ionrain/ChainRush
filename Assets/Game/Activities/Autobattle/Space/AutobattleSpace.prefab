@@ -46,7 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Core::Core.World.SpatialMarkerSocket
   tags:
   - {fileID: 11400000, guid: ffd72531a038d4e2b9d368cb5752f29a, type: 2}
-  topologyCoordinates: {x: 6000, y: 0, z: 0}
+  topologyCoordinates: {x: 15000, y: 0, z: 0}
 --- !u!1 &5377253934661751569
 GameObject:
   m_ObjectHideFlags: 0
@@ -147,7 +147,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Core::Core.World.SpatialMarkerSocket
   tags:
   - {fileID: 11400000, guid: 450f265c94828495fa654ec2c4ee93a3, type: 2}
-  topologyCoordinates: {x: -6000, y: 0, z: 0}
+  topologyCoordinates: {x: -15000, y: 0, z: 0}
 --- !u!1 &6766125950364642319
 GameObject:
   m_ObjectHideFlags: 0
@@ -177,7 +177,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -0.1, z: 0}
-  m_LocalScale: {x: 14, y: 0.1, z: 10}
+  m_LocalScale: {x: 30, y: 0.1, z: 30}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4305023672100259356}

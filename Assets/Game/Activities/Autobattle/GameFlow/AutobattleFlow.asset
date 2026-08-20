@@ -16,6 +16,7 @@ MonoBehaviour:
     SerializedFormat: 2
     SerializedBytes: 
     ReferencedUnityObjects:
+    - {fileID: 11400000, guid: a09d83a16ee224bc4981ca811308d0fd, type: 2}
     - {fileID: 11400000, guid: 47ae82ad7cab24d298ee11e58cf69538, type: 2}
     - {fileID: 11400000, guid: c44a7831da1204e789b4239312234587, type: 2}
     SerializedBytesString: 
@@ -131,6 +132,22 @@ MonoBehaviour:
     - Name: executor
       Entry: 7
       Data: 10|Core.GameFlow.GameFlowLaunchActivityExecutorData, Core
+    - Name: runtimeTags
+      Entry: 7
+      Data: 11|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 10
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: 
       Entry: 8
       Data: 
@@ -139,23 +156,23 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 11|Core.GameFlow.GameFlowStepData, Core
+      Data: 12|Core.GameFlow.GameFlowStepData, Core
     - Name: id
       Entry: 1
       Data: await-autobattle-ready
     - Name: successConditions
       Entry: 7
-      Data: 12|System.Collections.Generic.List`1[[Core.GameFlow.GameFlowCondition,
+      Data: 13|System.Collections.Generic.List`1[[Core.GameFlow.GameFlowCondition,
         Core]], mscorlib
     - Name: 
       Entry: 12
       Data: 1
     - Name: 
       Entry: 7
-      Data: 13|Core.GameFlow.GameFlowConditionActivityLifecycle, Core
+      Data: 14|Core.GameFlow.GameFlowConditionActivityLifecycle, Core
     - Name: activity
       Entry: 10
-      Data: 0
+      Data: 1
     - Name: stage
       Entry: 3
       Data: 2
@@ -173,17 +190,17 @@ MonoBehaviour:
       Data: 
     - Name: failConditions
       Entry: 7
-      Data: 14|System.Collections.Generic.List`1[[Core.GameFlow.GameFlowCondition,
+      Data: 15|System.Collections.Generic.List`1[[Core.GameFlow.GameFlowCondition,
         Core]], mscorlib
     - Name: 
       Entry: 12
       Data: 2
     - Name: 
       Entry: 7
-      Data: 15|Core.GameFlow.GameFlowConditionActivityLifecycle, Core
+      Data: 16|Core.GameFlow.GameFlowConditionActivityLifecycle, Core
     - Name: activity
       Entry: 10
-      Data: 0
+      Data: 1
     - Name: stage
       Entry: 3
       Data: 2
@@ -195,10 +212,10 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 16|Core.GameFlow.GameFlowConditionActivityLifecycle, Core
+      Data: 17|Core.GameFlow.GameFlowConditionActivityLifecycle, Core
     - Name: activity
       Entry: 10
-      Data: 0
+      Data: 1
     - Name: stage
       Entry: 3
       Data: 2
@@ -222,24 +239,11 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 17|Core.GameFlow.GameFlowStepData, Core
+      Data: 18|Core.GameFlow.GameFlowStepData, Core
     - Name: id
       Entry: 1
       Data: publish-board-activation
     - Name: successConditions
-      Entry: 7
-      Data: 18|System.Collections.Generic.List`1[[Core.GameFlow.GameFlowCondition,
-        Core]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: failConditions
       Entry: 7
       Data: 19|System.Collections.Generic.List`1[[Core.GameFlow.GameFlowCondition,
         Core]], mscorlib
@@ -252,19 +256,32 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
+    - Name: failConditions
+      Entry: 7
+      Data: 20|System.Collections.Generic.List`1[[Core.GameFlow.GameFlowCondition,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: executor
       Entry: 7
-      Data: 20|Core.GameFlow.GameFlowPublishChildActivationExecutorData, Core
+      Data: 21|Core.GameFlow.GameFlowPublishChildActivationExecutorData, Core
     - Name: taxonomy
       Entry: 7
-      Data: 21|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+      Data: 22|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
         Core]], mscorlib
     - Name: 
       Entry: 12
       Data: 1
     - Name: 
       Entry: 10
-      Data: 1
+      Data: 2
     - Name: 
       Entry: 13
       Data: 
@@ -285,7 +302,7 @@ MonoBehaviour:
       Data: 
     - Name: activity
       Entry: 10
-      Data: 0
+      Data: 1
     - Name: 
       Entry: 8
       Data: 

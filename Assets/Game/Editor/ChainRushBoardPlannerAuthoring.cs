@@ -1280,7 +1280,8 @@ namespace ChainRush.Editor
                 {
                     new ActivityWalletSeedEntryData(
                         new SeedEntry(turnToken, 1L, EconomyFormType.Stack),
-                        ActivitySeedMaterializationType.None),
+                        ActivitySeedMaterializationType.None,
+                        new List<TaxonomyTermData>(0)),
                 });
 
             ActivityTeamWalletData boardWalletData = default;
@@ -1292,10 +1293,12 @@ namespace ChainRush.Editor
                 {
                     new ActivityWalletSeedEntryData(
                         new SeedEntry(boardHost, 1L, EconomyFormType.Token),
-                        ActivitySeedMaterializationType.NonSpatial),
+                        ActivitySeedMaterializationType.NonSpatial,
+                        new List<TaxonomyTermData>(0)),
                     new ActivityWalletSeedEntryData(
                         new SeedEntry(populationProducer, 1L, EconomyFormType.Token),
-                        ActivitySeedMaterializationType.NonSpatial),
+                        ActivitySeedMaterializationType.NonSpatial,
+                        new List<TaxonomyTermData>(0)),
                 });
 
             ActivityTeamObjectiveData teamObjective = default;

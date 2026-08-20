@@ -31,7 +31,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 29e7260b10fe64f24a0c760ac0537596, type: 2}
   diagnostics:
     determinismStart: 0
-    aiBrain: 0
+    aiBrain: 1
     drop: 0
     skill: 0
     movement: 0

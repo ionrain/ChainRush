@@ -6,6 +6,7 @@ using System.Reflection;
 using Core;
 using Core.AI;
 using Core.AI.Actions;
+using Core.AI.Conditions;
 using Core.Activities;
 using Core.CapabilityHosts;
 using Core.Economy;
@@ -31,7 +32,9 @@ using NUnit.Framework;
 using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace ChainRush.Tests.EditMode
 {
@@ -110,6 +113,8 @@ namespace ChainRush.Tests.EditMode
             AutobattleRoot + "/Economy/BugBrownSmall.asset";
         const string ExperienceDropPath =
             AutobattleRoot + "/Economy/ExperienceDrop.asset";
+        const string ExperienceCollectorPath =
+            AutobattleRoot + "/Economy/ExperienceCollector.asset";
         const string DeploymentRecipePath =
             AutobattleRoot + "/Production/WaterUnitDeploymentRecipe.asset";
         const string EnemyWaveRecipePath =
@@ -118,12 +123,38 @@ namespace ChainRush.Tests.EditMode
             AutobattleRoot + "/Production/PlayerProduction.asset";
         const string EnemyProductionPath =
             AutobattleRoot + "/Production/EnemyWaveProduction.asset";
+        const string PlayerBrainPath =
+            AutobattleRoot + "/Orchestration/PlayerBrain.asset";
+        const string AwaitFactOperatorPath =
+            AutobattleRoot + "/Orchestration/Taxonomy/AwaitFactOperator.asset";
         const string DropProfilePath =
             AutobattleRoot + "/Drops/ExperienceDropProfile.asset";
         const string AlliedCombatBrainPath = AutobattleRoot + "/AI/AlliedCombatBrain.asset";
         const string EnemyCombatBrainPath = AutobattleRoot + "/AI/EnemyCombatBrain.asset";
         const string CollectionBrainPath =
-            AutobattleRoot + "/AI/ExperienceCollectionBrain.asset";
+            AutobattleRoot + "/AI/ExperienceCollectorBrain.asset";
+        const string SearchStatePath =
+            AutobattleRoot + "/AI/Taxonomy/SearchState.asset";
+        const string WaitingStatePath =
+            AutobattleRoot + "/AI/Taxonomy/WaitingState.asset";
+        const string CollectionStatePath =
+            AutobattleRoot + "/AI/Taxonomy/CollectState.asset";
+        const string CollectionSkillPath =
+            AutobattleRoot + "/Skills/ExperienceCollectionSkill.asset";
+        const string MovementPath =
+            AutobattleRoot + "/Movement/UnitMovement.asset";
+        const string ExperienceDropPrefabPath =
+            AutobattleRoot + "/Projection/ExperienceDrop.prefab";
+        const string ExperienceCollectorPrefabPath =
+            AutobattleRoot + "/Projection/ExperienceCollector.prefab";
+        const string ExperienceUIPrefabPath =
+            AutobattleRoot + "/UI/ExperienceUI.prefab";
+        const string IntegrationScenePath =
+            "Assets/Game/Scenes/Integration/ChainRushFrameworkIntegration.unity";
+        const string ExperienceProgressTargetPath =
+            AutobattleRoot + "/Taxonomy/ExperienceProgressTarget.asset";
+        const string IntegrationRuntimeTagPath =
+            AutobattleRoot + "/Definition/IntegrationAutobattle.asset";
 
         const string AutobattleActivityTypeId = "chainrush.activity-type.autobattle";
         const string BoardActivityTypeId = "chainrush.activity-type.board";
@@ -131,7 +162,7 @@ namespace ChainRush.Tests.EditMode
         const string BoardCellTagId = "chainrush.board.cell";
 
         [Test]
-        public void ActivityAssets_ReferenceOnlyTheirOwnerOrSharedAssets()
+        public void ActivityAssets_DoNotReferenceOtherActivityDirectly()
         {
             Assert.IsTrue(AssetDatabase.IsValidFolder(SharedRoot), $"Missing folder: {SharedRoot}");
             Assert.IsTrue(AssetDatabase.IsValidFolder(AutobattleRoot), $"Missing folder: {AutobattleRoot}");
@@ -139,7 +170,6 @@ namespace ChainRush.Tests.EditMode
 
             AssertFolderDependenciesStayWithinBoundary(AutobattleRoot, BoardRoot);
             AssertFolderDependenciesStayWithinBoundary(BoardRoot, AutobattleRoot);
-            AssertFolderDependenciesStayWithinBoundary(SharedRoot, AutobattleRoot, BoardRoot);
         }
 
         [Test]
@@ -441,6 +471,8 @@ namespace ChainRush.Tests.EditMode
             CapabilityHostData enemy = LoadRequiredAsset<CapabilityHostData>(EnemyPath);
             CapabilityHostData experienceDrop =
                 LoadRequiredAsset<CapabilityHostData>(ExperienceDropPath);
+            CapabilityHostData experienceCollector =
+                LoadRequiredAsset<CapabilityHostData>(ExperienceCollectorPath);
             CapabilityHostData waterUnit = LoadRequiredAsset<CapabilityHostData>(WaterUnitPath);
             EconomyAssetData experience = LoadRequiredAsset<EconomyAssetData>(ExperiencePath);
             EconomyAssetData turnToken = LoadRequiredAsset<EconomyAssetData>(BoardTurnTokenPath);
@@ -454,6 +486,10 @@ namespace ChainRush.Tests.EditMode
                 LoadRequiredAsset<ProductionData>(PlayerProductionPath);
             ProductionData enemyProduction =
                 LoadRequiredAsset<ProductionData>(EnemyProductionPath);
+            OrchestratorAIBrainData playerBrain =
+                LoadRequiredAsset<OrchestratorAIBrainData>(PlayerBrainPath);
+            TaxonomyTermData awaitFactOperator =
+                LoadRequiredAsset<TaxonomyTermData>(AwaitFactOperatorPath);
             ProductionRecipeData merge =
                 LoadRequiredAsset<ProductionRecipeData>(BoardMergeRecipePath);
             DropProfileData dropProfile = LoadRequiredAsset<DropProfileData>(DropProfilePath);
@@ -462,6 +498,18 @@ namespace ChainRush.Tests.EditMode
             AIBrainData enemyCombatBrain =
                 LoadRequiredAsset<AIBrainData>(EnemyCombatBrainPath);
             AIBrainData collectionBrain = LoadRequiredAsset<AIBrainData>(CollectionBrainPath);
+            TaxonomyTermData searchState =
+                LoadRequiredAsset<TaxonomyTermData>(SearchStatePath);
+            TaxonomyTermData waitingState =
+                LoadRequiredAsset<TaxonomyTermData>(WaitingStatePath);
+            TaxonomyTermData collectionState =
+                LoadRequiredAsset<TaxonomyTermData>(CollectionStatePath);
+            SkillData collectionSkill = LoadRequiredAsset<SkillData>(CollectionSkillPath);
+            MovementData movement = LoadRequiredAsset<MovementData>(MovementPath);
+            TaxonomyTermData experienceProgressTarget =
+                LoadRequiredAsset<TaxonomyTermData>(ExperienceProgressTargetPath);
+            TaxonomyTermData integrationRuntimeTag =
+                LoadRequiredAsset<TaxonomyTermData>(IntegrationRuntimeTagPath);
 
             Assert.AreEqual(2, activity.Teams[0].Objectives.Count);
             Assert.AreEqual(1, activity.Teams[1].Objectives.Count);
@@ -477,6 +525,13 @@ namespace ChainRush.Tests.EditMode
                 seed.Seed.Asset == playerSpawner
                 && seed.Seed.FormType == EconomyFormType.Token
                 && seed.MaterializationType == ActivitySeedMaterializationType.Spatial));
+            ActivityWalletSeedEntryData collectorSeed = playerWallet.Seed.Single(seed =>
+                seed.Seed.Asset == experienceCollector);
+            Assert.AreEqual(EconomyFormType.Token, collectorSeed.Seed.FormType);
+            Assert.AreEqual(ActivitySeedMaterializationType.NonSpatial, collectorSeed.MaterializationType);
+            Assert.AreEqual(1, collectorSeed.ProjectionTargetTags.Count);
+            Assert.AreSame(experienceProgressTarget, collectorSeed.ProjectionTargetTags[0]);
+            Assert.AreEqual(0, collectorSeed.MaterializationMarkerTags.Count);
             Assert.IsTrue(playerWallet.Seed.Any(seed =>
                 seed.Seed.Asset == waterUnit
                 && seed.Seed.FormType == EconomyFormType.Stack
@@ -528,6 +583,46 @@ namespace ChainRush.Tests.EditMode
                 "chainrush.autobattle.marker.enemy-spawn",
                 enemyProduction.MaterializationProviderType.Id);
 
+            Assert.AreEqual(8, playerBrain.Operators.Count);
+            AwaitFactDecompOpData awaitFact = playerBrain.Operators
+                .OfType<AwaitFactDecompOpData>()
+                .Single();
+            Assert.AreSame(awaitFactOperator, awaitFact.OperatorId);
+            CollectionAssert.AreEqual(
+                new[] { OrchestrationPlanningFactType.EconomyAmount },
+                awaitFact.InputFactTypes);
+            Assert.AreEqual(9, playerBrain.DecisionGraph.Nodes.Count);
+            var globalProduction = playerBrain.DecisionGraph.Nodes[2]
+                as OrchestrationDecisionData;
+            var awaitExternal = playerBrain.DecisionGraph.Nodes[3]
+                as OrchestrationDecisionData;
+            Assert.NotNull(globalProduction);
+            Assert.NotNull(awaitExternal);
+            Assert.AreEqual("global-production-economy", globalProduction.DecisionId);
+            Assert.IsInstanceOf<ProductionEconomyDecompOpData>(
+                playerBrain.Operators.Single(operation =>
+                    operation.OperatorId == globalProduction.OperatorId));
+            Assert.AreEqual("await-external-economy", awaitExternal.DecisionId);
+            Assert.AreSame(awaitFactOperator, awaitExternal.OperatorId);
+            ScopeDecisionConditionData awaitScope = awaitExternal.Conditions
+                .OfType<ScopeDecisionConditionData>()
+                .Single();
+            Assert.AreEqual(
+                OrchestrationDecompositionScopeType.GlobalObjective,
+                ReadField<OrchestrationDecompositionScopeType>(awaitScope, "scopeType"));
+            PlanIntentDecisionConditionData awaitIntent = awaitExternal.Conditions
+                .OfType<PlanIntentDecisionConditionData>()
+                .Single();
+            CollectionAssert.AreEqual(
+                new[] { PlanActionType.Push },
+                ReadField<List<PlanActionType>>(awaitIntent, "actionTypes"));
+            TaxonomyRuntimeInstallerData taxonomyInstaller =
+                LoadRequiredAsset<TaxonomyRuntimeInstallerData>(
+                    "Assets/Game/Runtime/Installers/ChainRushTaxonomyRuntimeInstaller.asset");
+            CollectionAssert.Contains(
+                ReadObjectReferences<TaxonomyTermData>(taxonomyInstaller, "terms"),
+                awaitFactOperator);
+
             Assert.IsTrue(enemy.WalletEntries
                 .SelectMany(entry => entry.Seed)
                 .Any(seed => seed.Asset == experience
@@ -536,12 +631,62 @@ namespace ChainRush.Tests.EditMode
             Assert.AreEqual(1, dropProfile.Preparations.Count);
             Assert.IsInstanceOf<ContainerDropPreparationData>(dropProfile.Preparations[0]);
             Assert.AreEqual(1, dropProfile.WorldWalletTags.Count);
-            Assert.IsTrue(experienceDrop.WalletEntries
+            Assert.IsFalse(experienceDrop.SupportsCapability(CapabilityHostType.SkillOwner));
+            Assert.IsFalse(experienceDrop.SupportsCapability(CapabilityHostType.MovementOwner));
+            Assert.IsFalse(experienceDrop.SupportsCapability(CapabilityHostType.AIBrainOwner));
+            Assert.IsFalse(experienceDrop.WalletEntries
                 .SelectMany(entry => entry.Seed)
-                .Any(seed => seed.Asset is SkillData));
+                .Any(seed => seed.Asset == movement || seed.Asset is SkillData || seed.Asset is AIBrainData));
+            Assert.IsTrue(experienceCollector.SupportsCapability(CapabilityHostType.SkillOwner));
+            Assert.IsTrue(experienceCollector.SupportsCapability(CapabilityHostType.AIBrainOwner));
+            Assert.IsFalse(experienceCollector.SupportsCapability(CapabilityHostType.MovementOwner));
+            AssertAIBrainBinding(experienceCollector, collectionBrain);
+            Assert.IsTrue(experienceCollector.WalletEntries
+                .SelectMany(entry => entry.Seed)
+                .Any(seed => seed.Asset == collectionSkill));
+            Assert.AreEqual(10L, collectionSkill.StartDelay);
+            Assert.AreEqual(2, collectionSkill.Effects.Count);
+            Assert.IsTrue(collectionSkill.Effects.All(
+                effect => effect is SkillEconomyEntryEffectData));
+            var transferEffect = (SkillEconomyEntryEffectData)collectionSkill.Effects[0];
+            Assert.AreEqual(EffectRecipient.Target, transferEffect.Recipient);
+            Assert.AreEqual(SkillEconomyEntrySourceType.Wallet, transferEffect.SourceType);
+            Assert.AreEqual(SkillEconomyOwnerType.Host, transferEffect.SourceOwnerType);
+            Assert.AreEqual(EconomyOperation.Transfer, transferEffect.Operation);
+            Assert.AreEqual(EffectRecipient.Owner, transferEffect.DestinationRecipient);
+            Assert.AreEqual(SkillEconomyOwnerType.Root, transferEffect.DestinationOwnerType);
+            var destroyEffect = (SkillEconomyEntryEffectData)collectionSkill.Effects[1];
+            Assert.AreEqual(EffectRecipient.Target, destroyEffect.Recipient);
+            Assert.AreEqual(SkillEconomyEntrySourceType.BackingEntry, destroyEffect.SourceType);
+            Assert.AreEqual(EconomyOperation.Destroy, destroyEffect.Operation);
+
+            Assert.AreEqual(1, collectionBrain.Nodes.Count);
+            AIBrainNodeData collectionNode = collectionBrain.Nodes.Single();
+            Assert.AreSame(searchState, collectionNode.EntryState);
+            Assert.AreEqual(3, collectionNode.States.Count);
+            AIBrainStateData search = collectionNode.States.Single(state => state.Tag == searchState);
+            AIBrainStateData waiting = collectionNode.States.Single(state => state.Tag == waitingState);
+            AIBrainStateData collectState = collectionNode.States.Single(
+                state => state.Tag == collectionState);
+            Assert.AreEqual(1, search.OnEnterActions.Count);
+            Assert.IsInstanceOf<SelectActivityTargetAIBrainActionData>(
+                search.OnEnterActions[0]);
+            Assert.AreEqual(0, waiting.OnEnterActions.Count);
+            Assert.AreEqual(1, collectState.OnEnterActions.Count);
+            Assert.IsInstanceOf<UseSkillAIBrainActionData>(collectState.OnEnterActions[0]);
+            Assert.AreSame(
+                collectionSkill,
+                ReadField<SkillData>(collectState.OnEnterActions[0], "skill"));
+            Assert.AreEqual(6, collectionBrain.Transitions.Count);
+            AIBrainTransitionData failedSearchRetry = collectionBrain.Transitions.Single(
+                transition => transition.FromStates.Contains(searchState)
+                    && transition.Conditions.Any(
+                        condition => condition is CurrentStateResultMatchesAIBrainConditionData));
+            Assert.AreSame(waitingState, failedSearchRetry.ToState);
+            Assert.IsFalse(collectionBrain.Transitions.Any(transition =>
+                transition.FromStates.Contains(transition.ToState)));
             AssertAIBrainBinding(waterUnit, alliedCombatBrain);
             AssertAIBrainBinding(enemy, enemyCombatBrain);
-            AssertAIBrainBinding(experienceDrop, collectionBrain);
             AssertCombatDefeatActions(
                 alliedCombatBrain,
                 typeof(RemoveEntityAIBrainActionData));
@@ -556,10 +701,44 @@ namespace ChainRush.Tests.EditMode
                 AutobattleRoot + "/Projection/EnemySpawner.prefab",
                 AutobattleRoot + "/Projection/WaterUnit.prefab",
                 AutobattleRoot + "/Projection/BugBrownSmall.prefab",
-                AutobattleRoot + "/Projection/ExperienceDrop.prefab",
+                ExperienceDropPrefabPath,
+                ExperienceCollectorPrefabPath,
             };
             GameObject enemyProjection = LoadRequiredAsset<GameObject>(
                 AutobattleRoot + "/Projection/BugBrownSmall.prefab");
+            GameObject experienceProjection = LoadRequiredAsset<GameObject>(ExperienceDropPrefabPath);
+            GameObject collectorProjection =
+                LoadRequiredAsset<GameObject>(ExperienceCollectorPrefabPath);
+            Assert.IsNull(
+                experienceProjection.GetComponent<AIBrainTransitionUnityEventController>());
+            Assert.NotNull(experienceProjection.GetComponent<ProjectionMovementController>());
+            Assert.NotNull(collectorProjection.GetComponent<ProjectionBindingController>());
+            SkillTargetProjectionController transition =
+                collectorProjection.GetComponent<SkillTargetProjectionController>();
+            Assert.NotNull(transition);
+            Assert.AreSame(collectionSkill, ReadField<SkillData>(transition, "skill"));
+            Assert.IsEmpty(collectorProjection.GetComponentsInChildren<Renderer>(true));
+            GameObject experienceUI = LoadRequiredAsset<GameObject>(ExperienceUIPrefabPath);
+            Assert.IsNull(experienceUI.transform.Find("CollectionLayer"));
+            UIProjectionContextController uiContext =
+                experienceUI.GetComponent<UIProjectionContextController>();
+            Assert.NotNull(uiContext);
+            ActivityRuntimeSelectorData uiSelector =
+                ReadField<ActivityRuntimeSelectorData>(uiContext, "activitySelector");
+            Assert.AreSame(activity, uiSelector.Definition);
+            Assert.AreEqual(1, uiSelector.RequiredRuntimeTags.Count);
+            Assert.AreSame(integrationRuntimeTag, uiSelector.RequiredRuntimeTags[0]);
+            UIProjectionTargetController uiTarget =
+                experienceUI.GetComponentInChildren<UIProjectionTargetController>(true);
+            Assert.NotNull(uiTarget);
+            List<TaxonomyTermData> uiTargetTags =
+                ReadField<List<TaxonomyTermData>>(uiTarget, "targetTags");
+            Assert.AreEqual(1, uiTargetTags.Count);
+            Assert.AreSame(experienceProgressTarget, uiTargetTags[0]);
+            Assert.IsNull(AssetDatabase.LoadMainAssetAtPath(
+                AutobattleRoot + "/Skills/ExperienceAttractionSkill.asset"));
+            Assert.IsNull(AssetDatabase.LoadMainAssetAtPath(
+                AutobattleRoot + "/AI/ExperienceCollectionBrain.asset"));
             PrefabMarkerCollectorController enemyDropProvider =
                 enemyProjection.GetComponent<PrefabMarkerCollectorController>();
             Assert.NotNull(enemyDropProvider);
@@ -609,6 +788,12 @@ namespace ChainRush.Tests.EditMode
                 autobattleContainer.Steps[0].Executor);
             Assert.IsInstanceOf<GameFlowLaunchActivityExecutorData>(
                 autobattleContainer.Steps[1].Executor);
+            var rootLaunch = (GameFlowLaunchActivityExecutorData)
+                autobattleContainer.Steps[1].Executor;
+            Assert.AreEqual(1, rootLaunch.RuntimeTags.Count);
+            Assert.AreSame(
+                LoadRequiredAsset<TaxonomyTermData>(IntegrationRuntimeTagPath),
+                rootLaunch.RuntimeTags[0]);
             Assert.IsNull(autobattleContainer.Steps[2].Executor);
             Assert.IsInstanceOf<GameFlowPublishChildActivationExecutorData>(
                 autobattleContainer.Steps[3].Executor);
@@ -630,7 +815,38 @@ namespace ChainRush.Tests.EditMode
             Assert.AreEqual(2, boardContainer.Steps.Count);
             Assert.IsInstanceOf<GameFlowLaunchChildActivityExecutorData>(
                 boardContainer.Steps[0].Executor);
+            var childLaunch = (GameFlowLaunchChildActivityExecutorData)
+                boardContainer.Steps[0].Executor;
+            Assert.AreEqual(0, childLaunch.RuntimeTags.Count);
             Assert.IsNull(boardContainer.Steps[1].Executor);
+        }
+
+        [Test]
+        public void IntegrationPresentation_BindsViewportToTaggedAutobattleRuntime()
+        {
+            ActivityData activity = LoadRequiredAsset<ActivityData>(AutobattleActivityPath);
+            TaxonomyTermData runtimeTag =
+                LoadRequiredAsset<TaxonomyTermData>(IntegrationRuntimeTagPath);
+            Scene scene = EditorSceneManager.OpenScene(IntegrationScenePath, OpenSceneMode.Additive);
+            try
+            {
+                ActivityViewportController[] viewports = scene.GetRootGameObjects()
+                    .SelectMany(root => root.GetComponentsInChildren<ActivityViewportController>(true))
+                    .ToArray();
+                Assert.AreEqual(1, viewports.Length);
+                ActivityRuntimeSelectorData selector =
+                    ReadField<ActivityRuntimeSelectorData>(viewports[0], "activitySelector");
+                Assert.AreSame(activity, selector.Definition);
+                Assert.AreEqual(1, selector.RequiredRuntimeTags.Count);
+                Assert.AreSame(runtimeTag, selector.RequiredRuntimeTags[0]);
+                Assert.AreSame(
+                    viewports[0].GetComponent<Camera>(),
+                    ReadField<Camera>(viewports[0], "viewport"));
+            }
+            finally
+            {
+                EditorSceneManager.CloseScene(scene, true);
+            }
         }
 
         [Test]
@@ -1102,7 +1318,7 @@ namespace ChainRush.Tests.EditMode
                 if (AssetDatabase.IsValidFolder(assetPath))
                     continue;
 
-                string[] dependencies = AssetDatabase.GetDependencies(assetPath, true);
+                string[] dependencies = AssetDatabase.GetDependencies(assetPath, false);
                 for (int dependencyIndex = 0; dependencyIndex < dependencies.Length; dependencyIndex++)
                 {
                     string dependency = dependencies[dependencyIndex];

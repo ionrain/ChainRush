@@ -112,6 +112,19 @@ MonoBehaviour:
     - Name: executor
       Entry: 7
       Data: 8|Core.GameFlow.GameFlowLaunchChildActivityExecutorData, Core
+    - Name: runtimeTags
+      Entry: 7
+      Data: 9|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: 
       Entry: 8
       Data: 
@@ -120,20 +133,20 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 9|Core.GameFlow.GameFlowStepData, Core
+      Data: 10|Core.GameFlow.GameFlowStepData, Core
     - Name: id
       Entry: 1
       Data: await-board-ready
     - Name: successConditions
       Entry: 7
-      Data: 10|System.Collections.Generic.List`1[[Core.GameFlow.GameFlowCondition,
+      Data: 11|System.Collections.Generic.List`1[[Core.GameFlow.GameFlowCondition,
         Core]], mscorlib
     - Name: 
       Entry: 12
       Data: 1
     - Name: 
       Entry: 7
-      Data: 11|Core.GameFlow.GameFlowConditionActivityLifecycle, Core
+      Data: 12|Core.GameFlow.GameFlowConditionActivityLifecycle, Core
     - Name: activity
       Entry: 10
       Data: 1
@@ -154,14 +167,14 @@ MonoBehaviour:
       Data: 
     - Name: failConditions
       Entry: 7
-      Data: 12|System.Collections.Generic.List`1[[Core.GameFlow.GameFlowCondition,
+      Data: 13|System.Collections.Generic.List`1[[Core.GameFlow.GameFlowCondition,
         Core]], mscorlib
     - Name: 
       Entry: 12
       Data: 2
     - Name: 
       Entry: 7
-      Data: 13|Core.GameFlow.GameFlowConditionActivityLifecycle, Core
+      Data: 14|Core.GameFlow.GameFlowConditionActivityLifecycle, Core
     - Name: activity
       Entry: 10
       Data: 1
@@ -176,7 +189,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 14|Core.GameFlow.GameFlowConditionActivityLifecycle, Core
+      Data: 15|Core.GameFlow.GameFlowConditionActivityLifecycle, Core
     - Name: activity
       Entry: 10
       Data: 1

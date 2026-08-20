@@ -20,10 +20,13 @@ MonoBehaviour:
   - rid: 2807516363299750034
   - rid: 2807516363299750035
   - rid: 2807516363299750036
+  - rid: 2807516543296733292
   decisionGraph:
     nodes:
     - rid: 2807516363299750037
     - rid: 2807516363299750038
+    - rid: 2807516543296733293
+    - rid: 2807516543296733294
     - rid: 2807516363299750039
     - rid: 2807516363299750040
     - rid: 2807516363299750041
@@ -206,3 +209,56 @@ MonoBehaviour:
       type: {class: ScopeDecisionConditionData, ns: Core.Orchestration, asm: Core}
       data:
         scopeType: 1
+    - rid: 2807516543296733292
+      type: {class: AwaitFactDecompOpData, ns: Core.Orchestration, asm: Core}
+      data:
+        operatorId: {fileID: 11400000, guid: a5a834597863349cc91ef85102128ba8, type: 2}
+        inputFactTypes: 01000000
+    - rid: 2807516543296733293
+      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
+      data:
+        decisionId: global-production-economy
+        conditions:
+        - rid: 2807516543296733295
+        - rid: 2807516543296733296
+        - rid: 2807516543296733297
+        operatorId: {fileID: 11400000, guid: 81c68355248194ec8909c09aa9c7480f, type: 2}
+    - rid: 2807516543296733294
+      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
+      data:
+        decisionId: await-external-economy
+        conditions:
+        - rid: 2807516543296733298
+        - rid: 2807516543296733299
+        - rid: 2807516543296733300
+        operatorId: {fileID: 11400000, guid: a5a834597863349cc91ef85102128ba8, type: 2}
+    - rid: 2807516543296733295
+      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        factType: 1
+    - rid: 2807516543296733296
+      type: {class: ScopeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        scopeType: 0
+    - rid: 2807516543296733297
+      type: {class: CompareOperationDecisionConditionData, ns: Core.Orchestration,
+        asm: Core}
+      data:
+        compareOperations: 0200000003000000
+        requireZeroTargetForEqual: 0
+    - rid: 2807516543296733298
+      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        factType: 1
+    - rid: 2807516543296733299
+      type: {class: ScopeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        scopeType: 0
+    - rid: 2807516543296733300
+      type: {class: PlanIntentDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        targetTypes:
+        targetRelations:
+        actionTypes: 01000000
+        conditionTypes:
+        requirePlanningEnabled: 1

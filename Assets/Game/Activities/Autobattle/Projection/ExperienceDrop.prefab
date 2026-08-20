@@ -10,8 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2673437579423569717}
   - component: {fileID: 3458794149850981438}
-  - component: {fileID: 5172638957605589258}
-  - component: {fileID: 6019870320630832818}
+  - component: {fileID: 3386678152987176302}
   m_Layer: 0
   m_Name: ExperienceDrop
   m_TagString: Untagged
@@ -55,7 +54,7 @@ MonoBehaviour:
   onUnbound:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &5172638957605589258
+--- !u!114 &3386678152987176302
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -64,42 +63,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 7851959692986926334}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c2bf8a59e8f14467f86b02d8566e343f, type: 3}
+  m_Script: {fileID: 11500000, guid: 71560613c7d8d41998701ebe8d5b5dd0, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ChainRush.Autobattle.ExperienceDropView
-  visualRoot: {fileID: 8641223270256992497}
---- !u!114 &6019870320630832818
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7851959692986926334}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9a5ee378bd574458b93d651f5234fc62, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Core::Core.AI.AIBrainTransitionUnityEventController
-  bindings:
-  - fromNode: {fileID: 11400000, guid: a8f21a653d4844293a575427553c005c, type: 2}
-    fromState: {fileID: 11400000, guid: a868f7f68aeb74b9e87b368248314b76, type: 2}
-    toNode: {fileID: 11400000, guid: a8f21a653d4844293a575427553c005c, type: 2}
-    toState: {fileID: 11400000, guid: 7bc966730bcdf4409b140f41d97ba1a6, type: 2}
-    action:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 5172638957605589258}
-          m_TargetAssemblyTypeName: ChainRush.Autobattle.ExperienceDropView, Assembly-CSharp
-          m_MethodName: PublishCollectionStarted
-          m_Mode: 0
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: 
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
+  m_EditorClassIdentifier: Core::Core.Projection.ProjectionMovementController
+  poseUpdateType: 0
+  poseTransitionSeconds: 0.05
 --- !u!1 &8641223270256992497
 GameObject:
   m_ObjectHideFlags: 0

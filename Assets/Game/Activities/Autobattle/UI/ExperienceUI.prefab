@@ -36,81 +36,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -6, y: -6}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!1 &2047529778245925871
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4213300416749972961}
-  - component: {fileID: 4507183176721269125}
-  - component: {fileID: 7287483073200353886}
-  m_Layer: 0
-  m_Name: CollectionIcon
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!224 &4213300416749972961
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2047529778245925871}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 6487840109079686404}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 22, y: 22}
-  m_Pivot: {x: 0, y: 0}
---- !u!222 &4507183176721269125
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2047529778245925871}
-  m_CullTransparentMesh: 1
---- !u!114 &7287483073200353886
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2047529778245925871}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 0}
-  m_Color: {r: 0.3, g: 1, b: 0.45, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &2302502455654345458
 GameObject:
   m_ObjectHideFlags: 0
@@ -121,6 +46,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1892701050217340442}
   - component: {fileID: 8823146734897365747}
+  - component: {fileID: 5180740810777609723}
   m_Layer: 0
   m_Name: Progress
   m_TagString: Untagged
@@ -200,6 +126,21 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &5180740810777609723
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2302502455654345458}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 39a233ba1f113486f822bdf1cd1d10e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Core::Core.Projection.UIProjectionTargetController
+  targetTags:
+  - {fileID: 11400000, guid: 2b644075a9b584a7a82b24b61a91b748, type: 2}
+  target: {fileID: 1892701050217340442}
 --- !u!1 &2665485332966129551
 GameObject:
   m_ObjectHideFlags: 0
@@ -213,6 +154,7 @@ GameObject:
   - component: {fileID: 7265214682104381137}
   - component: {fileID: 4082266712703178152}
   - component: {fileID: 3814328854384945560}
+  - component: {fileID: 5316222016435938411}
   m_Layer: 0
   m_Name: ExperienceUI
   m_TagString: Untagged
@@ -232,7 +174,6 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 6487840109079686404}
   - {fileID: 1049857574107808232}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -303,7 +244,7 @@ MonoBehaviour:
   m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 16375
 --- !u!114 &3814328854384945560
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -322,70 +263,23 @@ MonoBehaviour:
   turnTokenRecipe: {fileID: 11400000, guid: 12901f89cec45450d878321220736744, type: 2}
   progressBar: {fileID: 8823146734897365747}
   valueLabel: {fileID: 413068364478304345}
-  collectionLayer: {fileID: 6487840109079686404}
-  collectionTarget: {fileID: 1892701050217340442}
-  collectionIconPrefab: {fileID: 4213300416749972961}
-  flightDuration: 0.4
-  flightCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
---- !u!1 &5114952423799260419
-GameObject:
+--- !u!114 &5316222016435938411
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 6487840109079686404}
-  m_Layer: 0
-  m_Name: CollectionLayer
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &6487840109079686404
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5114952423799260419}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 4213300416749972961}
-  m_Father: {fileID: 1370551352287692873}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_GameObject: {fileID: 2665485332966129551}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e28e06f10c8a44ada5f9d05eb5b1dd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Core::Core.Projection.UIProjectionContextController
+  activitySelector:
+    definition: {fileID: 11400000, guid: 47ae82ad7cab24d298ee11e58cf69538, type: 2}
+    requiredRuntimeTags:
+    - {fileID: 11400000, guid: a09d83a16ee224bc4981ca811308d0fd, type: 2}
+  canvas: {fileID: 5375256221547096086}
 --- !u!1 &5719191938127650082
 GameObject:
   m_ObjectHideFlags: 0

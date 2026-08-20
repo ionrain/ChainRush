@@ -8,6 +8,7 @@ using Core.Entities;
 using Core.Events;
 using Core.Production.Authoring;
 using Core.Production.Events;
+using Core.Projection;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,21 +17,14 @@ using EntityId = Core.Entities.EntityId;
 namespace ChainRush.Autobattle
 {
     [DisallowMultipleComponent]
+    [RequireComponent(typeof(UIProjectionContextController))]
     public sealed class ExperienceUIController :
         MonoBehaviour,
         IEventListener<CapabilityHostRegisteredEvent>,
         IEventListener<CapabilityHostUnregisteredEvent>,
         IEventListener<EconomyResourceChangedEvent>,
-        IEventListener<ProductionOrderYieldedEvent>,
-        IEventListener<ExperienceCollectionStartedEvent>
+        IEventListener<ProductionOrderYieldedEvent>
     {
-        sealed class FlyingIcon
-        {
-            public RectTransform RectTransform;
-            public Vector2 StartPosition;
-            public float Elapsed;
-        }
-
         [Header("Runtime Identity")]
         [SerializeField] CapabilityHostBaseData playerSpawnerDefinition;
         [SerializeField] EconomyAssetData experience;
@@ -40,30 +34,23 @@ namespace ChainRush.Autobattle
         [SerializeField] Slider progressBar;
         [SerializeField] TMP_Text valueLabel;
 
-        [Header("Collection Flight")]
-        [SerializeField] RectTransform collectionLayer;
-        [SerializeField] RectTransform collectionTarget;
-        [SerializeField] RectTransform collectionIconPrefab;
-        [Min(0.01f)]
-        [SerializeField] float flightDuration = 0.35f;
-        [SerializeField] AnimationCurve flightCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
-
-        readonly List<FlyingIcon> _flyingIcons = new List<FlyingIcon>(4);
-
         ActivityId _activityId;
         EntityId _playerSpawnerEntityId;
         string _playerOwnerStableKey;
         long _experienceAmount;
         long _completedTurnTokens;
+        UIProjectionContextController _projectionContext;
 
         void OnEnable()
         {
+            _projectionContext = GetComponent<UIProjectionContextController>();
+            if (_projectionContext != null)
+                _projectionContext.BindingChanged += OnActivityBindingChanged;
             EventBus.Register<CapabilityHostRegisteredEvent>(this);
             EventBus.Register<CapabilityHostUnregisteredEvent>(this);
             EventBus.Register<EconomyResourceChangedEvent>(this);
             EventBus.Register<ProductionOrderYieldedEvent>(this);
-            EventBus.Register<ExperienceCollectionStartedEvent>(this);
-            ResetRuntimeState();
+            ApplyActivityBinding();
         }
 
         void OnDisable()
@@ -72,51 +59,18 @@ namespace ChainRush.Autobattle
             EventBus.Unregister<CapabilityHostUnregisteredEvent>(this);
             EventBus.Unregister<EconomyResourceChangedEvent>(this);
             EventBus.Unregister<ProductionOrderYieldedEvent>(this);
-            EventBus.Unregister<ExperienceCollectionStartedEvent>(this);
-            ClearFlyingIcons();
-        }
-
-        void Update()
-        {
-            if (_flyingIcons.Count == 0 || collectionLayer == null || collectionTarget == null)
-                return;
-
-            float duration = Mathf.Max(0.01f, flightDuration);
-            Vector2 targetPosition = ResolveLocalPosition(
-                RectTransformUtility.WorldToScreenPoint(
-                    ResolveUICamera(),
-                    collectionTarget.position));
-            for (int i = _flyingIcons.Count - 1; i >= 0; i--)
-            {
-                FlyingIcon icon = _flyingIcons[i];
-                if (icon == null || icon.RectTransform == null)
-                {
-                    _flyingIcons.RemoveAt(i);
-                    continue;
-                }
-
-                icon.Elapsed += Time.unscaledDeltaTime;
-                float normalizedTime = Mathf.Clamp01(icon.Elapsed / duration);
-                float progress = flightCurve == null
-                    ? normalizedTime
-                    : flightCurve.Evaluate(normalizedTime);
-                icon.RectTransform.anchoredPosition = Vector2.LerpUnclamped(
-                    icon.StartPosition,
-                    targetPosition,
-                    progress);
-                if (normalizedTime < 1f)
-                    continue;
-
-                Destroy(icon.RectTransform.gameObject);
-                _flyingIcons.RemoveAt(i);
-            }
+            if (_projectionContext != null)
+                _projectionContext.BindingChanged -= OnActivityBindingChanged;
+            _projectionContext = null;
+            ResetRuntimeState(clearActivity: true);
         }
 
         public void OnEvent(CapabilityHostRegisteredEvent e)
         {
             CapabilityHostSnapshot snapshot = e.Snapshot;
             if (!snapshot.EntityId.IsValid
-                || !snapshot.ActivityId.IsValid
+                || !_activityId.IsValid
+                || snapshot.ActivityId != _activityId
                 || playerSpawnerDefinition == null
                 || snapshot.Definition == null
                 || !snapshot.Definition.Matches(playerSpawnerDefinition))
@@ -125,25 +79,15 @@ namespace ChainRush.Autobattle
             }
 
             if (_playerSpawnerEntityId.IsValid
-                && snapshot.ActivityId == _activityId
                 && snapshot.EntityId.Value >= _playerSpawnerEntityId.Value)
             {
                 return;
             }
 
-            bool activityChanged = snapshot.ActivityId != _activityId;
-            _activityId = snapshot.ActivityId;
             _playerSpawnerEntityId = snapshot.EntityId;
             _playerOwnerStableKey = snapshot.Owner == null
                 ? null
                 : snapshot.Owner.StableSimulationKey;
-            if (activityChanged)
-            {
-                _experienceAmount = 0L;
-                _completedTurnTokens = 0L;
-                ClearFlyingIcons();
-            }
-
             RefreshProgress();
         }
 
@@ -152,7 +96,7 @@ namespace ChainRush.Autobattle
             if (!_playerSpawnerEntityId.IsValid || e.EntityId != _playerSpawnerEntityId)
                 return;
 
-            ResetRuntimeState();
+            ResetRuntimeState(clearActivity: false);
         }
 
         public void OnEvent(EconomyResourceChangedEvent e)
@@ -188,37 +132,31 @@ namespace ChainRush.Autobattle
             RefreshProgress();
         }
 
-        public void OnEvent(ExperienceCollectionStartedEvent e)
+        void OnActivityBindingChanged()
         {
-            if (!_activityId.IsValid
-                || e.ActivityId != _activityId
-                || !e.DropEntityId.IsValid
-                || collectionLayer == null
-                || collectionIconPrefab == null)
-            {
-                return;
-            }
-
-            RectTransform icon = Instantiate(collectionIconPrefab, collectionLayer, false);
-            icon.gameObject.SetActive(true);
-            Vector2 startPosition = ResolveLocalPosition(e.ScreenPosition);
-            icon.anchoredPosition = startPosition;
-            _flyingIcons.Add(new FlyingIcon
-            {
-                RectTransform = icon,
-                StartPosition = startPosition,
-                Elapsed = 0f,
-            });
+            ApplyActivityBinding();
         }
 
-        void ResetRuntimeState()
+        void ApplyActivityBinding()
         {
-            _activityId = ActivityId.Invalid;
+            ActivityId nextActivityId = _projectionContext == null
+                ? ActivityId.Invalid
+                : _projectionContext.ActivityId;
+            if (_activityId == nextActivityId)
+                return;
+
+            ResetRuntimeState(clearActivity: true);
+            _activityId = nextActivityId;
+        }
+
+        void ResetRuntimeState(bool clearActivity)
+        {
+            if (clearActivity)
+                _activityId = ActivityId.Invalid;
             _playerSpawnerEntityId = EntityId.Invalid;
             _playerOwnerStableKey = null;
             _experienceAmount = 0L;
             _completedTurnTokens = 0L;
-            ClearFlyingIcons();
             RefreshProgress();
         }
 
@@ -256,41 +194,5 @@ namespace ChainRush.Autobattle
             return Math.Max(1L, inputs[0].Amount);
         }
 
-        Vector2 ResolveLocalPosition(Vector2 screenPosition)
-        {
-            if (collectionLayer == null)
-                return screenPosition;
-
-            return RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                collectionLayer,
-                screenPosition,
-                ResolveUICamera(),
-                out Vector2 localPosition)
-                ? localPosition
-                : screenPosition;
-        }
-
-        Camera ResolveUICamera()
-        {
-            if (collectionLayer == null)
-                return null;
-
-            Canvas canvas = collectionLayer.GetComponentInParent<Canvas>();
-            return canvas == null || canvas.renderMode == RenderMode.ScreenSpaceOverlay
-                ? null
-                : canvas.worldCamera;
-        }
-
-        void ClearFlyingIcons()
-        {
-            for (int i = 0; i < _flyingIcons.Count; i++)
-            {
-                FlyingIcon icon = _flyingIcons[i];
-                if (icon != null && icon.RectTransform != null)
-                    Destroy(icon.RectTransform.gameObject);
-            }
-
-            _flyingIcons.Clear();
-        }
     }
 }

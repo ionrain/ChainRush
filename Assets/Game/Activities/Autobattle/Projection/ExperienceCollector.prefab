@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &1236662687714593378
+--- !u!1 &5164926502592248735
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,23 +8,23 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 7501208016011740862}
-  - component: {fileID: 5896520107383358409}
-  - component: {fileID: 5662032428778241956}
+  - component: {fileID: 5025098855151371949}
+  - component: {fileID: 8433390416652839131}
+  - component: {fileID: 4916825198486537267}
   m_Layer: 0
-  m_Name: EnemySpawner
+  m_Name: ExperienceCollector
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &7501208016011740862
+--- !u!4 &5025098855151371949
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1236662687714593378}
+  m_GameObject: {fileID: 5164926502592248735}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -33,19 +33,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5896520107383358409
+--- !u!114 &8433390416652839131
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1236662687714593378}
+  m_GameObject: {fileID: 5164926502592248735}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 98617caacf99c41c8bce03f9ab420f59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Core::Core.Projection.ProjectionBindingController
-  poolKey: chainrush.autobattle.enemy-spawner
+  poolKey: chainrush.autobattle.experience-collector
   autoReturnOnDisable: 0
   onBound:
     m_PersistentCalls:
@@ -53,33 +53,40 @@ MonoBehaviour:
   onUnbound:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &5662032428778241956
+--- !u!114 &4916825198486537267
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1236662687714593378}
+  m_GameObject: {fileID: 5164926502592248735}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9e3e1a375262d490dbc37cd0dd0f25a2, type: 3}
+  m_Script: {fileID: 11500000, guid: 05633606039f74c4aa82d9c315a36328, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Core::Core.World.GeneratedMarkerProviderController
-  providerId: enemyspawner-spawn-provider
-  providerType: {fileID: 11400000, guid: aa92cc0714f724a0491b75e03d6282a9, type: 2}
-  usagePolicy:
-    selectionType: 0
-    reusePolicyType: 0
-  drawGizmo: 1
-  patterns:
-  - tags:
-    - {fileID: 11400000, guid: aa92cc0714f724a0491b75e03d6282a9, type: 2}
-    refreshPolicyType: 1
-    count: 1
-    shapeType: 3
-    boundaryType: 0
-    minimumDistance: 0
-    size: {x: 6000, y: 0, z: 20000}
-    offset: {x: -3000, y: 0, z: 10000}
-    rotationDegrees: {x: 0, y: 0, z: 0}
-  markerViewPrefab: {fileID: 0}
+  m_EditorClassIdentifier: Core::Core.Projection.SkillTargetProjectionController
+  skill: {fileID: 11400000, guid: 30080af789ba3432b9b8308ad9595703, type: 2}
+  curve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4

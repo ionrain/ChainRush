@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b65a5bf3374d4d3597b95a983d584f0b, type: 3}
   m_Name: ExperienceCollectionSkill
   m_EditorClassIdentifier: Core::Core.Skills.SkillData
-  domainTypePreview: 0
+  domainTypePreview: 10
   id: chainrush.skill.autobattle.experience-collection
   title:
     m_TableReference:
@@ -44,25 +44,25 @@ MonoBehaviour:
     max: 1
   analyticSupposedTarget: 0
   targetTags:
-  - {fileID: 11400000, guid: 21dd0e09a873844fb9f21d3ce7d47a2a, type: 2}
+  - {fileID: 11400000, guid: dbbed6d69bfb64f2681885eff3a7271a, type: 2}
   targetSlot: {fileID: 0}
   executionSlot: {fileID: 0}
-  startDelay: 12
+  startDelay: 10
   endDelay: 0
   actionInterval: 0
   actionCount: 1
   reloadTime: 0
   requirements: []
   effects:
-  - rid: 2807516363299750069
-  - rid: 2807516363299750070
+  - rid: 2807516542362452066
+  - rid: 2807516542362452067
   references:
     version: 2
     RefIds:
-    - rid: 2807516363299750069
+    - rid: 2807516542362452066
       type: {class: SkillEconomyEntryEffectData, ns: Core.Skills, asm: Core}
       data:
-        recipient: 0
+        recipient: 1
         requiredTags: []
         value: 0
         multiplier: {fileID: 0}
@@ -78,14 +78,14 @@ MonoBehaviour:
           requiredRuntimeTags: []
           excludedRuntimeTags: []
         operation: 8
-        destinationRecipient: 1
+        destinationRecipient: 0
         destinationOwnerType: 1
         destinationWalletTags:
         - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
-    - rid: 2807516363299750070
+    - rid: 2807516542362452067
       type: {class: SkillEconomyEntryEffectData, ns: Core.Skills, asm: Core}
       data:
-        recipient: 0
+        recipient: 1
         requiredTags: []
         value: 0
         multiplier: {fileID: 0}
@@ -101,6 +101,6 @@ MonoBehaviour:
           requiredRuntimeTags: []
           excludedRuntimeTags: []
         operation: 16
-        destinationRecipient: 0
+        destinationRecipient: 1
         destinationOwnerType: 0
         destinationWalletTags: []

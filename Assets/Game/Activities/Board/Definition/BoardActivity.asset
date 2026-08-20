@@ -74,6 +74,7 @@ MonoBehaviour:
           runtimeTags: []
         materializationType: 2
         materializationMarkerTags: []
+        projectionTargetTags: []
       - seed:
           entry:
             asset: {fileID: 11400000, guid: 98384777501f34b01bdb949ca92adda2, type: 2}
@@ -82,6 +83,7 @@ MonoBehaviour:
           runtimeTags: []
         materializationType: 2
         materializationMarkerTags: []
+        projectionTargetTags: []
     features:
     - {fileID: 11400000, guid: d1a497a418cfb4c2fa6e709b56630a3f, type: 2}
   activityContextTag: {fileID: 11400000, guid: 4ceffc5ec75d94a00b7a7b29748493b2, type: 2}
@@ -106,8 +108,8 @@ MonoBehaviour:
         projectionMarkerTags:
         - {fileID: 11400000, guid: a70bd9d1bf3b1457fbe47de7812a7fed, type: 2}
         projectionSettings:
-          cellSize: {x: 88, y: 88}
-          spacing: {x: 6, y: 6}
+          cellSize: {x: 140, y: 140}
+          spacing: {x: 10, y: 10}
     - rid: 2807516141394329705
       type: {class: UIPopupPresentationData, ns: Core.UI.Flow, asm: Core}
       data:

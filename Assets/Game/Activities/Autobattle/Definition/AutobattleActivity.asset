@@ -76,6 +76,17 @@ MonoBehaviour:
         materializationType: 1
         materializationMarkerTags:
         - {fileID: 11400000, guid: 450f265c94828495fa654ec2c4ee93a3, type: 2}
+        projectionTargetTags: []
+      - seed:
+          entry:
+            asset: {fileID: 11400000, guid: bc776416e57d149eb85f26000d5a3839, type: 2}
+            formType: 1
+            amount: 1
+          runtimeTags: []
+        materializationType: 2
+        materializationMarkerTags: []
+        projectionTargetTags:
+        - {fileID: 11400000, guid: 2b644075a9b584a7a82b24b61a91b748, type: 2}
       - seed:
           entry:
             asset: {fileID: 11400000, guid: ba6dc7b2969654c0c96dd451c9a18987, type: 2}
@@ -84,6 +95,7 @@ MonoBehaviour:
           runtimeTags: []
         materializationType: 0
         materializationMarkerTags: []
+        projectionTargetTags: []
     features:
     - {fileID: 11400000, guid: 847659956c5e7433da259fcf9cb220da, type: 2}
   - slotCount: 1
@@ -104,6 +116,7 @@ MonoBehaviour:
         materializationType: 1
         materializationMarkerTags:
         - {fileID: 11400000, guid: ffd72531a038d4e2b9d368cb5752f29a, type: 2}
+        projectionTargetTags: []
     features:
     - {fileID: 11400000, guid: 7f4894a7a989944bda6a9b6400c4355f, type: 2}
   activityContextTag: {fileID: 11400000, guid: 1d56d6d471e9643298aa95ba74ca0c9a, type: 2}
@@ -130,5 +143,5 @@ MonoBehaviour:
           m_SubObjectType: 
           m_SubObjectGUID: 
           m_EditorAssetChanged: 0
-        origin: {x: 0, y: 0, z: 0}
+        origin: {x: 0, y: 0, z: 12.5}
         rotationDegrees: {x: 0, y: 0, z: 0}

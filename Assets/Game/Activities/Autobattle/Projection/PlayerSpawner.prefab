@@ -70,6 +70,7 @@ MonoBehaviour:
   usagePolicy:
     selectionType: 0
     reusePolicyType: 0
+  drawGizmo: 1
   patterns:
   - tags:
     - {fileID: 11400000, guid: 498ad0925a24645cba6ef1cfe6b35b4c, type: 2}
@@ -78,7 +79,7 @@ MonoBehaviour:
     shapeType: 3
     boundaryType: 0
     minimumDistance: 0
-    size: {x: 4000, y: 0, z: 8000}
-    offset: {x: 2000, y: 0, z: 0}
+    size: {x: 6000, y: 0, z: 20000}
+    offset: {x: 3000, y: 0, z: 10000}
     rotationDegrees: {x: 0, y: 0, z: 0}
   markerViewPrefab: {fileID: 0}

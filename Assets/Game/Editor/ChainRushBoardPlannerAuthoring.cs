@@ -33,6 +33,9 @@ namespace ChainRush.Editor
         const string SharedRoot = "Assets/Game/Activities/Shared";
         const string PopulationRoot = BoardRoot + "/Population";
         const string PlannerRoot = PopulationRoot + "/Planner";
+        const string SpaceRoot = BoardRoot + "/Space";
+        const string ShapesRoot = SpaceRoot + "/Shapes";
+        const string ShapeRulesRoot = ShapesRoot + "/Rules";
         const string AgentsRoot = BoardRoot + "/Agents";
         const string ObjectivesRoot = BoardRoot + "/Objectives";
         const string OrchestrationRoot = BoardRoot + "/Orchestration";
@@ -62,6 +65,17 @@ namespace ChainRush.Editor
         const string ExperienceToTurnTokenRecipePath =
             AutobattleRoot + "/Production/ExperienceToTurnTokenRecipe.asset";
 
+        const string BoardPlaneShapePath = ShapesRoot + "/BoardPlane.asset";
+        const string SingleShapePath = ShapesRoot + "/Single.asset";
+        const string LineShapePath = ShapesRoot + "/Line.asset";
+        const string CornerShapePath = ShapesRoot + "/Corner.asset";
+        const string BoxShapePath = ShapesRoot + "/Box.asset";
+        const string ZigzagShapePath = ShapesRoot + "/Zigzag.asset";
+        const string SingleRulePath = ShapeRulesRoot + "/SingleRule.asset";
+        const string LineRulePath = ShapeRulesRoot + "/LineRule.asset";
+        const string CornerRulePath = ShapeRulesRoot + "/CornerRule.asset";
+        const string ZigzagRulePath = ShapeRulesRoot + "/ZigzagRule.asset";
+
         const string TurnTokenPath = SharedRoot + "/Economy/BoardTurnToken.asset";
         const string WaterUnitPath = SharedWaterRoot + "/WaterUnit.asset";
         const string PopulationProducerPath = BoardRoot + "/Economy/BoardPopulationProducer.asset";
@@ -86,6 +100,7 @@ namespace ChainRush.Editor
 
         const string RuntimeProfilePath = "Assets/Game/Runtime/Host/ChainRushGameRuntimeProfile.asset";
         const string EconomyDefinitionsInstallerPath = "Assets/Game/Runtime/Installers/ChainRushEconomyDefinitionsInstaller.asset";
+        const string EconomyRuntimeInstallerPath = "Assets/Game/Runtime/Installers/ChainRushEconomyRuntimeInstaller.asset";
         const string TaxonomyInstallerPath = "Assets/Game/Runtime/Installers/ChainRushTaxonomyRuntimeInstaller.asset";
         const string SkillsInstallerPath = "Assets/Game/Runtime/Installers/ChainRushGameplaySkillsInstaller.asset";
         const string FoundationInstallerPath = "Assets/Game/Runtime/Installers/ChainRushGameplayFoundationInstaller.asset";
@@ -120,6 +135,40 @@ namespace ChainRush.Editor
             BrainPath,
             OrchestrationPath,
         };
+
+        static readonly string[] SpatialShapeCreatedPaths =
+        {
+            BoardPlaneShapePath,
+            SingleShapePath,
+            LineShapePath,
+            CornerShapePath,
+            BoxShapePath,
+            ZigzagShapePath,
+            SingleRulePath,
+            LineRulePath,
+            CornerRulePath,
+            ZigzagRulePath,
+        };
+
+        sealed class BoardSpatialShapes
+        {
+            public SpatialShapeData BoardPlane;
+            public SpatialShapeData Single;
+            public SpatialShapeData Line;
+            public SpatialShapeData Corner;
+            public SpatialShapeData Box;
+            public SpatialShapeData Zigzag;
+
+            public List<SpatialShapeData> All => new List<SpatialShapeData>
+            {
+                BoardPlane,
+                Single,
+                Line,
+                Corner,
+                Box,
+                Zigzag,
+            };
+        }
 
         [MenuItem("ChainRush/Activities/Autobattle/Create Experience To Turn Token Recipe")]
         public static void CreateExperienceToTurnTokenRecipe()
@@ -181,18 +230,42 @@ namespace ChainRush.Editor
             }
         }
 
+        [MenuItem("ChainRush/Activities/Board/Create Spatial Shape Assets")]
+        public static void CreateSpatialShapeAssets()
+        {
+            EnsureSpatialShapeTargetsDoNotExist();
+            EnsureFolder(ShapeRulesRoot);
+
+            var createdPaths = new List<string>(SpatialShapeCreatedPaths.Length);
+            try
+            {
+                BoardSpatialShapes shapes = CreateBoardSpatialShapes(createdPaths);
+                AssetDatabase.SaveAssets();
+                AssetDatabase.Refresh();
+                Selection.activeObject = shapes.BoardPlane;
+                EditorGUIUtility.PingObject(shapes.BoardPlane);
+                Debug.Log("[ChainRush] Created Board spatial shape assets.");
+            }
+            catch
+            {
+                DeleteCreatedAssets(createdPaths);
+                throw;
+            }
+        }
+
         [MenuItem("ChainRush/Activities/Board/Create Population Planner Assets")]
         public static void CreatePopulationPlannerAssets()
         {
             EnsureAssetDoesNotExist(PlannerPath);
             CapabilityHostData water = LoadRequired<CapabilityHostData>(WaterPath);
+            BoardSpatialShapes shapes = LoadBoardSpatialShapes();
 
             EnsureFolder(PlannerRoot);
             try
             {
                 ProgressivePlannerData planner = ScriptableObject.CreateInstance<ProgressivePlannerData>();
                 planner.name = "BoardPlanner";
-                ConfigurePlanner(planner, water);
+                ConfigurePlanner(planner, water, shapes.Line, shapes.Single);
                 AssetDatabase.CreateAsset(planner, PlannerPath);
 
                 AssetDatabase.SaveAssets();
@@ -225,6 +298,7 @@ namespace ChainRush.Editor
             ProductionCatalogData mergeCatalog = LoadRequired<ProductionCatalogData>(MergeCatalogPath);
             FrameworkSkillData mergeSkill = LoadRequired<FrameworkSkillData>(MergeSkillPath);
             ProgressivePlannerData planner = LoadRequired<ProgressivePlannerData>(PlannerPath);
+            BoardSpatialShapes shapes = LoadBoardSpatialShapes();
             EconomyWalletData sharedWallet = LoadRequired<EconomyWalletData>(SharedWalletPath);
             TaxonomyTermData sharedWalletTag = LoadRequired<TaxonomyTermData>(SharedWalletTagPath);
 
@@ -364,6 +438,7 @@ namespace ChainRush.Editor
                     refreshRecipe,
                     boardHost,
                     boardCellTag,
+                    boardWalletTag,
                     createdPaths);
                 ActivityAgentDefinitionData productionAgent = CreateProductionAgent(
                     water,
@@ -414,7 +489,8 @@ namespace ChainRush.Editor
                     populationProducer,
                     populationObjective,
                     orchestration,
-                    boardCellTag);
+                    boardCellTag,
+                    shapes);
                 ConfigureRuntime(
                     turnToken,
                     waterUnit,
@@ -445,7 +521,8 @@ namespace ChainRush.Editor
                     mergeProduction,
                     mergeCatalog,
                     mergeSkill,
-                    boardActivity);
+                    boardActivity,
+                    shapes);
                 ConfigureBoardUIPrefab(boardHost, mergeSkill);
 
                 AssetDatabase.DeleteAsset(UpgradedAssetPath);
@@ -687,7 +764,9 @@ namespace ChainRush.Editor
 
         static void ConfigurePlanner(
             ProgressivePlannerData planner,
-            CapabilityHostData water)
+            CapabilityHostData water,
+            SpatialShapeData line,
+            SpatialShapeData single)
         {
             var serialized = new SerializedObject(planner);
             SerializedProperty patterns = serialized.FindProperty("patternRules");
@@ -695,13 +774,13 @@ namespace ChainRush.Editor
 
             ConfigurePattern(
                 patterns.GetArrayElementAtIndex(0),
-                ProgressivePlannerData.PatternType.Line,
+                line,
                 3L,
                 1L,
                 1L);
             ConfigurePattern(
                 patterns.GetArrayElementAtIndex(1),
-                ProgressivePlannerData.PatternType.Single,
+                single,
                 1L,
                 1L,
                 0L);
@@ -720,12 +799,12 @@ namespace ChainRush.Editor
 
         static void ConfigurePattern(
             SerializedProperty property,
-            ProgressivePlannerData.PatternType patternType,
+            SpatialShapeData shape,
             long size,
             long weight,
             long minimumCount)
         {
-            property.FindPropertyRelative("patternType").enumValueIndex = (int)patternType;
+            property.FindPropertyRelative("shape").objectReferenceValue = shape;
             property.FindPropertyRelative("size").managedReferenceValue =
                 new LongLinearProgressionData(size, 0L);
             property.FindPropertyRelative("weight").managedReferenceValue =
@@ -963,12 +1042,14 @@ namespace ChainRush.Editor
             ProductionRecipeData refreshRecipe,
             CapabilityHostData executorHost,
             TaxonomyTermData boardCellTag,
+            TaxonomyTermData boardWalletTag,
             List<string> createdPaths)
         {
             var agentData = new PopulationActivityOrchestrationAgentData();
             SetField(agentData, "planner", planner);
             SetField(agentData, "completionRecipe", refreshRecipe);
             SetField(agentData, "markerTags", new List<TaxonomyTermData> { boardCellTag });
+            SetField(agentData, "shapeWalletTags", new List<TaxonomyTermData> { boardWalletTag });
 
             var match = new ObjectiveConditionMarkerAvailability(
                 null,
@@ -1269,7 +1350,8 @@ namespace ChainRush.Editor
             CapabilityHostData populationProducer,
             ObjectiveTemplateData objective,
             ActivityOrchestrationConfigData orchestration,
-            TaxonomyTermData boardCellTag)
+            TaxonomyTermData boardCellTag,
+            BoardSpatialShapes shapes)
         {
             ActivityTeamWalletData sharedWalletData = default;
             SetStructField(ref sharedWalletData, "wallet", sharedWallet);
@@ -1286,20 +1368,29 @@ namespace ChainRush.Editor
 
             ActivityTeamWalletData boardWalletData = default;
             SetStructField(ref boardWalletData, "wallet", boardWallet);
+            var boardSeed = new List<ActivityWalletSeedEntryData>
+            {
+                new ActivityWalletSeedEntryData(
+                    new SeedEntry(boardHost, 1L, EconomyFormType.Token),
+                    ActivitySeedMaterializationType.NonSpatial,
+                    new List<TaxonomyTermData>(0)),
+                new ActivityWalletSeedEntryData(
+                    new SeedEntry(populationProducer, 1L, EconomyFormType.Token),
+                    ActivitySeedMaterializationType.NonSpatial,
+                    new List<TaxonomyTermData>(0)),
+            };
+            List<SpatialShapeData> availableShapes = shapes.All;
+            for (int i = 0; i < availableShapes.Count; i++)
+            {
+                boardSeed.Add(new ActivityWalletSeedEntryData(
+                    new SeedEntry(availableShapes[i], 1L, EconomyFormType.Stack),
+                    ActivitySeedMaterializationType.None,
+                    new List<TaxonomyTermData>(0)));
+            }
             SetStructField(
                 ref boardWalletData,
                 "seed",
-                new List<ActivityWalletSeedEntryData>
-                {
-                    new ActivityWalletSeedEntryData(
-                        new SeedEntry(boardHost, 1L, EconomyFormType.Token),
-                        ActivitySeedMaterializationType.NonSpatial,
-                        new List<TaxonomyTermData>(0)),
-                    new ActivityWalletSeedEntryData(
-                        new SeedEntry(populationProducer, 1L, EconomyFormType.Token),
-                        ActivitySeedMaterializationType.NonSpatial,
-                        new List<TaxonomyTermData>(0)),
-                });
+                boardSeed);
 
             ActivityTeamObjectiveData teamObjective = default;
             SetStructField(ref teamObjective, "template", objective);
@@ -1321,15 +1412,15 @@ namespace ChainRush.Editor
                 new List<ActivityFeatureData> { orchestration });
             activity.Teams[0] = team;
 
-            if (activity.Space == null
-                || activity.Space.MarkerProviders.Count != 1
-                || !(activity.Space.MarkerProviders[0] is SpatialGridProviderData grid))
-            {
-                throw new InvalidOperationException(
-                    "BoardActivity must contain exactly one SpatialGridProviderData.");
-            }
-
-            SetField(grid, "providerType", boardCellTag);
+            if (activity.Space == null)
+                throw new InvalidOperationException("BoardActivity requires an Activity space.");
+            SetField(
+                activity.Space,
+                "markerProviders",
+                new List<SpatialMarkerProviderData>
+                {
+                    CreateBoardShapeProvider(shapes.BoardPlane, boardCellTag),
+                });
             EditorUtility.SetDirty(activity);
         }
 
@@ -1363,7 +1454,8 @@ namespace ChainRush.Editor
             ProductionData mergeProduction,
             ProductionCatalogData mergeCatalog,
             FrameworkSkillData mergeSkill,
-            ActivityData boardActivity)
+            ActivityData boardActivity,
+            BoardSpatialShapes shapes)
         {
             EconomyDefinitionsInstallerData economyInstaller =
                 LoadRequired<EconomyDefinitionsInstallerData>(EconomyDefinitionsInstallerPath);
@@ -1384,12 +1476,24 @@ namespace ChainRush.Editor
                 mergeCatalog,
                 mergeSkill,
                 boardActivity);
+            List<SpatialShapeData> spatialShapes = shapes.All;
+            for (int i = 0; i < spatialShapes.Count; i++)
+                AddUnique(assets, spatialShapes[i]);
             SetField(economyInstaller, "assets", assets);
 
             var wallets = new List<EconomyWalletData>(GetField<List<EconomyWalletData>>(economyInstaller, "wallets"));
             AddUnique(wallets, boardWallet);
             SetField(economyInstaller, "wallets", wallets);
             EditorUtility.SetDirty(economyInstaller);
+
+            EconomyRuntimeInstallerData economyRuntime =
+                LoadRequired<EconomyRuntimeInstallerData>(EconomyRuntimeInstallerPath);
+            var domains = new List<EconomyDomainType>(
+                GetField<List<EconomyDomainType>>(economyRuntime, "domains"));
+            if (!domains.Contains(EconomyDomainType.Spatial))
+                domains.Add(EconomyDomainType.Spatial);
+            SetField(economyRuntime, "domains", domains);
+            EditorUtility.SetDirty(economyRuntime);
 
             TaxonomyRuntimeInstallerData taxonomyInstaller =
                 LoadRequired<TaxonomyRuntimeInstallerData>(TaxonomyInstallerPath);
@@ -1502,6 +1606,185 @@ namespace ChainRush.Editor
             {
                 PrefabUtility.UnloadPrefabContents(root);
             }
+        }
+
+        static BoardSpatialShapes CreateBoardSpatialShapes(List<string> createdPaths)
+        {
+            SpatialShapeRuleData singleRule = CreateSpatialShapeRule(
+                SingleRulePath,
+                "SingleRule",
+                new List<SpatialShapeRuleData.ContinuationPathData>(0),
+                createdPaths);
+            SpatialShapeRuleData lineRule = CreateSpatialShapeRule(
+                LineRulePath,
+                "LineRule",
+                new List<SpatialShapeRuleData.ContinuationPathData>
+                {
+                    new SpatialShapeRuleData.ContinuationPathData(
+                        Vector3Int.zero,
+                        new List<Vector3Int> { Vector3Int.right }),
+                },
+                createdPaths);
+            SpatialShapeRuleData cornerRule = CreateSpatialShapeRule(
+                CornerRulePath,
+                "CornerRule",
+                new List<SpatialShapeRuleData.ContinuationPathData>
+                {
+                    new SpatialShapeRuleData.ContinuationPathData(
+                        Vector3Int.zero,
+                        new List<Vector3Int> { Vector3Int.right }),
+                    new SpatialShapeRuleData.ContinuationPathData(
+                        Vector3Int.zero,
+                        new List<Vector3Int> { Vector3Int.forward }),
+                },
+                createdPaths);
+            SpatialShapeRuleData zigzagRule = CreateSpatialShapeRule(
+                ZigzagRulePath,
+                "ZigzagRule",
+                new List<SpatialShapeRuleData.ContinuationPathData>
+                {
+                    new SpatialShapeRuleData.ContinuationPathData(
+                        Vector3Int.zero,
+                        new List<Vector3Int>
+                        {
+                            Vector3Int.right,
+                            Vector3Int.forward,
+                            Vector3Int.right,
+                            Vector3Int.back,
+                        }),
+                },
+                createdPaths);
+
+            return new BoardSpatialShapes
+            {
+                BoardPlane = CreateSpatialShape(
+                    BoardPlaneShapePath,
+                    "BoardPlane",
+                    "chainrush.spatial.shape.board-plane",
+                    SpatialShapeType.Box,
+                    null,
+                    createdPaths),
+                Single = CreateSpatialShape(
+                    SingleShapePath,
+                    "Single",
+                    "chainrush.spatial.shape.single",
+                    SpatialShapeType.Custom,
+                    singleRule,
+                    createdPaths),
+                Line = CreateSpatialShape(
+                    LineShapePath,
+                    "Line",
+                    "chainrush.spatial.shape.line",
+                    SpatialShapeType.Custom,
+                    lineRule,
+                    createdPaths),
+                Corner = CreateSpatialShape(
+                    CornerShapePath,
+                    "Corner",
+                    "chainrush.spatial.shape.corner",
+                    SpatialShapeType.Custom,
+                    cornerRule,
+                    createdPaths),
+                Box = CreateSpatialShape(
+                    BoxShapePath,
+                    "Box",
+                    "chainrush.spatial.shape.box",
+                    SpatialShapeType.Box,
+                    null,
+                    createdPaths),
+                Zigzag = CreateSpatialShape(
+                    ZigzagShapePath,
+                    "Zigzag",
+                    "chainrush.spatial.shape.zigzag",
+                    SpatialShapeType.Custom,
+                    zigzagRule,
+                    createdPaths),
+            };
+        }
+
+        static SpatialShapeRuleData CreateSpatialShapeRule(
+            string path,
+            string name,
+            List<SpatialShapeRuleData.ContinuationPathData> continuationPaths,
+            List<string> createdPaths)
+        {
+            SpatialShapeRuleData rule = CreateAsset<SpatialShapeRuleData>(path, name, createdPaths);
+            SetField(rule, "requiredCells", new List<Vector3Int> { Vector3Int.zero });
+            SetField(
+                rule,
+                "continuationPaths",
+                continuationPaths ?? new List<SpatialShapeRuleData.ContinuationPathData>(0));
+            SetField(
+                rule,
+                "forbiddenRelations",
+                new List<SpatialShapeRuleData.ForbiddenRelationData>(0));
+            EditorUtility.SetDirty(rule);
+            return rule;
+        }
+
+        static SpatialShapeData CreateSpatialShape(
+            string path,
+            string name,
+            string id,
+            SpatialShapeType shapeType,
+            SpatialShapeRuleData customRule,
+            List<string> createdPaths)
+        {
+            SpatialShapeData shape = CreateEconomyAsset<SpatialShapeData>(
+                path,
+                name,
+                id,
+                EconomyOperation.Require
+                | EconomyOperation.Issue
+                | EconomyOperation.Consume
+                | EconomyOperation.Transfer
+                | EconomyOperation.Reserve
+                | EconomyOperation.DirectSet,
+                createdPaths);
+            SetField(shape, "shapeType", shapeType);
+            SetField(shape, "customRule", customRule);
+            EditorUtility.SetDirty(shape);
+            return shape;
+        }
+
+        static BoardSpatialShapes LoadBoardSpatialShapes()
+        {
+            return new BoardSpatialShapes
+            {
+                BoardPlane = LoadRequired<SpatialShapeData>(BoardPlaneShapePath),
+                Single = LoadRequired<SpatialShapeData>(SingleShapePath),
+                Line = LoadRequired<SpatialShapeData>(LineShapePath),
+                Corner = LoadRequired<SpatialShapeData>(CornerShapePath),
+                Box = LoadRequired<SpatialShapeData>(BoxShapePath),
+                Zigzag = LoadRequired<SpatialShapeData>(ZigzagShapePath),
+            };
+        }
+
+        static SpatialShapeProviderData CreateBoardShapeProvider(
+            SpatialShapeData boardPlane,
+            TaxonomyTermData boardCellTag)
+        {
+            var provider = new SpatialShapeProviderData();
+            SetField(provider, "providerType", boardCellTag);
+            SetField(
+                provider,
+                "usagePolicy",
+                new SpatialMarkerUsagePolicyData(
+                    SpatialMarkerSelectionType.Next,
+                    SpatialMarkerReusePolicyType.ExhaustBeforeReuse));
+            SetField(provider, "shape", boardPlane);
+            SetField(
+                provider,
+                "usage",
+                new SpatialShapeUsageData(
+                    SpatialShapeFillType.Inside,
+                    Vector3Int.zero,
+                    new Vector3Int(4, 1, 4),
+                    Vector3Int.zero,
+                    new Vector3Int(1000, 1, 1000),
+                    Vector3Int.zero));
+            SetField(provider, "markerTags", new List<TaxonomyTermData> { boardCellTag });
+            return provider;
         }
 
         static CapabilityHostData CreateCapabilityHost(
@@ -1833,6 +2116,19 @@ namespace ChainRush.Editor
         {
             for (int i = 0; i < VerticalSliceCreatedPaths.Length; i++)
                 EnsureAssetDoesNotExist(VerticalSliceCreatedPaths[i]);
+        }
+
+        static void EnsureSpatialShapeTargetsDoNotExist()
+        {
+            for (int i = 0; i < SpatialShapeCreatedPaths.Length; i++)
+                EnsureAssetDoesNotExist(SpatialShapeCreatedPaths[i]);
+        }
+
+        static void DeleteCreatedAssets(List<string> createdPaths)
+        {
+            for (int i = createdPaths.Count - 1; i >= 0; i--)
+                AssetDatabase.DeleteAsset(createdPaths[i]);
+            AssetDatabase.SaveAssets();
         }
 
         static void EnsureExistingVerticalSliceTargetsAreEmpty(

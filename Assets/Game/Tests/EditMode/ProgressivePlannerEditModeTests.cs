@@ -9,6 +9,7 @@ using Core.Activities;
 using Core.CapabilityHosts;
 using Core.Determinism;
 using Core.Economy;
+using Core.Economy.Modules.SpatialEconomyModule;
 using Core.Entities;
 using Core.Runtime;
 using Core.World;
@@ -32,7 +33,9 @@ namespace ChainRush.Tests.EditMode
         static readonly EntityId MarkerScopeEntityId = new EntityId(7105);
 
         readonly List<Object> _ownedObjects = new List<Object>();
+        readonly List<SpatialShapeData> _activeShapes = new List<SpatialShapeData>();
         bool _topologyOpen;
+        TopologyUpAxisType _upAxisType;
 
         [TearDown]
         public void TearDown()
@@ -48,6 +51,7 @@ namespace ChainRush.Tests.EditMode
             }
 
             _ownedObjects.Clear();
+            _activeShapes.Clear();
             _topologyOpen = false;
         }
 
@@ -59,8 +63,8 @@ namespace ChainRush.Tests.EditMode
             PopulationPlannerData planner = CreatePlanner(
                 new[]
                 {
-                    Pattern(PatternType.Line, 3L, 1L, 1L),
-                    Pattern(PatternType.Single, 1L, 1L, 0L),
+                    Pattern(ShapeFixtureType.Line, 3L, 1L, 1L),
+                    Pattern(ShapeFixtureType.Single, 1L, 1L, 0L),
                 },
                 new[] { Content(water, 1L, 0L, 1f) });
             PopulationPlanContext context = CreateContext(1L, CreateGridCells(4, 4));
@@ -68,12 +72,13 @@ namespace ChainRush.Tests.EditMode
             Assert.IsTrue(planner.TryBuild(context, out PopulationPlan first, out string firstFailure), firstFailure);
             Assert.IsTrue(planner.TryBuild(context, out PopulationPlan second, out string secondFailure), secondFailure);
 
-            Assert.AreEqual(first.Entries.Count, second.Entries.Count);
-            for (int i = 0; i < first.Entries.Count; i++)
+            Assert.AreEqual(first.Groups.Count, second.Groups.Count);
+            for (int i = 0; i < first.Groups.Count; i++)
             {
-                Assert.AreEqual(first.Entries[i].Marker, second.Entries[i].Marker);
-                Assert.AreSame(first.Entries[i].Asset, second.Entries[i].Asset);
-                Assert.AreEqual(first.Entries[i].FormType, second.Entries[i].FormType);
+                Assert.AreSame(first.Groups[i].Shape, second.Groups[i].Shape);
+                Assert.AreSame(first.Groups[i].Asset, second.Groups[i].Asset);
+                Assert.AreEqual(first.Groups[i].FormType, second.Groups[i].FormType);
+                CollectionAssert.AreEqual(first.Groups[i].Markers, second.Groups[i].Markers);
             }
         }
 
@@ -85,8 +90,8 @@ namespace ChainRush.Tests.EditMode
             PopulationPlannerData planner = CreatePlanner(
                 new[]
                 {
-                    Pattern(PatternType.Line, 3L, 1L, 1L, sizeStep: 1L),
-                    Pattern(PatternType.Single, 1L, 1L, 0L),
+                    Pattern(ShapeFixtureType.Line, 3L, 1L, 1L, sizeStep: 1L),
+                    Pattern(ShapeFixtureType.Single, 1L, 1L, 0L),
                 },
                 new[] { Content(water, 1L, 0L, 1f) });
             List<PopulationCellSnapshot> cells = CreateCells(
@@ -105,7 +110,7 @@ namespace ChainRush.Tests.EditMode
             OpenGridTopology(TopologyUpAxisType.Y);
             CapabilityHostData water = CreateHost("planner-water");
             PopulationPlannerData planner = CreatePlanner(
-                new[] { Pattern(PatternType.Single, 1L, 1L, 0L) },
+                new[] { Pattern(ShapeFixtureType.Single, 1L, 1L, 0L) },
                 new[] { Content(water, 1L, 0L, 1f) });
             List<PopulationCellSnapshot> cells = CreateGridCells(3, 2);
             cells[2] = Occupy(cells[2], water);
@@ -114,10 +119,11 @@ namespace ChainRush.Tests.EditMode
                 planner.TryBuild(CreateContext(1L, cells), out PopulationPlan plan, out string failure),
                 failure);
 
-            Assert.AreEqual(5, plan.Entries.Count);
-            Assert.AreEqual(5, plan.Entries.Select(entry => entry.Marker).Distinct().Count());
-            Assert.IsFalse(plan.Entries.Any(entry => entry.Marker == cells[2].Marker));
-            Assert.IsTrue(plan.Entries.All(entry => entry.FormType == EconomyFormType.Token));
+            List<SpatialMarkerRef> markers = FlattenMarkers(plan);
+            Assert.AreEqual(5, markers.Count);
+            Assert.AreEqual(5, markers.Distinct().Count());
+            Assert.IsFalse(markers.Contains(cells[2].Marker));
+            Assert.IsTrue(plan.Groups.All(group => group.FormType == EconomyFormType.Token));
         }
 
         [Test]
@@ -126,7 +132,7 @@ namespace ChainRush.Tests.EditMode
             OpenGridTopology(TopologyUpAxisType.Y);
             CapabilityHostData water = CreateHost("planner-water");
             PopulationPlannerData planner = CreatePlanner(
-                new[] { Pattern(PatternType.Single, 1L, 1L, 0L) },
+                new[] { Pattern(ShapeFixtureType.Single, 1L, 1L, 0L) },
                 new[] { Content(water, 1L, 0L, 1f) });
             List<PopulationCellSnapshot> cells = CreateGridCells(3, 2);
             cells[2] = MakeUnavailable(cells[2]);
@@ -135,18 +141,19 @@ namespace ChainRush.Tests.EditMode
                 planner.TryBuild(CreateContext(1L, cells), out PopulationPlan plan, out string failure),
                 failure);
 
-            Assert.AreEqual(5, plan.Entries.Count);
+            List<SpatialMarkerRef> markers = FlattenMarkers(plan);
+            Assert.AreEqual(5, markers.Count);
             Assert.IsFalse(cells[2].IsOccupied);
             Assert.IsFalse(cells[2].AvailableForPlacement);
-            Assert.IsFalse(plan.Entries.Any(entry => entry.Marker == cells[2].Marker));
+            Assert.IsFalse(markers.Contains(cells[2].Marker));
         }
 
-        [TestCase(PatternType.Single)]
-        [TestCase(PatternType.Line)]
-        [TestCase(PatternType.Corner)]
-        [TestCase(PatternType.Box)]
-        [TestCase(PatternType.Zigzag)]
-        public void PatternRule_AcceptsItsExactConnectedGeometry(PatternType patternType)
+        [TestCase(ShapeFixtureType.Single)]
+        [TestCase(ShapeFixtureType.Line)]
+        [TestCase(ShapeFixtureType.Corner)]
+        [TestCase(ShapeFixtureType.Box)]
+        [TestCase(ShapeFixtureType.Zigzag)]
+        public void PatternRule_AcceptsItsExactConnectedGeometry(ShapeFixtureType patternType)
         {
             OpenGridTopology(TopologyUpAxisType.Y);
             CapabilityHostData water = CreateHost("planner-water");
@@ -155,7 +162,7 @@ namespace ChainRush.Tests.EditMode
                 new[]
                 {
                     Pattern(patternType, coordinates.Length, 1L, 1L),
-                    Pattern(PatternType.Single, 1L, 1L, 0L),
+                    Pattern(ShapeFixtureType.Single, 1L, 1L, 0L),
                 },
                 new[] { Content(water, 1L, 0L, 1f) });
 
@@ -165,8 +172,8 @@ namespace ChainRush.Tests.EditMode
                     out PopulationPlan plan,
                     out string failure),
                 failure);
-            Assert.AreEqual(coordinates.Length, plan.Entries.Count);
-            Assert.IsTrue(plan.Entries.All(entry => ReferenceEquals(entry.Asset, water)));
+            Assert.AreEqual(coordinates.Length, FlattenMarkers(plan).Count);
+            Assert.IsTrue(plan.Groups.All(group => ReferenceEquals(group.Asset, water)));
         }
 
         [Test]
@@ -177,8 +184,8 @@ namespace ChainRush.Tests.EditMode
             PopulationPlannerData planner = CreatePlanner(
                 new[]
                 {
-                    Pattern(PatternType.Line, 3L, 1L, 1L),
-                    Pattern(PatternType.Single, 1L, 1L, 0L),
+                    Pattern(ShapeFixtureType.Line, 3L, 1L, 1L),
+                    Pattern(ShapeFixtureType.Single, 1L, 1L, 0L),
                 },
                 new[] { Content(water, 1L, 0L, 1f) });
             var disconnected = new[]
@@ -199,7 +206,7 @@ namespace ChainRush.Tests.EditMode
             CapabilityHostData water = CreateHost("planner-water");
             CapabilityHostData fire = CreateHost("planner-fire");
             PopulationPlannerData planner = CreatePlanner(
-                new[] { Pattern(PatternType.Single, 1L, 1L, 0L) },
+                new[] { Pattern(ShapeFixtureType.Single, 1L, 1L, 0L) },
                 new[]
                 {
                     Content(water, 1L, 0L, 0.5f),
@@ -212,8 +219,8 @@ namespace ChainRush.Tests.EditMode
                 planner.TryBuild(CreateContext(1L, cells), out PopulationPlan plan, out string failure),
                 failure);
 
-            Assert.AreEqual(1, plan.Entries.Count(entry => ReferenceEquals(entry.Asset, water)));
-            Assert.AreEqual(2, plan.Entries.Count(entry => ReferenceEquals(entry.Asset, fire)));
+            Assert.AreEqual(1, CountPlannedCells(plan, water));
+            Assert.AreEqual(2, CountPlannedCells(plan, fire));
         }
 
         [TestCase(TopologyUpAxisType.X)]
@@ -226,8 +233,8 @@ namespace ChainRush.Tests.EditMode
             PopulationPlannerData planner = CreatePlanner(
                 new[]
                 {
-                    Pattern(PatternType.Line, 3L, 1L, 1L),
-                    Pattern(PatternType.Single, 1L, 1L, 0L),
+                    Pattern(ShapeFixtureType.Line, 3L, 1L, 1L),
+                    Pattern(ShapeFixtureType.Single, 1L, 1L, 0L),
                 },
                 new[] { Content(water, 1L, 0L, 1f) });
             List<PopulationCellSnapshot> cells = CreateCells(
@@ -237,7 +244,9 @@ namespace ChainRush.Tests.EditMode
             Assert.IsTrue(
                 planner.TryBuild(CreateContext(1L, cells), out PopulationPlan plan, out string failure),
                 failure);
-            CollectionAssert.AreEqual(new[] { 0, 1, 2 }, plan.Entries.Select(entry => entry.Marker.LocalIndex));
+            CollectionAssert.AreEqual(
+                new[] { 0, 1, 2 },
+                FlattenMarkers(plan).Select(marker => marker.LocalIndex));
         }
 
         [Test]
@@ -246,15 +255,15 @@ namespace ChainRush.Tests.EditMode
             OpenGridTopology(TopologyUpAxisType.Y);
             CapabilityHostData water = CreateHost("planner-water");
             PopulationPlannerData missingSingle = CreatePlanner(
-                new[] { Pattern(PatternType.Line, 3L, 1L, 0L) },
+                new[] { Pattern(ShapeFixtureType.Line, 3L, 1L, 0L) },
                 new[] { Content(water, 1L, 0L, 1f) });
             PopulationPlannerData missingProgression = CreatePlanner(
-                new[] { new PatternSpec(PatternType.Single, null, Constant(1L), Constant(0L)) },
+                new[] { new PatternSpec(CreateShape(ShapeFixtureType.Single), null, Constant(1L), Constant(0L)) },
                 new[] { Content(water, 1L, 0L, 1f) });
             PopulationPlanContext context = CreateContext(1L, CreateGridCells(2, 2));
 
             Assert.IsFalse(missingSingle.TryBuild(context, out _, out string singleFailure));
-            StringAssert.Contains("active Single", singleFailure);
+            StringAssert.Contains("resolved size of one cell", singleFailure);
             Assert.IsFalse(missingProgression.TryBuild(context, out _, out string progressionFailure));
             StringAssert.Contains("is missing", progressionFailure);
         }
@@ -265,7 +274,7 @@ namespace ChainRush.Tests.EditMode
             OpenGridTopology(TopologyUpAxisType.Y);
             CapabilityHostData water = CreateHost("planner-water");
             PopulationPlannerData planner = CreatePlanner(
-                new[] { Pattern(PatternType.Single, 1L, 1L, 0L) },
+                new[] { Pattern(ShapeFixtureType.Single, 1L, 1L, 0L) },
                 new[] { Content(water, 1L, 0L, 1f) });
             var cells = new List<PopulationCellSnapshot>
             {
@@ -329,6 +338,7 @@ namespace ChainRush.Tests.EditMode
 
         void OpenGridTopology(TopologyUpAxisType upAxisType)
         {
+            _upAxisType = upAxisType;
             DeterminismService.StartSession(8191);
             InvokeTopology("StartSession", 8191);
             TopologyDefinitionData definition = ScriptableObject.CreateInstance<TopologyDefinitionData>();
@@ -354,10 +364,8 @@ namespace ChainRush.Tests.EditMode
             _ownedObjects.Add(planner);
 
             Type patternRuleType = plannerType.GetNestedType("PatternRule", BindingFlags.Public);
-            Type patternEnumType = plannerType.GetNestedType("PatternType", BindingFlags.Public);
             Type contentRuleType = plannerType.GetNestedType("ContentRule", BindingFlags.Public);
             Assert.NotNull(patternRuleType);
-            Assert.NotNull(patternEnumType);
             Assert.NotNull(contentRuleType);
 
             IList patternList = CreateList(patternRuleType);
@@ -365,7 +373,7 @@ namespace ChainRush.Tests.EditMode
             {
                 PatternSpec spec = patterns[i];
                 object rule = Activator.CreateInstance(patternRuleType);
-                SetField(rule, "patternType", Enum.ToObject(patternEnumType, (int)spec.Type));
+                SetField(rule, "shape", spec.Shape);
                 SetField(rule, "size", spec.Size);
                 SetField(rule, "weight", spec.Weight);
                 SetField(rule, "minimumCount", spec.MinimumCount);
@@ -403,17 +411,83 @@ namespace ChainRush.Tests.EditMode
         }
 
         PatternSpec Pattern(
-            PatternType type,
+            ShapeFixtureType type,
             long size,
             long weight,
             long minimumCount,
             long sizeStep = 0L)
         {
             return new PatternSpec(
-                type,
+                CreateShape(type),
                 Constant(size, sizeStep),
                 Constant(weight),
                 Constant(minimumCount));
+        }
+
+        SpatialShapeData CreateShape(ShapeFixtureType type)
+        {
+            SpatialShapeData shape = ScriptableObject.CreateInstance<SpatialShapeData>();
+            _ownedObjects.Add(shape);
+            _activeShapes.Add(shape);
+            SetField(shape, "id", string.Concat("planner-shape-", type.ToString(), "-", _activeShapes.Count.ToString()));
+            if (type == ShapeFixtureType.Box)
+            {
+                SetField(shape, "shapeType", SpatialShapeType.Box);
+                return shape;
+            }
+
+            SetField(shape, "shapeType", SpatialShapeType.Custom);
+            SpatialShapeRuleData rule = ScriptableObject.CreateInstance<SpatialShapeRuleData>();
+            _ownedObjects.Add(rule);
+            SetField(rule, "requiredCells", new List<Vector3Int> { Vector3Int.zero });
+            ResolvePlanarDirections(_upAxisType, out Vector3Int first, out Vector3Int second);
+            var paths = new List<SpatialShapeRuleData.ContinuationPathData>();
+            switch (type)
+            {
+                case ShapeFixtureType.Line:
+                    paths.Add(new SpatialShapeRuleData.ContinuationPathData(
+                        Vector3Int.zero,
+                        new List<Vector3Int> { first }));
+                    break;
+                case ShapeFixtureType.Corner:
+                    paths.Add(new SpatialShapeRuleData.ContinuationPathData(
+                        Vector3Int.zero,
+                        new List<Vector3Int> { first }));
+                    paths.Add(new SpatialShapeRuleData.ContinuationPathData(
+                        Vector3Int.zero,
+                        new List<Vector3Int> { second }));
+                    break;
+                case ShapeFixtureType.Zigzag:
+                    paths.Add(new SpatialShapeRuleData.ContinuationPathData(
+                        Vector3Int.zero,
+                        new List<Vector3Int> { first, second }));
+                    break;
+            }
+            SetField(rule, "continuationPaths", paths);
+            SetField(shape, "customRule", rule);
+            return shape;
+        }
+
+        static void ResolvePlanarDirections(
+            TopologyUpAxisType upAxisType,
+            out Vector3Int first,
+            out Vector3Int second)
+        {
+            switch (upAxisType)
+            {
+                case TopologyUpAxisType.X:
+                    first = Vector3Int.up;
+                    second = new Vector3Int(0, 0, 1);
+                    break;
+                case TopologyUpAxisType.Z:
+                    first = Vector3Int.right;
+                    second = Vector3Int.up;
+                    break;
+                default:
+                    first = Vector3Int.right;
+                    second = new Vector3Int(0, 0, 1);
+                    break;
+            }
         }
 
         ContentSpec Content(
@@ -429,15 +503,19 @@ namespace ChainRush.Tests.EditMode
                 guaranteedCellShare);
         }
 
-        static PopulationPlanContext CreateContext(long generation, IEnumerable<PopulationCellSnapshot> cells)
+        PopulationPlanContext CreateContext(long generation, IEnumerable<PopulationCellSnapshot> cells)
         {
+            var shapes = new List<SpatialShapeProjectionRecord>(_activeShapes.Count);
+            for (int i = 0; i < _activeShapes.Count; i++)
+                shapes.Add(new SpatialShapeProjectionRecord(_activeShapes[i], 1L));
             return new PopulationPlanContext(
                 ActivityId,
                 DomainId,
                 ParticipantEntityId,
                 PopulationEntityId,
                 generation,
-                cells);
+                cells,
+                shapes);
         }
 
         static List<PopulationCellSnapshot> CreateGridCells(
@@ -487,12 +565,61 @@ namespace ChainRush.Tests.EditMode
 
             return new PopulationCellSnapshot(
                 new SpatialMarkerRef(ActivityId, MarkerScopeEntityId, "planner-grid", index),
-                WorldPosition.Invalid,
+                ResolvePosition(topologyCoordinates, upAxisType),
                 topologyCoordinates,
+                Quaternion.identity,
+                ResolveCellFootprint(upAxisType),
                 true,
                 EntityId.Invalid,
                 null,
                 EconomyFormType.Token);
+        }
+
+        static WorldPosition ResolvePosition(
+            Vector3 topologyCoordinates,
+            TopologyUpAxisType upAxisType)
+        {
+            _ = upAxisType;
+            Assert.IsTrue(TopologyService.TryResolveTopologyPoint(
+                ActivityId,
+                Mathf.RoundToInt(topologyCoordinates.x),
+                Mathf.RoundToInt(topologyCoordinates.y),
+                Mathf.RoundToInt(topologyCoordinates.z),
+                out WorldPosition position,
+                out _));
+            return position;
+        }
+
+        static NavigationFootprint ResolveCellFootprint(TopologyUpAxisType upAxisType)
+        {
+            switch (upAxisType)
+            {
+                case TopologyUpAxisType.X:
+                    return new NavigationFootprint(0, 1000, 1000);
+                case TopologyUpAxisType.Z:
+                    return new NavigationFootprint(1000, 1000, 0);
+                default:
+                    return new NavigationFootprint(1000, 0, 1000);
+            }
+        }
+
+        static List<SpatialMarkerRef> FlattenMarkers(PopulationPlan plan)
+        {
+            var markers = new List<SpatialMarkerRef>();
+            for (int i = 0; i < plan.Groups.Count; i++)
+                markers.AddRange(plan.Groups[i].Markers);
+            return markers;
+        }
+
+        static int CountPlannedCells(PopulationPlan plan, CapabilityHostData asset)
+        {
+            int count = 0;
+            for (int i = 0; i < plan.Groups.Count; i++)
+            {
+                if (ReferenceEquals(plan.Groups[i].Asset, asset))
+                    count += plan.Groups[i].Markers.Count;
+            }
+            return count;
         }
 
         static PopulationCellSnapshot Occupy(
@@ -503,6 +630,8 @@ namespace ChainRush.Tests.EditMode
                 cell.Marker,
                 cell.Position,
                 cell.Coordinates,
+                cell.Rotation,
+                cell.CellFootprint,
                 false,
                 new EntityId(9000 + cell.Marker.LocalIndex),
                 asset,
@@ -515,31 +644,33 @@ namespace ChainRush.Tests.EditMode
                 cell.Marker,
                 cell.Position,
                 cell.Coordinates,
+                cell.Rotation,
+                cell.CellFootprint,
                 false,
                 EntityId.Invalid,
                 null,
                 EconomyFormType.Token);
         }
 
-        static Vector2Int[] CoordinatesFor(PatternType type)
+        static Vector2Int[] CoordinatesFor(ShapeFixtureType type)
         {
             switch (type)
             {
-                case PatternType.Line:
+                case ShapeFixtureType.Line:
                     return new[]
                     {
                         new Vector2Int(0, 0),
                         new Vector2Int(1, 0),
                         new Vector2Int(2, 0),
                     };
-                case PatternType.Corner:
+                case ShapeFixtureType.Corner:
                     return new[]
                     {
                         new Vector2Int(0, 0),
                         new Vector2Int(1, 0),
                         new Vector2Int(0, 1),
                     };
-                case PatternType.Box:
+                case ShapeFixtureType.Box:
                     return new[]
                     {
                         new Vector2Int(0, 0),
@@ -547,7 +678,7 @@ namespace ChainRush.Tests.EditMode
                         new Vector2Int(0, 1),
                         new Vector2Int(1, 1),
                     };
-                case PatternType.Zigzag:
+                case ShapeFixtureType.Zigzag:
                     return new[]
                     {
                         new Vector2Int(0, 0),
@@ -590,7 +721,7 @@ namespace ChainRush.Tests.EditMode
             field.SetValue(target, value);
         }
 
-        public enum PatternType
+        public enum ShapeFixtureType
         {
             Single = 0,
             Line = 1,
@@ -602,18 +733,18 @@ namespace ChainRush.Tests.EditMode
         readonly struct PatternSpec
         {
             public PatternSpec(
-                PatternType type,
+                SpatialShapeData shape,
                 LongProgressionData size,
                 LongProgressionData weight,
                 LongProgressionData minimumCount)
             {
-                Type = type;
+                Shape = shape;
                 Size = size;
                 Weight = weight;
                 MinimumCount = minimumCount;
             }
 
-            public PatternType Type { get; }
+            public SpatialShapeData Shape { get; }
             public LongProgressionData Size { get; }
             public LongProgressionData Weight { get; }
             public LongProgressionData MinimumCount { get; }

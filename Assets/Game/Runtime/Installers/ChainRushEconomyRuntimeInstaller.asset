@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: ChainRushEconomyRuntimeInstaller
   m_EditorClassIdentifier: Core::Core.GameRuntime.Installers.EconomyRuntimeInstallerData
   clearExistingModulesOnInstall: 1
-  domains: 0000000003000000090000000a0000000b0000000d0000000e0000000f000000
+  domains: 0000000003000000090000000a0000000b0000000d0000000e0000000f00000011000000

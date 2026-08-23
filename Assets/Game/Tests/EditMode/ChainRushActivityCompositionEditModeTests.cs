@@ -57,6 +57,20 @@ namespace ChainRush.Tests.EditMode
             AutobattleRoot + "/Space/AutobattleSpace.prefab";
         const string BoardWaterProjectionPath =
             BoardRoot + "/Projection/WaterBoardBase.prefab";
+        const string BoardPlaneShapePath =
+            BoardRoot + "/Space/Shapes/BoardPlane.asset";
+        const string SingleShapePath =
+            BoardRoot + "/Space/Shapes/Single.asset";
+        const string LineShapePath =
+            BoardRoot + "/Space/Shapes/Line.asset";
+        const string CornerShapePath =
+            BoardRoot + "/Space/Shapes/Corner.asset";
+        const string BoxShapePath =
+            BoardRoot + "/Space/Shapes/Box.asset";
+        const string ZigzagShapePath =
+            BoardRoot + "/Space/Shapes/Zigzag.asset";
+        const string SpawnAreaShapePath =
+            AutobattleRoot + "/Space/Shapes/SpawnArea.asset";
         const string RuntimeProfilePath =
             "Assets/Game/Runtime/Host/ChainRushGameRuntimeProfile.asset";
         const string ActivityDiplomacyModulePath =
@@ -230,16 +244,21 @@ namespace ChainRush.Tests.EditMode
 
             Assert.IsInstanceOf<ActivityUISpaceData>(board.Space);
             var boardSpace = (ActivityUISpaceData)board.Space;
+            SpatialShapeData boardPlane =
+                LoadRequiredAsset<SpatialShapeData>(BoardPlaneShapePath);
             Assert.NotNull(boardSpace.Presentation);
             Assert.AreEqual(1, boardSpace.MarkerProviders.Count);
-            Assert.IsInstanceOf<SpatialGridProviderData>(boardSpace.MarkerProviders[0]);
-            var boardGrid = (SpatialGridProviderData)boardSpace.MarkerProviders[0];
-            Assert.AreEqual(new Vector2Int(4, 4), boardGrid.Size);
-            Assert.AreEqual(Vector2Int.zero, boardGrid.Origin);
-            Assert.AreEqual(1, boardGrid.MarkerTags.Count);
-            Assert.AreEqual(BoardCellTagId, boardGrid.MarkerTags[0].Id);
+            Assert.IsInstanceOf<SpatialShapeProviderData>(boardSpace.MarkerProviders[0]);
+            var boardProvider = (SpatialShapeProviderData)boardSpace.MarkerProviders[0];
+            Assert.AreSame(boardPlane, boardProvider.Shape);
+            Assert.AreEqual(new Vector3Int(4, 1, 4), boardProvider.Usage.Size);
+            Assert.AreEqual(Vector3Int.zero, boardProvider.Usage.Position);
+            Assert.AreEqual(new Vector3Int(1000, 1, 1000), boardProvider.Usage.CellSize);
+            Assert.AreEqual(Vector3Int.zero, boardProvider.Usage.CellOffset);
+            Assert.AreEqual(1, boardProvider.MarkerTags.Count);
+            Assert.AreEqual(BoardCellTagId, boardProvider.MarkerTags[0].Id);
             Assert.AreEqual(1, boardSpace.ProjectionMarkerTags.Count);
-            Assert.AreSame(boardGrid.MarkerTags[0], boardSpace.ProjectionMarkerTags[0]);
+            Assert.AreSame(boardProvider.MarkerTags[0], boardSpace.ProjectionMarkerTags[0]);
             Assert.NotNull(boardSpace.ProjectionSettings);
             Assert.IsTrue(boardSpace.ProjectionSettings.IsValid);
         }
@@ -266,6 +285,18 @@ namespace ChainRush.Tests.EditMode
                 LoadRequiredAsset<TaxonomyTermData>(SharedWalletTagPath);
             TaxonomyTermData boardWalletTag =
                 LoadRequiredAsset<TaxonomyTermData>(BoardWalletTagPath);
+            SpatialShapeData boardPlane =
+                LoadRequiredAsset<SpatialShapeData>(BoardPlaneShapePath);
+            SpatialShapeData singleShape =
+                LoadRequiredAsset<SpatialShapeData>(SingleShapePath);
+            SpatialShapeData lineShape =
+                LoadRequiredAsset<SpatialShapeData>(LineShapePath);
+            SpatialShapeData cornerShape =
+                LoadRequiredAsset<SpatialShapeData>(CornerShapePath);
+            SpatialShapeData boxShape =
+                LoadRequiredAsset<SpatialShapeData>(BoxShapePath);
+            SpatialShapeData zigzagShape =
+                LoadRequiredAsset<SpatialShapeData>(ZigzagShapePath);
             ProductionRecipeData refreshRecipe =
                 LoadRequiredAsset<ProductionRecipeData>(BoardRefreshRecipePath);
             ProductionRecipeData waterBaseRecipe =
@@ -329,6 +360,41 @@ namespace ChainRush.Tests.EditMode
             Assert.NotNull(population.Planner);
             Assert.AreSame(refreshRecipe, population.CompletionRecipe);
             Assert.AreEqual(BoardCellTagId, population.MarkerTags.Single().Id);
+            Assert.AreSame(boardWalletTag, population.ShapeWalletTags.Single());
+            List<ActivityWalletSeedEntryData> shapeSeeds = board.Teams[0].Wallets
+                .SelectMany(wallet => wallet.Seed)
+                .Where(seed => seed.Seed.Asset is SpatialShapeData)
+                .ToList();
+            Assert.AreEqual(6, shapeSeeds.Count);
+            CollectionAssert.AreEquivalent(
+                new SpatialShapeData[]
+                {
+                    boardPlane,
+                    singleShape,
+                    lineShape,
+                    cornerShape,
+                    boxShape,
+                    zigzagShape,
+                },
+                shapeSeeds.Select(seed => seed.Seed.Asset).ToList());
+            Assert.IsTrue(shapeSeeds.All(seed =>
+                seed.Seed.FormType == EconomyFormType.Stack
+                && seed.Seed.Amount == 1L
+                && seed.MaterializationType == ActivitySeedMaterializationType.None));
+            var planner = new SerializedObject(population.Planner);
+            SerializedProperty patternRules = planner.FindProperty("patternRules");
+            Assert.NotNull(patternRules);
+            Assert.AreEqual(2, patternRules.arraySize);
+            Assert.AreSame(
+                lineShape,
+                patternRules.GetArrayElementAtIndex(0)
+                    .FindPropertyRelative("shape")
+                    .objectReferenceValue);
+            Assert.AreSame(
+                singleShape,
+                patternRules.GetArrayElementAtIndex(1)
+                    .FindPropertyRelative("shape")
+                    .objectReferenceValue);
             var producerCriterion = populationAgent.ExecutorSelectionCriteria
                 .OfType<MaterializedEntitySelectionCriterionData>()
                 .Single();
@@ -706,6 +772,20 @@ namespace ChainRush.Tests.EditMode
             };
             GameObject enemyProjection = LoadRequiredAsset<GameObject>(
                 AutobattleRoot + "/Projection/BugBrownSmall.prefab");
+            SpatialShapeData spawnArea =
+                LoadRequiredAsset<SpatialShapeData>(SpawnAreaShapePath);
+            GameObject playerSpawnerProjection =
+                LoadRequiredAsset<GameObject>(projectionPaths[0]);
+            GameObject enemySpawnerProjection =
+                LoadRequiredAsset<GameObject>(projectionPaths[1]);
+            AssertSpawnerShapeProvider(
+                playerSpawnerProjection,
+                spawnArea,
+                Vector3Int.zero);
+            AssertSpawnerShapeProvider(
+                enemySpawnerProjection,
+                spawnArea,
+                new Vector3Int(-6000, 0, 0));
             GameObject experienceProjection = LoadRequiredAsset<GameObject>(ExperienceDropPrefabPath);
             GameObject collectorProjection =
                 LoadRequiredAsset<GameObject>(ExperienceCollectorPrefabPath);
@@ -884,6 +964,12 @@ namespace ChainRush.Tests.EditMode
             DiplomacyRuntimeInstallerData diplomacyInstaller = profile.Installers
                 .OfType<DiplomacyRuntimeInstallerData>()
                 .Single();
+            EconomyRuntimeInstallerData economyRuntimeInstaller = profile.Installers
+                .OfType<EconomyRuntimeInstallerData>()
+                .Single();
+            CollectionAssert.Contains(
+                ReadField<List<EconomyDomainType>>(economyRuntimeInstaller, "domains"),
+                EconomyDomainType.Spatial);
             var serializedDiplomacyInstaller = new SerializedObject(diplomacyInstaller);
             SerializedProperty diplomacyModules =
                 serializedDiplomacyInstaller.FindProperty("modules");
@@ -1238,6 +1324,24 @@ namespace ChainRush.Tests.EditMode
             Assert.AreEqual(amount, output.Entry.Amount);
             Assert.AreEqual(1, output.WalletTags.Count);
             Assert.AreSame(walletTag, output.WalletTags[0]);
+        }
+
+        static void AssertSpawnerShapeProvider(
+            GameObject projection,
+            SpatialShapeData shape,
+            Vector3Int expectedPosition)
+        {
+            Assert.AreEqual(1, projection.GetComponents<SpatialMarkerProviderController>().Length);
+            SpatialShapeProviderController provider =
+                projection.GetComponent<SpatialShapeProviderController>();
+            Assert.NotNull(provider);
+            Assert.AreSame(shape, provider.Shape);
+            Assert.AreEqual(SpatialMarkerRefreshPolicyType.OnUse, provider.RefreshPolicyType);
+            Assert.AreEqual(new Vector3Int(7, 1, 21), provider.Usage.Size);
+            Assert.AreEqual(expectedPosition, provider.Usage.Position);
+            Assert.AreEqual(new Vector3Int(1000, 1, 1000), provider.Usage.CellSize);
+            Assert.AreEqual(Vector3Int.zero, provider.Usage.CellOffset);
+            Assert.AreEqual(SpatialMarkerReusePolicyType.ReuseAllowed, provider.UsagePolicy.ReusePolicyType);
         }
 
         static void AssertTopology(

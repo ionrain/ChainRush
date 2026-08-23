@@ -54,6 +54,13 @@ MonoBehaviour:
   - {fileID: 11400000, guid: bbd630ad6dac84b0b84db644d3fc067a, type: 2}
   - {fileID: 11400000, guid: bedc4c57926e341a48e21cb5399f9b34, type: 2}
   - {fileID: 11400000, guid: bc776416e57d149eb85f26000d5a3839, type: 2}
+  - {fileID: 11400000, guid: 2f65219a893574b4fa3c6f69edfbf800, type: 2}
+  - {fileID: 11400000, guid: 109337a645aed4c8aa505efd3b08e7bb, type: 2}
+  - {fileID: 11400000, guid: bb87873e608bd483d86718dbdd98536c, type: 2}
+  - {fileID: 11400000, guid: 15cb86222121346da9f5d4d39c02a6a2, type: 2}
+  - {fileID: 11400000, guid: 15a5a7f50b6bf4c5d8cdf0265a38f88f, type: 2}
+  - {fileID: 11400000, guid: 32428c36112fb448490849a0aec703fb, type: 2}
+  - {fileID: 11400000, guid: 1ffd8c4e50eea4ebd84c03248bcbb087, type: 2}
   wallets:
   - {fileID: 11400000, guid: 16da9107fd104467980bd94f53e0f9e1, type: 2}
   - {fileID: 11400000, guid: 5e352fdca6ae04c9b931f9fd2bd9519d, type: 2}

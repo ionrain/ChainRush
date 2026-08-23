@@ -13,66 +13,66 @@ MonoBehaviour:
   m_Name: BoardPlanner
   m_EditorClassIdentifier: Assembly-CSharp::ChainRush.Board.ProgressivePlannerData
   patternRules:
-  - patternType: 1
+  - shape: {fileID: 11400000, guid: bb87873e608bd483d86718dbdd98536c, type: 2}
     size:
-      rid: 2807516289745289315
+      rid: 2807516545835073666
     weight:
-      rid: 2807516289745289316
+      rid: 2807516545835073667
     minimumCount:
-      rid: 2807516289745289317
-  - patternType: 0
+      rid: 2807516545835073668
+  - shape: {fileID: 11400000, guid: 109337a645aed4c8aa505efd3b08e7bb, type: 2}
     size:
-      rid: 2807516289745289318
+      rid: 2807516545835073669
     weight:
-      rid: 2807516289745289319
+      rid: 2807516545835073670
     minimumCount:
-      rid: 2807516289745289320
+      rid: 2807516545835073671
   contentRules:
   - asset: {fileID: 11400000, guid: 1116b7b9d35a249b18741b1309a53cd1, type: 2}
     weight:
-      rid: 2807516289745289321
+      rid: 2807516545835073672
     minimumPatternCount:
-      rid: 2807516289745289322
+      rid: 2807516545835073673
     guaranteedCellShare: 1
   references:
     version: 2
     RefIds:
-    - rid: 2807516289745289315
+    - rid: 2807516545835073666
       type: {class: LongLinearProgressionData, ns: Core, asm: Core}
       data:
         baseValue: 3
         step: 0
-    - rid: 2807516289745289316
+    - rid: 2807516545835073667
       type: {class: LongLinearProgressionData, ns: Core, asm: Core}
       data:
         baseValue: 1
         step: 0
-    - rid: 2807516289745289317
+    - rid: 2807516545835073668
       type: {class: LongLinearProgressionData, ns: Core, asm: Core}
       data:
         baseValue: 1
         step: 0
-    - rid: 2807516289745289318
+    - rid: 2807516545835073669
       type: {class: LongLinearProgressionData, ns: Core, asm: Core}
       data:
         baseValue: 1
         step: 0
-    - rid: 2807516289745289319
+    - rid: 2807516545835073670
       type: {class: LongLinearProgressionData, ns: Core, asm: Core}
       data:
         baseValue: 1
         step: 0
-    - rid: 2807516289745289320
+    - rid: 2807516545835073671
       type: {class: LongLinearProgressionData, ns: Core, asm: Core}
       data:
         baseValue: 0
         step: 0
-    - rid: 2807516289745289321
+    - rid: 2807516545835073672
       type: {class: LongLinearProgressionData, ns: Core, asm: Core}
       data:
         baseValue: 1
         step: 0
-    - rid: 2807516289745289322
+    - rid: 2807516545835073673
       type: {class: LongLinearProgressionData, ns: Core, asm: Core}
       data:
         baseValue: 0

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85e184825c3ab43e5a64ac84b7ab1ba9, type: 3}
   m_Name: EnemyWaveRecipe
   m_EditorClassIdentifier: Core::Core.Production.Authoring.ProductionRecipeData
-  domainTypePreview: 0
+  domainTypePreview: 9
   id: chainrush.production.autobattle.enemy-wave.recipe
   title:
     m_TableReference:

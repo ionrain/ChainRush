@@ -84,6 +84,60 @@ MonoBehaviour:
         materializationType: 2
         materializationMarkerTags: []
         projectionTargetTags: []
+      - seed:
+          entry:
+            asset: {fileID: 11400000, guid: 2f65219a893574b4fa3c6f69edfbf800, type: 2}
+            formType: 0
+            amount: 1
+          runtimeTags: []
+        materializationType: 0
+        materializationMarkerTags: []
+        projectionTargetTags: []
+      - seed:
+          entry:
+            asset: {fileID: 11400000, guid: 109337a645aed4c8aa505efd3b08e7bb, type: 2}
+            formType: 0
+            amount: 1
+          runtimeTags: []
+        materializationType: 0
+        materializationMarkerTags: []
+        projectionTargetTags: []
+      - seed:
+          entry:
+            asset: {fileID: 11400000, guid: bb87873e608bd483d86718dbdd98536c, type: 2}
+            formType: 0
+            amount: 1
+          runtimeTags: []
+        materializationType: 0
+        materializationMarkerTags: []
+        projectionTargetTags: []
+      - seed:
+          entry:
+            asset: {fileID: 11400000, guid: 15cb86222121346da9f5d4d39c02a6a2, type: 2}
+            formType: 0
+            amount: 1
+          runtimeTags: []
+        materializationType: 0
+        materializationMarkerTags: []
+        projectionTargetTags: []
+      - seed:
+          entry:
+            asset: {fileID: 11400000, guid: 15a5a7f50b6bf4c5d8cdf0265a38f88f, type: 2}
+            formType: 0
+            amount: 1
+          runtimeTags: []
+        materializationType: 0
+        materializationMarkerTags: []
+        projectionTargetTags: []
+      - seed:
+          entry:
+            asset: {fileID: 11400000, guid: 32428c36112fb448490849a0aec703fb, type: 2}
+            formType: 0
+            amount: 1
+          runtimeTags: []
+        materializationType: 0
+        materializationMarkerTags: []
+        projectionTargetTags: []
     features:
     - {fileID: 11400000, guid: d1a497a418cfb4c2fa6e709b56630a3f, type: 2}
   activityContextTag: {fileID: 11400000, guid: 4ceffc5ec75d94a00b7a7b29748493b2, type: 2}
@@ -102,7 +156,7 @@ MonoBehaviour:
       type: {class: ActivityUISpaceData, ns: Core.Activities, asm: Core}
       data:
         markerProviders:
-        - rid: 2807516141394329706
+        - rid: 2807516545835073674
         presentation:
           rid: 2807516141394329705
         projectionMarkerTags:
@@ -115,14 +169,20 @@ MonoBehaviour:
       data:
         popupPrefab: {fileID: 400000, guid: 0642783c541484a2fb866b3ec16863c6, type: 3}
         isModal: 1
-    - rid: 2807516141394329706
-      type: {class: SpatialGridProviderData, ns: Core.World, asm: Core}
+    - rid: 2807516545835073674
+      type: {class: SpatialShapeProviderData, ns: Core.World, asm: Core}
       data:
         providerType: {fileID: 11400000, guid: a70bd9d1bf3b1457fbe47de7812a7fed, type: 2}
         usagePolicy:
           selectionType: 0
           reusePolicyType: 1
-        size: {x: 4, y: 4}
-        origin: {x: 0, y: 0}
+        shape: {fileID: 11400000, guid: 2f65219a893574b4fa3c6f69edfbf800, type: 2}
+        usage:
+          fillType: 0
+          position: {x: 0, y: 0, z: 0}
+          size: {x: 4, y: 1, z: 4}
+          rotation: {x: 0, y: 0, z: 0}
+          cellSize: {x: 1000, y: 1, z: 1000}
+          cellOffset: {x: 0, y: 0, z: 0}
         markerTags:
         - {fileID: 11400000, guid: a70bd9d1bf3b1457fbe47de7812a7fed, type: 2}

@@ -98,6 +98,8 @@ namespace ChainRush.Editor
         const string OrchestrationTaxonomyRoot = OrchestrationRoot + "/Taxonomy";
         const string ProductionRoot = AutobattleRoot + "/Production";
         const string ProjectionRoot = AutobattleRoot + "/Projection";
+        const string SpaceRoot = AutobattleRoot + "/Space";
+        const string ShapesRoot = SpaceRoot + "/Shapes";
         const string SkillsRoot = AutobattleRoot + "/Skills";
         const string TaxonomyRoot = AutobattleRoot + "/Taxonomy";
         const string UIRoot = AutobattleRoot + "/UI";
@@ -211,6 +213,7 @@ namespace ChainRush.Editor
         const string EnemyPrefabPath = ProjectionRoot + "/BugBrownSmall.prefab";
         const string ExperienceDropPrefabPath = ProjectionRoot + "/ExperienceDrop.prefab";
         const string ExperienceCollectorPrefabPath = ProjectionRoot + "/ExperienceCollector.prefab";
+        const string SpawnAreaShapePath = ShapesRoot + "/SpawnArea.asset";
         const string PlayerSpawnerPoolKey = "chainrush.autobattle.player-spawner";
         const string EnemySpawnerPoolKey = "chainrush.autobattle.enemy-spawner";
         const string WaterUnitPoolKey = "chainrush.autobattle.water-unit";
@@ -325,6 +328,7 @@ namespace ChainRush.Editor
             EnemyPrefabPath,
             ExperienceDropPrefabPath,
             ExperienceCollectorPrefabPath,
+            SpawnAreaShapePath,
             AlliedMaterialPath,
             EnemyMaterialPath,
             NeutralMaterialPath,
@@ -365,6 +369,7 @@ namespace ChainRush.Editor
             public FrameworkSkillData ApproachSkill;
             public FrameworkSkillData AttackSkill;
             public FrameworkSkillData CollectionSkill;
+            public SpatialShapeData SpawnArea;
             public AIBrainData AlliedCombatBrain;
             public AIBrainData EnemyCombatBrain;
             public AIBrainData CollectorBrain;
@@ -461,6 +466,7 @@ namespace ChainRush.Editor
                 CreateTaxonomy(content, createdPaths);
                 CreateWallets(content, createdPaths);
                 CreateRuntimeDefinitions(content, createdPaths);
+                CreateSpatialShapes(content, createdPaths);
                 CreateProduction(content, createdPaths);
                 CreateDrops(content, createdPaths);
                 CreateAI(content, createdPaths);
@@ -1446,16 +1452,18 @@ namespace ChainRush.Editor
                 PlayerSpawnerPrefabPath,
                 "PlayerSpawner",
                 content.AlliedSpawn,
-                new Vector3Int(4000, 0, 8000),
-                new Vector3Int(2000, 0, 0),
+                content.SpawnArea,
+                Vector3Int.zero,
+                new Vector3Int(7, 1, 21),
                 PlayerSpawnerPoolKey,
                 createdPaths);
             CreateSpawnerPrefab(
                 EnemySpawnerPrefabPath,
                 "EnemySpawner",
                 content.EnemySpawn,
-                new Vector3Int(4000, 0, 8000),
-                new Vector3Int(-2000, 0, 0),
+                content.SpawnArea,
+                new Vector3Int(-6000, 0, 0),
+                new Vector3Int(7, 1, 21),
                 EnemySpawnerPoolKey,
                 createdPaths);
             CreateSimpleProjectionPrefab(
@@ -1479,6 +1487,24 @@ namespace ChainRush.Editor
 
             CreateExperienceUIPrefab(content, createdPaths);
             ConfigureSpacePrefab(content);
+        }
+
+        static void CreateSpatialShapes(Content content, List<string> createdPaths)
+        {
+            content.SpawnArea = CreateEconomyAsset<SpatialShapeData>(
+                SpawnAreaShapePath,
+                "SpawnArea",
+                "chainrush.spatial.shape.spawn-area",
+                EconomyOperation.Require
+                | EconomyOperation.Issue
+                | EconomyOperation.Consume
+                | EconomyOperation.Transfer
+                | EconomyOperation.Reserve
+                | EconomyOperation.DirectSet,
+                createdPaths);
+            SetField(content.SpawnArea, "shapeType", SpatialShapeType.Box);
+            SetField<SpatialShapeRuleData>(content.SpawnArea, "customRule", null);
+            EditorUtility.SetDirty(content.SpawnArea);
         }
 
         static void ConfigureExistingAssets(
@@ -1668,7 +1694,8 @@ namespace ChainRush.Editor
                 content.EnemyProduction,
                 content.DropProduction,
                 content.WaterUnit,
-                content.Experience);
+                content.Experience,
+                content.SpawnArea);
             SetField(economyInstaller, "assets", assets);
             var wallets = new List<EconomyWalletData>(
                 GetField<List<EconomyWalletData>>(economyInstaller, "wallets"));
@@ -1689,7 +1716,8 @@ namespace ChainRush.Editor
                 domains,
                 EconomyDomainType.HostValue,
                 EconomyDomainType.AI,
-                EconomyDomainType.Movement);
+                EconomyDomainType.Movement,
+                EconomyDomainType.Spatial);
             SetField(economyRuntime, "domains", domains);
             EditorUtility.SetDirty(economyRuntime);
 
@@ -2769,8 +2797,9 @@ namespace ChainRush.Editor
             string path,
             string name,
             TaxonomyTermData providerType,
+            SpatialShapeData shape,
+            Vector3Int position,
             Vector3Int size,
-            Vector3Int offset,
             string poolKey,
             List<string> createdPaths)
         {
@@ -2778,25 +2807,21 @@ namespace ChainRush.Editor
             try
             {
                 ConfigureProjectionBinding(root, poolKey);
-                GeneratedMarkerProviderController provider =
-                    root.AddComponent<GeneratedMarkerProviderController>();
+                SpatialShapeProviderController provider =
+                    root.AddComponent<SpatialShapeProviderController>();
                 ConfigureProviderBase(
                     provider,
                     string.Concat(name.ToLowerInvariant(), "-spawn-provider"),
                     providerType,
                     SpatialMarkerReusePolicyType.ReuseAllowed);
-                var pattern = new SpatialMarkerPatternData();
-                SetField(pattern, "tags", new List<TaxonomyTermData> { providerType });
-                SetField(pattern, "refreshPolicyType", SpatialMarkerRefreshPolicyType.OnUse);
-                SetField(pattern, "count", 1);
-                SetField(pattern, "shapeType", SpatialMarkerPatternShapeType.Grid);
-                SetField(pattern, "boundaryType", SpatialMarkerPatternBoundaryType.Inside);
-                SetField(pattern, "minimumDistance", 0);
-                SetField(pattern, "size", size);
-                SetField(pattern, "offset", offset);
-                SetField(pattern, "rotationDegrees", Vector3.zero);
-                SetField(provider, "patterns", new List<SpatialMarkerPatternData> { pattern });
-                SetField<SpatialMarkerViewController>(provider, "markerViewPrefab", null);
+                SetField(provider, "refreshPolicyType", SpatialMarkerRefreshPolicyType.OnUse);
+                SetField(provider, "shape", shape);
+                SetField(
+                    provider,
+                    "usage",
+                    CreateSpawnAreaUsage(position, size));
+                SetField(provider, "markerTags", new List<TaxonomyTermData> { providerType });
+                SetField(provider, "drawGizmo", true);
 
                 SavePrefab(root, path, createdPaths);
             }
@@ -2804,6 +2829,19 @@ namespace ChainRush.Editor
             {
                 UnityEngine.Object.DestroyImmediate(root);
             }
+        }
+
+        static SpatialShapeUsageData CreateSpawnAreaUsage(
+            Vector3Int position,
+            Vector3Int size)
+        {
+            return new SpatialShapeUsageData(
+                SpatialShapeFillType.Inside,
+                position,
+                size,
+                Vector3Int.zero,
+                new Vector3Int(1000, 1, 1000),
+                Vector3Int.zero);
         }
 
         static void CreateSimpleProjectionPrefab(
@@ -3528,6 +3566,7 @@ namespace ChainRush.Editor
             EnsureFolder(OrchestrationTaxonomyRoot);
             EnsureFolder(ProductionRoot);
             EnsureFolder(ProjectionRoot);
+            EnsureFolder(ShapesRoot);
             EnsureFolder(SkillsRoot);
             EnsureFolder(TaxonomyRoot);
             EnsureFolder(UIRoot);

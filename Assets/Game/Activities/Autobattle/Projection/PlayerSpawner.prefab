@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4796992942970916923}
   - component: {fileID: 3129569822636427163}
-  - component: {fileID: 8825342738596575882}
+  - component: {fileID: 5755791578422388350}
   m_Layer: 0
   m_Name: PlayerSpawner
   m_TagString: Untagged
@@ -53,7 +53,7 @@ MonoBehaviour:
   onUnbound:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &8825342738596575882
+--- !u!114 &5755791578422388350
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -62,24 +62,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 6858691733481192598}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9e3e1a375262d490dbc37cd0dd0f25a2, type: 3}
+  m_Script: {fileID: 11500000, guid: f18b24255ff5f4f639f97a14c56d1d2a, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Core::Core.World.GeneratedMarkerProviderController
+  m_EditorClassIdentifier: Core::Core.World.SpatialShapeProviderController
   providerId: playerspawner-spawn-provider
   providerType: {fileID: 11400000, guid: 498ad0925a24645cba6ef1cfe6b35b4c, type: 2}
   usagePolicy:
     selectionType: 0
     reusePolicyType: 0
+  refreshPolicyType: 1
+  shape: {fileID: 11400000, guid: 1ffd8c4e50eea4ebd84c03248bcbb087, type: 2}
+  usage:
+    fillType: 0
+    position: {x: 0, y: 0, z: 0}
+    size: {x: 7, y: 1, z: 21}
+    rotation: {x: 0, y: 0, z: 0}
+    cellSize: {x: 1000, y: 1, z: 1000}
+    cellOffset: {x: 0, y: 0, z: 0}
+  markerTags:
+  - {fileID: 11400000, guid: 498ad0925a24645cba6ef1cfe6b35b4c, type: 2}
   drawGizmo: 1
-  patterns:
-  - tags:
-    - {fileID: 11400000, guid: 498ad0925a24645cba6ef1cfe6b35b4c, type: 2}
-    refreshPolicyType: 1
-    count: 1
-    shapeType: 3
-    boundaryType: 0
-    minimumDistance: 0
-    size: {x: 6000, y: 0, z: 20000}
-    offset: {x: 3000, y: 0, z: 10000}
-    rotationDegrees: {x: 0, y: 0, z: 0}
-  markerViewPrefab: {fileID: 0}

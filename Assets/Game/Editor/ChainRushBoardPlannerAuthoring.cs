@@ -819,10 +819,12 @@ namespace ChainRush.Editor
             TaxonomyTermData sharedWalletTag)
         {
             recipe.Inputs.Clear();
-            recipe.Inputs.Add(new ProductionInputData(new EconomyOperationData(
+            recipe.Inputs.Add(new ProductionInputData(
                 EconomyOperation.Consume,
-                new EconomyAssetAmountEntry(turnToken, 1L, EconomyFormType.Stack),
-                new List<TaxonomyTermData> { sharedWalletTag })));
+                turnToken,
+                EconomyFormType.Stack,
+                new List<TaxonomyTermData> { sharedWalletTag },
+                new LongFlatProgressionData(1L)));
             recipe.Outputs.Clear();
             EditorUtility.SetDirty(recipe);
         }
@@ -835,15 +837,17 @@ namespace ChainRush.Editor
         {
             recipe.Inputs.Clear();
             recipe.Inputs.Add(new ProductionInputData(
-                new EconomyOperationData(
-                    EconomyOperation.Consume,
-                    new EconomyAssetAmountEntry(experience, 1L, EconomyFormType.Stack),
-                    new List<TaxonomyTermData> { sharedWalletTag }),
+                EconomyOperation.Consume,
+                experience,
+                EconomyFormType.Stack,
+                new List<TaxonomyTermData> { sharedWalletTag },
                 new LongStepProgressionData(6L, 2L, 1L)));
             recipe.Outputs.Clear();
-            recipe.Outputs.Add(new ProductionOutputData(new EconomyOutputEntry(
-                new EconomyAssetAmountEntry(turnToken, 1L, EconomyFormType.Stack),
-                new List<TaxonomyTermData> { sharedWalletTag })));
+            recipe.Outputs.Add(new ProductionOutputData(
+                turnToken,
+                EconomyFormType.Stack,
+                new List<TaxonomyTermData> { sharedWalletTag },
+                new LongFlatProgressionData(1L)));
             EditorUtility.SetDirty(recipe);
         }
 
@@ -854,9 +858,11 @@ namespace ChainRush.Editor
         {
             recipe.Inputs.Clear();
             recipe.Outputs.Clear();
-            recipe.Outputs.Add(new ProductionOutputData(new EconomyOutputEntry(
-                new EconomyAssetAmountEntry(water, 1L, EconomyFormType.Token),
-                new List<TaxonomyTermData> { boardWalletTag })));
+            recipe.Outputs.Add(new ProductionOutputData(
+                water,
+                EconomyFormType.Token,
+                new List<TaxonomyTermData> { boardWalletTag },
+                new LongFlatProgressionData(1L)));
             EditorUtility.SetDirty(recipe);
         }
 
@@ -870,16 +876,20 @@ namespace ChainRush.Editor
             recipe.Inputs.Clear();
             for (int i = 0; i < 3; i++)
             {
-                recipe.Inputs.Add(new ProductionInputData(new EconomyOperationData(
+                recipe.Inputs.Add(new ProductionInputData(
                     EconomyOperation.Consume,
-                    new EconomyAssetAmountEntry(water, 1L, EconomyFormType.Token),
-                    new List<TaxonomyTermData> { boardWalletTag })));
+                    water,
+                    EconomyFormType.Token,
+                    new List<TaxonomyTermData> { boardWalletTag },
+                    new LongFlatProgressionData(1L)));
             }
 
             recipe.Outputs.Clear();
-            recipe.Outputs.Add(new ProductionOutputData(new EconomyOutputEntry(
-                new EconomyAssetAmountEntry(waterUnit, 1L, EconomyFormType.Token),
-                new List<TaxonomyTermData> { sharedWalletTag })));
+            recipe.Outputs.Add(new ProductionOutputData(
+                waterUnit,
+                EconomyFormType.Token,
+                new List<TaxonomyTermData> { sharedWalletTag },
+                new LongFlatProgressionData(1L)));
             EditorUtility.SetDirty(recipe);
         }
 

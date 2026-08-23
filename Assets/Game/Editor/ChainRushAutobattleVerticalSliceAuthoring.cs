@@ -932,13 +932,17 @@ namespace ChainRush.Editor
                 "chainrush.production.autobattle.water-unit-deployment.recipe",
                 EconomyOperation.Require | EconomyOperation.Issue,
                 createdPaths);
-            content.DeploymentRecipe.Inputs.Add(new ProductionInputData(new EconomyOperationData(
+            content.DeploymentRecipe.Inputs.Add(new ProductionInputData(
                 EconomyOperation.Consume,
-                new EconomyAssetAmountEntry(content.WaterUnit, 1L, EconomyFormType.Stack),
-                new List<TaxonomyTermData> { content.SharedWalletTag })));
-            content.DeploymentRecipe.Outputs.Add(new ProductionOutputData(new EconomyOutputEntry(
-                new EconomyAssetAmountEntry(content.WaterUnit, 1L, EconomyFormType.Token),
-                new List<TaxonomyTermData> { content.SharedWalletTag })));
+                content.WaterUnit,
+                EconomyFormType.Stack,
+                new List<TaxonomyTermData> { content.SharedWalletTag },
+                new LongFlatProgressionData(1L)));
+            content.DeploymentRecipe.Outputs.Add(new ProductionOutputData(
+                content.WaterUnit,
+                EconomyFormType.Token,
+                new List<TaxonomyTermData> { content.SharedWalletTag },
+                new LongFlatProgressionData(1L)));
 
             content.EnemyWaveRecipe = CreateEconomyAsset<ProductionRecipeData>(
                 EnemyWaveRecipePath,
@@ -947,9 +951,9 @@ namespace ChainRush.Editor
                 EconomyOperation.Require | EconomyOperation.Issue,
                 createdPaths);
             content.EnemyWaveRecipe.Outputs.Add(new ProductionOutputData(
-                new EconomyOutputEntry(
-                    new EconomyAssetAmountEntry(content.Enemy, 1L, EconomyFormType.Token),
-                    new List<TaxonomyTermData> { content.SharedWalletTag }),
+                content.Enemy,
+                EconomyFormType.Token,
+                new List<TaxonomyTermData> { content.SharedWalletTag },
                 new LongCappedProgressionData(new LongLinearProgressionData(2L, 1L), 20L)));
 
             content.DropRecipe = CreateEconomyAsset<ProductionRecipeData>(
@@ -958,9 +962,11 @@ namespace ChainRush.Editor
                 "chainrush.production.autobattle.experience-drop.recipe",
                 EconomyOperation.Require | EconomyOperation.Issue,
                 createdPaths);
-            content.DropRecipe.Outputs.Add(new ProductionOutputData(new EconomyOutputEntry(
-                new EconomyAssetAmountEntry(content.ExperienceDrop, 1L, EconomyFormType.Token),
-                new List<TaxonomyTermData> { content.UnitWalletTag })));
+            content.DropRecipe.Outputs.Add(new ProductionOutputData(
+                content.ExperienceDrop,
+                EconomyFormType.Token,
+                new List<TaxonomyTermData> { content.UnitWalletTag },
+                new LongFlatProgressionData(1L)));
 
             content.PlayerCatalog = CreateCatalog(
                 PlayerCatalogPath,
@@ -1606,9 +1612,11 @@ namespace ChainRush.Editor
             EditorUtility.SetDirty(boardActivity);
 
             boardMergeRecipe.Outputs.Clear();
-            boardMergeRecipe.Outputs.Add(new ProductionOutputData(new EconomyOutputEntry(
-                new EconomyAssetAmountEntry(content.WaterUnit, 1L, EconomyFormType.Stack),
-                new List<TaxonomyTermData> { content.SharedWalletTag })));
+            boardMergeRecipe.Outputs.Add(new ProductionOutputData(
+                content.WaterUnit,
+                EconomyFormType.Stack,
+                new List<TaxonomyTermData> { content.SharedWalletTag },
+                new LongFlatProgressionData(1L)));
             EditorUtility.SetDirty(boardMergeRecipe);
 
             ConfigureGameFlowRuntimeTags(content);
@@ -3502,8 +3510,8 @@ namespace ChainRush.Editor
             }
 
             if (boardMergeRecipe.Outputs.Count != 1
-                || boardMergeRecipe.Outputs[0].Output.Entry.Asset != content.WaterUnit
-                || boardMergeRecipe.Outputs[0].Output.Entry.FormType != EconomyFormType.Token)
+                || boardMergeRecipe.Outputs[0].Asset != content.WaterUnit
+                || boardMergeRecipe.Outputs[0].FormType != EconomyFormType.Token)
             {
                 throw new InvalidOperationException(
                     "BoardMergeRecipe is not in the expected Token-output state.");

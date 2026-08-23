@@ -40,19 +40,18 @@ MonoBehaviour:
   stackCapacity: 0
   inputs: []
   outputs:
-  - output:
-      entry:
-        asset: {fileID: 11400000, guid: 1116b7b9d35a249b18741b1309a53cd1, type: 2}
-        formType: 1
-        amount: 1
-      walletTags:
-      - {fileID: 11400000, guid: 9cbb4f47a974c42cfa008dda55386302, type: 2}
+  - asset: {fileID: 11400000, guid: 1116b7b9d35a249b18741b1309a53cd1, type: 2}
+    formType: 1
+    walletTags:
+    - {fileID: 11400000, guid: 9cbb4f47a974c42cfa008dda55386302, type: 2}
     amountProgression:
-      rid: -2
+      rid: 2807516619138138116
   limitMode: 0
   capValue: 0
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
+    - rid: 2807516619138138116
+      type: {class: LongFlatProgressionData, ns: Core, asm: Core}
+      data:
+        value: 1

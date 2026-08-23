@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85e184825c3ab43e5a64ac84b7ab1ba9, type: 3}
   m_Name: ExperienceDropRecipe
   m_EditorClassIdentifier: Core::Core.Production.Authoring.ProductionRecipeData
-  domainTypePreview: 0
+  domainTypePreview: 9
   id: chainrush.production.autobattle.experience-drop.recipe
   title:
     m_TableReference:
@@ -40,19 +40,18 @@ MonoBehaviour:
   stackCapacity: 0
   inputs: []
   outputs:
-  - output:
-      entry:
-        asset: {fileID: 11400000, guid: 94e3b4832778d4295ac300f3bb307913, type: 2}
-        formType: 1
-        amount: 1
-      walletTags:
-      - {fileID: 11400000, guid: 16f36e1393e474476a6758136c43b6c2, type: 2}
+  - asset: {fileID: 11400000, guid: 94e3b4832778d4295ac300f3bb307913, type: 2}
+    formType: 1
+    walletTags:
+    - {fileID: 11400000, guid: 16f36e1393e474476a6758136c43b6c2, type: 2}
     amountProgression:
-      rid: -2
+      rid: 2807516619138138124
   limitMode: 0
   capValue: 0
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
+    - rid: 2807516619138138124
+      type: {class: LongFlatProgressionData, ns: Core, asm: Core}
+      data:
+        value: 1

@@ -410,7 +410,7 @@ namespace ChainRush.Tests.EditMode
 
             Assert.AreEqual(1, refreshRecipe.Inputs.Count);
             AssertEconomyOperation(
-                refreshRecipe.Inputs[0].Operation,
+                refreshRecipe.Inputs[0],
                 turnToken,
                 EconomyFormType.Stack,
                 1L,
@@ -420,7 +420,7 @@ namespace ChainRush.Tests.EditMode
             Assert.AreEqual(0, waterBaseRecipe.Inputs.Count);
             Assert.AreEqual(1, waterBaseRecipe.Outputs.Count);
             AssertEconomyOutput(
-                waterBaseRecipe.Outputs[0].Output,
+                waterBaseRecipe.Outputs[0],
                 waterBase,
                 EconomyFormType.Token,
                 1L,
@@ -431,7 +431,7 @@ namespace ChainRush.Tests.EditMode
             for (int inputIndex = 0; inputIndex < mergeRecipe.Inputs.Count; inputIndex++)
             {
                 AssertEconomyOperation(
-                    mergeRecipe.Inputs[inputIndex].Operation,
+                    mergeRecipe.Inputs[inputIndex],
                     waterBase,
                     EconomyFormType.Token,
                     1L,
@@ -440,7 +440,7 @@ namespace ChainRush.Tests.EditMode
 
             Assert.AreEqual(1, mergeRecipe.Outputs.Count);
             AssertEconomyOutput(
-                mergeRecipe.Outputs[0].Output,
+                mergeRecipe.Outputs[0],
                 waterUnit,
                 EconomyFormType.Stack,
                 1L,
@@ -492,10 +492,10 @@ namespace ChainRush.Tests.EditMode
             Assert.AreEqual(1, recipe.Inputs.Count);
             ProductionInputData input = recipe.Inputs[0];
             AssertEconomyOperation(
-                input.Operation,
+                input,
                 experience,
                 EconomyFormType.Stack,
-                1L,
+                6L,
                 sharedWalletTag);
             Assert.IsInstanceOf<LongStepProgressionData>(input.AmountProgression);
             var progression = (LongStepProgressionData)input.AmountProgression;
@@ -518,7 +518,7 @@ namespace ChainRush.Tests.EditMode
 
             Assert.AreEqual(1, recipe.Outputs.Count);
             AssertEconomyOutput(
-                recipe.Outputs[0].Output,
+                recipe.Outputs[0],
                 turnToken,
                 EconomyFormType.Stack,
                 1L,
@@ -611,22 +611,22 @@ namespace ChainRush.Tests.EditMode
 
             Assert.AreEqual(1, deployment.Inputs.Count);
             AssertEconomyOperation(
-                deployment.Inputs[0].Operation,
+                deployment.Inputs[0],
                 waterUnit,
                 EconomyFormType.Stack,
                 1L,
                 sharedWalletTag);
             Assert.AreEqual(1, deployment.Outputs.Count);
             AssertEconomyOutput(
-                deployment.Outputs[0].Output,
+                deployment.Outputs[0],
                 waterUnit,
                 EconomyFormType.Token,
                 1L,
                 sharedWalletTag);
 
             Assert.AreEqual(1, wave.Outputs.Count);
-            Assert.AreSame(enemy, wave.Outputs[0].Output.Entry.Asset);
-            Assert.AreEqual(EconomyFormType.Token, wave.Outputs[0].Output.Entry.FormType);
+            Assert.AreSame(enemy, wave.Outputs[0].Asset);
+            Assert.AreEqual(EconomyFormType.Token, wave.Outputs[0].FormType);
             Assert.IsInstanceOf<LongCappedProgressionData>(wave.Outputs[0].AmountProgression);
             var capped = (LongCappedProgressionData)wave.Outputs[0].AmountProgression;
             Assert.AreEqual(20L, capped.Maximum);
@@ -840,7 +840,7 @@ namespace ChainRush.Tests.EditMode
 
             Assert.AreEqual(1, merge.Outputs.Count);
             AssertEconomyOutput(
-                merge.Outputs[0].Output,
+                merge.Outputs[0],
                 waterUnit,
                 EconomyFormType.Stack,
                 1L,
@@ -1298,12 +1298,17 @@ namespace ChainRush.Tests.EditMode
         }
 
         static void AssertEconomyOperation(
-            Core.Economy.Authoring.EconomyOperationData operation,
+            ProductionInputData input,
             EconomyAssetData asset,
             EconomyFormType formType,
             long amount,
             TaxonomyTermData walletTag)
         {
+            Assert.NotNull(input.AmountProgression);
+            Assert.IsTrue(input.TryResolve(
+                1L,
+                out Core.Economy.Authoring.EconomyOperationData operation,
+                out string failure), failure);
             Assert.AreEqual(EconomyOperation.Consume, operation.Operation);
             Assert.AreSame(asset, operation.Asset);
             Assert.AreEqual(formType, operation.FormType);
@@ -1313,12 +1318,17 @@ namespace ChainRush.Tests.EditMode
         }
 
         static void AssertEconomyOutput(
-            EconomyOutputEntry output,
+            ProductionOutputData authoredOutput,
             EconomyAssetData asset,
             EconomyFormType formType,
             long amount,
             TaxonomyTermData walletTag)
         {
+            Assert.NotNull(authoredOutput.AmountProgression);
+            Assert.IsTrue(authoredOutput.TryResolve(
+                1L,
+                out EconomyOutputEntry output,
+                out string failure), failure);
             Assert.AreSame(asset, output.Entry.Asset);
             Assert.AreEqual(formType, output.Entry.FormType);
             Assert.AreEqual(amount, output.Entry.Amount);

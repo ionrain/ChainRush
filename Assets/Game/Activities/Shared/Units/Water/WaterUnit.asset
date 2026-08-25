@@ -38,6 +38,7 @@ MonoBehaviour:
   tags:
   - {fileID: 11400000, guid: 2231ac3b695cc4d49895685ed991ab34, type: 2}
   - {fileID: 11400000, guid: dcfabdb6edfc6474497f945d0a6a025c, type: 2}
+  - {fileID: 11400000, guid: 35dd5fcbdbbc2499991c0dfcbff2a397, type: 2}
   slotFootprint: 1
   stackCapacity: 0
   capabilities:

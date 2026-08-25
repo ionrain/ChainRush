@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9969bb010093e43c6993c07d9c072f75, type: 3}
   m_Name: PlayerSpawner
   m_EditorClassIdentifier: Core::Core.CapabilityHosts.CapabilityHostData
-  domainTypePreview: 0
+  domainTypePreview: 3
   id: chainrush.autobattle.player-spawner
   title:
     m_TableReference:
@@ -37,6 +37,7 @@ MonoBehaviour:
   allowedOperations: 31
   tags:
   - {fileID: 11400000, guid: 21dd0e09a873844fb9f21d3ce7d47a2a, type: 2}
+  - {fileID: 11400000, guid: 16c5f9df2fe1845909ebb58747ac47c9, type: 2}
   slotFootprint: 1
   stackCapacity: 0
   capabilities:

@@ -44,6 +44,17 @@ namespace ChainRush.Tests.EditMode
         const string SharedRoot = ActivitiesRoot + "/Shared";
         const string AutobattleRoot = ActivitiesRoot + "/Autobattle";
         const string BoardRoot = ActivitiesRoot + "/Board";
+        const string OccupancyRoot = SharedRoot + "/Spatial/Occupancy";
+        const string OccupancyFamilyPath = OccupancyRoot + "/SpatialOccupancyFamily.asset";
+        const string MobileSolidPath = OccupancyRoot + "/MobileSolid.asset";
+        const string StaticSolidPath = OccupancyRoot + "/StaticSolid.asset";
+        const string PlacementObstaclePath = OccupancyRoot + "/PlacementObstacle.asset";
+        const string NonOccupyingPath = OccupancyRoot + "/NonOccupying.asset";
+        const string OccupancyMatrixPath = OccupancyRoot + "/SpatialOccupancyMatrix.asset";
+        const string FoundationInstallerPath =
+            "Assets/Game/Runtime/Installers/ChainRushGameplayFoundationInstaller.asset";
+        const string TaxonomyInstallerPath =
+            "Assets/Game/Runtime/Installers/ChainRushTaxonomyRuntimeInstaller.asset";
 
         const string AutobattleActivityPath =
             AutobattleRoot + "/Definition/AutobattleActivity.asset";
@@ -264,6 +275,72 @@ namespace ChainRush.Tests.EditMode
         }
 
         [Test]
+        public void SpatialOccupancyAssets_CentralizeAllActivityHostConflicts()
+        {
+            TaxonomyFamilyData family = LoadRequiredAsset<TaxonomyFamilyData>(OccupancyFamilyPath);
+            TaxonomyTermData mobileSolid = LoadRequiredAsset<TaxonomyTermData>(MobileSolidPath);
+            TaxonomyTermData staticSolid = LoadRequiredAsset<TaxonomyTermData>(StaticSolidPath);
+            TaxonomyTermData placementObstacle =
+                LoadRequiredAsset<TaxonomyTermData>(PlacementObstaclePath);
+            TaxonomyTermData nonOccupying = LoadRequiredAsset<TaxonomyTermData>(NonOccupyingPath);
+            SpatialOccupancyMatrixData matrix =
+                LoadRequiredAsset<SpatialOccupancyMatrixData>(OccupancyMatrixPath);
+
+            Assert.AreEqual("SpatialOccupancy", family.Id);
+            Assert.AreEqual(TaxonomyCardinality.Multiple, family.Cardinality);
+            AssertOccupancyTerm(mobileSolid, family, "MobileSolid");
+            AssertOccupancyTerm(staticSolid, family, "StaticSolid");
+            AssertOccupancyTerm(placementObstacle, family, "PlacementObstacle");
+            AssertOccupancyTerm(nonOccupying, family, "NonOccupying");
+
+            Assert.AreSame(family, matrix.OccupancyFamily);
+            Assert.AreEqual(4, matrix.Rows.Count);
+            AssertOccupancyRow(matrix.Rows[0], mobileSolid, mobileSolid, staticSolid);
+            AssertOccupancyRow(
+                matrix.Rows[1],
+                staticSolid,
+                mobileSolid,
+                staticSolid,
+                placementObstacle);
+            AssertOccupancyRow(
+                matrix.Rows[2],
+                placementObstacle,
+                staticSolid,
+                placementObstacle);
+            AssertOccupancyRow(matrix.Rows[3], nonOccupying);
+
+            TaxonomyRuntimeInstallerData taxonomyInstaller =
+                LoadRequiredAsset<TaxonomyRuntimeInstallerData>(TaxonomyInstallerPath);
+            CollectionAssert.Contains(
+                ReadObjectReferences<TaxonomyFamilyData>(taxonomyInstaller, "families"),
+                family);
+            List<TaxonomyTermData> installedTerms =
+                ReadObjectReferences<TaxonomyTermData>(taxonomyInstaller, "terms");
+            CollectionAssert.Contains(installedTerms, mobileSolid);
+            CollectionAssert.Contains(installedTerms, staticSolid);
+            CollectionAssert.Contains(installedTerms, placementObstacle);
+            CollectionAssert.Contains(installedTerms, nonOccupying);
+
+            GameplayFoundationInstallerData foundationInstaller =
+                LoadRequiredAsset<GameplayFoundationInstallerData>(FoundationInstallerPath);
+            var serializedInstaller = new SerializedObject(foundationInstaller);
+            SerializedProperty matrixProperty =
+                serializedInstaller.FindProperty("spatialOccupancyMatrix");
+            Assert.NotNull(matrixProperty);
+            Assert.AreSame(matrix, matrixProperty.objectReferenceValue);
+
+            AssertHostOccupancyTag(EnemyPath, family, mobileSolid);
+            AssertHostOccupancyTag(WaterUnitPath, family, mobileSolid);
+            AssertHostOccupancyTag(PlayerSpawnerPath, family, staticSolid);
+            AssertHostOccupancyTag(EnemySpawnerPath, family, staticSolid);
+            AssertHostOccupancyTag(ExperienceDropPath, family, placementObstacle);
+            AssertHostOccupancyTag(BoardWaterBasePath, family, placementObstacle);
+            AssertHostOccupancyTag(ExperienceCollectorPath, family, nonOccupying);
+            AssertHostOccupancyTag(BoardHostPath, family, nonOccupying);
+            AssertHostOccupancyTag(BoardPopulationProducerPath, family, nonOccupying);
+        }
+
+        [Test]
         public void BoardVerticalSlice_WiresObjectivePopulationAndMergeProduction()
         {
             ActivityData board = LoadRequiredAsset<ActivityData>(BoardActivityPath);
@@ -310,7 +387,10 @@ namespace ChainRush.Tests.EditMode
             SkillData mergeSkill = LoadRequiredAsset<SkillData>(BoardMergeSkillPath);
             ActivityOrchestrationConfigData orchestration =
                 LoadRequiredAsset<ActivityOrchestrationConfigData>(BoardOrchestrationPath);
-            TaxonomyTermData waterTag = waterBase.Tags.Single();
+            TaxonomyFamilyData occupancyFamily =
+                LoadRequiredAsset<TaxonomyFamilyData>(OccupancyFamilyPath);
+            TaxonomyTermData waterTag = waterBase.Tags.Single(
+                tag => tag != null && tag.Family != occupancyFamily);
             TaxonomyRuntimeInstallerData taxonomyInstaller =
                 LoadRequiredAsset<TaxonomyRuntimeInstallerData>(
                     "Assets/Game/Runtime/Installers/ChainRushTaxonomyRuntimeInstaller.asset");
@@ -338,7 +418,7 @@ namespace ChainRush.Tests.EditMode
             var success = objective.Root.SuccessConditions.Single()
                 as ObjectiveConditionMarkerAvailability;
             Assert.NotNull(success);
-            Assert.IsNull(success.EconomyAsset);
+            Assert.AreSame(waterBase, success.EconomyAsset);
             Assert.AreEqual(EconomyFormType.Token, success.EconomyFormType);
             Assert.AreEqual(CompareOperation.Equal, success.CompareOperation);
             Assert.AreEqual(0L, success.TargetValue);
@@ -1366,6 +1446,39 @@ namespace ChainRush.Tests.EditMode
             Assert.AreEqual(NavigationFrameType.Planar, topology.NavigationFrameType);
             Assert.AreEqual(NavigationAlgorithmType.StraightLine, topology.NavigationAlgorithmType);
             Assert.AreEqual(occupationPolicy, topology.CoordinateOccupationPolicy);
+        }
+
+        static void AssertOccupancyTerm(
+            TaxonomyTermData term,
+            TaxonomyFamilyData family,
+            string expectedId)
+        {
+            Assert.NotNull(term);
+            Assert.AreEqual(expectedId, term.Id);
+            Assert.AreSame(family, term.Family);
+        }
+
+        static void AssertOccupancyRow(
+            SpatialOccupancyMatrixRowData row,
+            TaxonomyTermData tag,
+            params TaxonomyTermData[] blockedTags)
+        {
+            Assert.NotNull(row);
+            Assert.AreSame(tag, row.Tag);
+            CollectionAssert.AreEqual(blockedTags, row.BlockedTags);
+        }
+
+        static void AssertHostOccupancyTag(
+            string path,
+            TaxonomyFamilyData family,
+            TaxonomyTermData expectedTag)
+        {
+            CapabilityHostBaseData host = LoadRequiredAsset<CapabilityHostBaseData>(path);
+            List<TaxonomyTermData> occupancyTags = host.Tags
+                .Where(tag => tag != null && tag.Family == family)
+                .ToList();
+            Assert.AreEqual(1, occupancyTags.Count, path);
+            Assert.AreSame(expectedTag, occupancyTags[0], path);
         }
 
         static ActivityFlowContainerData RequireActivityContainer(GameFlowTemplateData template)

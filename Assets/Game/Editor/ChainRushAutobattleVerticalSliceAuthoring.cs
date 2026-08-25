@@ -50,6 +50,13 @@ namespace ChainRush.Editor
         const string BoardRoot = "Assets/Game/Activities/Board";
         const string SharedRoot = "Assets/Game/Activities/Shared";
         const string RuntimeRoot = "Assets/Game/Runtime";
+        const string OccupancyRoot = SharedRoot + "/Spatial/Occupancy";
+        const string OccupancyFamilyPath = OccupancyRoot + "/SpatialOccupancyFamily.asset";
+        const string MobileSolidPath = OccupancyRoot + "/MobileSolid.asset";
+        const string StaticSolidPath = OccupancyRoot + "/StaticSolid.asset";
+        const string PlacementObstaclePath = OccupancyRoot + "/PlacementObstacle.asset";
+        const string NonOccupyingPath = OccupancyRoot + "/NonOccupying.asset";
+        const string OccupancyMatrixPath = OccupancyRoot + "/SpatialOccupancyMatrix.asset";
 
         const string ActivityPath = AutobattleRoot + "/Definition/AutobattleActivity.asset";
         const string TopologyPath = AutobattleRoot + "/Topology/AutobattleTopology.asset";
@@ -71,6 +78,9 @@ namespace ChainRush.Editor
             AutobattleRoot + "/Production/ExperienceToTurnTokenRecipe.asset";
 
         const string BoardActivityPath = BoardRoot + "/Definition/BoardActivity.asset";
+        const string BoardPopulationObjectivePath =
+            BoardRoot + "/Objectives/BoardPopulationObjective.asset";
+        const string BoardWaterBasePath = BoardRoot + "/Economy/WaterBoardBase.asset";
         const string BoardMergeRecipePath = BoardRoot + "/Production/BoardMergeRecipe.asset";
 
         const string EconomyInstallerPath =
@@ -79,6 +89,8 @@ namespace ChainRush.Editor
             RuntimeRoot + "/Installers/ChainRushEconomyRuntimeInstaller.asset";
         const string TaxonomyInstallerPath =
             RuntimeRoot + "/Installers/ChainRushTaxonomyRuntimeInstaller.asset";
+        const string FoundationInstallerPath =
+            RuntimeRoot + "/Installers/ChainRushGameplayFoundationInstaller.asset";
         const string SkillsInstallerPath =
             RuntimeRoot + "/Installers/ChainRushGameplaySkillsInstaller.asset";
         const string SkillsCatalogPath = BoardRoot + "/Skills/SkillAdapters.asset";
@@ -341,6 +353,31 @@ namespace ChainRush.Editor
             CapabilityHostDiplomacyPath,
         };
 
+        static readonly List<string> MobileSolidHostPaths = new List<string>
+        {
+            EnemyPath,
+            WaterUnitPath
+        };
+
+        static readonly List<string> StaticSolidHostPaths = new List<string>
+        {
+            PlayerSpawnerPath,
+            EnemySpawnerPath
+        };
+
+        static readonly List<string> PlacementObstacleHostPaths = new List<string>
+        {
+            ExperienceDropPath,
+            BoardWaterBasePath
+        };
+
+        static readonly List<string> NonOccupyingHostPaths = new List<string>
+        {
+            ExperienceCollectorPath,
+            BoardRoot + "/Economy/BoardHost.asset",
+            BoardRoot + "/Economy/BoardPopulationProducer.asset"
+        };
+
         sealed class Content
         {
             public EconomyWalletData SharedWallet;
@@ -487,6 +524,187 @@ namespace ChainRush.Editor
                 for (int i = createdPaths.Count - 1; i >= 0; i--)
                     AssetDatabase.DeleteAsset(createdPaths[i]);
                 AssetDatabase.SaveAssets();
+                throw;
+            }
+        }
+
+        [MenuItem("ChainRush/Spatial/Create Occupancy Matrix Assets")]
+        public static void CreateOccupancyMatrixAssets()
+        {
+            TaxonomyFamilyData family =
+                AssetDatabase.LoadAssetAtPath<TaxonomyFamilyData>(OccupancyFamilyPath);
+            TaxonomyTermData mobileSolid =
+                AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(MobileSolidPath);
+            TaxonomyTermData staticSolid =
+                AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(StaticSolidPath);
+            TaxonomyTermData placementObstacle =
+                AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(PlacementObstaclePath);
+            TaxonomyTermData nonOccupying =
+                AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(NonOccupyingPath);
+            SpatialOccupancyMatrixData matrix =
+                AssetDatabase.LoadAssetAtPath<SpatialOccupancyMatrixData>(OccupancyMatrixPath);
+
+            int existingCount = CountExisting(
+                family,
+                mobileSolid,
+                staticSolid,
+                placementObstacle,
+                nonOccupying,
+                matrix);
+            if (existingCount == 6)
+            {
+                ValidateOccupancyAuthoring(
+                    family,
+                    mobileSolid,
+                    staticSolid,
+                    placementObstacle,
+                    nonOccupying,
+                    matrix);
+                EnsureOccupancyConsumerWiring();
+                ValidateOccupancyConsumerWiring();
+                Debug.Log("[ChainRush] Spatial occupancy authoring is already complete and valid.");
+                return;
+            }
+
+            if (existingCount != 0)
+            {
+                throw new InvalidOperationException(
+                    "Spatial occupancy assets are partially authored. Refusing to repair or overwrite them.");
+            }
+
+            TaxonomyRuntimeInstallerData taxonomyInstaller =
+                LoadRequired<TaxonomyRuntimeInstallerData>(TaxonomyInstallerPath);
+            GameplayFoundationInstallerData foundationInstaller =
+                LoadRequired<GameplayFoundationInstallerData>(FoundationInstallerPath);
+            EnsureOccupancyInstallerState(taxonomyInstaller, foundationInstaller);
+            EnsureOccupancyIdentityAvailable();
+            EnsureOccupancyHostPlanMatchesAssets();
+
+            TaxonomyFamilyData[] originalFamilies =
+                GetField<TaxonomyFamilyData[]>(taxonomyInstaller, "families")
+                ?? new TaxonomyFamilyData[0];
+            TaxonomyTermData[] originalTerms =
+                GetField<TaxonomyTermData[]>(taxonomyInstaller, "terms")
+                ?? new TaxonomyTermData[0];
+            SpatialOccupancyMatrixData originalMatrix =
+                GetField<SpatialOccupancyMatrixData>(foundationInstaller, "spatialOccupancyMatrix");
+            Dictionary<CapabilityHostBaseData, List<TaxonomyTermData>> originalTags =
+                CaptureOccupancyHostTags();
+            var createdPaths = new List<string>(6);
+            bool occupancyFolderExisted = AssetDatabase.IsValidFolder(OccupancyRoot);
+
+            try
+            {
+                EnsureFolder(OccupancyRoot);
+                family = CreateAsset<TaxonomyFamilyData>(
+                    OccupancyFamilyPath,
+                    "SpatialOccupancyFamily",
+                    createdPaths);
+                SetField(family, "id", "SpatialOccupancy");
+                SetField(family, "displayName", "Spatial Occupancy");
+                SetField(family, "cardinality", TaxonomyCardinality.Multiple);
+                EditorUtility.SetDirty(family);
+                mobileSolid = CreateOccupancyTerm(
+                    "MobileSolid",
+                    0,
+                    family,
+                    MobileSolidPath,
+                    createdPaths);
+                staticSolid = CreateOccupancyTerm(
+                    "StaticSolid",
+                    1,
+                    family,
+                    StaticSolidPath,
+                    createdPaths);
+                placementObstacle = CreateOccupancyTerm(
+                    "PlacementObstacle",
+                    2,
+                    family,
+                    PlacementObstaclePath,
+                    createdPaths);
+                nonOccupying = CreateOccupancyTerm(
+                    "NonOccupying",
+                    3,
+                    family,
+                    NonOccupyingPath,
+                    createdPaths);
+
+                matrix = CreateAsset<SpatialOccupancyMatrixData>(
+                    OccupancyMatrixPath,
+                    "SpatialOccupancyMatrix",
+                    createdPaths);
+                SetField(matrix, "occupancyFamily", family);
+                SetField(
+                    matrix,
+                    "rows",
+                    new List<SpatialOccupancyMatrixRowData>
+                    {
+                        new SpatialOccupancyMatrixRowData(
+                            mobileSolid,
+                            new List<TaxonomyTermData> { mobileSolid, staticSolid }),
+                        new SpatialOccupancyMatrixRowData(
+                            staticSolid,
+                            new List<TaxonomyTermData>
+                            {
+                                mobileSolid,
+                                staticSolid,
+                                placementObstacle
+                            }),
+                        new SpatialOccupancyMatrixRowData(
+                            placementObstacle,
+                            new List<TaxonomyTermData> { staticSolid, placementObstacle }),
+                        new SpatialOccupancyMatrixRowData(
+                            nonOccupying,
+                            new List<TaxonomyTermData>(0))
+                    });
+                EditorUtility.SetDirty(matrix);
+
+                var families = new List<TaxonomyFamilyData>(originalFamilies);
+                families.Add(family);
+                SetField(taxonomyInstaller, "families", families.ToArray());
+                var terms = new List<TaxonomyTermData>(originalTerms);
+                terms.Add(mobileSolid);
+                terms.Add(staticSolid);
+                terms.Add(placementObstacle);
+                terms.Add(nonOccupying);
+                SetField(taxonomyInstaller, "terms", terms.ToArray());
+                EditorUtility.SetDirty(taxonomyInstaller);
+
+                SetField(foundationInstaller, "spatialOccupancyMatrix", matrix);
+                EditorUtility.SetDirty(foundationInstaller);
+
+                AssignOccupancyTag(MobileSolidHostPaths, mobileSolid);
+                AssignOccupancyTag(StaticSolidHostPaths, staticSolid);
+                AssignOccupancyTag(PlacementObstacleHostPaths, placementObstacle);
+                AssignOccupancyTag(NonOccupyingHostPaths, nonOccupying);
+
+                AssetDatabase.SaveAssets();
+                AssetDatabase.Refresh();
+                ValidateOccupancyAuthoring(
+                    family,
+                    mobileSolid,
+                    staticSolid,
+                    placementObstacle,
+                    nonOccupying,
+                    matrix);
+                EnsureOccupancyConsumerWiring();
+                ValidateOccupancyConsumerWiring();
+                Debug.Log("[ChainRush] Spatial occupancy assets were created and wired.");
+            }
+            catch
+            {
+                SetField(taxonomyInstaller, "families", originalFamilies);
+                SetField(taxonomyInstaller, "terms", originalTerms);
+                EditorUtility.SetDirty(taxonomyInstaller);
+                SetField(foundationInstaller, "spatialOccupancyMatrix", originalMatrix);
+                EditorUtility.SetDirty(foundationInstaller);
+                RestoreOccupancyHostTags(originalTags);
+                for (int i = createdPaths.Count - 1; i >= 0; i--)
+                    AssetDatabase.DeleteAsset(createdPaths[i]);
+                if (!occupancyFolderExisted && AssetDatabase.IsValidFolder(OccupancyRoot))
+                    AssetDatabase.DeleteAsset(OccupancyRoot);
+                AssetDatabase.SaveAssets();
+                AssetDatabase.Refresh();
                 throw;
             }
         }
@@ -3413,6 +3631,380 @@ namespace ChainRush.Editor
             EditorUtility.SetDirty(term);
             content.Terms.Add(term);
             return term;
+        }
+
+        static TaxonomyTermData CreateOccupancyTerm(
+            string id,
+            int sortOrder,
+            TaxonomyFamilyData family,
+            string path,
+            List<string> createdPaths)
+        {
+            TaxonomyTermData term = CreateAsset<TaxonomyTermData>(path, id, createdPaths);
+            SetField(term, "id", id);
+            SetField(term, "displayName", id);
+            SetField(term, "family", family);
+            SetField(term, "sortOrder", sortOrder);
+            EditorUtility.SetDirty(term);
+            return term;
+        }
+
+        static void EnsureOccupancyInstallerState(
+            TaxonomyRuntimeInstallerData taxonomyInstaller,
+            GameplayFoundationInstallerData foundationInstaller)
+        {
+            TaxonomyFamilyData[] families =
+                GetField<TaxonomyFamilyData[]>(taxonomyInstaller, "families")
+                ?? new TaxonomyFamilyData[0];
+            for (int i = 0; i < families.Length; i++)
+            {
+                TaxonomyFamilyData family = families[i];
+                if (family != null && family.Id == "SpatialOccupancy")
+                {
+                    throw new InvalidOperationException(
+                        "SpatialOccupancy taxonomy family is already registered.");
+                }
+            }
+
+            var ids = new HashSet<string>(StringComparer.Ordinal)
+            {
+                "MobileSolid",
+                "StaticSolid",
+                "PlacementObstacle",
+                "NonOccupying"
+            };
+            TaxonomyTermData[] terms =
+                GetField<TaxonomyTermData[]>(taxonomyInstaller, "terms")
+                ?? new TaxonomyTermData[0];
+            for (int i = 0; i < terms.Length; i++)
+            {
+                TaxonomyTermData term = terms[i];
+                if (term != null && ids.Contains(term.Id))
+                {
+                    throw new InvalidOperationException(
+                        $"Spatial occupancy taxonomy term '{term.Id}' is already registered.");
+                }
+            }
+
+            if (GetField<SpatialOccupancyMatrixData>(
+                    foundationInstaller,
+                    "spatialOccupancyMatrix") != null)
+            {
+                throw new InvalidOperationException(
+                    "Gameplay foundation already references a spatial occupancy matrix.");
+            }
+        }
+
+        static void EnsureOccupancyIdentityAvailable()
+        {
+            string[] familyGuids = AssetDatabase.FindAssets("t:TaxonomyFamilyData");
+            for (int i = 0; i < familyGuids.Length; i++)
+            {
+                TaxonomyFamilyData family = AssetDatabase.LoadAssetAtPath<TaxonomyFamilyData>(
+                    AssetDatabase.GUIDToAssetPath(familyGuids[i]));
+                if (family != null && family.Id == "SpatialOccupancy")
+                {
+                    throw new InvalidOperationException(
+                        "Taxonomy family id 'SpatialOccupancy' already exists.");
+                }
+            }
+
+            var ids = new HashSet<string>(StringComparer.Ordinal)
+            {
+                "MobileSolid",
+                "StaticSolid",
+                "PlacementObstacle",
+                "NonOccupying"
+            };
+            string[] termGuids = AssetDatabase.FindAssets("t:TaxonomyTermData");
+            for (int i = 0; i < termGuids.Length; i++)
+            {
+                TaxonomyTermData term = AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(
+                    AssetDatabase.GUIDToAssetPath(termGuids[i]));
+                if (term != null && ids.Contains(term.Id))
+                    throw new InvalidOperationException($"Taxonomy term id '{term.Id}' already exists.");
+            }
+        }
+
+        static void EnsureOccupancyHostPlanMatchesAssets()
+        {
+            var expected = new HashSet<string>(StringComparer.Ordinal);
+            AddHostPaths(expected, MobileSolidHostPaths);
+            AddHostPaths(expected, StaticSolidHostPaths);
+            AddHostPaths(expected, PlacementObstacleHostPaths);
+            AddHostPaths(expected, NonOccupyingHostPaths);
+
+            var actual = new HashSet<string>(StringComparer.Ordinal);
+            string[] guids = AssetDatabase.FindAssets(string.Empty, new[]
+            {
+                "Assets/Game/Activities"
+            });
+            for (int i = 0; i < guids.Length; i++)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guids[i]);
+                if (AssetDatabase.LoadAssetAtPath<CapabilityHostBaseData>(path) != null)
+                    actual.Add(path);
+            }
+
+            if (actual.SetEquals(expected))
+                return;
+
+            var missing = new List<string>(expected);
+            missing.RemoveAll(actual.Contains);
+            var unexpected = new List<string>(actual);
+            unexpected.RemoveAll(expected.Contains);
+            throw new InvalidOperationException(
+                "Spatial occupancy host plan does not match ChainRush Activity assets. " +
+                $"Missing=[{string.Join(", ", missing)}] Unexpected=[{string.Join(", ", unexpected)}].");
+        }
+
+        static Dictionary<CapabilityHostBaseData, List<TaxonomyTermData>> CaptureOccupancyHostTags()
+        {
+            var result = new Dictionary<CapabilityHostBaseData, List<TaxonomyTermData>>();
+            CaptureHostTags(result, MobileSolidHostPaths);
+            CaptureHostTags(result, StaticSolidHostPaths);
+            CaptureHostTags(result, PlacementObstacleHostPaths);
+            CaptureHostTags(result, NonOccupyingHostPaths);
+            return result;
+        }
+
+        static void CaptureHostTags(
+            Dictionary<CapabilityHostBaseData, List<TaxonomyTermData>> destination,
+            List<string> paths)
+        {
+            for (int i = 0; i < paths.Count; i++)
+            {
+                CapabilityHostBaseData host = LoadRequired<CapabilityHostBaseData>(paths[i]);
+                destination.Add(host, new List<TaxonomyTermData>(host.Tags));
+            }
+        }
+
+        static void AssignOccupancyTag(List<string> paths, TaxonomyTermData tag)
+        {
+            for (int i = 0; i < paths.Count; i++)
+            {
+                CapabilityHostBaseData host = LoadRequired<CapabilityHostBaseData>(paths[i]);
+                var tags = new List<TaxonomyTermData>(host.Tags) { tag };
+                SetField(host, "tags", tags);
+                EditorUtility.SetDirty(host);
+            }
+        }
+
+        static void RestoreOccupancyHostTags(
+            Dictionary<CapabilityHostBaseData, List<TaxonomyTermData>> originalTags)
+        {
+            foreach (KeyValuePair<CapabilityHostBaseData, List<TaxonomyTermData>> pair in originalTags)
+            {
+                SetField(pair.Key, "tags", pair.Value);
+                EditorUtility.SetDirty(pair.Key);
+            }
+        }
+
+        static void ValidateOccupancyAuthoring(
+            TaxonomyFamilyData family,
+            TaxonomyTermData mobileSolid,
+            TaxonomyTermData staticSolid,
+            TaxonomyTermData placementObstacle,
+            TaxonomyTermData nonOccupying,
+            SpatialOccupancyMatrixData matrix)
+        {
+            if (family == null || family.Id != "SpatialOccupancy" ||
+                family.Cardinality != TaxonomyCardinality.Multiple)
+            {
+                throw new InvalidOperationException("Spatial occupancy family is invalid.");
+            }
+
+            ValidateOccupancyTerm(mobileSolid, family, "MobileSolid");
+            ValidateOccupancyTerm(staticSolid, family, "StaticSolid");
+            ValidateOccupancyTerm(placementObstacle, family, "PlacementObstacle");
+            ValidateOccupancyTerm(nonOccupying, family, "NonOccupying");
+
+            if (matrix == null || matrix.OccupancyFamily != family || matrix.Rows.Count != 4)
+                throw new InvalidOperationException("Spatial occupancy matrix is invalid.");
+            ValidateOccupancyRow(matrix.Rows[0], mobileSolid, mobileSolid, staticSolid);
+            ValidateOccupancyRow(
+                matrix.Rows[1],
+                staticSolid,
+                mobileSolid,
+                staticSolid,
+                placementObstacle);
+            ValidateOccupancyRow(
+                matrix.Rows[2],
+                placementObstacle,
+                staticSolid,
+                placementObstacle);
+            ValidateOccupancyRow(matrix.Rows[3], nonOccupying);
+
+            TaxonomyRuntimeInstallerData taxonomyInstaller =
+                LoadRequired<TaxonomyRuntimeInstallerData>(TaxonomyInstallerPath);
+            RequireSingleReference(
+                GetField<TaxonomyFamilyData[]>(taxonomyInstaller, "families"),
+                family);
+            TaxonomyTermData[] terms = GetField<TaxonomyTermData[]>(taxonomyInstaller, "terms");
+            RequireSingleReference(terms, mobileSolid);
+            RequireSingleReference(terms, staticSolid);
+            RequireSingleReference(terms, placementObstacle);
+            RequireSingleReference(terms, nonOccupying);
+
+            GameplayFoundationInstallerData foundationInstaller =
+                LoadRequired<GameplayFoundationInstallerData>(FoundationInstallerPath);
+            if (GetField<SpatialOccupancyMatrixData>(
+                    foundationInstaller,
+                    "spatialOccupancyMatrix") != matrix)
+            {
+                throw new InvalidOperationException(
+                    "Gameplay foundation has an invalid spatial occupancy matrix reference.");
+            }
+
+            ValidateOccupancyHostTags(MobileSolidHostPaths, mobileSolid, family);
+            ValidateOccupancyHostTags(StaticSolidHostPaths, staticSolid, family);
+            ValidateOccupancyHostTags(PlacementObstacleHostPaths, placementObstacle, family);
+            ValidateOccupancyHostTags(NonOccupyingHostPaths, nonOccupying, family);
+            EnsureOccupancyHostPlanMatchesAssets();
+        }
+
+        static void ValidateOccupancyTerm(
+            TaxonomyTermData term,
+            TaxonomyFamilyData family,
+            string expectedId)
+        {
+            if (term == null || term.Family != family || term.Id != expectedId)
+                throw new InvalidOperationException($"Spatial occupancy term '{expectedId}' is invalid.");
+        }
+
+        static void ValidateOccupancyRow(
+            SpatialOccupancyMatrixRowData row,
+            TaxonomyTermData tag,
+            params TaxonomyTermData[] blockedTags)
+        {
+            if (row == null || row.Tag != tag || row.BlockedTags.Count != blockedTags.Length)
+                throw new InvalidOperationException($"Spatial occupancy row '{tag.name}' is invalid.");
+            for (int i = 0; i < blockedTags.Length; i++)
+            {
+                if (row.BlockedTags[i] != blockedTags[i])
+                    throw new InvalidOperationException($"Spatial occupancy row '{tag.name}' is invalid.");
+            }
+        }
+
+        static void ValidateOccupancyHostTags(
+            List<string> paths,
+            TaxonomyTermData expectedTag,
+            TaxonomyFamilyData family)
+        {
+            for (int i = 0; i < paths.Count; i++)
+            {
+                CapabilityHostBaseData host = LoadRequired<CapabilityHostBaseData>(paths[i]);
+                int occupancyTagCount = 0;
+                TaxonomyTermData actualTag = null;
+                for (int tagIndex = 0; tagIndex < host.Tags.Count; tagIndex++)
+                {
+                    TaxonomyTermData tag = host.Tags[tagIndex];
+                    if (tag == null || tag.Family != family)
+                        continue;
+                    occupancyTagCount++;
+                    actualTag = tag;
+                }
+
+                if (occupancyTagCount != 1 || actualTag != expectedTag)
+                {
+                    throw new InvalidOperationException(
+                        $"CapabilityHost '{paths[i]}' must have exactly one '{expectedTag.Id}' occupancy tag.");
+                }
+            }
+        }
+
+        static void EnsureOccupancyConsumerWiring()
+        {
+            CapabilityHostData waterBase = LoadRequired<CapabilityHostData>(BoardWaterBasePath);
+            ObjectiveConditionMarkerAvailability condition =
+                ResolveBoardPopulationMarkerCondition();
+            if (condition.EconomyAsset == waterBase)
+                return;
+            if (condition.EconomyAsset != null)
+            {
+                throw new InvalidOperationException(
+                    "Board Population marker condition references an unexpected occupancy candidate asset.");
+            }
+
+            try
+            {
+                SetField(condition, "economyAsset", waterBase);
+                EditorUtility.SetDirty(
+                    LoadRequired<ObjectiveTemplateData>(BoardPopulationObjectivePath));
+                AssetDatabase.SaveAssets();
+                AssetDatabase.Refresh();
+                ValidateOccupancyConsumerWiring();
+            }
+            catch
+            {
+                SetField<CapabilityHostBaseData>(condition, "economyAsset", null);
+                EditorUtility.SetDirty(
+                    LoadRequired<ObjectiveTemplateData>(BoardPopulationObjectivePath));
+                AssetDatabase.SaveAssets();
+                throw;
+            }
+        }
+
+        static void ValidateOccupancyConsumerWiring()
+        {
+            CapabilityHostData waterBase = LoadRequired<CapabilityHostData>(BoardWaterBasePath);
+            ObjectiveConditionMarkerAvailability condition =
+                ResolveBoardPopulationMarkerCondition();
+            if (condition.EconomyAsset != waterBase)
+            {
+                throw new InvalidOperationException(
+                    "Board Population marker condition must use WaterBoardBase as its occupancy candidate.");
+            }
+        }
+
+        static ObjectiveConditionMarkerAvailability ResolveBoardPopulationMarkerCondition()
+        {
+            ObjectiveTemplateData objective =
+                LoadRequired<ObjectiveTemplateData>(BoardPopulationObjectivePath);
+            if (objective.Root == null || objective.Root.SuccessConditions.Count != 1
+                || !(objective.Root.SuccessConditions[0] is ObjectiveConditionMarkerAvailability condition))
+            {
+                throw new InvalidOperationException(
+                    "Board Population Objective does not contain the expected marker availability success condition.");
+            }
+
+            return condition;
+        }
+
+        static void RequireSingleReference<T>(T[] references, T expected)
+            where T : UnityEngine.Object
+        {
+            int count = 0;
+            for (int i = 0; references != null && i < references.Length; i++)
+            {
+                if (references[i] == expected)
+                    count++;
+            }
+            if (count != 1)
+            {
+                throw new InvalidOperationException(
+                    $"Installer must contain exactly one reference to '{expected.name}', but contains {count}.");
+            }
+        }
+
+        static int CountExisting(params UnityEngine.Object[] assets)
+        {
+            int count = 0;
+            for (int i = 0; i < assets.Length; i++)
+            {
+                if (assets[i] != null)
+                    count++;
+            }
+            return count;
+        }
+
+        static void AddHostPaths(HashSet<string> destination, List<string> paths)
+        {
+            for (int i = 0; i < paths.Count; i++)
+            {
+                if (!destination.Add(paths[i]))
+                    throw new InvalidOperationException($"Duplicate occupancy host path '{paths[i]}'.");
+            }
         }
 
         static T CreateEconomyAsset<T>(

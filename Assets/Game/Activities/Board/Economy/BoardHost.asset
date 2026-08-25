@@ -35,7 +35,8 @@ MonoBehaviour:
   icon: {fileID: 0}
   precision: 0
   allowedOperations: 31
-  tags: []
+  tags:
+  - {fileID: 11400000, guid: 6fbd221e1449243cdb5158b822822c2b, type: 2}
   slotFootprint: 1
   stackCapacity: 0
   capabilities:

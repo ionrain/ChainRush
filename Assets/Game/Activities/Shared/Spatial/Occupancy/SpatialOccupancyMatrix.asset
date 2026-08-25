@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 596e5c3b255d7464a8e1c0e867462ee1, type: 3}
+  m_Name: SpatialOccupancyMatrix
+  m_EditorClassIdentifier: Core::Core.World.SpatialOccupancyMatrixData
+  occupancyFamily: {fileID: 11400000, guid: f4bf43959b8e54a019d62c9ff20710e5, type: 2}
+  rows:
+  - tag: {fileID: 11400000, guid: 35dd5fcbdbbc2499991c0dfcbff2a397, type: 2}
+    blockedTags:
+    - {fileID: 11400000, guid: 35dd5fcbdbbc2499991c0dfcbff2a397, type: 2}
+    - {fileID: 11400000, guid: 16c5f9df2fe1845909ebb58747ac47c9, type: 2}
+  - tag: {fileID: 11400000, guid: 16c5f9df2fe1845909ebb58747ac47c9, type: 2}
+    blockedTags:
+    - {fileID: 11400000, guid: 35dd5fcbdbbc2499991c0dfcbff2a397, type: 2}
+    - {fileID: 11400000, guid: 16c5f9df2fe1845909ebb58747ac47c9, type: 2}
+    - {fileID: 11400000, guid: d65bc7797b2884444a858fec0e36bbcd, type: 2}
+  - tag: {fileID: 11400000, guid: d65bc7797b2884444a858fec0e36bbcd, type: 2}
+    blockedTags:
+    - {fileID: 11400000, guid: 16c5f9df2fe1845909ebb58747ac47c9, type: 2}
+    - {fileID: 11400000, guid: d65bc7797b2884444a858fec0e36bbcd, type: 2}
+  - tag: {fileID: 11400000, guid: 6fbd221e1449243cdb5158b822822c2b, type: 2}
+    blockedTags: []

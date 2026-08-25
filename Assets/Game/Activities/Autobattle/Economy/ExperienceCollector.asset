@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9969bb010093e43c6993c07d9c072f75, type: 3}
   m_Name: ExperienceCollector
   m_EditorClassIdentifier: Core::Core.CapabilityHosts.CapabilityHostData
-  domainTypePreview: 0
+  domainTypePreview: 3
   id: chainrush.autobattle.experience-collector
   title:
     m_TableReference:
@@ -35,7 +35,8 @@ MonoBehaviour:
   icon: {fileID: 0}
   precision: 0
   allowedOperations: 31
-  tags: []
+  tags:
+  - {fileID: 11400000, guid: 6fbd221e1449243cdb5158b822822c2b, type: 2}
   slotFootprint: 1
   stackCapacity: 0
   capabilities:

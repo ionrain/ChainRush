@@ -41,3 +41,5 @@ MonoBehaviour:
     allowBackwardBypass: 0
     yieldDuration: 6
     deadlockDuration: 15
+  spatialOccupancyMatrix: {fileID: 11400000, guid: 984942b2c450548aca5a4dc26c82cd46,
+    type: 2}

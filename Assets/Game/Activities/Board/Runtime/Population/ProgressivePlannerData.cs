@@ -613,6 +613,7 @@ namespace ChainRush.Board
                                     rule.Shape,
                                     usage,
                                     anchor,
+                                    default,
                                     SpatialOccupancyType.Any,
                                     sink,
                                     out _,

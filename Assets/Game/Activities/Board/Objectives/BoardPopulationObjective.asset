@@ -18,6 +18,7 @@ MonoBehaviour:
     ReferencedUnityObjects:
     - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
     - {fileID: 11400000, guid: 854a0cd2c05d9443ead51a662d4966bf, type: 2}
+    - {fileID: 11400000, guid: 1116b7b9d35a249b18741b1309a53cd1, type: 2}
     - {fileID: 11400000, guid: a70bd9d1bf3b1457fbe47de7812a7fed, type: 2}
     SerializedBytesString: 
     Prefab: {fileID: 0}
@@ -110,8 +111,8 @@ MonoBehaviour:
       Entry: 3
       Data: 0
     - Name: economyAsset
-      Entry: 6
-      Data: 
+      Entry: 10
+      Data: 2
     - Name: economyFormType
       Entry: 3
       Data: 1
@@ -124,7 +125,7 @@ MonoBehaviour:
       Data: 1
     - Name: 
       Entry: 10
-      Data: 2
+      Data: 3
     - Name: 
       Entry: 13
       Data: 

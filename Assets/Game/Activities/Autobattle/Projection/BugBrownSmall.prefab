@@ -191,6 +191,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8568990382664544381}
   - component: {fileID: 4425635377836022329}
+  - component: {fileID: 7814824039234022002}
   - component: {fileID: 3949379462873774990}
   m_Layer: 0
   m_Name: BugBrownSmall
@@ -236,6 +237,20 @@ MonoBehaviour:
   onUnbound:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &7814824039234022002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7076204244455331881}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71560613c7d8d41998701ebe8d5b5dd0, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Core::Core.Projection.ProjectionMovementController
+  poseUpdateType: 0
+  poseTransitionSeconds: 0.05
 --- !u!114 &3949379462873774990
 MonoBehaviour:
   m_ObjectHideFlags: 0

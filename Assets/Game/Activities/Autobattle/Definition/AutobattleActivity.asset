@@ -143,5 +143,5 @@ MonoBehaviour:
           m_SubObjectType: 
           m_SubObjectGUID: 
           m_EditorAssetChanged: 0
-        origin: {x: 0, y: 0, z: 12.5}
+        origin: {x: 0, y: 0, z: 15}
         rotationDegrees: {x: 0, y: 0, z: 0}

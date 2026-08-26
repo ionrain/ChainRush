@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 02d1a3baa20004b4c9af3160993765a5, type: 3}
   m_Name: PlayerDeploymentAgent
-  m_EditorClassIdentifier: Core::Core.Activities.ActivityAgentDefinitionData
+  m_EditorClassIdentifier: Core::Core.Orchestration.ActivityAgentDefinitionData
   agentId: chainrush-autobattle-agent-player-deployment
   basePriority: 100
   updateInterval: 1
@@ -49,7 +49,7 @@ MonoBehaviour:
         _formType: 0
         _compareOperation: 5
     - rid: 2807516363299750063
-      type: {class: MaterializedEntitySelectionCriterionData, ns: Core.Activities,
+      type: {class: MaterializedEntitySelectionCriterionData, ns: Core.Orchestration,
         asm: Core}
       data:
         requirementType: 0
@@ -61,12 +61,12 @@ MonoBehaviour:
         compareOperation: 3
         targetValue: 1
     - rid: 2807516363299750064
-      type: {class: EntityOwnerSelectionCriterionData, ns: Core.Activities, asm: Core}
+      type: {class: EntityOwnerSelectionCriterionData, ns: Core.Orchestration, asm: Core}
       data:
         requirementType: 0
         weight: 1
         ownerSelectionType: 0
     - rid: 2807516363299750065
-      type: {class: ProductionActivityOrchestrationAgentData, ns: Core.Activities,
+      type: {class: ProductionActivityOrchestrationAgentData, ns: Core.Orchestration,
         asm: Core}
       data: 

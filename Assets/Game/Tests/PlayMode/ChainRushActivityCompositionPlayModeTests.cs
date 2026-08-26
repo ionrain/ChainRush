@@ -6,6 +6,7 @@ using System.Text;
 using Core.AI;
 using Core.Activities;
 using Core.Activities.Events;
+using Core.Activities.Selection;
 using Core.CapabilityHosts;
 using Core.CapabilityHosts.Runtime;
 using Core.Diplomacy;
@@ -17,6 +18,7 @@ using Core.Objectives;
 using Core.Orchestration;
 using Core.Players;
 using Core.Production;
+using Core.Production.Events;
 using Core.Projection;
 using Core.SimulationControl;
 using Core.Skills;
@@ -51,8 +53,8 @@ namespace ChainRush.Tests.PlayMode
             "Assets/Game/Activities/Board/Economy/WaterBoardBase.asset";
         const string BoardHostPath =
             "Assets/Game/Activities/Board/Economy/BoardHost.asset";
-        const string BoardMergeSkillPath =
-            "Assets/Game/Activities/Board/Skills/BoardMergeSkill.asset";
+        const string BoardMergeSelectionPath =
+            "Assets/Game/Activities/Board/Taxonomy/BoardMergeSelection.asset";
         const string BoardTurnTokenPath =
             "Assets/Game/Activities/Shared/Economy/BoardTurnToken.asset";
         const string WaterUnitPath =
@@ -154,9 +156,9 @@ namespace ChainRush.Tests.PlayMode
             Assert.AreEqual(0, board.RuntimeTags.Count);
             Assert.AreEqual(1, board.Participants.Count);
             AssertParticipant(board.Participants, 0, PlayerControlType.LocalHuman);
-            Assert.AreEqual(1, board.ObjectiveRuntimeIds.Count);
+            Assert.AreEqual(3, board.ObjectiveRuntimeIds.Count);
             Assert.AreEqual(
-                1,
+                3,
                 board.Objectives.Count(objective =>
                     objective.SourceType == ActivityObjectiveSourceType.Definition));
             CollectionAssert.AreEqual(
@@ -325,9 +327,10 @@ namespace ChainRush.Tests.PlayMode
 
             CapabilityHostData boardHost =
                 AssetDatabase.LoadAssetAtPath<CapabilityHostData>(BoardHostPath);
-            SkillData mergeSkill = AssetDatabase.LoadAssetAtPath<SkillData>(BoardMergeSkillPath);
+            TaxonomyTermData mergeSelection =
+                AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(BoardMergeSelectionPath);
             Assert.NotNull(boardHost);
-            Assert.NotNull(mergeSkill);
+            Assert.NotNull(mergeSelection);
             Assert.IsTrue(
                 TryFindBoardHost(board.Id, boardHost, out Core.Entities.EntityId boardHostEntityId),
                 "The hidden Board host was not registered for the Board Activity.");
@@ -339,14 +342,26 @@ namespace ChainRush.Tests.PlayMode
             HashSet<long> waterUnitsBeforeMerge = GetActivityHostEntityValues(
                 autobattle.Id,
                 waterUnitDefinition);
+            EnableOrchestrationTraceDiagnostics();
 
-            SimulationControlIntentEvent mergeRequest = SimulationControlIntentEvent.ActivateSkillEntities(
+            SelectionIntentEvent mergeRequest = SelectionIntentEvent.Begin(
                 board.Id,
-                boardHostEntityId,
-                mergeSkill,
-                selectedEntities);
+                mergeSelection,
+                Core.Entities.EntityId.Invalid,
+                boardHostEntityId);
             Assert.IsTrue(mergeRequest.RequestId.IsValid);
+            var selectionResultCapture = new SelectionResultCapture(mergeRequest.RequestId);
+            var productionOrderCapture = new ProductionOrderCapture(boardHostEntityId);
+            EventBus.Register<SelectionResultEvent>(selectionResultCapture);
+            EventBus.Register<ProductionOrderStartedEvent>(productionOrderCapture);
             EventBus.Trigger(mergeRequest);
+            for (int selectedIndex = 0; selectedIndex < selectedEntities.Count; selectedIndex++)
+            {
+                EventBus.Trigger(SelectionIntentEvent.Target(
+                    mergeRequest,
+                    selectedEntities[selectedIndex]));
+            }
+            EventBus.Trigger(SelectionIntentEvent.Complete(mergeRequest));
 
             float mergeDeadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
             while (Time.realtimeSinceStartup < mergeDeadline
@@ -358,12 +373,50 @@ namespace ChainRush.Tests.PlayMode
             {
                 yield return null;
             }
+            EventBus.Unregister<SelectionResultEvent>(selectionResultCapture);
+            EventBus.Unregister<ProductionOrderStartedEvent>(productionOrderCapture);
+
+            Assert.AreEqual(
+                1,
+                selectionResultCapture.Count,
+                string.Concat(
+                    "Selection request did not publish exactly one terminal result.\n",
+                    BuildExecutorDiagnostic(boardHostEntityId),
+                    BuildPopulationDiagnostic(
+                        autobattle,
+                        board,
+                        sharedWalletTag,
+                        turnToken,
+                        experience,
+                        health,
+                        collectorDefinition,
+                        experienceDropDefinition)));
+            Assert.AreEqual(
+                SelectionResultType.Committed,
+                selectionResultCapture.Result.Type,
+                selectionResultCapture.Result.Message);
+            CollectionAssert.AreEqual(
+                selectedEntities,
+                selectionResultCapture.Result.SelectedEntityIds);
 
             for (int selectedIndex = 0; selectedIndex < selectedEntities.Count; selectedIndex++)
             {
                 Assert.IsFalse(
                     CapabilityHostService.Exists(selectedEntities[selectedIndex]),
-                    "A selected Board token remained materialized after committed merge production.");
+                    string.Concat(
+                        "A selected Board token remained materialized after committed merge production.\n",
+                        BuildSelectedEntityDiagnostic(selectedEntities),
+                        productionOrderCapture.BuildDiagnostic(),
+                        BuildExecutorDiagnostic(boardHostEntityId),
+                        BuildPopulationDiagnostic(
+                            autobattle,
+                            board,
+                            sharedWalletTag,
+                            turnToken,
+                            experience,
+                            health,
+                            collectorDefinition,
+                            experienceDropDefinition)));
             }
             Assert.IsTrue(
                 HasNewActivityHost(
@@ -371,6 +424,24 @@ namespace ChainRush.Tests.PlayMode
                     waterUnitDefinition,
                     waterUnitsBeforeMerge),
                 "Merge output was not deployed as a new physical Water unit.");
+            HashSet<long> waterUnitsAfterMerge = GetActivityHostEntityValues(
+                autobattle.Id,
+                waterUnitDefinition);
+            Assert.AreEqual(
+                waterUnitsBeforeMerge.Count + 1,
+                waterUnitsAfterMerge.Count,
+                string.Concat(
+                    "A three-token selection must resolve through one x3 recipe yield.\n",
+                    productionOrderCapture.BuildDiagnostic(),
+                    BuildPopulationDiagnostic(
+                        autobattle,
+                        board,
+                        sharedWalletTag,
+                        turnToken,
+                        experience,
+                        health,
+                        collectorDefinition,
+                        experienceDropDefinition)));
 
             float collectorCycleDeadline =
                 Time.realtimeSinceStartup + CollectorCycleTimeoutSeconds;
@@ -383,7 +454,17 @@ namespace ChainRush.Tests.PlayMode
             Assert.AreEqual(
                 16,
                 CountMaterializedBoardAssets(board, boardCellTag, waterBase),
-                "Collected Experience did not produce and consume the next Board turn token.");
+                string.Concat(
+                    "Collected Experience did not produce and consume the next Board turn token.\n",
+                    BuildPopulationDiagnostic(
+                        autobattle,
+                        board,
+                        sharedWalletTag,
+                        turnToken,
+                        experience,
+                        health,
+                        collectorDefinition,
+                        experienceDropDefinition)));
             Assert.AreEqual(
                 0L,
                 QueryAmount(board, sharedWalletTag, EconomyFormType.Stack, turnToken),
@@ -937,6 +1018,30 @@ namespace ChainRush.Tests.PlayMode
                         .Append(trace.Diagnostics.Count - diagnosticLimit)
                         .AppendLine();
                 }
+
+                int selectionTraceCount = 0;
+                for (int nodeIndex = trace.Nodes.Count - 1;
+                     nodeIndex >= 0 && selectionTraceCount < 16;
+                     nodeIndex--)
+                {
+                    OrchestrationPlanTraceNodeSnapshot node = trace.Nodes[nodeIndex];
+                    if (string.IsNullOrWhiteSpace(node.Message)
+                        || !node.Message.Contains("policy="))
+                    {
+                        continue;
+                    }
+
+                    message.Append("      SelectionTrace key=")
+                        .Append(node.StableKey ?? "<null>")
+                        .Append(" utility=")
+                        .Append(node.Utility)
+                        .Append(" reason=")
+                        .Append(node.ReasonCode ?? "<null>")
+                        .Append(" message=")
+                        .Append(node.Message)
+                        .AppendLine();
+                    selectionTraceCount++;
+                }
             }
 
             if (ActivityAgentService.TryGetAssignmentBoardSnapshot(
@@ -954,6 +1059,14 @@ namespace ChainRush.Tests.PlayMode
                         assignments.Assignments[assignmentIndex];
                     message.Append("  Assignment agent=")
                         .Append(assignment.MatchedAgentId ?? "<null>")
+                        .Append(" objective=")
+                        .Append(assignment.ObjectiveId ?? "<null>")
+                        .Append(" runtime=")
+                        .Append(assignment.RuntimeId.Value)
+                        .Append(" node=")
+                        .Append(assignment.NodeId ?? "<null>")
+                        .Append(" fact=")
+                        .Append(assignment.DesiredFactType ?? "<null>")
                         .Append(" status=")
                         .Append(assignment.StatusType)
                         .Append(" generation=")
@@ -1003,6 +1116,25 @@ namespace ChainRush.Tests.PlayMode
                     .Append(production.ActivePipelineCount)
                     .AppendLine();
 
+                bool controlAvailable = EntityControlAuthorityService.CanClaim(
+                    production.EntityId,
+                    EntityControlOwnerType.Orchestration,
+                    "chainrush-test-production-probe",
+                    out string controlFailure);
+                bool agentAllocated =
+                    typeof(ActivityAgentService)
+                        .GetMethod(
+                            "IsExecutorAllocated",
+                            BindingFlags.Static | BindingFlags.NonPublic)
+                        ?.Invoke(null, new object[] { production.EntityId }) is true;
+                message.Append("    Control available=")
+                    .Append(controlAvailable)
+                    .Append(" failure=")
+                    .Append(controlFailure ?? "<none>")
+                    .Append(" agentAllocated=")
+                    .Append(agentAllocated)
+                    .AppendLine();
+
                 if (CapabilityHostService.TryGet(
                         production.EntityId,
                         out CapabilityHostSnapshot host))
@@ -1021,6 +1153,166 @@ namespace ChainRush.Tests.PlayMode
             AppendBranchDiagnostic(message, board.DomainId);
 
             return message.ToString();
+        }
+
+        static string BuildSelectedEntityDiagnostic(
+            IReadOnlyList<Core.Entities.EntityId> selectedEntities)
+        {
+            var message = new StringBuilder("SelectedEntities=[");
+            for (int i = 0; selectedEntities != null && i < selectedEntities.Count; i++)
+            {
+                if (i > 0)
+                    message.Append(',');
+                message.Append(selectedEntities[i].Value)
+                    .Append(":exists=")
+                    .Append(CapabilityHostService.Exists(selectedEntities[i]));
+            }
+            return message.AppendLine("]").ToString();
+        }
+
+        static void EnableOrchestrationTraceDiagnostics()
+        {
+            RuntimeDiagnosticsProfile profile = default;
+            object boxedProfile = profile;
+            typeof(RuntimeDiagnosticsProfile)
+                .GetField("orchestrationTrace", BindingFlags.Instance | BindingFlags.NonPublic)
+                ?.SetValue(boxedProfile, true);
+            profile = (RuntimeDiagnosticsProfile)boxedProfile;
+            typeof(GameRuntimeDiagnostics)
+                .GetField("_profile", BindingFlags.Static | BindingFlags.NonPublic)
+                ?.SetValue(null, profile);
+        }
+
+        static string BuildExecutorDiagnostic(Core.Entities.EntityId entityId)
+        {
+            bool canClaim = EntityControlAuthorityService.CanClaim(
+                entityId,
+                EntityControlOwnerType.Orchestration,
+                "board-selection-playmode-probe",
+                out string controlFailure);
+            System.Type serviceType = typeof(ActivityAgentService);
+            const BindingFlags flags = BindingFlags.Static | BindingFlags.NonPublic;
+            MethodInfo reservedMethod = serviceType.GetMethod("IsExecutorReserved", flags);
+            MethodInfo issuedMethod = serviceType.GetMethod("IsExecutorIssuedToRequest", flags);
+            bool reserved = reservedMethod != null
+                && (bool)reservedMethod.Invoke(null, new object[] { entityId });
+            bool issued = issuedMethod != null
+                && (bool)issuedMethod.Invoke(null, new object[] { entityId });
+
+            var reservationOwners = new StringBuilder();
+            var localDiagnostics = new StringBuilder();
+            FieldInfo domainsField = serviceType.GetField("Domains", flags);
+            if (domainsField?.GetValue(null) is IEnumerable domains)
+            {
+                foreach (object domainEntry in domains)
+                {
+                    object domain = domainEntry.GetType().GetProperty("Value")?.GetValue(domainEntry);
+                    FieldInfo runtimesField = domain?.GetType().GetField(
+                        "_runtimesById",
+                        BindingFlags.Instance | BindingFlags.NonPublic);
+                    if (!(runtimesField?.GetValue(domain) is IEnumerable runtimes))
+                        continue;
+
+                    foreach (object runtimeEntry in runtimes)
+                    {
+                        object runtime = runtimeEntry.GetType().GetProperty("Value")?.GetValue(runtimeEntry);
+                        object state = runtime?.GetType().GetProperty("State")?.GetValue(runtime);
+                        if (state == null)
+                            continue;
+
+                        object definition = state.GetType().GetProperty("Definition")?.GetValue(state);
+                        string agentId = definition?.GetType().GetProperty("AgentId")?.GetValue(definition)
+                            as string;
+                        object agent = state.GetType().GetProperty("Agent")?.GetValue(state);
+                        FieldInfo localStatesField = null;
+                        System.Type agentType = agent?.GetType();
+                        while (agentType != null && localStatesField == null)
+                        {
+                            localStatesField = agentType.GetField(
+                                "_states",
+                                BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+                            agentType = agentType.BaseType;
+                        }
+                        if (string.Equals(
+                                agentId,
+                                "chainrush-board-production",
+                                System.StringComparison.Ordinal)
+                            && localStatesField?.GetValue(agent) is IEnumerable localStates)
+                        {
+                            foreach (object localEntry in localStates)
+                            {
+                                object localAssignmentId = localEntry.GetType()
+                                    .GetProperty("Key")
+                                    ?.GetValue(localEntry);
+                                object local = localEntry.GetType()
+                                    .GetProperty("Value")
+                                    ?.GetValue(localEntry);
+                                if (local == null)
+                                    continue;
+
+                                FieldInfo terminalField = local.GetType().GetField("TerminalWorkCompleted");
+                                FieldInfo activeWorksField = local.GetType().GetField("ActiveWorks");
+                                FieldInfo startField = local.GetType().GetField("WorkStartInProgress");
+                                int activeWorkCount = activeWorksField?.GetValue(local) is ICollection works
+                                    ? works.Count
+                                    : -1;
+                                localDiagnostics
+                                    .Append(" localAssignment=")
+                                    .Append(localAssignmentId ?? "<null>")
+                                    .Append(" terminalWork=")
+                                    .Append(terminalField?.GetValue(local) ?? "<null>")
+                                    .Append(" activeWorks=")
+                                    .Append(activeWorkCount)
+                                    .Append(" starting=")
+                                    .Append(startField?.GetValue(local) ?? "<null>");
+                            }
+                        }
+
+                        object reservations = state.GetType().GetProperty("ExecutorReservations")?.GetValue(state);
+                        if (!(reservations is IEnumerable reservationItems))
+                            continue;
+
+                        foreach (object reservation in reservationItems)
+                        {
+                            object reservedEntity = reservation.GetType()
+                                .GetProperty("ExecutorEntityId")
+                                ?.GetValue(reservation);
+                            if (!(reservedEntity is Core.Entities.EntityId reservedId)
+                                || reservedId != entityId)
+                            {
+                                continue;
+                            }
+
+                            reservationOwners
+                                .Append(" ownerRuntime=")
+                                .Append(state.GetType().GetProperty("AgentRuntimeId")?.GetValue(state) ?? "<null>")
+                                .Append(" agent=")
+                                .Append(agentId ?? "<null>")
+                                .Append(" assignment=")
+                                .Append(reservation.GetType().GetProperty("AssignmentId")?.GetValue(reservation) ?? "<null>")
+                                .Append(" policy=")
+                                .Append(reservation.GetType().GetProperty("PolicyType")?.GetValue(reservation) ?? "<null>")
+                                .Append(" reason=")
+                                .Append(reservation.GetType().GetProperty("ReasonKey")?.GetValue(reservation) ?? "<null>");
+                        }
+                    }
+                }
+            }
+
+            return string.Concat(
+                "BoardHostExecutor entity=",
+                entityId.Value.ToString(),
+                " canClaim=",
+                canClaim.ToString(),
+                " controlFailure=",
+                controlFailure ?? "<null>",
+                " reserved=",
+                reserved.ToString(),
+                " issued=",
+                issued.ToString(),
+                localDiagnostics.ToString(),
+                reservationOwners.ToString(),
+                "\n");
         }
 
         static void AppendAutobattleHostDiagnostic(
@@ -1525,6 +1817,56 @@ namespace ChainRush.Tests.PlayMode
             ActivityParticipantBinding participant =
                 participants.Single(binding => binding.TeamIndex == teamIndex);
             Assert.AreEqual(controlType, participant.ControlType);
+        }
+
+        sealed class SelectionResultCapture : IEventListener<SelectionResultEvent>
+        {
+            readonly SelectionRequestId _requestId;
+
+            public SelectionResultCapture(SelectionRequestId requestId)
+            {
+                _requestId = requestId;
+            }
+
+            public int Count { get; private set; }
+            public SelectionResultEvent Result { get; private set; }
+
+            public void OnEvent(SelectionResultEvent e)
+            {
+                if (e.RequestId != _requestId)
+                    return;
+
+                Count++;
+                Result = e;
+            }
+        }
+
+        sealed class ProductionOrderCapture : IEventListener<ProductionOrderStartedEvent>
+        {
+            readonly List<string> _recipeIds = new List<string>(4);
+
+            public ProductionOrderCapture(Core.Entities.EntityId productionEntityId)
+            {
+                _recipeIds.Add(string.Concat(
+                    "expected-production-entity:",
+                    productionEntityId.Value.ToString()));
+            }
+
+            public void OnEvent(ProductionOrderStartedEvent e)
+            {
+                _recipeIds.Add(string.Concat(
+                    e.ProductionEntityId.Value.ToString(),
+                    ":",
+                    e.RecipeId));
+            }
+
+            public string BuildDiagnostic()
+            {
+                return string.Concat(
+                    "BoardProductionRecipes=[",
+                    _recipeIds.Count == 0 ? "<none>" : string.Join(",", _recipeIds),
+                    "]\n");
+            }
         }
     }
 }

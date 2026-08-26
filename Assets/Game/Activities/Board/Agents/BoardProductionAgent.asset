@@ -11,12 +11,13 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 02d1a3baa20004b4c9af3160993765a5, type: 3}
   m_Name: BoardProductionAgent
-  m_EditorClassIdentifier: Core::Core.Activities.ActivityAgentDefinitionData
+  m_EditorClassIdentifier: Core::Core.Orchestration.ActivityAgentDefinitionData
   agentId: chainrush-board-production
   basePriority: 90
   updateInterval: 1
   matchConditions:
-  - rid: 2807516289745289328
+  - rid: 2807516677360582801
+  - rid: 2807516677360582802
   executorSelectionCriteria:
   - rid: 2807516289745289329
   - rid: 2807516289745289330
@@ -25,7 +26,7 @@ MonoBehaviour:
   controlType: 2
   agent:
     rid: 2807516289745289331
-  stopPolicyType: 0
+  stopPolicyType: 1
   timeLimit: 0
   commandFailurePolicyType: 0
   tokenReservationPolicyType: 0
@@ -38,17 +39,8 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 2807516289745289328
-      type: {class: ObjectiveConditionMaterializedEntity, ns: Core.Objectives, asm: Core}
-      data:
-        _targetValue: 1
-        economyAsset: {fileID: 11400000, guid: 1116b7b9d35a249b18741b1309a53cd1, type: 2}
-        economyFormType: 1
-        requiredAssetTags: []
-        requiredCapabilityTypes: 
-        compareOperation: 3
     - rid: 2807516289745289329
-      type: {class: MaterializedEntitySelectionCriterionData, ns: Core.Activities,
+      type: {class: MaterializedEntitySelectionCriterionData, ns: Core.Orchestration,
         asm: Core}
       data:
         requirementType: 0
@@ -60,12 +52,33 @@ MonoBehaviour:
         compareOperation: 3
         targetValue: 1
     - rid: 2807516289745289330
-      type: {class: EntityOwnerSelectionCriterionData, ns: Core.Activities, asm: Core}
+      type: {class: EntityOwnerSelectionCriterionData, ns: Core.Orchestration, asm: Core}
       data:
         requirementType: 0
         weight: 1
         ownerSelectionType: 0
     - rid: 2807516289745289331
-      type: {class: ProductionActivityOrchestrationAgentData, ns: Core.Activities,
+      type: {class: ProductionActivityOrchestrationAgentData, ns: Core.Orchestration,
         asm: Core}
       data: 
+    - rid: 2807516677360582801
+      type: {class: ObjectiveConditionMaterializedEntity, ns: Core.Objectives, asm: Core}
+      data:
+        _targetValue: 1
+        economyAsset: {fileID: 11400000, guid: 1116b7b9d35a249b18741b1309a53cd1, type: 2}
+        economyFormType: 1
+        requiredAssetTags: []
+        requiredCapabilityTypes: 
+        compareOperation: 3
+    - rid: 2807516677360582802
+      type: {class: ObjectiveConditionEconomyMetric, ns: Core.Objectives, asm: Core}
+      data:
+        _targetValue: 0
+        _walletTags:
+        - {fileID: 11400000, guid: 9cbb4f47a974c42cfa008dda55386302, type: 2}
+        _asset: {fileID: 11400000, guid: 1116b7b9d35a249b18741b1309a53cd1, type: 2}
+        _requiredAssetTags: []
+        _requiredRuntimeTags:
+        - {fileID: 11400000, guid: a18044d5476ae485296043e6e5ba431f, type: 2}
+        _formType: 1
+        _compareOperation: 0

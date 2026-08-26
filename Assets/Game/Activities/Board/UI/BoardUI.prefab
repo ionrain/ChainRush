@@ -95,7 +95,8 @@ MonoBehaviour:
   cellPrefab: {fileID: 100004, guid: fb7cb8b3bd465410488c0a34a8c2be14, type: 3}
   boardHostDefinition: {fileID: 11400000, guid: d998acfcc5fb2426387891c381d11387,
     type: 2}
-  mergeSkill: {fileID: 11400000, guid: 384559014fe26497ba1433dd486c2ea9, type: 2}
+  selectionRequestType: {fileID: 11400000, guid: 11f65a92bd4d9475cbc102ba67e7505e,
+    type: 2}
 --- !u!1 &400100
 GameObject:
   m_ObjectHideFlags: 0

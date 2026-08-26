@@ -1,0 +1,104 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02d1a3baa20004b4c9af3160993765a5, type: 3}
+  m_Name: BoardSelectionAgent
+  m_EditorClassIdentifier: Core::Core.Orchestration.ActivityAgentDefinitionData
+  agentId: board-selection
+  basePriority: 110
+  updateInterval: 1
+  matchConditions:
+  - rid: 2807516677360582758
+  executorSelectionCriteria:
+  - rid: 2807516677360582759
+  - rid: 2807516677360582760
+  targetSelectionCriteria:
+  - rid: 2807516677360582764
+  - rid: 2807516677360582765
+  - rid: 2807516677360582762
+  - rid: 2807516677360582763
+  aiBrainTargetKey: {fileID: 0}
+  controlType: 2
+  agent:
+    rid: 2807516677360582761
+  stopPolicyType: 1
+  timeLimit: 0
+  commandFailurePolicyType: 1
+  tokenReservationPolicyType: 0
+  targetAssignmentPolicyType: 0
+  movementPolicyType: 0
+  executorLossPolicyType: 0
+  executorBusyPolicyType: 1
+  executorReservationPolicyType: 1
+  negativeImpactPolicyType: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: 2807516677360582758
+      type: {class: ObjectiveConditionSelectionRequest, ns: Core.Objectives, asm: Core}
+      data:
+        _targetValue: 0
+        requestType: {fileID: 11400000, guid: 11f65a92bd4d9475cbc102ba67e7505e, type: 2}
+        compareOperation: 0
+    - rid: 2807516677360582759
+      type: {class: MaterializedEntitySelectionCriterionData, ns: Core.Orchestration,
+        asm: Core}
+      data:
+        requirementType: 0
+        weight: 1
+        economyAsset: {fileID: 11400000, guid: d998acfcc5fb2426387891c381d11387, type: 2}
+        economyFormType: 1
+        requiredAssetTags: []
+        requiredCapabilityTypes: 
+        compareOperation: 3
+        targetValue: 1
+    - rid: 2807516677360582760
+      type: {class: EntityOwnerSelectionCriterionData, ns: Core.Orchestration, asm: Core}
+      data:
+        requirementType: 0
+        weight: 1
+        ownerSelectionType: 0
+    - rid: 2807516677360582761
+      type: {class: SelectionAgentData, ns: Core.Orchestration, asm: Core}
+      data:
+        resultTags:
+        - {fileID: 11400000, guid: a18044d5476ae485296043e6e5ba431f, type: 2}
+    - rid: 2807516677360582762
+      type: {class: SameAssetCriterionData, ns: Core.Orchestration, asm: Core}
+      data:
+        requirementType: 0
+        weight: 1
+    - rid: 2807516677360582763
+      type: {class: StepDistanceCriterionData, ns: Core.Orchestration, asm: Core}
+      data:
+        requirementType: 0
+        weight: 1
+        minimumDistance: 1000
+        maximumDistance: 1000
+    - rid: 2807516677360582764
+      type: {class: MaterializedEntitySelectionCriterionData, ns: Core.Orchestration,
+        asm: Core}
+      data:
+        requirementType: 0
+        weight: 1
+        economyAsset: {fileID: 0}
+        economyFormType: 1
+        requiredAssetTags:
+        - {fileID: 11400000, guid: 6c06de2863f654107bf5774971fb5d30, type: 2}
+        requiredCapabilityTypes: 
+        compareOperation: 3
+        targetValue: 1
+    - rid: 2807516677360582765
+      type: {class: EntityOwnerSelectionCriterionData, ns: Core.Orchestration, asm: Core}
+      data:
+        requirementType: 0
+        weight: 1
+        ownerSelectionType: 0

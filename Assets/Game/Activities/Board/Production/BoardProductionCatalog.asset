@@ -39,7 +39,19 @@ MonoBehaviour:
   slotFootprint: 1
   stackCapacity: 0
   entries:
-  - recipe: {fileID: 11400000, guid: 966ef9627543e4c4ea4a17a87d24d095, type: 2}
+  - recipe: {fileID: 11400000, guid: f437d8148946247f4bf4a086d58618db, type: 2}
+    workDuration: 1
+    recoveryDuration: 0
+    reservationPolicy: 0
+  - recipe: {fileID: 11400000, guid: 82bd305d9b0ac4590b48f26faa825e52, type: 2}
+    workDuration: 1
+    recoveryDuration: 0
+    reservationPolicy: 0
+  - recipe: {fileID: 11400000, guid: 2a6b7c16f03e84034b197e0e6bcb172e, type: 2}
+    workDuration: 1
+    recoveryDuration: 0
+    reservationPolicy: 0
+  - recipe: {fileID: 11400000, guid: e51e111c4f15e4c9c97f78b951d471b9, type: 2}
     workDuration: 1
     recoveryDuration: 0
     reservationPolicy: 0

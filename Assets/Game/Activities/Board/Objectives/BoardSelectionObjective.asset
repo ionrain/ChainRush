@@ -1,0 +1,109 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da96b7a2c335d49a5875e768ce52b227, type: 3}
+  m_Name: BoardSelectionObjective
+  m_EditorClassIdentifier: Core::Core.Objectives.ObjectiveTemplateData
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects:
+    - {fileID: 11400000, guid: 11f65a92bd4d9475cbc102ba67e7505e, type: 2}
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: root
+      Entry: 7
+      Data: 0|Core.Objectives.ObjectiveNode, Core
+    - Name: _id
+      Entry: 1
+      Data: board-selection
+    - Name: _data
+      Entry: 6
+      Data: 
+    - Name: _state
+      Entry: 3
+      Data: 1
+    - Name: _activateConditions
+      Entry: 7
+      Data: 1|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: 2|Core.Objectives.ObjectiveConditionSelectionRequest, Core
+    - Name: _targetValue
+      Entry: 3
+      Data: 1
+    - Name: requestType
+      Entry: 10
+      Data: 0
+    - Name: compareOperation
+      Entry: 3
+      Data: 3
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: _successConditions
+      Entry: 7
+      Data: 3|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: 4|Core.Objectives.ObjectiveConditionSelectionRequest, Core
+    - Name: _targetValue
+      Entry: 3
+      Data: 0
+    - Name: requestType
+      Entry: 10
+      Data: 0
+    - Name: compareOperation
+      Entry: 3
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: _failConditions
+      Entry: 7
+      Data: 5|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+  completionPolicyType: 1

@@ -4,6 +4,7 @@ using System.Reflection;
 using ChainRush.Board;
 using Core;
 using Core.Activities;
+using Core.Activities.Selection;
 using Core.CapabilityHosts;
 using Core.Economy;
 using Core.Economy.Authoring;
@@ -13,7 +14,6 @@ using Core.Objectives;
 using Core.Orchestration;
 using Core.Production;
 using Core.Production.Authoring;
-using Core.Skills;
 using Core.Taxonomy;
 using Core.World;
 using UnityEditor;
@@ -22,7 +22,6 @@ using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 using EntityId = Core.Entities.EntityId;
 using FrameworkResourceData = Core.Economy.Modules.ResourceEconomyModule.ResourceData;
-using FrameworkSkillData = Core.Skills.SkillData;
 
 namespace ChainRush.Editor
 {
@@ -52,10 +51,15 @@ namespace ChainRush.Editor
         const string WaterPath = BoardRoot + "/Economy/WaterBoardBase.asset";
         const string WaterTagPath = BoardRoot + "/Taxonomy/WaterBoardItem.asset";
         const string BoardCellTagPath = BoardRoot + "/Taxonomy/BoardCellTag.asset";
-        const string MergeRecipePath = BoardRoot + "/Production/BoardMergeRecipe.asset";
+        const string BoardItemFamilyPath = BoardRoot + "/Taxonomy/BoardItemFamily.asset";
+        const string MergeSelectionTypePath = BoardRoot + "/Taxonomy/BoardMergeSelection.asset";
+        const string MergeSelectedTagPath = BoardRoot + "/Taxonomy/BoardMergeSelected.asset";
+        const string MergeRecipe4Path = BoardRoot + "/Production/BoardMergeRecipe4.asset";
+        const string MergeRecipe3Path = BoardRoot + "/Production/BoardMergeRecipe3.asset";
+        const string MergeRecipe2Path = BoardRoot + "/Production/BoardMergeRecipe2.asset";
+        const string MergeRecipe1Path = BoardRoot + "/Production/BoardMergeRecipe1.asset";
         const string MergeProductionPath = BoardRoot + "/Production/BoardProduction.asset";
         const string MergeCatalogPath = BoardRoot + "/Production/BoardProductionCatalog.asset";
-        const string MergeSkillPath = BoardRoot + "/Skills/BoardMergeSkill.asset";
         const string BoardUIPrefabPath = BoardRoot + "/UI/BoardUI.prefab";
         const string WaterProjectionPrefabPath =
             BoardRoot + "/Projection/WaterBoardBase.prefab";
@@ -85,13 +89,18 @@ namespace ChainRush.Editor
         const string PopulationCatalogPath = BoardRoot + "/Production/BoardPopulationCatalog.asset";
         const string PopulationAgentPath = AgentsRoot + "/BoardPopulationAgent.asset";
         const string ProductionAgentPath = AgentsRoot + "/BoardProductionAgent.asset";
+        const string SelectionAgentPath = AgentsRoot + "/BoardSelectionAgent.asset";
         const string PopulationObjectivePath = ObjectivesRoot + "/BoardPopulationObjective.asset";
+        const string SelectionObjectivePath = ObjectivesRoot + "/BoardSelectionObjective.asset";
+        const string MergeObjectivePath = ObjectivesRoot + "/BoardMergeObjective.asset";
         const string OperatorFamilyPath = OrchestrationTaxonomyRoot + "/BoardOperatorFamily.asset";
         const string PopulationAgentOperatorPath = OrchestrationTaxonomyRoot + "/BoardPopulationAgentOperator.asset";
         const string ProductionAgentOperatorPath = OrchestrationTaxonomyRoot + "/BoardProductionAgentOperator.asset";
         const string ProductionYieldOperatorPath = OrchestrationTaxonomyRoot + "/BoardProductionYieldOperator.asset";
         const string ProductionAvailableOperatorPath = OrchestrationTaxonomyRoot + "/BoardProductionAvailableOperator.asset";
         const string MaterializedProductionOperatorPath = OrchestrationTaxonomyRoot + "/BoardMaterializedProductionOperator.asset";
+        const string SelectionAgentOperatorPath = OrchestrationTaxonomyRoot + "/BoardSelectionAgentOperator.asset";
+        const string ProductionInputOperatorPath = OrchestrationTaxonomyRoot + "/BoardProductionInputOperator.asset";
         const string EconomyStateModulePath = OrchestrationModulesRoot + "/BoardEconomyState.asset";
         const string ProductionStateModulePath = OrchestrationModulesRoot + "/BoardProductionState.asset";
         const string ProjectionStateModulePath = OrchestrationModulesRoot + "/BoardProjectionState.asset";
@@ -102,10 +111,8 @@ namespace ChainRush.Editor
         const string EconomyDefinitionsInstallerPath = "Assets/Game/Runtime/Installers/ChainRushEconomyDefinitionsInstaller.asset";
         const string EconomyRuntimeInstallerPath = "Assets/Game/Runtime/Installers/ChainRushEconomyRuntimeInstaller.asset";
         const string TaxonomyInstallerPath = "Assets/Game/Runtime/Installers/ChainRushTaxonomyRuntimeInstaller.asset";
-        const string SkillsInstallerPath = "Assets/Game/Runtime/Installers/ChainRushGameplaySkillsInstaller.asset";
         const string FoundationInstallerPath = "Assets/Game/Runtime/Installers/ChainRushGameplayFoundationInstaller.asset";
         const string ProductionInstallerPath = "Assets/Game/Runtime/Installers/ChainRushProductionRuntimeInstaller.asset";
-        const string SimulationControlInstallerPath = "Assets/Game/Runtime/Installers/ChainRushSimulationControlInstaller.asset";
         const string ProjectionInstallerPath = "Assets/Game/Runtime/Installers/ChainRushProjectionRuntimeInstaller.asset";
 
         const string UpgradedAssetPath = BoardRoot + "/Economy/WaterBoardUpgraded.asset";
@@ -281,265 +288,67 @@ namespace ChainRush.Editor
             }
         }
 
-        [MenuItem("ChainRush/Activities/Board/Wire Vertical Slice Assets")]
-        public static void WireVerticalSliceAssets()
+        [MenuItem("ChainRush/Activities/Board/Add Production Input Operator")]
+        public static void AddProductionInputOperator()
         {
-            EnsureVerticalSliceTargetsDoNotExist();
+            EnsureAssetDoesNotExist(ProductionInputOperatorPath);
 
-            ActivityData boardActivity = LoadRequired<ActivityData>(BoardActivityPath);
-            CapabilityHostData boardHost = LoadRequired<CapabilityHostData>(BoardHostPath);
-            EconomyWalletData boardWallet = LoadRequired<EconomyWalletData>(BoardWalletPath);
-            TaxonomyTermData boardWalletTag = LoadRequired<TaxonomyTermData>(BoardWalletTagPath);
-            CapabilityHostData water = LoadRequired<CapabilityHostData>(WaterPath);
-            TaxonomyTermData waterTag = LoadRequired<TaxonomyTermData>(WaterTagPath);
-            TaxonomyTermData boardCellTag = LoadRequired<TaxonomyTermData>(BoardCellTagPath);
-            ProductionRecipeData mergeRecipe = LoadRequired<ProductionRecipeData>(MergeRecipePath);
-            ProductionData mergeProduction = LoadRequired<ProductionData>(MergeProductionPath);
-            ProductionCatalogData mergeCatalog = LoadRequired<ProductionCatalogData>(MergeCatalogPath);
-            FrameworkSkillData mergeSkill = LoadRequired<FrameworkSkillData>(MergeSkillPath);
-            ProgressivePlannerData planner = LoadRequired<ProgressivePlannerData>(PlannerPath);
-            BoardSpatialShapes shapes = LoadBoardSpatialShapes();
-            EconomyWalletData sharedWallet = LoadRequired<EconomyWalletData>(SharedWalletPath);
-            TaxonomyTermData sharedWalletTag = LoadRequired<TaxonomyTermData>(SharedWalletTagPath);
+            TaxonomyFamilyData operatorFamily = LoadRequired<TaxonomyFamilyData>(OperatorFamilyPath);
+            ActivityAgentDefinitionData populationAgent =
+                LoadRequired<ActivityAgentDefinitionData>(PopulationAgentPath);
+            ActivityAgentDefinitionData selectionAgent =
+                LoadRequired<ActivityAgentDefinitionData>(SelectionAgentPath);
+            ActivityAgentDefinitionData productionAgent =
+                LoadRequired<ActivityAgentDefinitionData>(ProductionAgentPath);
+            TaxonomyTermData populationAgentOperator =
+                LoadRequired<TaxonomyTermData>(PopulationAgentOperatorPath);
+            TaxonomyTermData selectionAgentOperator =
+                LoadRequired<TaxonomyTermData>(SelectionAgentOperatorPath);
+            TaxonomyTermData productionAgentOperator =
+                LoadRequired<TaxonomyTermData>(ProductionAgentOperatorPath);
+            TaxonomyTermData productionYieldOperator =
+                LoadRequired<TaxonomyTermData>(ProductionYieldOperatorPath);
+            TaxonomyTermData productionAvailableOperator =
+                LoadRequired<TaxonomyTermData>(ProductionAvailableOperatorPath);
+            TaxonomyTermData materializedProductionOperator =
+                LoadRequired<TaxonomyTermData>(MaterializedProductionOperatorPath);
+            OrchestratorAIBrainData brain = LoadRequired<OrchestratorAIBrainData>(BrainPath);
+            TaxonomyRuntimeInstallerData taxonomyInstaller =
+                LoadRequired<TaxonomyRuntimeInstallerData>(TaxonomyInstallerPath);
 
-            EnsureExistingVerticalSliceTargetsAreEmpty(
-                boardActivity,
-                boardHost,
-                mergeRecipe,
-                mergeProduction,
-                mergeCatalog,
-                mergeSkill);
-            EnsureVerticalSliceFolders();
+            TaxonomyTermData productionInputOperator = ScriptableObject.CreateInstance<TaxonomyTermData>();
+            productionInputOperator.name = "BoardProductionInputOperator";
+            ConfigureTaxonomyTerm(
+                productionInputOperator,
+                "chainrush.orchestration.board.production-input",
+                "Board Production Input",
+                operatorFamily,
+                6);
+            AssetDatabase.CreateAsset(productionInputOperator, ProductionInputOperatorPath);
 
-            var createdPaths = new List<string>(VerticalSliceCreatedPaths.Length);
-            try
-            {
-                FrameworkResourceData turnToken = CreateEconomyAsset<FrameworkResourceData>(
-                    TurnTokenPath,
-                    "BoardTurnToken",
-                    "chainrush.resource.board-turn-token",
-                    EconomyOperation.Require | EconomyOperation.Issue | EconomyOperation.Consume,
-                    createdPaths);
-                CapabilityHostData waterUnit = CreateCapabilityHost(
-                    WaterUnitPath,
-                    "WaterUnit",
-                    "chainrush.unit.water",
-                    new List<CapabilityEntry>(0),
-                    new List<WalletEntry>(0),
-                    createdPaths);
-                CapabilityHostData populationProducer = CreateCapabilityHost(
-                    PopulationProducerPath,
-                    "BoardPopulationProducer",
-                    "chainrush.board.population-producer",
-                    new List<CapabilityEntry>
-                    {
-                        CreateCapabilityEntry(CapabilityHostType.ProductionOwner),
-                    },
-                    new List<WalletEntry>(0),
-                    createdPaths);
+            ConfigureSelectionBrain(
+                brain,
+                populationAgent,
+                selectionAgent,
+                productionAgent,
+                populationAgentOperator,
+                selectionAgentOperator,
+                productionAgentOperator,
+                productionInputOperator,
+                productionYieldOperator,
+                productionAvailableOperator,
+                materializedProductionOperator);
 
-                ProductionRecipeData refreshRecipe = CreateEconomyAsset<ProductionRecipeData>(
-                    RefreshRecipePath,
-                    "BoardRefreshRecipe",
-                    "chainrush.production.board.refresh.recipe",
-                    EconomyOperation.Require | EconomyOperation.Issue,
-                    createdPaths);
-                ProductionRecipeData waterRecipe = CreateEconomyAsset<ProductionRecipeData>(
-                    WaterRecipePath,
-                    "WaterBoardBaseRecipe",
-                    "chainrush.production.board.water-base.recipe",
-                    EconomyOperation.Require | EconomyOperation.Issue,
-                    createdPaths);
-                ProductionCatalogData populationCatalog = CreateEconomyAsset<ProductionCatalogData>(
-                    PopulationCatalogPath,
-                    "BoardPopulationCatalog",
-                    "chainrush.production.board.population.catalog",
-                    EconomyOperation.Require | EconomyOperation.Issue,
-                    createdPaths);
-                ProductionData populationProduction = CreateEconomyAsset<ProductionData>(
-                    PopulationProductionPath,
-                    "BoardPopulationProduction",
-                    "chainrush.production.board.population",
-                    EconomyOperation.Require | EconomyOperation.Issue,
-                    createdPaths);
+            var installer = new SerializedObject(taxonomyInstaller);
+            SerializedProperty terms = installer.FindProperty("terms");
+            terms.arraySize++;
+            terms.GetArrayElementAtIndex(terms.arraySize - 1).objectReferenceValue = productionInputOperator;
+            installer.ApplyModifiedPropertiesWithoutUndo();
 
-                ConfigureRefreshRecipe(refreshRecipe, turnToken, sharedWalletTag);
-                ConfigureWaterRecipe(waterRecipe, water, boardWalletTag);
-                ConfigureCatalog(populationCatalog, refreshRecipe, waterRecipe);
-                ConfigureProduction(populationProduction, populationCatalog, boardCellTag);
-                SetField(
-                    populationProducer,
-                    "walletEntries",
-                    new List<WalletEntry>
-                    {
-                        new WalletEntry(
-                            boardWallet,
-                            new List<SeedEntry>
-                            {
-                                new SeedEntry(populationProduction, 1L, EconomyFormType.Stack),
-                            }),
-                    });
-                EditorUtility.SetDirty(populationProducer);
-
-                TaxonomyFamilyData operatorFamily = CreateTaxonomyFamily(
-                    OperatorFamilyPath,
-                    "BoardOperatorFamily",
-                    "chainrush.orchestration.board.operator",
-                    "ChainRush Board Operator",
-                    createdPaths);
-                TaxonomyTermData populationAgentOperator = CreateTaxonomyTerm(
-                    PopulationAgentOperatorPath,
-                    "BoardPopulationAgentOperator",
-                    "chainrush.orchestration.board.agent.population",
-                    "Board Population Agent",
-                    operatorFamily,
-                    0,
-                    createdPaths);
-                TaxonomyTermData productionAgentOperator = CreateTaxonomyTerm(
-                    ProductionAgentOperatorPath,
-                    "BoardProductionAgentOperator",
-                    "chainrush.orchestration.board.agent.production",
-                    "Board Production Agent",
-                    operatorFamily,
-                    1,
-                    createdPaths);
-                TaxonomyTermData productionYieldOperator = CreateTaxonomyTerm(
-                    ProductionYieldOperatorPath,
-                    "BoardProductionYieldOperator",
-                    "chainrush.orchestration.board.production-yield",
-                    "Board Production Yield",
-                    operatorFamily,
-                    2,
-                    createdPaths);
-                TaxonomyTermData productionAvailableOperator = CreateTaxonomyTerm(
-                    ProductionAvailableOperatorPath,
-                    "BoardProductionAvailableOperator",
-                    "chainrush.orchestration.board.production-available",
-                    "Board Production Available",
-                    operatorFamily,
-                    3,
-                    createdPaths);
-                TaxonomyTermData materializedProductionOperator = CreateTaxonomyTerm(
-                    MaterializedProductionOperatorPath,
-                    "BoardMaterializedProductionOperator",
-                    "chainrush.orchestration.board.production-materialized",
-                    "Board Materialized Production",
-                    operatorFamily,
-                    4,
-                    createdPaths);
-
-                ObjectiveTemplateData populationObjective = CreatePopulationObjective(
-                    turnToken,
-                    sharedWalletTag,
-                    boardCellTag,
-                    createdPaths);
-                ActivityAgentDefinitionData populationAgent = CreatePopulationAgent(
-                    planner,
-                    refreshRecipe,
-                    boardHost,
-                    boardCellTag,
-                    boardWalletTag,
-                    createdPaths);
-                ActivityAgentDefinitionData productionAgent = CreateProductionAgent(
-                    water,
-                    createdPaths);
-                EconomyStateOrchestrationModuleData economyState = CreateAsset<EconomyStateOrchestrationModuleData>(
-                    EconomyStateModulePath,
-                    "BoardEconomyState",
-                    createdPaths);
-                ProductionStateOrchestrationModuleData productionState = CreateAsset<ProductionStateOrchestrationModuleData>(
-                    ProductionStateModulePath,
-                    "BoardProductionState",
-                    createdPaths);
-                ProjectionStateOrchestrationModuleData projectionState = CreateAsset<ProjectionStateOrchestrationModuleData>(
-                    ProjectionStateModulePath,
-                    "BoardProjectionState",
-                    createdPaths);
-                OrchestratorAIBrainData brain = CreateBrain(
-                    populationAgent,
-                    productionAgent,
-                    populationAgentOperator,
-                    productionAgentOperator,
-                    productionYieldOperator,
-                    productionAvailableOperator,
-                    materializedProductionOperator,
-                    createdPaths);
-                ActivityOrchestrationConfigData orchestration = CreateOrchestration(
-                    brain,
-                    economyState,
-                    productionState,
-                    projectionState,
-                    createdPaths);
-
-                ConfigureMergeRecipe(mergeRecipe, water, waterUnit, boardWalletTag, sharedWalletTag);
-                ConfigureCatalog(mergeCatalog, mergeRecipe);
-                ConfigureProduction(mergeProduction, mergeCatalog, null);
-                ConfigureMergeSkill(mergeSkill, mergeRecipe);
-                ConfigureBoardHost(boardHost, boardWallet, mergeSkill, mergeProduction);
-                ConfigureBoardWater(water, waterTag);
-                ConfigureAddressable(
-                    WaterProjectionPrefabPath,
-                    "ChainRush-Activity-Board");
-                ConfigureBoardActivity(
-                    boardActivity,
-                    sharedWallet,
-                    boardWallet,
-                    turnToken,
-                    boardHost,
-                    populationProducer,
-                    populationObjective,
-                    orchestration,
-                    boardCellTag,
-                    shapes);
-                ConfigureRuntime(
-                    turnToken,
-                    waterUnit,
-                    populationProducer,
-                    refreshRecipe,
-                    waterRecipe,
-                    populationProduction,
-                    populationCatalog,
-                    populationObjective,
-                    populationAgent,
-                    productionAgent,
-                    operatorFamily,
-                    waterTag,
-                    populationAgentOperator,
-                    productionAgentOperator,
-                    productionYieldOperator,
-                    productionAvailableOperator,
-                    materializedProductionOperator,
-                    economyState,
-                    productionState,
-                    projectionState,
-                    brain,
-                    orchestration,
-                    boardWallet,
-                    boardHost,
-                    water,
-                    mergeRecipe,
-                    mergeProduction,
-                    mergeCatalog,
-                    mergeSkill,
-                    boardActivity,
-                    shapes);
-                ConfigureBoardUIPrefab(boardHost, mergeSkill);
-
-                AssetDatabase.DeleteAsset(UpgradedAssetPath);
-                AssetDatabase.DeleteAsset(UpgradedPrefabPath);
-                AssetDatabase.SaveAssets();
-                AssetDatabase.Refresh();
-                Selection.activeObject = orchestration;
-                EditorGUIUtility.PingObject(orchestration);
-                Debug.Log("[ChainRush] Board vertical slice assets were created and wired.");
-            }
-            catch
-            {
-                for (int i = createdPaths.Count - 1; i >= 0; i--)
-                    AssetDatabase.DeleteAsset(createdPaths[i]);
-                AssetDatabase.SaveAssets();
-                throw;
-            }
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            Selection.activeObject = productionInputOperator;
+            Debug.Log("[ChainRush] Added Board Production input operator.");
         }
 
         [MenuItem("ChainRush/Activities/Board/Complete Vertical Slice Wiring")]
@@ -824,6 +633,7 @@ namespace ChainRush.Editor
                 turnToken,
                 EconomyFormType.Stack,
                 new List<TaxonomyTermData> { sharedWalletTag },
+                null,
                 new LongFlatProgressionData(1L)));
             recipe.Outputs.Clear();
             EditorUtility.SetDirty(recipe);
@@ -841,6 +651,7 @@ namespace ChainRush.Editor
                 experience,
                 EconomyFormType.Stack,
                 new List<TaxonomyTermData> { sharedWalletTag },
+                null,
                 new LongStepProgressionData(6L, 2L, 1L)));
             recipe.Outputs.Clear();
             recipe.Outputs.Add(new ProductionOutputData(
@@ -866,31 +677,238 @@ namespace ChainRush.Editor
             EditorUtility.SetDirty(recipe);
         }
 
-        static void ConfigureMergeRecipe(
-            ProductionRecipeData recipe,
+        static ProductionRecipeData CreateMergeRecipe(
+            string path,
+            string name,
+            string id,
+            long selectedAmount,
             CapabilityHostData water,
             CapabilityHostData waterUnit,
             TaxonomyTermData boardWalletTag,
-            TaxonomyTermData sharedWalletTag)
+            TaxonomyTermData sharedWalletTag,
+            TaxonomyTermData selectedTag,
+            List<string> createdPaths)
         {
+            ProductionRecipeData recipe = CreateEconomyAsset<ProductionRecipeData>(
+                path,
+                name,
+                id,
+                EconomyOperation.Require | EconomyOperation.Issue,
+                createdPaths);
             recipe.Inputs.Clear();
-            for (int i = 0; i < 3; i++)
-            {
-                recipe.Inputs.Add(new ProductionInputData(
-                    EconomyOperation.Consume,
-                    water,
-                    EconomyFormType.Token,
-                    new List<TaxonomyTermData> { boardWalletTag },
-                    new LongFlatProgressionData(1L)));
-            }
-
+            recipe.Inputs.Add(new ProductionInputData(
+                EconomyOperation.Consume,
+                water,
+                EconomyFormType.Token,
+                new List<TaxonomyTermData> { boardWalletTag },
+                new List<TaxonomyTermData> { selectedTag },
+                new LongFlatProgressionData(selectedAmount)));
             recipe.Outputs.Clear();
             recipe.Outputs.Add(new ProductionOutputData(
                 waterUnit,
-                EconomyFormType.Token,
+                EconomyFormType.Stack,
                 new List<TaxonomyTermData> { sharedWalletTag },
                 new LongFlatProgressionData(1L)));
             EditorUtility.SetDirty(recipe);
+            return recipe;
+        }
+
+        static ObjectiveTemplateData CreateSelectionObjective(
+            TaxonomyTermData requestType,
+            List<string> createdPaths)
+        {
+            var root = new ObjectiveNode(
+                "board-selection",
+                null,
+                new List<ObjectiveCondition>
+                {
+                    new ObjectiveConditionSelectionRequest(
+                        requestType,
+                        1L,
+                        CompareOperation.GreaterOrEqual),
+                },
+                new List<ObjectiveCondition>
+                {
+                    new ObjectiveConditionSelectionRequest(
+                        requestType,
+                        0L,
+                        CompareOperation.Equal),
+                },
+                new List<ObjectiveCondition>(0));
+            ObjectiveTemplateData objective = ScriptableObject.CreateInstance<ObjectiveTemplateData>();
+            objective.name = "BoardSelectionObjective";
+            SetField(objective, "root", root);
+            SetField(objective, "completionPolicyType", ObjectiveCompletionPolicyType.Reset);
+            AssetDatabase.CreateAsset(objective, SelectionObjectivePath);
+            createdPaths.Add(SelectionObjectivePath);
+            return objective;
+        }
+
+        static ObjectiveTemplateData CreateMergeObjective(
+            CapabilityHostData water,
+            TaxonomyTermData boardWalletTag,
+            TaxonomyTermData selectedTag,
+            List<string> createdPaths)
+        {
+            var root = new ObjectiveNode(
+                "board-merge",
+                null,
+                new List<ObjectiveCondition>
+                {
+                    CreateSelectedEconomyCondition(
+                        water,
+                        boardWalletTag,
+                        selectedTag,
+                        1L,
+                        CompareOperation.GreaterOrEqual),
+                },
+                new List<ObjectiveCondition>
+                {
+                    CreateSelectedEconomyCondition(
+                        water,
+                        boardWalletTag,
+                        selectedTag,
+                        0L,
+                        CompareOperation.Equal),
+                },
+                new List<ObjectiveCondition>(0));
+            ObjectiveTemplateData objective = ScriptableObject.CreateInstance<ObjectiveTemplateData>();
+            objective.name = "BoardMergeObjective";
+            SetField(objective, "root", root);
+            SetField(objective, "completionPolicyType", ObjectiveCompletionPolicyType.Reset);
+            AssetDatabase.CreateAsset(objective, MergeObjectivePath);
+            createdPaths.Add(MergeObjectivePath);
+            return objective;
+        }
+
+        static ObjectiveConditionEconomyMetric CreateSelectedEconomyCondition(
+            CapabilityHostData water,
+            TaxonomyTermData boardWalletTag,
+            TaxonomyTermData selectedTag,
+            long targetValue,
+            CompareOperation compareOperation)
+        {
+            return new ObjectiveConditionEconomyMetric(
+                new List<TaxonomyTermData> { boardWalletTag },
+                EconomyFormType.Token,
+                water,
+                targetValue,
+                compareOperation,
+                null,
+                new List<TaxonomyTermData> { selectedTag });
+        }
+
+        static ActivityAgentDefinitionData CreateSelectionAgent(
+            CapabilityHostData boardHost,
+            TaxonomyTermData waterTag,
+            TaxonomyTermData requestType,
+            TaxonomyTermData selectedTag,
+            List<string> createdPaths)
+        {
+            var agentData = new SelectionAgentData();
+            SetField(
+                agentData,
+                "resultTags",
+                new List<TaxonomyTermData> { selectedTag });
+
+            ActivityAgentDefinitionData definition = CreateAgentDefinition(
+                SelectionAgentPath,
+                "BoardSelectionAgent",
+                "board-selection",
+                110,
+                ObjectiveCommandFailurePolicyType.FailObjective,
+                new List<ObjectiveCondition>
+                {
+                    new ObjectiveConditionSelectionRequest(
+                        requestType,
+                        0L,
+                        CompareOperation.Equal),
+                },
+                new List<ActivityAgentSelectionCriterionData>
+                {
+                    CreateMaterializedCriterion(boardHost, null),
+                    CreateOwnerCriterion(),
+                },
+                new List<ActivityAgentSelectionCriterionData>
+                {
+                    CreateMaterializedCriterion(
+                        null,
+                        null,
+                        new List<TaxonomyTermData> { waterTag }),
+                    CreateOwnerCriterion(),
+                    new SameAssetCriterionData(),
+                    new StepDistanceCriterionData(1000, 1000),
+                },
+                agentData,
+                createdPaths);
+            SetField(
+                definition,
+                "stopPolicyType",
+                ActivityAgentStopPolicyType.AssignmentSuccess);
+            return definition;
+        }
+
+        static void ConfigureSelectionBoardHost(
+            CapabilityHostData boardHost,
+            EconomyWalletData boardWallet,
+            ProductionData mergeProduction)
+        {
+            SetField(
+                boardHost,
+                "capabilities",
+                new List<CapabilityEntry>
+                {
+                    CreateCapabilityEntry(CapabilityHostType.SelectionOwner),
+                    CreateCapabilityEntry(CapabilityHostType.ProductionOwner),
+                });
+            SetField(
+                boardHost,
+                "walletEntries",
+                new List<WalletEntry>
+                {
+                    new WalletEntry(
+                        boardWallet,
+                        new List<SeedEntry>
+                        {
+                            new SeedEntry(mergeProduction, 1L, EconomyFormType.Stack),
+                        }),
+                });
+            EditorUtility.SetDirty(boardHost);
+        }
+
+        static void ConfigureProductionAgentForMerge(
+            ActivityAgentDefinitionData productionAgent,
+            CapabilityHostData water,
+            TaxonomyTermData boardWalletTag,
+            TaxonomyTermData selectedTag)
+        {
+            var materializedMatch = new ObjectiveConditionMaterializedEntity(
+                EntityId.Invalid,
+                water,
+                EconomyFormType.Token,
+                new List<TaxonomyTermData>(0),
+                new List<CapabilityHostType>(0),
+                1L,
+                CompareOperation.GreaterOrEqual,
+                SpatialMarkerRef.Invalid);
+            SetField(
+                productionAgent,
+                "matchConditions",
+                new List<ObjectiveCondition>
+                {
+                    materializedMatch,
+                    CreateSelectedEconomyCondition(
+                        water,
+                        boardWalletTag,
+                        selectedTag,
+                        0L,
+                        CompareOperation.Equal),
+                });
+            SetField(
+                productionAgent,
+                "stopPolicyType",
+                ActivityAgentStopPolicyType.AssignmentSuccess);
+            EditorUtility.SetDirty(productionAgent);
         }
 
         static void ConfigureCatalog(
@@ -923,61 +941,6 @@ namespace ChainRush.Editor
             SetField(production, "startPolicy", ProductionStartPolicyType.Explicit);
             SetField(production, "materializationProviderType", materializationProviderType);
             EditorUtility.SetDirty(production);
-        }
-
-        static void ConfigureMergeSkill(
-            FrameworkSkillData mergeSkill,
-            ProductionRecipeData mergeRecipe)
-        {
-            if (mergeSkill.Effects.Count != 1
-                || !(mergeSkill.Effects[0] is SkillProductionEffectData effect)
-                || effect.InputMappings.Count != 3)
-            {
-                throw new InvalidOperationException(
-                    "BoardMergeSkill must contain exactly one Production effect with three input mappings.");
-            }
-
-            SetField(effect, "recipe", mergeRecipe);
-            EditorUtility.SetDirty(mergeSkill);
-        }
-
-        static void ConfigureBoardHost(
-            CapabilityHostData boardHost,
-            EconomyWalletData boardWallet,
-            FrameworkSkillData mergeSkill,
-            ProductionData mergeProduction)
-        {
-            SetField(
-                boardHost,
-                "capabilities",
-                new List<CapabilityEntry>
-                {
-                    CreateCapabilityEntry(CapabilityHostType.SkillOwner),
-                    CreateCapabilityEntry(CapabilityHostType.ProductionOwner),
-                    CreateCapabilityEntry(CapabilityHostType.ControlOwner),
-                });
-            SetField(
-                boardHost,
-                "walletEntries",
-                new List<WalletEntry>
-                {
-                    new WalletEntry(
-                        boardWallet,
-                        new List<SeedEntry>
-                        {
-                            new SeedEntry(mergeSkill, 1L, EconomyFormType.Stack),
-                            new SeedEntry(mergeProduction, 1L, EconomyFormType.Stack),
-                        }),
-                });
-            SetField(
-                boardHost,
-                "allowedOperations",
-                EconomyOperation.Require
-                | EconomyOperation.Issue
-                | EconomyOperation.Consume
-                | EconomyOperation.Transfer
-                | EconomyOperation.Destroy);
-            EditorUtility.SetDirty(boardHost);
         }
 
         static void ConfigureBoardWater(
@@ -1025,7 +988,9 @@ namespace ChainRush.Editor
                 EconomyFormType.Stack,
                 turnToken,
                 1L,
-                CompareOperation.GreaterOrEqual);
+                CompareOperation.GreaterOrEqual,
+                null,
+                null);
             var success = new ObjectiveConditionMarkerAvailability(
                 null,
                 EconomyFormType.Token,
@@ -1067,7 +1032,7 @@ namespace ChainRush.Editor
                 new List<TaxonomyTermData> { boardCellTag },
                 0L,
                 CompareOperation.Equal);
-            return CreateAgentDefinition(
+            ActivityAgentDefinitionData definition = CreateAgentDefinition(
                 PopulationAgentPath,
                 "BoardPopulationAgent",
                 "chainrush-board-population",
@@ -1079,8 +1044,14 @@ namespace ChainRush.Editor
                     CreateMaterializedCriterion(executorHost, null),
                     CreateOwnerCriterion(),
                 },
+                new List<ActivityAgentSelectionCriterionData>(0),
                 agentData,
                 createdPaths);
+            SetField(
+                definition,
+                "stopPolicyType",
+                ActivityAgentStopPolicyType.AssignmentSuccess);
+            return definition;
         }
 
         static void ConfigurePopulationAgentExecutor(
@@ -1127,7 +1098,7 @@ namespace ChainRush.Editor
                 1L,
                 CompareOperation.GreaterOrEqual,
                 SpatialMarkerRef.Invalid);
-            return CreateAgentDefinition(
+            ActivityAgentDefinitionData definition = CreateAgentDefinition(
                 ProductionAgentPath,
                 "BoardProductionAgent",
                 "chainrush-board-production",
@@ -1141,8 +1112,14 @@ namespace ChainRush.Editor
                         new List<CapabilityHostType> { CapabilityHostType.ProductionOwner }),
                     CreateOwnerCriterion(),
                 },
+                new List<ActivityAgentSelectionCriterionData>(0),
                 new ProductionActivityOrchestrationAgentData(),
                 createdPaths);
+            SetField(
+                definition,
+                "stopPolicyType",
+                ActivityAgentStopPolicyType.AssignmentSuccess);
+            return definition;
         }
 
         static ActivityAgentDefinitionData CreateAgentDefinition(
@@ -1153,6 +1130,7 @@ namespace ChainRush.Editor
             ObjectiveCommandFailurePolicyType commandFailurePolicyType,
             List<ObjectiveCondition> matchConditions,
             List<ActivityAgentSelectionCriterionData> executorCriteria,
+            List<ActivityAgentSelectionCriterionData> targetCriteria,
             ActivityOrchestrationAgentData agent,
             List<string> createdPaths)
         {
@@ -1164,7 +1142,7 @@ namespace ChainRush.Editor
             SetField(definition, "commandFailurePolicyType", commandFailurePolicyType);
             SetField(definition, "matchConditions", matchConditions);
             SetField(definition, "executorSelectionCriteria", executorCriteria);
-            SetField(definition, "targetSelectionCriteria", new List<ActivityAgentSelectionCriterionData>(0));
+            SetField(definition, "targetSelectionCriteria", targetCriteria);
             SetField(definition, "controlType", ActivityAgentControlType.Endpoint);
             SetField(definition, "agent", agent);
             SetField(definition, "stopPolicyType", ActivityAgentStopPolicyType.None);
@@ -1177,14 +1155,18 @@ namespace ChainRush.Editor
 
         static MaterializedEntitySelectionCriterionData CreateMaterializedCriterion(
             EconomyAssetData asset,
-            List<CapabilityHostType> capabilities)
+            List<CapabilityHostType> capabilities,
+            List<TaxonomyTermData> requiredAssetTags = null)
         {
             var criterion = new MaterializedEntitySelectionCriterionData();
             SetField(criterion, "requirementType", ActivityAgentCriterionRequirementType.Required);
             SetField(criterion, "weight", 1);
             SetField(criterion, "economyAsset", asset);
             SetField(criterion, "economyFormType", EconomyFormType.Token);
-            SetField(criterion, "requiredAssetTags", new List<TaxonomyTermData>(0));
+            SetField(
+                criterion,
+                "requiredAssetTags",
+                requiredAssetTags ?? new List<TaxonomyTermData>(0));
             SetField(
                 criterion,
                 "requiredCapabilityTypes",
@@ -1295,6 +1277,108 @@ namespace ChainRush.Editor
                 {
                     populationOperation,
                     productionOperation,
+                    yieldOperation,
+                    availableOperation,
+                    materializedProductionOperation,
+                });
+            SetField(brain, "decisionGraph", graph);
+            EditorUtility.SetDirty(brain);
+        }
+
+        static void ConfigureSelectionBrain(
+            OrchestratorAIBrainData brain,
+            ActivityAgentDefinitionData populationAgent,
+            ActivityAgentDefinitionData selectionAgent,
+            ActivityAgentDefinitionData productionAgent,
+            TaxonomyTermData populationAgentOperator,
+            TaxonomyTermData selectionAgentOperator,
+            TaxonomyTermData productionAgentOperator,
+            TaxonomyTermData productionInputOperator,
+            TaxonomyTermData productionYieldOperator,
+            TaxonomyTermData productionAvailableOperator,
+            TaxonomyTermData materializedProductionOperator)
+        {
+            var populationOperation = new AgentDecompOpData();
+            SetField(populationOperation, "operatorId", populationAgentOperator);
+            SetField(populationOperation, "agentDefinition", populationAgent);
+            var selectionOperation = new AgentDecompOpData();
+            SetField(selectionOperation, "operatorId", selectionAgentOperator);
+            SetField(selectionOperation, "agentDefinition", selectionAgent);
+            var productionOperation = new AgentDecompOpData();
+            SetField(productionOperation, "operatorId", productionAgentOperator);
+            SetField(productionOperation, "agentDefinition", productionAgent);
+            var productionInputOperation = new ProductionInputConsumptionDecompOpData();
+            SetField(productionInputOperation, "operatorId", productionInputOperator);
+            var yieldOperation = new ProductionYieldDecompOpData();
+            SetField(yieldOperation, "operatorId", productionYieldOperator);
+            var availableOperation = new ProductionAvailableDecompOpData();
+            SetField(availableOperation, "operatorId", productionAvailableOperator);
+            var materializedProductionOperation = new ProductionMaterializedEntityDecompOpData();
+            SetField(materializedProductionOperation, "operatorId", materializedProductionOperator);
+
+            var graph = new OrchestrationDecisionGraphData();
+            SetField(
+                graph,
+                "nodes",
+                new List<OrchestrationDecisionNodeData>
+                {
+                    CreateDecision(
+                        "board-population-agent",
+                        OrchestrationFactType.MaterializationMarkerAvailable,
+                        populationAgentOperator,
+                        true,
+                        OrchestrationDecompositionScopeType.GlobalObjective),
+                    CreateDecision(
+                        "board-selection-agent",
+                        OrchestrationFactType.SelectionRequest,
+                        selectionAgentOperator,
+                        true,
+                        OrchestrationDecompositionScopeType.GlobalObjective),
+                    CreateDecision(
+                        "board-production-agent-materialized",
+                        OrchestrationFactType.MaterializedEntity,
+                        productionAgentOperator,
+                        true,
+                        OrchestrationDecompositionScopeType.GlobalObjective),
+                    CreateDecision(
+                        "board-production-agent-economy",
+                        OrchestrationFactType.EconomyAmount,
+                        productionAgentOperator,
+                        true,
+                        OrchestrationDecompositionScopeType.GlobalObjective),
+                    CreateDecision(
+                        "board-production-input",
+                        OrchestrationFactType.EconomyAmount,
+                        productionInputOperator,
+                        false,
+                        OrchestrationDecompositionScopeType.AgentLocal),
+                    CreateDecision(
+                        "board-materialized-production",
+                        OrchestrationFactType.MaterializedEntity,
+                        materializedProductionOperator,
+                        false,
+                        OrchestrationDecompositionScopeType.AgentLocal),
+                    CreateDecision(
+                        "board-production-yield",
+                        OrchestrationFactType.ProductionYield,
+                        productionYieldOperator,
+                        false),
+                    CreateDecision(
+                        "board-production-available",
+                        OrchestrationFactType.ProductionAvailable,
+                        productionAvailableOperator,
+                        false),
+                });
+
+            SetField(
+                brain,
+                "operators",
+                new List<OrchestrationDecompOpData>
+                {
+                    populationOperation,
+                    selectionOperation,
+                    productionOperation,
+                    productionInputOperation,
                     yieldOperation,
                     availableOperation,
                     materializedProductionOperation,
@@ -1434,126 +1518,36 @@ namespace ChainRush.Editor
             EditorUtility.SetDirty(activity);
         }
 
-        static void ConfigureRuntime(
-            EconomyAssetData turnToken,
-            CapabilityHostData waterUnit,
-            CapabilityHostData populationProducer,
-            ProductionRecipeData refreshRecipe,
-            ProductionRecipeData waterRecipe,
-            ProductionData populationProduction,
-            ProductionCatalogData populationCatalog,
+        static void ConfigureBoardObjectives(
+            ActivityData activity,
             ObjectiveTemplateData populationObjective,
-            ActivityAgentDefinitionData populationAgent,
-            ActivityAgentDefinitionData productionAgent,
-            TaxonomyFamilyData operatorFamily,
-            TaxonomyTermData waterTag,
-            TaxonomyTermData populationAgentOperator,
-            TaxonomyTermData productionAgentOperator,
-            TaxonomyTermData productionYieldOperator,
-            TaxonomyTermData productionAvailableOperator,
-            TaxonomyTermData materializedProductionOperator,
-            EconomyStateOrchestrationModuleData economyState,
-            ProductionStateOrchestrationModuleData productionState,
-            ProjectionStateOrchestrationModuleData projectionState,
-            OrchestratorAIBrainData brain,
-            ActivityOrchestrationConfigData orchestration,
-            EconomyWalletData boardWallet,
-            CapabilityHostData boardHost,
-            CapabilityHostData water,
-            ProductionRecipeData mergeRecipe,
-            ProductionData mergeProduction,
-            ProductionCatalogData mergeCatalog,
-            FrameworkSkillData mergeSkill,
-            ActivityData boardActivity,
-            BoardSpatialShapes shapes)
+            ObjectiveTemplateData selectionObjective,
+            ObjectiveTemplateData mergeObjective)
         {
-            EconomyDefinitionsInstallerData economyInstaller =
-                LoadRequired<EconomyDefinitionsInstallerData>(EconomyDefinitionsInstallerPath);
-            var assets = new List<EconomyAssetData>(GetField<List<EconomyAssetData>>(economyInstaller, "assets"));
-            AddUnique(
-                assets,
-                turnToken,
-                waterUnit,
-                populationProducer,
-                refreshRecipe,
-                waterRecipe,
-                populationProduction,
-                populationCatalog,
-                boardHost,
-                water,
-                mergeRecipe,
-                mergeProduction,
-                mergeCatalog,
-                mergeSkill,
-                boardActivity);
-            List<SpatialShapeData> spatialShapes = shapes.All;
-            for (int i = 0; i < spatialShapes.Count; i++)
-                AddUnique(assets, spatialShapes[i]);
-            SetField(economyInstaller, "assets", assets);
+            if (activity == null || activity.Teams.Count != 1)
+                throw new InvalidOperationException("Board Activity must contain exactly one team.");
 
-            var wallets = new List<EconomyWalletData>(GetField<List<EconomyWalletData>>(economyInstaller, "wallets"));
-            AddUnique(wallets, boardWallet);
-            SetField(economyInstaller, "wallets", wallets);
-            EditorUtility.SetDirty(economyInstaller);
+            ActivityTeamData team = activity.Teams[0];
+            SetStructField(
+                ref team,
+                "objectives",
+                new List<ActivityTeamObjectiveData>
+                {
+                    CreateTeamObjective(populationObjective),
+                    CreateTeamObjective(selectionObjective),
+                    CreateTeamObjective(mergeObjective),
+                });
+            activity.Teams[0] = team;
+            EditorUtility.SetDirty(activity);
+        }
 
-            EconomyRuntimeInstallerData economyRuntime =
-                LoadRequired<EconomyRuntimeInstallerData>(EconomyRuntimeInstallerPath);
-            var domains = new List<EconomyDomainType>(
-                GetField<List<EconomyDomainType>>(economyRuntime, "domains"));
-            if (!domains.Contains(EconomyDomainType.Spatial))
-                domains.Add(EconomyDomainType.Spatial);
-            SetField(economyRuntime, "domains", domains);
-            EditorUtility.SetDirty(economyRuntime);
-
-            TaxonomyRuntimeInstallerData taxonomyInstaller =
-                LoadRequired<TaxonomyRuntimeInstallerData>(TaxonomyInstallerPath);
-            var families = new List<TaxonomyFamilyData>(
-                GetField<TaxonomyFamilyData[]>(taxonomyInstaller, "families")
-                ?? new TaxonomyFamilyData[0]);
-            AddUnique(families, operatorFamily);
-            SetField(taxonomyInstaller, "families", families.ToArray());
-            var terms = new List<TaxonomyTermData>(
-                GetField<TaxonomyTermData[]>(taxonomyInstaller, "terms")
-                ?? new TaxonomyTermData[0]);
-            AddUnique(
-                terms,
-                waterTag,
-                populationAgentOperator,
-                productionAgentOperator,
-                productionYieldOperator,
-                productionAvailableOperator,
-                materializedProductionOperator);
-            SetField(taxonomyInstaller, "terms", terms.ToArray());
-            EditorUtility.SetDirty(taxonomyInstaller);
-
-            GameplaySkillsInstallerData skillsInstaller =
-                LoadRequired<GameplaySkillsInstallerData>(SkillsInstallerPath);
-            var skills = new List<FrameworkSkillData>(
-                GetField<List<FrameworkSkillData>>(skillsInstaller, "skills"));
-            AddUnique(skills, mergeSkill);
-            SetField(skillsInstaller, "skills", skills);
-            EditorUtility.SetDirty(skillsInstaller);
-
-            GameRuntimeProfileData profile = LoadRequired<GameRuntimeProfileData>(RuntimeProfilePath);
-            var installers = new List<GameRuntimeInstallerData>(profile.Installers);
-            AddUnique(
-                installers,
-                LoadRequired<GameRuntimeInstallerData>(FoundationInstallerPath),
-                LoadRequired<GameRuntimeInstallerData>(SkillsInstallerPath),
-                LoadRequired<GameRuntimeInstallerData>(ProductionInstallerPath),
-                LoadRequired<GameRuntimeInstallerData>(SimulationControlInstallerPath),
-                LoadRequired<GameRuntimeInstallerData>(ProjectionInstallerPath));
-            SetField(profile, "installers", installers);
-            EditorUtility.SetDirty(profile);
-
-            EditorUtility.SetDirty(populationObjective);
-            EditorUtility.SetDirty(populationAgent);
-            EditorUtility.SetDirty(productionAgent);
-            EditorUtility.SetDirty(economyState);
-            EditorUtility.SetDirty(productionState);
-            EditorUtility.SetDirty(projectionState);
-            EditorUtility.SetDirty(brain);
-            EditorUtility.SetDirty(orchestration);
+        static ActivityTeamObjectiveData CreateTeamObjective(ObjectiveTemplateData objective)
+        {
+            ActivityTeamObjectiveData teamObjective = default;
+            SetStructField(ref teamObjective, "template", objective);
+            SetStructField(ref teamObjective, "successScoreDelta", 0);
+            SetStructField(ref teamObjective, "failScoreDelta", 0);
+            return teamObjective;
         }
 
         static void ConfigureOrchestrationModules(
@@ -1593,22 +1587,24 @@ namespace ChainRush.Editor
 
         static void ConfigureBoardUIPrefab(
             CapabilityHostData boardHost,
-            FrameworkSkillData mergeSkill)
+            TaxonomyTermData selectionRequestType)
         {
             GameObject root = PrefabUtility.LoadPrefabContents(BoardUIPrefabPath);
             try
             {
-                BoardUIController controller =
-                    root.GetComponent<BoardUIController>();
+                BoardUIController controller = root.GetComponent<BoardUIController>();
                 if (controller == null)
-                {
-                    throw new InvalidOperationException(
-                        "BoardUI prefab has no BoardUIController.");
-                }
+                    throw new InvalidOperationException("BoardUI prefab has no BoardUIController.");
 
                 var serialized = new SerializedObject(controller);
                 serialized.FindProperty("boardHostDefinition").objectReferenceValue = boardHost;
-                serialized.FindProperty("mergeSkill").objectReferenceValue = mergeSkill;
+                SerializedProperty requestType = serialized.FindProperty("selectionRequestType");
+                if (requestType == null)
+                {
+                    throw new InvalidOperationException(
+                        "BoardUIController selectionRequestType field is not imported yet.");
+                }
+                requestType.objectReferenceValue = selectionRequestType;
                 serialized.ApplyModifiedPropertiesWithoutUndo();
                 PrefabUtility.SaveAsPrefabAsset(root, BoardUIPrefabPath);
             }
@@ -2139,32 +2135,6 @@ namespace ChainRush.Editor
             for (int i = createdPaths.Count - 1; i >= 0; i--)
                 AssetDatabase.DeleteAsset(createdPaths[i]);
             AssetDatabase.SaveAssets();
-        }
-
-        static void EnsureExistingVerticalSliceTargetsAreEmpty(
-            ActivityData boardActivity,
-            CapabilityHostData boardHost,
-            ProductionRecipeData mergeRecipe,
-            ProductionData mergeProduction,
-            ProductionCatalogData mergeCatalog,
-            FrameworkSkillData mergeSkill)
-        {
-            if (boardActivity.Teams.Count != 1
-                || boardActivity.Teams[0].Objectives.Count != 0
-                || boardActivity.Teams[0].Features.Count != 0
-                || boardActivity.Teams[0].Wallets.Count != 1
-                || boardHost.WalletEntries.Count != 0
-                || mergeRecipe.Inputs.Count != 0
-                || mergeRecipe.Outputs.Count != 0
-                || mergeProduction.SupportedCatalogs.Count != 0
-                || mergeCatalog.Entries.Count != 0
-                || mergeSkill.Effects.Count != 1
-                || !(mergeSkill.Effects[0] is SkillProductionEffectData effect)
-                || effect.Recipe != null)
-            {
-                throw new InvalidOperationException(
-                    "Board vertical slice skeleton is not in the expected unwired state. Refusing to rewrite existing authoring.");
-            }
         }
 
         static void EnsureAssetDoesNotExist(string path)

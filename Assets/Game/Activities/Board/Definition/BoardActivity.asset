@@ -61,6 +61,12 @@ MonoBehaviour:
     - template: {fileID: 11400000, guid: ad98ef64fbb8347228d05b01fe0a089f, type: 2}
       successScoreDelta: 0
       failScoreDelta: 0
+    - template: {fileID: 11400000, guid: b13d94f121ff3454dbb2c014e155f58a, type: 2}
+      successScoreDelta: 0
+      failScoreDelta: 0
+    - template: {fileID: 11400000, guid: d8cf4ba54ad97453085a33eb1da3aeeb, type: 2}
+      successScoreDelta: 0
+      failScoreDelta: 0
     wallets:
     - wallet: {fileID: 11400000, guid: 16da9107fd104467980bd94f53e0f9e1, type: 2}
       seed: []

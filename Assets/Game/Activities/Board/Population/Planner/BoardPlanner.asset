@@ -40,8 +40,8 @@ MonoBehaviour:
     - rid: 2807516545835073666
       type: {class: LongLinearProgressionData, ns: Core, asm: Core}
       data:
-        baseValue: 3
-        step: 0
+        baseValue: 2
+        step: 1
     - rid: 2807516545835073667
       type: {class: LongLinearProgressionData, ns: Core, asm: Core}
       data:
@@ -50,7 +50,7 @@ MonoBehaviour:
     - rid: 2807516545835073668
       type: {class: LongLinearProgressionData, ns: Core, asm: Core}
       data:
-        baseValue: 1
+        baseValue: 0
         step: 0
     - rid: 2807516545835073669
       type: {class: LongLinearProgressionData, ns: Core, asm: Core}

@@ -1,17 +1,16 @@
 using System;
 using System.Collections.Generic;
 using Core.Activities;
+using Core.Activities.Selection;
 using Core.CapabilityHosts;
 using Core.CapabilityHosts.Runtime;
 using Core.Entities;
 using Core.Events;
-using Core.SimulationControl;
-using Core.Skills;
+using Core.Taxonomy;
 using Core.UI.Flow;
 using UnityEngine;
 using UnityEngine.UI;
 using EntityId = Core.Entities.EntityId;
-using FrameworkSkillData = Core.Skills.SkillData;
 
 namespace ChainRush.Board
 {
@@ -20,14 +19,14 @@ namespace ChainRush.Board
         UIPresentationController,
         IEventListener<CapabilityHostRegisteredEvent>,
         IEventListener<CapabilityHostUnregisteredEvent>,
-        IEventListener<SimulationControlResultEvent>,
-        IEventListener<SkillExecutionTerminatedEvent>
+        IEventListener<SelectionProgressEvent>,
+        IEventListener<SelectionResultEvent>
     {
         [SerializeField] RectTransform gridRoot;
         [SerializeField] GridLayoutGroup gridLayout;
         [SerializeField] BoardCellView cellPrefab;
         [SerializeField] CapabilityHostBaseData boardHostDefinition;
-        [SerializeField] FrameworkSkillData mergeSkill;
+        [SerializeField] TaxonomyTermData selectionRequestType;
 
         readonly List<BoardCellView> _cells = new List<BoardCellView>();
         readonly List<BoardCellView> _selectedCells = new List<BoardCellView>(4);
@@ -39,24 +38,23 @@ namespace ChainRush.Board
         bool _selectionLocked;
         bool _awaitingBoardRefresh;
         bool _boardRefreshObserved;
-        SimulationControlRequestId _pendingRequestId;
-        SkillExecutionRef _pendingExecutionRef;
+        SelectionIntentEvent _pendingBeginIntent;
 
         void OnEnable()
         {
             EventBus.Register<CapabilityHostRegisteredEvent>(this);
             EventBus.Register<CapabilityHostUnregisteredEvent>(this);
-            EventBus.Register<SimulationControlResultEvent>(this);
-            EventBus.Register<SkillExecutionTerminatedEvent>(this);
+            EventBus.Register<SelectionProgressEvent>(this);
+            EventBus.Register<SelectionResultEvent>(this);
         }
 
         void OnDisable()
         {
+            CancelPendingSelection();
             EventBus.Unregister<CapabilityHostRegisteredEvent>(this);
             EventBus.Unregister<CapabilityHostUnregisteredEvent>(this);
-            EventBus.Unregister<SimulationControlResultEvent>(this);
-            EventBus.Unregister<SkillExecutionTerminatedEvent>(this);
-            ClearPendingControl();
+            EventBus.Unregister<SelectionProgressEvent>(this);
+            EventBus.Unregister<SelectionResultEvent>(this);
             ClearSelection();
             _isSelecting = false;
         }
@@ -119,7 +117,7 @@ namespace ChainRush.Board
 
             ClearSelection();
             _isSelecting = false;
-            ClearPendingControl();
+            CancelPendingSelection();
         }
 
         public void OnEvent(CapabilityHostRegisteredEvent e)
@@ -147,81 +145,98 @@ namespace ChainRush.Board
             _awaitingBoardRefresh = false;
             _boardRefreshObserved = false;
             _isSelecting = false;
-            ClearPendingControl();
+            CancelPendingSelection();
             ClearSelection();
         }
 
-        public void OnEvent(SimulationControlResultEvent e)
+        public void OnEvent(SelectionProgressEvent e)
         {
-            if (!_pendingRequestId.IsValid
-                || e.RequestId != _pendingRequestId
-                || _context == null
-                || e.ActivityId != _context.ActivityId
-                || e.HostEntityId != _boardHostEntityId
-                || e.Skill != mergeSkill)
+            if (!MatchesPendingRequest(
+                    e.RequestId,
+                    e.ActivityId,
+                    e.RequestType,
+                    e.ReceiverEntityId))
             {
                 return;
             }
 
-            _pendingRequestId = SimulationControlRequestId.Invalid;
-
-            if (e.Type == SimulationControlResultType.Rejected)
-            {
-                _pendingExecutionRef = SkillExecutionRef.Invalid;
-                _selectionLocked = false;
-                _awaitingBoardRefresh = false;
-                _boardRefreshObserved = false;
+            ApplySelectionProgress(e.AcceptedTargetEntityIds);
+            if (e.InputClosed)
                 _isSelecting = false;
-                ClearSelection();
-                return;
-            }
-
-            if (e.ExecutionStatus == SkillExecutionStatus.Running)
-            {
-                _pendingExecutionRef = e.ExecutionRef;
-                return;
-            }
-
-            _pendingExecutionRef = SkillExecutionRef.Invalid;
         }
 
-        public void OnEvent(SkillExecutionTerminatedEvent e)
+        public void OnEvent(SelectionResultEvent e)
         {
-            if (!_pendingExecutionRef.IsValid
-                || e.ExecutionRef.ExecutionId != _pendingExecutionRef.ExecutionId
-                || e.ExecutionRef.HostEntityId != _pendingExecutionRef.HostEntityId
-                || e.ExecutionRef.SkillId != _pendingExecutionRef.SkillId)
+            if (!MatchesPendingRequest(
+                    e.RequestId,
+                    e.ActivityId,
+                    e.RequestType,
+                    e.ReceiverEntityId))
             {
                 return;
             }
 
-            _pendingExecutionRef = SkillExecutionRef.Invalid;
+            ApplySelectionProgress(e.SelectedEntityIds);
+            _pendingBeginIntent = default;
+            _isSelecting = false;
+
+            if (e.Type == SelectionResultType.Committed)
+            {
+                _selectionLocked = true;
+                _awaitingBoardRefresh = true;
+                _boardRefreshObserved = false;
+                return;
+            }
+
+            _selectionLocked = false;
+            _awaitingBoardRefresh = false;
+            _boardRefreshObserved = false;
+            ClearSelection();
+        }
+
+        bool MatchesPendingRequest(
+            SelectionRequestId requestId,
+            ActivityId activityId,
+            TaxonomyTermData requestType,
+            EntityId receiverEntityId)
+        {
+            return _pendingBeginIntent.RequestId.IsValid
+                && requestId == _pendingBeginIntent.RequestId
+                && _context != null
+                && activityId == _context.ActivityId
+                && receiverEntityId == _boardHostEntityId
+                && selectionRequestType != null
+                && requestType != null
+                && selectionRequestType.Matches(requestType);
         }
 
         internal void BeginSelection(BoardCellView cell)
         {
-            if (_selectionLocked || !CanSelect(cell))
+            if (_selectionLocked || !CanSubmitTarget(cell))
                 return;
 
             ClearSelection();
+            _pendingBeginIntent = SelectionIntentEvent.Begin(
+                _context.ActivityId,
+                selectionRequestType,
+                EntityId.Invalid,
+                _boardHostEntityId);
             _isSelecting = true;
-            AddSelection(cell);
+            EventBus.Trigger(_pendingBeginIntent);
+            EventBus.Trigger(SelectionIntentEvent.Target(_pendingBeginIntent, cell.EntityId));
         }
 
         internal void ExtendSelection(BoardCellView cell)
         {
             if (!_isSelecting
                 || _selectionLocked
-                || !CanSelect(cell)
-                || _selectedCells.Count == 0
-                || _selectedCells.Count >= mergeSkill.TargetCount.Max
-                || _selectedEntities.Contains(cell.EntityId)
-                || !AreAdjacent(_selectedCells[_selectedCells.Count - 1], cell))
+                || !_pendingBeginIntent.RequestId.IsValid
+                || !CanSubmitTarget(cell))
             {
                 return;
             }
 
-            AddSelection(cell);
+            EventBus.Trigger(SelectionIntentEvent.Target(_pendingBeginIntent, cell.EntityId));
         }
 
         internal void EndSelection()
@@ -230,8 +245,8 @@ namespace ChainRush.Board
                 return;
 
             _isSelecting = false;
-            if (!TrySubmitSelection())
-                ClearSelection();
+            if (_pendingBeginIntent.RequestId.IsValid)
+                EventBus.Trigger(SelectionIntentEvent.Complete(_pendingBeginIntent));
         }
 
         internal void OnCellEntityRemoved(BoardCellView cell, EntityId entityId)
@@ -266,54 +281,46 @@ namespace ChainRush.Board
             _awaitingBoardRefresh = false;
             _selectionLocked = false;
             _boardRefreshObserved = false;
-            ClearPendingControl();
+            _pendingBeginIntent = default;
         }
 
-        bool TrySubmitSelection()
+        void CancelPendingSelection()
         {
-            if (_context == null
-                || !_context.ActivityId.IsValid
-                || !_boardHostEntityId.IsValid
-                || mergeSkill == null
-                || !mergeSkill.TargetCount.Contains(_selectedEntities.Count))
-            {
-                return false;
-            }
-
-            _selectionLocked = true;
-            _awaitingBoardRefresh = true;
-            _boardRefreshObserved = false;
-            SimulationControlIntentEvent request = SimulationControlIntentEvent.ActivateSkillEntities(
-                _context.ActivityId,
-                _boardHostEntityId,
-                mergeSkill,
-                _selectedEntities);
-            _pendingRequestId = request.RequestId;
-            _pendingExecutionRef = SkillExecutionRef.Invalid;
-            EventBus.Trigger(request);
-            return true;
+            if (_pendingBeginIntent.RequestId.IsValid)
+                EventBus.Trigger(SelectionIntentEvent.Cancel(_pendingBeginIntent));
+            _pendingBeginIntent = default;
         }
 
-        void ClearPendingControl()
-        {
-            _pendingRequestId = SimulationControlRequestId.Invalid;
-            _pendingExecutionRef = SkillExecutionRef.Invalid;
-        }
-
-        bool CanSelect(BoardCellView cell)
+        bool CanSubmitTarget(BoardCellView cell)
         {
             return cell != null
                 && cell.EntityId.IsValid
-                && mergeSkill != null
-                && mergeSkill.TargetCount.IsValid
-                && mergeSkill.TargetCount.Max > 0;
+                && _context != null
+                && _context.ActivityId.IsValid
+                && _boardHostEntityId.IsValid
+                && selectionRequestType != null;
         }
 
-        void AddSelection(BoardCellView cell)
+        void ApplySelectionProgress(List<EntityId> selectedEntityIds)
         {
-            _selectedCells.Add(cell);
-            _selectedEntities.Add(cell.EntityId);
-            cell.SetSelected(true);
+            ClearSelection();
+            for (int entityIndex = 0;
+                selectedEntityIds != null && entityIndex < selectedEntityIds.Count;
+                entityIndex++)
+            {
+                EntityId entityId = selectedEntityIds[entityIndex];
+                for (int cellIndex = 0; cellIndex < _cells.Count; cellIndex++)
+                {
+                    BoardCellView cell = _cells[cellIndex];
+                    if (cell == null || cell.EntityId != entityId)
+                        continue;
+
+                    _selectedCells.Add(cell);
+                    _selectedEntities.Add(entityId);
+                    cell.SetSelected(true);
+                    break;
+                }
+            }
         }
 
         void ClearSelection()
@@ -345,7 +352,7 @@ namespace ChainRush.Board
             _awaitingBoardRefresh = false;
             _boardRefreshObserved = false;
             _boardHostEntityId = EntityId.Invalid;
-            ClearPendingControl();
+            CancelPendingSelection();
 
             for (int i = 0; i < _cells.Count; i++)
             {
@@ -375,14 +382,6 @@ namespace ChainRush.Board
                     definition.Id,
                     boardHostDefinition.Id,
                     StringComparison.Ordinal);
-        }
-
-        static bool AreAdjacent(BoardCellView left, BoardCellView right)
-        {
-            Vector2Int delta = left.GridCoordinates - right.GridCoordinates;
-            return delta != Vector2Int.zero
-                && Math.Abs(delta.x) <= 1
-                && Math.Abs(delta.y) <= 1;
         }
 
         static int ResolveColumnCount(IReadOnlyList<ActivityUICell> cells)

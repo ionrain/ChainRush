@@ -40,20 +40,13 @@ MonoBehaviour:
   slotFootprint: 1
   stackCapacity: 0
   capabilities:
-  - capabilityType: 0
+  - capabilityType: 6
     selectorTags: []
   - capabilityType: 2
-    selectorTags: []
-  - capabilityType: 4
     selectorTags: []
   walletEntries:
   - wallet: {fileID: 11400000, guid: 5e352fdca6ae04c9b931f9fd2bd9519d, type: 2}
     seed:
-    - entry:
-        asset: {fileID: 11400000, guid: 384559014fe26497ba1433dd486c2ea9, type: 2}
-        formType: 0
-        amount: 1
-      runtimeTags: []
     - entry:
         asset: {fileID: 11400000, guid: 6e7ef418bd659426e8ea6665ce3857e1, type: 2}
         formType: 0

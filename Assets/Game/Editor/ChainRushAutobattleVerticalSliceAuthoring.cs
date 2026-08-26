@@ -81,7 +81,7 @@ namespace ChainRush.Editor
         const string BoardPopulationObjectivePath =
             BoardRoot + "/Objectives/BoardPopulationObjective.asset";
         const string BoardWaterBasePath = BoardRoot + "/Economy/WaterBoardBase.asset";
-        const string BoardMergeRecipePath = BoardRoot + "/Production/BoardMergeRecipe.asset";
+        const string BoardMergeRecipePath = BoardRoot + "/Production/BoardMergeRecipe4.asset";
 
         const string EconomyInstallerPath =
             RuntimeRoot + "/Installers/ChainRushEconomyDefinitionsInstaller.asset";
@@ -1155,6 +1155,7 @@ namespace ChainRush.Editor
                 content.WaterUnit,
                 EconomyFormType.Stack,
                 new List<TaxonomyTermData> { content.SharedWalletTag },
+                null,
                 new LongFlatProgressionData(1L)));
             content.DeploymentRecipe.Outputs.Add(new ProductionOutputData(
                 content.WaterUnit,
@@ -1545,13 +1546,17 @@ namespace ChainRush.Editor
                     EconomyFormType.Stack,
                     content.WaterUnit,
                     1L,
-                    CompareOperation.GreaterOrEqual),
+                    CompareOperation.GreaterOrEqual,
+                    null,
+                    null),
                 new ObjectiveConditionEconomyMetric(
                     new List<TaxonomyTermData> { content.SharedWalletTag },
                     EconomyFormType.Stack,
                     content.WaterUnit,
                     0L,
-                    CompareOperation.LessOrEqual),
+                    CompareOperation.LessOrEqual,
+                    null,
+                    null),
                 createdPaths);
             content.TurnTokenObjective = CreateResetObjective(
                 TurnTokenObjectivePath,
@@ -1562,13 +1567,17 @@ namespace ChainRush.Editor
                     EconomyFormType.Stack,
                     content.TurnToken,
                     0L,
-                    CompareOperation.LessOrEqual),
+                    CompareOperation.LessOrEqual,
+                    null,
+                    null),
                 new ObjectiveConditionEconomyMetric(
                     new List<TaxonomyTermData> { content.SharedWalletTag },
                     EconomyFormType.Stack,
                     content.TurnToken,
                     1L,
-                    CompareOperation.GreaterOrEqual),
+                    CompareOperation.GreaterOrEqual,
+                    null,
+                    null),
                 createdPaths);
 
             ObjectiveConditionMaterializedEntity noEnemies = CreateMaterializedCondition(
@@ -1596,7 +1605,9 @@ namespace ChainRush.Editor
                     EconomyFormType.Stack,
                     content.WaterUnit,
                     0L,
-                    CompareOperation.LessOrEqual),
+                    CompareOperation.LessOrEqual,
+                    null,
+                    null),
                 content.PlayerSpawner,
                 createdPaths);
             content.TurnTokenAgent = CreateProductionAgent(
@@ -1608,7 +1619,9 @@ namespace ChainRush.Editor
                     EconomyFormType.Stack,
                     content.TurnToken,
                     1L,
-                    CompareOperation.GreaterOrEqual),
+                    CompareOperation.GreaterOrEqual,
+                    null,
+                    null),
                 content.PlayerSpawner,
                 createdPaths);
             content.EnemyWaveAgent = CreateProductionAgent(
@@ -4103,10 +4116,10 @@ namespace ChainRush.Editor
 
             if (boardMergeRecipe.Outputs.Count != 1
                 || boardMergeRecipe.Outputs[0].Asset != content.WaterUnit
-                || boardMergeRecipe.Outputs[0].FormType != EconomyFormType.Token)
+                || boardMergeRecipe.Outputs[0].FormType != EconomyFormType.Stack)
             {
                 throw new InvalidOperationException(
-                    "BoardMergeRecipe is not in the expected Token-output state.");
+                    "BoardMergeRecipe4 is not in the expected Stack-output state.");
             }
         }
 

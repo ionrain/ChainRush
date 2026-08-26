@@ -8,6 +8,7 @@ using Core.AI;
 using Core.AI.Actions;
 using Core.AI.Conditions;
 using Core.Activities;
+using Core.Activities.Selection;
 using Core.CapabilityHosts;
 using Core.Economy;
 using Core.Activities.GameRuntime.Installers;
@@ -96,6 +97,15 @@ namespace ChainRush.Tests.EditMode
             BoardRoot + "/Agents/BoardPopulationAgent.asset";
         const string BoardProductionAgentPath =
             BoardRoot + "/Agents/BoardProductionAgent.asset";
+        const string BoardSelectionAgentPath =
+            BoardRoot + "/Agents/BoardSelectionAgent.asset";
+        const string BoardBrainPath = BoardRoot + "/Orchestration/BoardBrain.asset";
+        const string BoardProductionInputOperatorPath =
+            BoardRoot + "/Orchestration/Taxonomy/BoardProductionInputOperator.asset";
+        const string BoardSelectionObjectivePath =
+            BoardRoot + "/Objectives/BoardSelectionObjective.asset";
+        const string BoardMergeObjectivePath =
+            BoardRoot + "/Objectives/BoardMergeObjective.asset";
         const string BoardPopulationProducerPath =
             BoardRoot + "/Economy/BoardPopulationProducer.asset";
         const string BoardHostPath =
@@ -110,10 +120,20 @@ namespace ChainRush.Tests.EditMode
             BoardRoot + "/Production/BoardPopulationProduction.asset";
         const string BoardMergeProductionPath =
             BoardRoot + "/Production/BoardProduction.asset";
-        const string BoardMergeRecipePath =
-            BoardRoot + "/Production/BoardMergeRecipe.asset";
-        const string BoardMergeSkillPath =
-            BoardRoot + "/Skills/BoardMergeSkill.asset";
+        const string BoardMergeCatalogPath =
+            BoardRoot + "/Production/BoardProductionCatalog.asset";
+        const string BoardMergeRecipe1Path =
+            BoardRoot + "/Production/BoardMergeRecipe1.asset";
+        const string BoardMergeRecipe2Path =
+            BoardRoot + "/Production/BoardMergeRecipe2.asset";
+        const string BoardMergeRecipe3Path =
+            BoardRoot + "/Production/BoardMergeRecipe3.asset";
+        const string BoardMergeRecipe4Path =
+            BoardRoot + "/Production/BoardMergeRecipe4.asset";
+        const string BoardMergeSelectionPath =
+            BoardRoot + "/Taxonomy/BoardMergeSelection.asset";
+        const string BoardMergeSelectedPath =
+            BoardRoot + "/Taxonomy/BoardMergeSelected.asset";
         const string BoardUIPrefabPath =
             BoardRoot + "/UI/BoardUI.prefab";
         const string BoardOrchestrationPath =
@@ -231,7 +251,7 @@ namespace ChainRush.Tests.EditMode
             Assert.AreEqual(1, board.Teams[0].SlotCount);
             Assert.IsFalse(board.AllowBots);
             Assert.AreEqual(ActivityEndMode.Manual, board.Result.EndMode);
-            Assert.AreEqual(1, board.Teams[0].Objectives.Count);
+            Assert.AreEqual(3, board.Teams[0].Objectives.Count);
             Assert.AreEqual(1, board.Teams[0].Features.Count);
             AssertTopology(
                 board.Topology,
@@ -346,10 +366,20 @@ namespace ChainRush.Tests.EditMode
             ActivityData board = LoadRequiredAsset<ActivityData>(BoardActivityPath);
             ObjectiveTemplateData objective =
                 LoadRequiredAsset<ObjectiveTemplateData>(BoardObjectivePath);
+            ObjectiveTemplateData selectionObjective =
+                LoadRequiredAsset<ObjectiveTemplateData>(BoardSelectionObjectivePath);
+            ObjectiveTemplateData mergeObjective =
+                LoadRequiredAsset<ObjectiveTemplateData>(BoardMergeObjectivePath);
             ActivityAgentDefinitionData populationAgent =
                 LoadRequiredAsset<ActivityAgentDefinitionData>(BoardPopulationAgentPath);
             ActivityAgentDefinitionData productionAgent =
                 LoadRequiredAsset<ActivityAgentDefinitionData>(BoardProductionAgentPath);
+            ActivityAgentDefinitionData selectionAgent =
+                LoadRequiredAsset<ActivityAgentDefinitionData>(BoardSelectionAgentPath);
+            OrchestratorAIBrainData boardBrain =
+                LoadRequiredAsset<OrchestratorAIBrainData>(BoardBrainPath);
+            TaxonomyTermData productionInputOperator =
+                LoadRequiredAsset<TaxonomyTermData>(BoardProductionInputOperatorPath);
             CapabilityHostData boardHost =
                 LoadRequiredAsset<CapabilityHostData>(BoardHostPath);
             CapabilityHostData populationProducer =
@@ -362,6 +392,10 @@ namespace ChainRush.Tests.EditMode
                 LoadRequiredAsset<TaxonomyTermData>(SharedWalletTagPath);
             TaxonomyTermData boardWalletTag =
                 LoadRequiredAsset<TaxonomyTermData>(BoardWalletTagPath);
+            TaxonomyTermData mergeSelection =
+                LoadRequiredAsset<TaxonomyTermData>(BoardMergeSelectionPath);
+            TaxonomyTermData mergeSelected =
+                LoadRequiredAsset<TaxonomyTermData>(BoardMergeSelectedPath);
             SpatialShapeData boardPlane =
                 LoadRequiredAsset<SpatialShapeData>(BoardPlaneShapePath);
             SpatialShapeData singleShape =
@@ -382,9 +416,15 @@ namespace ChainRush.Tests.EditMode
                 LoadRequiredAsset<ProductionData>(BoardPopulationProductionPath);
             ProductionData mergeProduction =
                 LoadRequiredAsset<ProductionData>(BoardMergeProductionPath);
-            ProductionRecipeData mergeRecipe =
-                LoadRequiredAsset<ProductionRecipeData>(BoardMergeRecipePath);
-            SkillData mergeSkill = LoadRequiredAsset<SkillData>(BoardMergeSkillPath);
+            ProductionCatalogData mergeCatalog =
+                LoadRequiredAsset<ProductionCatalogData>(BoardMergeCatalogPath);
+            List<ProductionRecipeData> mergeRecipes = new List<ProductionRecipeData>
+            {
+                LoadRequiredAsset<ProductionRecipeData>(BoardMergeRecipe4Path),
+                LoadRequiredAsset<ProductionRecipeData>(BoardMergeRecipe3Path),
+                LoadRequiredAsset<ProductionRecipeData>(BoardMergeRecipe2Path),
+                LoadRequiredAsset<ProductionRecipeData>(BoardMergeRecipe1Path),
+            };
             ActivityOrchestrationConfigData orchestration =
                 LoadRequiredAsset<ActivityOrchestrationConfigData>(BoardOrchestrationPath);
             TaxonomyFamilyData occupancyFamily =
@@ -395,8 +435,32 @@ namespace ChainRush.Tests.EditMode
                 LoadRequiredAsset<TaxonomyRuntimeInstallerData>(
                     "Assets/Game/Runtime/Installers/ChainRushTaxonomyRuntimeInstaller.asset");
 
-            Assert.AreSame(objective, board.Teams[0].Objectives.Single().Template);
+            CollectionAssert.AreEquivalent(
+                new[] { objective, selectionObjective, mergeObjective },
+                board.Teams[0].Objectives.Select(entry => entry.Template).ToList());
             Assert.AreEqual(ObjectiveCompletionPolicyType.Reset, objective.CompletionPolicyType);
+            Assert.AreEqual(
+                ObjectiveCompletionPolicyType.Reset,
+                selectionObjective.CompletionPolicyType);
+            Assert.AreEqual(
+                ObjectiveCompletionPolicyType.Reset,
+                mergeObjective.CompletionPolicyType);
+            Assert.AreEqual(
+                ActivityAgentStopPolicyType.AssignmentSuccess,
+                populationAgent.StopPolicyType);
+            Assert.AreEqual(
+                ActivityAgentStopPolicyType.AssignmentSuccess,
+                selectionAgent.StopPolicyType);
+            Assert.AreEqual(
+                ActivityAgentStopPolicyType.AssignmentSuccess,
+                productionAgent.StopPolicyType);
+            ProductionInputConsumptionDecompOpData productionInput = boardBrain.Operators
+                .OfType<ProductionInputConsumptionDecompOpData>()
+                .Single();
+            Assert.AreSame(productionInputOperator, productionInput.OperatorId);
+            CollectionAssert.Contains(
+                ReadObjectReferences<TaxonomyTermData>(taxonomyInstaller, "terms"),
+                productionInputOperator);
             Assert.AreSame(orchestration, board.Teams[0].Features.Single());
             CollectionAssert.Contains(
                 ReadObjectReferences<TaxonomyTermData>(taxonomyInstaller, "terms"),
@@ -424,18 +488,80 @@ namespace ChainRush.Tests.EditMode
             Assert.AreEqual(0L, success.TargetValue);
             Assert.AreEqual(BoardCellTagId, success.MarkerTags.Single().Id);
 
+            var selectionActivation = selectionObjective.Root.ActivateConditions.Single()
+                as ObjectiveConditionSelectionRequest;
+            var selectionSuccess = selectionObjective.Root.SuccessConditions.Single()
+                as ObjectiveConditionSelectionRequest;
+            Assert.NotNull(selectionActivation);
+            Assert.NotNull(selectionSuccess);
+            Assert.AreSame(mergeSelection, selectionActivation.RequestType);
+            Assert.AreEqual(CompareOperation.GreaterOrEqual, selectionActivation.CompareOperation);
+            Assert.AreEqual(1L, selectionActivation.TargetValue);
+            Assert.AreSame(mergeSelection, selectionSuccess.RequestType);
+            Assert.AreEqual(CompareOperation.Equal, selectionSuccess.CompareOperation);
+            Assert.AreEqual(0L, selectionSuccess.TargetValue);
+
+            var mergeActivation = mergeObjective.Root.ActivateConditions.Single()
+                as ObjectiveConditionEconomyMetric;
+            var mergeSuccess = mergeObjective.Root.SuccessConditions.Single()
+                as ObjectiveConditionEconomyMetric;
+            Assert.NotNull(mergeActivation);
+            Assert.NotNull(mergeSuccess);
+            AssertMergeSelectionMetric(
+                mergeActivation,
+                waterBase,
+                boardWalletTag,
+                mergeSelected,
+                1L,
+                CompareOperation.GreaterOrEqual);
+            AssertMergeSelectionMetric(
+                mergeSuccess,
+                waterBase,
+                boardWalletTag,
+                mergeSelected,
+                0L,
+                CompareOperation.Equal);
+
             Assert.AreEqual(3, orchestration.Modules.Count);
             Assert.IsInstanceOf<EconomyStateOrchestrationModuleData>(orchestration.Modules[0]);
             Assert.IsInstanceOf<ProductionStateOrchestrationModuleData>(orchestration.Modules[1]);
             Assert.IsInstanceOf<ProjectionStateOrchestrationModuleData>(orchestration.Modules[2]);
 
             Assert.IsInstanceOf<PopulationActivityOrchestrationAgentData>(populationAgent.Agent);
+            Assert.IsInstanceOf<SelectionAgentData>(selectionAgent.Agent);
             Assert.AreEqual(
                 ObjectiveCommandFailurePolicyType.FailObjective,
                 populationAgent.CommandFailurePolicyType);
             Assert.AreEqual(
                 ObjectiveCommandFailurePolicyType.Replan,
                 productionAgent.CommandFailurePolicyType);
+            var selection = (SelectionAgentData)selectionAgent.Agent;
+            CollectionAssert.AreEqual(
+                new[] { mergeSelected },
+                selection.ResultTags);
+            Assert.AreEqual(4, selectionAgent.TargetSelectionCriteria.Count);
+            var targetMaterialization = selectionAgent.TargetSelectionCriteria
+                .OfType<MaterializedEntitySelectionCriterionData>()
+                .Single();
+            Assert.IsNull(targetMaterialization.EconomyAsset);
+            Assert.AreEqual(EconomyFormType.Token, targetMaterialization.EconomyFormType);
+            CollectionAssert.AreEqual(
+                new[] { waterTag },
+                targetMaterialization.RequiredAssetTags);
+            Assert.AreEqual(
+                ActivityAgentOwnerSelectionType.ParticipantOwner,
+                selectionAgent.TargetSelectionCriteria
+                    .OfType<EntityOwnerSelectionCriterionData>()
+                    .Single()
+                    .OwnerSelectionType);
+            Assert.AreEqual(
+                1,
+                selectionAgent.TargetSelectionCriteria.OfType<SameAssetCriterionData>().Count());
+            var distanceCriterion = selectionAgent.TargetSelectionCriteria
+                .OfType<StepDistanceCriterionData>()
+                .Single();
+            Assert.AreEqual(1000, distanceCriterion.MinimumDistance);
+            Assert.AreEqual(1000, distanceCriterion.MaximumDistance);
             var population = (PopulationActivityOrchestrationAgentData)populationAgent.Agent;
             Assert.NotNull(population.Planner);
             Assert.AreSame(refreshRecipe, population.CompletionRecipe);
@@ -507,37 +633,45 @@ namespace ChainRush.Tests.EditMode
                 boardWalletTag);
             Assert.AreEqual(BoardCellTagId, populationProduction.MaterializationProviderType.Id);
 
-            Assert.AreEqual(3, mergeRecipe.Inputs.Count);
-            for (int inputIndex = 0; inputIndex < mergeRecipe.Inputs.Count; inputIndex++)
+            for (int recipeIndex = 0; recipeIndex < mergeRecipes.Count; recipeIndex++)
             {
+                ProductionRecipeData mergeRecipe = mergeRecipes[recipeIndex];
+                long selectedAmount = 4L - recipeIndex;
+                Assert.AreEqual(1, mergeRecipe.Inputs.Count);
                 AssertEconomyOperation(
-                    mergeRecipe.Inputs[inputIndex],
+                    mergeRecipe.Inputs[0],
                     waterBase,
                     EconomyFormType.Token,
-                    1L,
+                    selectedAmount,
                     boardWalletTag);
+                CollectionAssert.AreEqual(
+                    new[] { mergeSelected },
+                    mergeRecipe.Inputs[0].RequiredRuntimeTags);
+
+                Assert.AreEqual(1, mergeRecipe.Outputs.Count);
+                AssertEconomyOutput(
+                    mergeRecipe.Outputs[0],
+                    waterUnit,
+                    EconomyFormType.Stack,
+                    1L,
+                    sharedWalletTag);
             }
 
-            Assert.AreEqual(1, mergeRecipe.Outputs.Count);
-            AssertEconomyOutput(
-                mergeRecipe.Outputs[0],
-                waterUnit,
-                EconomyFormType.Stack,
-                1L,
-                sharedWalletTag);
+            CollectionAssert.AreEqual(
+                mergeRecipes,
+                mergeCatalog.Entries.Select(entry => entry.Recipe).ToList());
+            CollectionAssert.AreEqual(
+                new[] { mergeCatalog },
+                mergeProduction.SupportedCatalogs);
             Assert.IsNull(mergeProduction.MaterializationProviderType);
 
-            Assert.AreEqual(SkillTargetType.Entities, mergeSkill.TargetType);
-            Assert.AreEqual(3, mergeSkill.TargetCount.Min);
-            Assert.AreEqual(3, mergeSkill.TargetCount.Max);
-            var productionEffect = mergeSkill.Effects.OfType<SkillProductionEffectData>().Single();
-            Assert.AreSame(mergeRecipe, productionEffect.Recipe);
-            Assert.AreEqual(3, productionEffect.InputMappings.Count);
-            for (int mappingIndex = 0; mappingIndex < productionEffect.InputMappings.Count; mappingIndex++)
-            {
-                Assert.AreEqual(mappingIndex, productionEffect.InputMappings[mappingIndex].RecipeInputIndex);
-                Assert.AreEqual(mappingIndex, productionEffect.InputMappings[mappingIndex].TargetIndex);
-            }
+            CollectionAssert.AreEquivalent(
+                new[]
+                {
+                    CapabilityHostType.SelectionOwner,
+                    CapabilityHostType.ProductionOwner,
+                },
+                boardHost.Capabilities.Select(entry => entry.CapabilityType).ToList());
 
             CollectionAssert.AreEquivalent(
                 new[]
@@ -637,7 +771,7 @@ namespace ChainRush.Tests.EditMode
             TaxonomyTermData awaitFactOperator =
                 LoadRequiredAsset<TaxonomyTermData>(AwaitFactOperatorPath);
             ProductionRecipeData merge =
-                LoadRequiredAsset<ProductionRecipeData>(BoardMergeRecipePath);
+                LoadRequiredAsset<ProductionRecipeData>(BoardMergeRecipe4Path);
             DropProfileData dropProfile = LoadRequiredAsset<DropProfileData>(DropProfilePath);
             AIBrainData alliedCombatBrain =
                 LoadRequiredAsset<AIBrainData>(AlliedCombatBrainPath);
@@ -1104,36 +1238,37 @@ namespace ChainRush.Tests.EditMode
         }
 
         [Test]
-        public void BoardUI_MatchingControlRejection_UnlocksAndClearsSelection()
+        public void BoardUI_MatchingSelectionRejection_UnlocksAndClearsSelection()
         {
             GameObject instance = InstantiateBoardUI(out MonoBehaviour controller);
             try
             {
-                SkillData skill = LoadRequiredAsset<SkillData>(BoardMergeSkillPath);
+                TaxonomyTermData requestType =
+                    LoadRequiredAsset<TaxonomyTermData>(BoardMergeSelectionPath);
                 var activityId = new ActivityId(31);
                 var hostEntityId = new Core.Entities.EntityId(47);
-                SimulationControlIntentEvent request = SimulationControlIntentEvent.ActivateSkillEntities(
+                SelectionIntentEvent request = SelectionIntentEvent.Begin(
                     activityId,
-                    hostEntityId,
-                    skill,
-                    new List<Core.Entities.EntityId>());
-                PrepareBoardControlState(controller, activityId, hostEntityId, skill, request.RequestId);
+                    requestType,
+                    Core.Entities.EntityId.Invalid,
+                    hostEntityId);
+                PrepareBoardSelectionState(controller, activityId, hostEntityId, requestType, request);
 
-                InvokeControlResult(controller, new SimulationControlResultEvent(
+                InvokeSelectionResult(controller, new SelectionResultEvent(
                     request.RequestId,
                     activityId,
+                    requestType,
+                    Core.Entities.EntityId.Invalid,
                     hostEntityId,
-                    skill,
-                    SimulationControlResultType.Rejected,
-                    SimulationErrorCode.InvalidIntent,
-                    "Rejected by test setup.",
-                    SkillExecutionStatus.Failed,
-                    SkillExecutionRef.Invalid));
+                    SelectionResultType.Rejected,
+                    new List<Core.Entities.EntityId>(0),
+                    "Rejected by test setup."));
 
                 Assert.IsFalse(ReadField<bool>(controller, "_selectionLocked"));
                 Assert.IsFalse(ReadField<bool>(controller, "_awaitingBoardRefresh"));
                 Assert.IsFalse(ReadField<bool>(controller, "_isSelecting"));
-                Assert.IsFalse(ReadField<SimulationControlRequestId>(controller, "_pendingRequestId").IsValid);
+                Assert.IsFalse(ReadField<SelectionIntentEvent>(controller, "_pendingBeginIntent")
+                    .RequestId.IsValid);
                 Assert.AreEqual(0, ReadListField(controller, "_selectedEntities").Count);
             }
             finally
@@ -1143,42 +1278,42 @@ namespace ChainRush.Tests.EditMode
         }
 
         [Test]
-        public void BoardUI_UnrelatedControlResult_DoesNotChangePendingSelection()
+        public void BoardUI_UnrelatedSelectionResult_DoesNotChangePendingSelection()
         {
             GameObject instance = InstantiateBoardUI(out MonoBehaviour controller);
             try
             {
-                SkillData skill = LoadRequiredAsset<SkillData>(BoardMergeSkillPath);
+                TaxonomyTermData requestType =
+                    LoadRequiredAsset<TaxonomyTermData>(BoardMergeSelectionPath);
                 var activityId = new ActivityId(32);
                 var hostEntityId = new Core.Entities.EntityId(48);
-                SimulationControlIntentEvent pending = SimulationControlIntentEvent.ActivateSkillEntities(
+                SelectionIntentEvent pending = SelectionIntentEvent.Begin(
                     activityId,
-                    hostEntityId,
-                    skill,
-                    new List<Core.Entities.EntityId>());
-                SimulationControlIntentEvent unrelated = SimulationControlIntentEvent.ActivateSkillEntities(
+                    requestType,
+                    Core.Entities.EntityId.Invalid,
+                    hostEntityId);
+                SelectionIntentEvent unrelated = SelectionIntentEvent.Begin(
                     activityId,
-                    hostEntityId,
-                    skill,
-                    new List<Core.Entities.EntityId>());
-                PrepareBoardControlState(controller, activityId, hostEntityId, skill, pending.RequestId);
+                    requestType,
+                    Core.Entities.EntityId.Invalid,
+                    hostEntityId);
+                PrepareBoardSelectionState(controller, activityId, hostEntityId, requestType, pending);
 
-                InvokeControlResult(controller, new SimulationControlResultEvent(
+                InvokeSelectionResult(controller, new SelectionResultEvent(
                     unrelated.RequestId,
                     activityId,
+                    requestType,
+                    Core.Entities.EntityId.Invalid,
                     hostEntityId,
-                    skill,
-                    SimulationControlResultType.Rejected,
-                    SimulationErrorCode.InvalidIntent,
-                    "Unrelated rejection.",
-                    SkillExecutionStatus.Failed,
-                    SkillExecutionRef.Invalid));
+                    SelectionResultType.Rejected,
+                    new List<Core.Entities.EntityId>(0),
+                    "Unrelated rejection."));
 
                 Assert.IsTrue(ReadField<bool>(controller, "_selectionLocked"));
                 Assert.IsTrue(ReadField<bool>(controller, "_awaitingBoardRefresh"));
                 Assert.AreEqual(
                     pending.RequestId,
-                    ReadField<SimulationControlRequestId>(controller, "_pendingRequestId"));
+                    ReadField<SelectionIntentEvent>(controller, "_pendingBeginIntent").RequestId);
                 Assert.AreEqual(1, ReadListField(controller, "_selectedEntities").Count);
             }
             finally
@@ -1188,55 +1323,36 @@ namespace ChainRush.Tests.EditMode
         }
 
         [Test]
-        public void BoardUI_AcceptedRunningRequest_StaysLockedUntilAuthoritativeRefresh()
+        public void BoardUI_CommittedSelection_StaysLockedUntilAuthoritativeRefresh()
         {
             GameObject instance = InstantiateBoardUI(out MonoBehaviour controller);
             try
             {
-                SkillData skill = LoadRequiredAsset<SkillData>(BoardMergeSkillPath);
+                TaxonomyTermData requestType =
+                    LoadRequiredAsset<TaxonomyTermData>(BoardMergeSelectionPath);
                 var activityId = new ActivityId(33);
                 var hostEntityId = new Core.Entities.EntityId(49);
-                SimulationControlIntentEvent request = SimulationControlIntentEvent.ActivateSkillEntities(
+                SelectionIntentEvent request = SelectionIntentEvent.Begin(
                     activityId,
-                    hostEntityId,
-                    skill,
-                    new List<Core.Entities.EntityId>());
-                var executionRef = new SkillExecutionRef(
-                    hostEntityId,
-                    new SkillId(5),
-                    8L);
-                PrepareBoardControlState(controller, activityId, hostEntityId, skill, request.RequestId);
+                    requestType,
+                    Core.Entities.EntityId.Invalid,
+                    hostEntityId);
+                PrepareBoardSelectionState(controller, activityId, hostEntityId, requestType, request);
 
-                InvokeControlResult(controller, new SimulationControlResultEvent(
+                InvokeSelectionResult(controller, new SelectionResultEvent(
                     request.RequestId,
                     activityId,
+                    requestType,
+                    Core.Entities.EntityId.Invalid,
                     hostEntityId,
-                    skill,
-                    SimulationControlResultType.Accepted,
-                    SimulationErrorCode.None,
-                    null,
-                    SkillExecutionStatus.Running,
-                    executionRef));
-
-                Assert.IsTrue(ReadField<bool>(controller, "_selectionLocked"));
-                Assert.IsTrue(ReadField<bool>(controller, "_awaitingBoardRefresh"));
-                Assert.IsFalse(ReadField<SimulationControlRequestId>(controller, "_pendingRequestId").IsValid);
-                Assert.AreEqual(
-                    executionRef.ExecutionId,
-                    ReadField<SkillExecutionRef>(controller, "_pendingExecutionRef").ExecutionId);
-
-                InvokeSkillTerminated(controller, new SkillExecutionTerminatedEvent(
-                    executionRef,
-                    hostEntityId,
-                    skill,
-                    SkillExecutionObservation.Terminal(
-                        SkillExecutionStatus.Completed,
-                        SkillActivationFailureReason.None),
+                    SelectionResultType.Committed,
+                    new List<Core.Entities.EntityId> { hostEntityId },
                     null));
 
                 Assert.IsTrue(ReadField<bool>(controller, "_selectionLocked"));
                 Assert.IsTrue(ReadField<bool>(controller, "_awaitingBoardRefresh"));
-                Assert.IsFalse(ReadField<SkillExecutionRef>(controller, "_pendingExecutionRef").IsValid);
+                Assert.IsFalse(ReadField<SelectionIntentEvent>(controller, "_pendingBeginIntent")
+                    .RequestId.IsValid);
             }
             finally
             {
@@ -1293,12 +1409,12 @@ namespace ChainRush.Tests.EditMode
             return instance;
         }
 
-        static void PrepareBoardControlState(
+        static void PrepareBoardSelectionState(
             MonoBehaviour controller,
             ActivityId activityId,
             Core.Entities.EntityId hostEntityId,
-            SkillData skill,
-            SimulationControlRequestId requestId)
+            TaxonomyTermData requestType,
+            SelectionIntentEvent beginIntent)
         {
             SetField(controller, "_context", new ActivityUIContext(
                 activityId,
@@ -1307,37 +1423,24 @@ namespace ChainRush.Tests.EditMode
                 null,
                 null));
             SetField(controller, "_boardHostEntityId", hostEntityId);
-            SetField(controller, "mergeSkill", skill);
+            SetField(controller, "selectionRequestType", requestType);
             SetField(controller, "_selectionLocked", true);
             SetField(controller, "_awaitingBoardRefresh", true);
             SetField(controller, "_boardRefreshObserved", false);
             SetField(controller, "_isSelecting", true);
-            SetField(controller, "_pendingRequestId", requestId);
-            SetField(controller, "_pendingExecutionRef", SkillExecutionRef.Invalid);
+            SetField(controller, "_pendingBeginIntent", beginIntent);
             ReadListField(controller, "_selectedEntities").Add(hostEntityId);
         }
 
-        static void InvokeControlResult(MonoBehaviour controller, SimulationControlResultEvent result)
+        static void InvokeSelectionResult(MonoBehaviour controller, SelectionResultEvent result)
         {
             MethodInfo method = controller.GetType().GetMethod(
                 "OnEvent",
                 BindingFlags.Instance | BindingFlags.Public,
                 null,
-                new[] { typeof(SimulationControlResultEvent) },
+                new[] { typeof(SelectionResultEvent) },
                 null);
-            Assert.NotNull(method, "BoardUIController does not handle SimulationControlResultEvent.");
-            method.Invoke(controller, new object[] { result });
-        }
-
-        static void InvokeSkillTerminated(MonoBehaviour controller, SkillExecutionTerminatedEvent result)
-        {
-            MethodInfo method = controller.GetType().GetMethod(
-                "OnEvent",
-                BindingFlags.Instance | BindingFlags.Public,
-                null,
-                new[] { typeof(SkillExecutionTerminatedEvent) },
-                null);
-            Assert.NotNull(method, "BoardUIController does not handle SkillExecutionTerminatedEvent.");
+            Assert.NotNull(method, "BoardUIController does not handle SelectionResultEvent.");
             method.Invoke(controller, new object[] { result });
         }
 
@@ -1375,6 +1478,22 @@ namespace ChainRush.Tests.EditMode
         {
             Assert.AreEqual(ActivitySimulationBindingType.OwnContext, activity.Simulation.BindingType);
             Assert.AreEqual(SimulationScope.Activity, activity.Simulation.Scope);
+        }
+
+        static void AssertMergeSelectionMetric(
+            ObjectiveConditionEconomyMetric condition,
+            EconomyAssetData asset,
+            TaxonomyTermData walletTag,
+            TaxonomyTermData runtimeTag,
+            long targetValue,
+            CompareOperation compareOperation)
+        {
+            Assert.AreSame(asset, condition.Asset);
+            Assert.AreEqual(EconomyFormType.Token, condition.FormType);
+            CollectionAssert.AreEqual(new[] { walletTag }, condition.WalletTags);
+            CollectionAssert.AreEqual(new[] { runtimeTag }, condition.RequiredRuntimeTags);
+            Assert.AreEqual(targetValue, condition.TargetValue);
+            Assert.AreEqual(compareOperation, condition.CompareOperation);
         }
 
         static void AssertEconomyOperation(

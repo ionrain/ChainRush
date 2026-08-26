@@ -13,18 +13,23 @@ MonoBehaviour:
   m_Name: BoardBrain
   m_EditorClassIdentifier: Core::Core.Orchestration.OrchestratorAIBrainData
   operators:
-  - rid: 2807516289745289384
-  - rid: 2807516289745289385
-  - rid: 2807516289745289386
-  - rid: 2807516289745289387
-  - rid: 2807516289745289388
+  - rid: 2807516679868776448
+  - rid: 2807516679868776449
+  - rid: 2807516679868776450
+  - rid: 2807516679868776451
+  - rid: 2807516679868776452
+  - rid: 2807516679868776453
+  - rid: 2807516679868776454
   decisionGraph:
     nodes:
-    - rid: 2807516289745289389
-    - rid: 2807516289745289390
-    - rid: 2807516289745289391
-    - rid: 2807516289745289392
-    - rid: 2807516289745289393
+    - rid: 2807516679868776455
+    - rid: 2807516679868776456
+    - rid: 2807516679868776457
+    - rid: 2807516679868776458
+    - rid: 2807516679868776459
+    - rid: 2807516679868776460
+    - rid: 2807516679868776461
+    - rid: 2807516679868776462
   budget:
     maxDependencyDepth: 4
     maxGeneratedNodes: 64
@@ -34,106 +39,173 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 2807516289745289384
+    - rid: 2807516679868776448
       type: {class: AgentDecompOpData, ns: Core.Orchestration, asm: Core}
       data:
         operatorId: {fileID: 11400000, guid: 00b4bf6caf8f043c4a885aafd9860bac, type: 2}
         agentDefinition: {fileID: 11400000, guid: f4de61ef3aff948ab8b739259ab2126c,
           type: 2}
-    - rid: 2807516289745289385
+    - rid: 2807516679868776449
+      type: {class: AgentDecompOpData, ns: Core.Orchestration, asm: Core}
+      data:
+        operatorId: {fileID: 11400000, guid: 412ef7f35980f4e77880afb345b6fc93, type: 2}
+        agentDefinition: {fileID: 11400000, guid: c8a467d8360f74294a10ef71859eca87,
+          type: 2}
+    - rid: 2807516679868776450
       type: {class: AgentDecompOpData, ns: Core.Orchestration, asm: Core}
       data:
         operatorId: {fileID: 11400000, guid: 6c53bdb92d89c4f59bb4726d2856efec, type: 2}
         agentDefinition: {fileID: 11400000, guid: a9524d1c70cb04fea9e02282b944343a,
           type: 2}
-    - rid: 2807516289745289386
+    - rid: 2807516679868776451
+      type: {class: ProductionInputConsumptionDecompOpData, ns: Core.Orchestration,
+        asm: Core}
+      data:
+        operatorId: {fileID: 11400000, guid: 6fcb96da5485a4d958e12a44e8eee6b1, type: 2}
+    - rid: 2807516679868776452
       type: {class: ProductionYieldDecompOpData, ns: Core.Orchestration, asm: Core}
       data:
         operatorId: {fileID: 11400000, guid: 296d87077bc4141b78c34fac580d5780, type: 2}
-    - rid: 2807516289745289387
+    - rid: 2807516679868776453
       type: {class: ProductionAvailableDecompOpData, ns: Core.Orchestration, asm: Core}
       data:
         operatorId: {fileID: 11400000, guid: fc9cdd410db2c4257b287cef63b92a16, type: 2}
-    - rid: 2807516289745289388
+    - rid: 2807516679868776454
       type: {class: ProductionMaterializedEntityDecompOpData, ns: Core.Orchestration,
         asm: Core}
       data:
         operatorId: {fileID: 11400000, guid: 95c746c927eed41b2bb874e248c67257, type: 2}
-    - rid: 2807516289745289389
+    - rid: 2807516679868776455
       type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
       data:
         decisionId: board-population-agent
         conditions:
-        - rid: 2807516289745289394
-        - rid: 2807516289745289395
-        - rid: 2807516289745289396
+        - rid: 2807516679868776463
+        - rid: 2807516679868776464
+        - rid: 2807516679868776465
         operatorId: {fileID: 11400000, guid: 00b4bf6caf8f043c4a885aafd9860bac, type: 2}
-    - rid: 2807516289745289390
+    - rid: 2807516679868776456
       type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
       data:
-        decisionId: board-production-agent
+        decisionId: board-selection-agent
         conditions:
-        - rid: 2807516289745289397
-        - rid: 2807516289745289398
-        - rid: 2807516289745289399
+        - rid: 2807516679868776466
+        - rid: 2807516679868776467
+        - rid: 2807516679868776468
+        operatorId: {fileID: 11400000, guid: 412ef7f35980f4e77880afb345b6fc93, type: 2}
+    - rid: 2807516679868776457
+      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
+      data:
+        decisionId: board-production-agent-materialized
+        conditions:
+        - rid: 2807516679868776469
+        - rid: 2807516679868776470
+        - rid: 2807516679868776471
         operatorId: {fileID: 11400000, guid: 6c53bdb92d89c4f59bb4726d2856efec, type: 2}
-    - rid: 2807516289745289391
+    - rid: 2807516679868776458
+      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
+      data:
+        decisionId: board-production-agent-economy
+        conditions:
+        - rid: 2807516679868776472
+        - rid: 2807516679868776473
+        - rid: 2807516679868776474
+        operatorId: {fileID: 11400000, guid: 6c53bdb92d89c4f59bb4726d2856efec, type: 2}
+    - rid: 2807516679868776459
+      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
+      data:
+        decisionId: board-production-input
+        conditions:
+        - rid: 2807516679868776475
+        - rid: 2807516679868776476
+        operatorId: {fileID: 11400000, guid: 6fcb96da5485a4d958e12a44e8eee6b1, type: 2}
+    - rid: 2807516679868776460
       type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
       data:
         decisionId: board-materialized-production
         conditions:
-        - rid: 2807516289745289400
-        - rid: 2807516289745289401
+        - rid: 2807516679868776477
+        - rid: 2807516679868776478
         operatorId: {fileID: 11400000, guid: 95c746c927eed41b2bb874e248c67257, type: 2}
-    - rid: 2807516289745289392
+    - rid: 2807516679868776461
       type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
       data:
         decisionId: board-production-yield
         conditions:
-        - rid: 2807516289745289402
+        - rid: 2807516679868776479
         operatorId: {fileID: 11400000, guid: 296d87077bc4141b78c34fac580d5780, type: 2}
-    - rid: 2807516289745289393
+    - rid: 2807516679868776462
       type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
       data:
         decisionId: board-production-available
         conditions:
-        - rid: 2807516289745289403
+        - rid: 2807516679868776480
         operatorId: {fileID: 11400000, guid: fc9cdd410db2c4257b287cef63b92a16, type: 2}
-    - rid: 2807516289745289394
+    - rid: 2807516679868776463
       type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
       data:
         factType: 13
-    - rid: 2807516289745289395
+    - rid: 2807516679868776464
       type: {class: AgentMatchDecisionConditionData, ns: Core.Orchestration, asm: Core}
       data: 
-    - rid: 2807516289745289396
+    - rid: 2807516679868776465
       type: {class: ScopeDecisionConditionData, ns: Core.Orchestration, asm: Core}
       data:
         scopeType: 0
-    - rid: 2807516289745289397
+    - rid: 2807516679868776466
       type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
       data:
-        factType: 4
-    - rid: 2807516289745289398
+        factType: 17
+    - rid: 2807516679868776467
       type: {class: AgentMatchDecisionConditionData, ns: Core.Orchestration, asm: Core}
       data: 
-    - rid: 2807516289745289399
+    - rid: 2807516679868776468
       type: {class: ScopeDecisionConditionData, ns: Core.Orchestration, asm: Core}
       data:
         scopeType: 0
-    - rid: 2807516289745289400
+    - rid: 2807516679868776469
       type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
       data:
         factType: 4
-    - rid: 2807516289745289401
+    - rid: 2807516679868776470
+      type: {class: AgentMatchDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data: 
+    - rid: 2807516679868776471
+      type: {class: ScopeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        scopeType: 0
+    - rid: 2807516679868776472
+      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        factType: 1
+    - rid: 2807516679868776473
+      type: {class: AgentMatchDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data: 
+    - rid: 2807516679868776474
+      type: {class: ScopeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        scopeType: 0
+    - rid: 2807516679868776475
+      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        factType: 1
+    - rid: 2807516679868776476
       type: {class: ScopeDecisionConditionData, ns: Core.Orchestration, asm: Core}
       data:
         scopeType: 1
-    - rid: 2807516289745289402
+    - rid: 2807516679868776477
+      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        factType: 4
+    - rid: 2807516679868776478
+      type: {class: ScopeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        scopeType: 1
+    - rid: 2807516679868776479
       type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
       data:
         factType: 16
-    - rid: 2807516289745289403
+    - rid: 2807516679868776480
       type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
       data:
         factType: 5

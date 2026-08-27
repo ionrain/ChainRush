@@ -744,6 +744,63 @@ namespace ChainRush.Editor
             Debug.Log("[ChainRush] Autobattle runtime bindings were applied.");
         }
 
+        [MenuItem("ChainRush/Activities/Autobattle/Apply Materialization Endpoint Wiring")]
+        public static void ApplyMaterializationEndpointWiring()
+        {
+            TaxonomyTermData operatorId =
+                LoadRequired<TaxonomyTermData>(ProductionMaterializedOperatorPath);
+            ReplaceMaterializationOperator(
+                LoadRequired<OrchestratorAIBrainData>(PlayerBrainPath),
+                operatorId,
+                PlayerBrainPath);
+            ReplaceMaterializationOperator(
+                LoadRequired<OrchestratorAIBrainData>(EnemyBrainPath),
+                operatorId,
+                EnemyBrainPath);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.ForceReserializeAssets(
+                new List<string> { PlayerBrainPath, EnemyBrainPath });
+            AssetDatabase.Refresh();
+            Debug.Log("[ChainRush] Autobattle materialization endpoint wiring was applied.");
+        }
+
+        static void ReplaceMaterializationOperator(
+            OrchestratorAIBrainData brain,
+            TaxonomyTermData operatorId,
+            string brainPath)
+        {
+            List<OrchestrationDecompOpData> operators = brain.Operators;
+            int replacementIndex = -1;
+            for (int i = 0; i < operators.Count; i++)
+            {
+                if (operators[i] is MaterializedEntityProductionDecompOpData existing)
+                {
+                    if (replacementIndex >= 0)
+                        throw new InvalidOperationException($"Brain '{brainPath}' has duplicate materialization operators.");
+                    SetField(existing, "operatorId", operatorId);
+                    replacementIndex = i;
+                    continue;
+                }
+                if (operators[i] != null)
+                    continue;
+                if (replacementIndex >= 0)
+                    throw new InvalidOperationException($"Brain '{brainPath}' has multiple unresolved operators.");
+                replacementIndex = i;
+            }
+
+            if (replacementIndex < 0)
+                throw new InvalidOperationException($"Brain '{brainPath}' has no materialization operator slot.");
+            if (operators[replacementIndex] == null)
+            {
+                var replacement = new MaterializedEntityProductionDecompOpData();
+                SetField(replacement, "operatorId", operatorId);
+                operators[replacementIndex] = replacement;
+            }
+
+            SetField(brain, "operators", operators);
+            EditorUtility.SetDirty(brain);
+        }
+
         static void CreateTaxonomy(Content content, List<string> createdPaths)
         {
             TaxonomyFamilyData roleFamily = CreateFamily(
@@ -2731,8 +2788,8 @@ namespace ChainRush.Editor
                     content.ProductionEconomyOperator);
             AwaitFactDecompOpData awaitFact = CreateAwaitFactOperation(
                 content.AwaitFactOperator);
-            ProductionMaterializedEntityDecompOpData materialized =
-                CreateOperation<ProductionMaterializedEntityDecompOpData>(
+            MaterializedEntityProductionDecompOpData materialized =
+                CreateOperation<MaterializedEntityProductionDecompOpData>(
                     content.ProductionMaterializedOperator);
             ProductionYieldDecompOpData yield = CreateOperation<ProductionYieldDecompOpData>(
                 content.ProductionYieldOperator);
@@ -2833,8 +2890,8 @@ namespace ChainRush.Editor
             AgentDecompOpData waveAgent = CreateAgentOperation(
                 content.EnemyWaveAgentOperator,
                 content.EnemyWaveAgent);
-            ProductionMaterializedEntityDecompOpData materialized =
-                CreateOperation<ProductionMaterializedEntityDecompOpData>(
+            MaterializedEntityProductionDecompOpData materialized =
+                CreateOperation<MaterializedEntityProductionDecompOpData>(
                     content.ProductionMaterializedOperator);
             ProductionYieldDecompOpData yield = CreateOperation<ProductionYieldDecompOpData>(
                 content.ProductionYieldOperator);

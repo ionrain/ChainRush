@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Core::Core.Orchestration.OrchestratorAIBrainData
   operators:
   - rid: 2807516363299750087
-  - rid: 2807516363299750088
+  - rid: 2807516701411770467
   - rid: 2807516363299750089
   - rid: 2807516363299750090
   decisionGraph:
@@ -38,11 +38,6 @@ MonoBehaviour:
         operatorId: {fileID: 11400000, guid: 8a74a6b24d5794a348fcdb5e66c6fa20, type: 2}
         agentDefinition: {fileID: 11400000, guid: 386ea07ad989a435bacf51b07a8402c1,
           type: 2}
-    - rid: 2807516363299750088
-      type: {class: ProductionMaterializedEntityDecompOpData, ns: Core.Orchestration,
-        asm: Core}
-      data:
-        operatorId: {fileID: 11400000, guid: 75feb13c5e1254519a15de921f8b2f4c, type: 2}
     - rid: 2807516363299750089
       type: {class: ProductionYieldDecompOpData, ns: Core.Orchestration, asm: Core}
       data:
@@ -119,3 +114,8 @@ MonoBehaviour:
       type: {class: ScopeDecisionConditionData, ns: Core.Orchestration, asm: Core}
       data:
         scopeType: 1
+    - rid: 2807516701411770467
+      type: {class: MaterializedEntityProductionDecompOpData, ns: Core.Orchestration,
+        asm: Core}
+      data:
+        operatorId: {fileID: 11400000, guid: 75feb13c5e1254519a15de921f8b2f4c, type: 2}

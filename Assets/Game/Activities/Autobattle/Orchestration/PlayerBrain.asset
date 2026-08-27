@@ -17,7 +17,7 @@ MonoBehaviour:
   - rid: 2807516363299750031
   - rid: 2807516363299750032
   - rid: 2807516363299750033
-  - rid: 2807516363299750034
+  - rid: 2807516701411770466
   - rid: 2807516363299750035
   - rid: 2807516363299750036
   - rid: 2807516543296733292
@@ -62,11 +62,6 @@ MonoBehaviour:
       type: {class: ProductionEconomyDecompOpData, ns: Core.Orchestration, asm: Core}
       data:
         operatorId: {fileID: 11400000, guid: 81c68355248194ec8909c09aa9c7480f, type: 2}
-    - rid: 2807516363299750034
-      type: {class: ProductionMaterializedEntityDecompOpData, ns: Core.Orchestration,
-        asm: Core}
-      data:
-        operatorId: {fileID: 11400000, guid: 75feb13c5e1254519a15de921f8b2f4c, type: 2}
     - rid: 2807516363299750035
       type: {class: ProductionYieldDecompOpData, ns: Core.Orchestration, asm: Core}
       data:
@@ -257,8 +252,13 @@ MonoBehaviour:
     - rid: 2807516543296733300
       type: {class: PlanIntentDecisionConditionData, ns: Core.Orchestration, asm: Core}
       data:
-        targetTypes:
-        targetRelations:
+        targetTypes: 
+        targetRelations: 
         actionTypes: 01000000
-        conditionTypes:
+        conditionTypes: 
         requirePlanningEnabled: 1
+    - rid: 2807516701411770466
+      type: {class: MaterializedEntityProductionDecompOpData, ns: Core.Orchestration,
+        asm: Core}
+      data:
+        operatorId: {fileID: 11400000, guid: 75feb13c5e1254519a15de921f8b2f4c, type: 2}

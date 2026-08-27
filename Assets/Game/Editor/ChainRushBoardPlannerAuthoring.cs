@@ -88,14 +88,12 @@ namespace ChainRush.Editor
         const string PopulationProductionPath = BoardRoot + "/Production/BoardPopulationProduction.asset";
         const string PopulationCatalogPath = BoardRoot + "/Production/BoardPopulationCatalog.asset";
         const string PopulationAgentPath = AgentsRoot + "/BoardPopulationAgent.asset";
-        const string ProductionAgentPath = AgentsRoot + "/BoardProductionAgent.asset";
         const string SelectionAgentPath = AgentsRoot + "/BoardSelectionAgent.asset";
         const string PopulationObjectivePath = ObjectivesRoot + "/BoardPopulationObjective.asset";
         const string SelectionObjectivePath = ObjectivesRoot + "/BoardSelectionObjective.asset";
         const string MergeObjectivePath = ObjectivesRoot + "/BoardMergeObjective.asset";
         const string OperatorFamilyPath = OrchestrationTaxonomyRoot + "/BoardOperatorFamily.asset";
         const string PopulationAgentOperatorPath = OrchestrationTaxonomyRoot + "/BoardPopulationAgentOperator.asset";
-        const string ProductionAgentOperatorPath = OrchestrationTaxonomyRoot + "/BoardProductionAgentOperator.asset";
         const string ProductionYieldOperatorPath = OrchestrationTaxonomyRoot + "/BoardProductionYieldOperator.asset";
         const string ProductionAvailableOperatorPath = OrchestrationTaxonomyRoot + "/BoardProductionAvailableOperator.asset";
         const string MaterializedProductionOperatorPath = OrchestrationTaxonomyRoot + "/BoardMaterializedProductionOperator.asset";
@@ -128,11 +126,9 @@ namespace ChainRush.Editor
             PopulationProductionPath,
             PopulationCatalogPath,
             PopulationAgentPath,
-            ProductionAgentPath,
             PopulationObjectivePath,
             OperatorFamilyPath,
             PopulationAgentOperatorPath,
-            ProductionAgentOperatorPath,
             ProductionYieldOperatorPath,
             ProductionAvailableOperatorPath,
             MaterializedProductionOperatorPath,
@@ -288,69 +284,6 @@ namespace ChainRush.Editor
             }
         }
 
-        [MenuItem("ChainRush/Activities/Board/Add Production Input Operator")]
-        public static void AddProductionInputOperator()
-        {
-            EnsureAssetDoesNotExist(ProductionInputOperatorPath);
-
-            TaxonomyFamilyData operatorFamily = LoadRequired<TaxonomyFamilyData>(OperatorFamilyPath);
-            ActivityAgentDefinitionData populationAgent =
-                LoadRequired<ActivityAgentDefinitionData>(PopulationAgentPath);
-            ActivityAgentDefinitionData selectionAgent =
-                LoadRequired<ActivityAgentDefinitionData>(SelectionAgentPath);
-            ActivityAgentDefinitionData productionAgent =
-                LoadRequired<ActivityAgentDefinitionData>(ProductionAgentPath);
-            TaxonomyTermData populationAgentOperator =
-                LoadRequired<TaxonomyTermData>(PopulationAgentOperatorPath);
-            TaxonomyTermData selectionAgentOperator =
-                LoadRequired<TaxonomyTermData>(SelectionAgentOperatorPath);
-            TaxonomyTermData productionAgentOperator =
-                LoadRequired<TaxonomyTermData>(ProductionAgentOperatorPath);
-            TaxonomyTermData productionYieldOperator =
-                LoadRequired<TaxonomyTermData>(ProductionYieldOperatorPath);
-            TaxonomyTermData productionAvailableOperator =
-                LoadRequired<TaxonomyTermData>(ProductionAvailableOperatorPath);
-            TaxonomyTermData materializedProductionOperator =
-                LoadRequired<TaxonomyTermData>(MaterializedProductionOperatorPath);
-            OrchestratorAIBrainData brain = LoadRequired<OrchestratorAIBrainData>(BrainPath);
-            TaxonomyRuntimeInstallerData taxonomyInstaller =
-                LoadRequired<TaxonomyRuntimeInstallerData>(TaxonomyInstallerPath);
-
-            TaxonomyTermData productionInputOperator = ScriptableObject.CreateInstance<TaxonomyTermData>();
-            productionInputOperator.name = "BoardProductionInputOperator";
-            ConfigureTaxonomyTerm(
-                productionInputOperator,
-                "chainrush.orchestration.board.production-input",
-                "Board Production Input",
-                operatorFamily,
-                6);
-            AssetDatabase.CreateAsset(productionInputOperator, ProductionInputOperatorPath);
-
-            ConfigureSelectionBrain(
-                brain,
-                populationAgent,
-                selectionAgent,
-                productionAgent,
-                populationAgentOperator,
-                selectionAgentOperator,
-                productionAgentOperator,
-                productionInputOperator,
-                productionYieldOperator,
-                productionAvailableOperator,
-                materializedProductionOperator);
-
-            var installer = new SerializedObject(taxonomyInstaller);
-            SerializedProperty terms = installer.FindProperty("terms");
-            terms.arraySize++;
-            terms.GetArrayElementAtIndex(terms.arraySize - 1).objectReferenceValue = productionInputOperator;
-            installer.ApplyModifiedPropertiesWithoutUndo();
-
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-            Selection.activeObject = productionInputOperator;
-            Debug.Log("[ChainRush] Added Board Production input operator.");
-        }
-
         [MenuItem("ChainRush/Activities/Board/Complete Vertical Slice Wiring")]
         public static void CompleteVerticalSliceWiring()
         {
@@ -370,8 +303,12 @@ namespace ChainRush.Editor
             TaxonomyFamilyData operatorFamily = LoadRequired<TaxonomyFamilyData>(OperatorFamilyPath);
             TaxonomyTermData populationAgentOperator =
                 LoadRequired<TaxonomyTermData>(PopulationAgentOperatorPath);
-            TaxonomyTermData productionAgentOperator =
-                LoadRequired<TaxonomyTermData>(ProductionAgentOperatorPath);
+            ActivityAgentDefinitionData selectionAgent =
+                LoadRequired<ActivityAgentDefinitionData>(SelectionAgentPath);
+            TaxonomyTermData selectionAgentOperator =
+                LoadRequired<TaxonomyTermData>(SelectionAgentOperatorPath);
+            TaxonomyTermData productionInputOperator =
+                LoadRequired<TaxonomyTermData>(ProductionInputOperatorPath);
             TaxonomyTermData productionYieldOperator =
                 LoadRequired<TaxonomyTermData>(ProductionYieldOperatorPath);
             TaxonomyTermData productionAvailableOperator =
@@ -392,7 +329,6 @@ namespace ChainRush.Editor
                 waterRecipe,
                 operatorFamily,
                 populationAgentOperator,
-                productionAgentOperator,
                 productionYieldOperator,
                 productionAvailableOperator);
 
@@ -502,12 +438,6 @@ namespace ChainRush.Editor
                 operatorFamily,
                 0);
             ConfigureTaxonomyTerm(
-                productionAgentOperator,
-                "chainrush.orchestration.board.agent.production",
-                "Board Production Agent",
-                operatorFamily,
-                1);
-            ConfigureTaxonomyTerm(
                 productionYieldOperator,
                 "chainrush.orchestration.board.production-yield",
                 "Board Production Yield",
@@ -526,12 +456,13 @@ namespace ChainRush.Editor
                 operatorFamily,
                 4);
             ConfigurePopulationAgentExecutor(populationAgent, boardHost);
-            ConfigureBrain(
+            ConfigureSelectionBrain(
                 brain,
                 populationAgent,
-                LoadRequired<ActivityAgentDefinitionData>(ProductionAgentPath),
+                selectionAgent,
                 populationAgentOperator,
-                productionAgentOperator,
+                selectionAgentOperator,
+                productionInputOperator,
                 productionYieldOperator,
                 productionAvailableOperator,
                 materializedProductionOperator);
@@ -553,7 +484,6 @@ namespace ChainRush.Editor
                 waterRecipe,
                 operatorFamily,
                 populationAgentOperator,
-                productionAgentOperator,
                 productionYieldOperator,
                 productionAvailableOperator,
                 materializedProductionOperator);
@@ -569,6 +499,90 @@ namespace ChainRush.Editor
             Selection.activeObject = populationProducer;
             EditorGUIUtility.PingObject(populationProducer);
             Debug.Log("[ChainRush] Board vertical slice incomplete assets were completed without changing GUIDs.");
+        }
+
+        [MenuItem("ChainRush/Activities/Board/Apply Materialization Endpoint Wiring")]
+        public static void ApplyMaterializationEndpointWiring()
+        {
+            OrchestratorAIBrainData brain = LoadRequired<OrchestratorAIBrainData>(BrainPath);
+            TaxonomyTermData operatorId =
+                LoadRequired<TaxonomyTermData>(MaterializedProductionOperatorPath);
+            ReplaceMaterializationOperator(brain, operatorId);
+
+            OrchestrationDecisionGraphData graph = brain.DecisionGraph;
+            if (graph == null)
+                throw new InvalidOperationException("Board brain has no decision graph.");
+
+            OrchestrationDecisionData materializationDecision = null;
+            for (int i = 0; i < graph.Nodes.Count; i++)
+            {
+                if (graph.Nodes[i] is OrchestrationDecisionData decision
+                    && string.Equals(
+                        decision.DecisionId,
+                        "board-materialized-production",
+                        StringComparison.Ordinal))
+                {
+                    if (materializationDecision != null)
+                        throw new InvalidOperationException("Board brain has duplicate materialization decisions.");
+                    materializationDecision = decision;
+                }
+            }
+            if (materializationDecision == null)
+                throw new InvalidOperationException("Board brain has no materialization decision.");
+
+            ScopeDecisionConditionData scope = null;
+            for (int i = 0; i < materializationDecision.Conditions.Count; i++)
+            {
+                if (!(materializationDecision.Conditions[i] is ScopeDecisionConditionData candidate))
+                    continue;
+                if (scope != null)
+                    throw new InvalidOperationException("Board materialization decision has duplicate scope criteria.");
+                scope = candidate;
+            }
+            if (scope == null)
+                throw new InvalidOperationException("Board materialization decision has no scope criterion.");
+
+            SetField(scope, "scopeType", OrchestrationDecompositionScopeType.GlobalObjective);
+            EditorUtility.SetDirty(brain);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.ForceReserializeAssets(new List<string> { BrainPath });
+            AssetDatabase.Refresh();
+            Debug.Log("[ChainRush] Board materialization endpoint wiring was applied.");
+        }
+
+        static void ReplaceMaterializationOperator(
+            OrchestratorAIBrainData brain,
+            TaxonomyTermData operatorId)
+        {
+            List<OrchestrationDecompOpData> operators = brain.Operators;
+            int replacementIndex = -1;
+            for (int i = 0; i < operators.Count; i++)
+            {
+                if (operators[i] is MaterializedEntityProductionDecompOpData existing)
+                {
+                    if (replacementIndex >= 0)
+                        throw new InvalidOperationException("Board brain has duplicate materialization operators.");
+                    SetField(existing, "operatorId", operatorId);
+                    replacementIndex = i;
+                    continue;
+                }
+                if (operators[i] != null)
+                    continue;
+                if (replacementIndex >= 0)
+                    throw new InvalidOperationException("Board brain has multiple unresolved operators.");
+                replacementIndex = i;
+            }
+
+            if (replacementIndex < 0)
+                throw new InvalidOperationException("Board brain has no materialization operator slot.");
+            if (operators[replacementIndex] == null)
+            {
+                var replacement = new MaterializedEntityProductionDecompOpData();
+                SetField(replacement, "operatorId", operatorId);
+                operators[replacementIndex] = replacement;
+            }
+
+            SetField(brain, "operators", operators);
         }
 
         static void ConfigurePlanner(
@@ -876,41 +890,6 @@ namespace ChainRush.Editor
             EditorUtility.SetDirty(boardHost);
         }
 
-        static void ConfigureProductionAgentForMerge(
-            ActivityAgentDefinitionData productionAgent,
-            CapabilityHostData water,
-            TaxonomyTermData boardWalletTag,
-            TaxonomyTermData selectedTag)
-        {
-            var materializedMatch = new ObjectiveConditionMaterializedEntity(
-                EntityId.Invalid,
-                water,
-                EconomyFormType.Token,
-                new List<TaxonomyTermData>(0),
-                new List<CapabilityHostType>(0),
-                1L,
-                CompareOperation.GreaterOrEqual,
-                SpatialMarkerRef.Invalid);
-            SetField(
-                productionAgent,
-                "matchConditions",
-                new List<ObjectiveCondition>
-                {
-                    materializedMatch,
-                    CreateSelectedEconomyCondition(
-                        water,
-                        boardWalletTag,
-                        selectedTag,
-                        0L,
-                        CompareOperation.Equal),
-                });
-            SetField(
-                productionAgent,
-                "stopPolicyType",
-                ActivityAgentStopPolicyType.AssignmentSuccess);
-            EditorUtility.SetDirty(productionAgent);
-        }
-
         static void ConfigureCatalog(
             ProductionCatalogData catalog,
             params ProductionRecipeData[] recipes)
@@ -980,10 +959,13 @@ namespace ChainRush.Editor
         static ObjectiveTemplateData CreatePopulationObjective(
             EconomyAssetData turnToken,
             TaxonomyTermData sharedWalletTag,
+            CapabilityHostData water,
+            TaxonomyTermData boardWalletTag,
+            TaxonomyTermData selectedTag,
             TaxonomyTermData boardCellTag,
             List<string> createdPaths)
         {
-            var activation = new ObjectiveConditionEconomyMetric(
+            var turnTokenActivation = new ObjectiveConditionEconomyMetric(
                 new List<TaxonomyTermData> { sharedWalletTag },
                 EconomyFormType.Stack,
                 turnToken,
@@ -991,6 +973,13 @@ namespace ChainRush.Editor
                 CompareOperation.GreaterOrEqual,
                 null,
                 null);
+            ObjectiveConditionEconomyMetric mergeCompleteActivation =
+                CreateSelectedEconomyCondition(
+                    water,
+                    boardWalletTag,
+                    selectedTag,
+                    0L,
+                    CompareOperation.Equal);
             var success = new ObjectiveConditionMarkerAvailability(
                 null,
                 EconomyFormType.Token,
@@ -1000,7 +989,11 @@ namespace ChainRush.Editor
             var root = new ObjectiveNode(
                 "chainrush-board-population",
                 null,
-                new List<ObjectiveCondition> { activation },
+                new List<ObjectiveCondition>
+                {
+                    turnTokenActivation,
+                    mergeCompleteActivation,
+                },
                 new List<ObjectiveCondition> { success },
                 new List<ObjectiveCondition>(0));
             ObjectiveTemplateData objective = ScriptableObject.CreateInstance<ObjectiveTemplateData>();
@@ -1085,43 +1078,6 @@ namespace ChainRush.Editor
             }
         }
 
-        static ActivityAgentDefinitionData CreateProductionAgent(
-            CapabilityHostData water,
-            List<string> createdPaths)
-        {
-            var match = new ObjectiveConditionMaterializedEntity(
-                EntityId.Invalid,
-                water,
-                EconomyFormType.Token,
-                new List<TaxonomyTermData>(0),
-                new List<CapabilityHostType>(0),
-                1L,
-                CompareOperation.GreaterOrEqual,
-                SpatialMarkerRef.Invalid);
-            ActivityAgentDefinitionData definition = CreateAgentDefinition(
-                ProductionAgentPath,
-                "BoardProductionAgent",
-                "chainrush-board-production",
-                90,
-                ObjectiveCommandFailurePolicyType.Replan,
-                new List<ObjectiveCondition> { match },
-                new List<ActivityAgentSelectionCriterionData>
-                {
-                    CreateMaterializedCriterion(
-                        null,
-                        new List<CapabilityHostType> { CapabilityHostType.ProductionOwner }),
-                    CreateOwnerCriterion(),
-                },
-                new List<ActivityAgentSelectionCriterionData>(0),
-                new ProductionActivityOrchestrationAgentData(),
-                createdPaths);
-            SetField(
-                definition,
-                "stopPolicyType",
-                ActivityAgentStopPolicyType.AssignmentSuccess);
-            return definition;
-        }
-
         static ActivityAgentDefinitionData CreateAgentDefinition(
             string path,
             string name,
@@ -1185,114 +1141,12 @@ namespace ChainRush.Editor
             return criterion;
         }
 
-        static OrchestratorAIBrainData CreateBrain(
-            ActivityAgentDefinitionData populationAgent,
-            ActivityAgentDefinitionData productionAgent,
-            TaxonomyTermData populationAgentOperator,
-            TaxonomyTermData productionAgentOperator,
-            TaxonomyTermData productionYieldOperator,
-            TaxonomyTermData productionAvailableOperator,
-            TaxonomyTermData materializedProductionOperator,
-            List<string> createdPaths)
-        {
-            OrchestratorAIBrainData brain = ScriptableObject.CreateInstance<OrchestratorAIBrainData>();
-            brain.name = "BoardBrain";
-            ConfigureBrain(
-                brain,
-                populationAgent,
-                productionAgent,
-                populationAgentOperator,
-                productionAgentOperator,
-                productionYieldOperator,
-                productionAvailableOperator,
-                materializedProductionOperator);
-            AssetDatabase.CreateAsset(brain, BrainPath);
-            createdPaths.Add(BrainPath);
-            return brain;
-        }
-
-        static void ConfigureBrain(
-            OrchestratorAIBrainData brain,
-            ActivityAgentDefinitionData populationAgent,
-            ActivityAgentDefinitionData productionAgent,
-            TaxonomyTermData populationAgentOperator,
-            TaxonomyTermData productionAgentOperator,
-            TaxonomyTermData productionYieldOperator,
-            TaxonomyTermData productionAvailableOperator,
-            TaxonomyTermData materializedProductionOperator)
-        {
-            var populationOperation = new AgentDecompOpData();
-            SetField(populationOperation, "operatorId", populationAgentOperator);
-            SetField(populationOperation, "agentDefinition", populationAgent);
-            var productionOperation = new AgentDecompOpData();
-            SetField(productionOperation, "operatorId", productionAgentOperator);
-            SetField(productionOperation, "agentDefinition", productionAgent);
-            var yieldOperation = new ProductionYieldDecompOpData();
-            SetField(yieldOperation, "operatorId", productionYieldOperator);
-            var availableOperation = new ProductionAvailableDecompOpData();
-            SetField(availableOperation, "operatorId", productionAvailableOperator);
-            var materializedProductionOperation = new ProductionMaterializedEntityDecompOpData();
-            SetField(materializedProductionOperation, "operatorId", materializedProductionOperator);
-
-            var graph = new OrchestrationDecisionGraphData();
-            SetField(
-                graph,
-                "nodes",
-                new List<OrchestrationDecisionNodeData>
-                {
-                    CreateDecision(
-                        "board-population-agent",
-                        OrchestrationFactType.MaterializationMarkerAvailable,
-                        populationAgentOperator,
-                        true,
-                        OrchestrationDecompositionScopeType.GlobalObjective),
-                    CreateDecision(
-                        "board-production-agent",
-                        OrchestrationFactType.MaterializedEntity,
-                        productionAgentOperator,
-                        true,
-                        OrchestrationDecompositionScopeType.GlobalObjective),
-                    CreateDecision(
-                        "board-materialized-production",
-                        OrchestrationFactType.MaterializedEntity,
-                        materializedProductionOperator,
-                        false,
-                        OrchestrationDecompositionScopeType.AgentLocal),
-                    CreateDecision(
-                        "board-production-yield",
-                        OrchestrationFactType.ProductionYield,
-                        productionYieldOperator,
-                        false),
-                    CreateDecision(
-                        "board-production-available",
-                        OrchestrationFactType.ProductionAvailable,
-                        productionAvailableOperator,
-                        false),
-                });
-
-            SetField(
-                brain,
-                "operators",
-                new List<OrchestrationDecompOpData>
-                {
-                    populationOperation,
-                    productionOperation,
-                    yieldOperation,
-                    availableOperation,
-                    materializedProductionOperation,
-                });
-            SetField(brain, "decisionGraph", graph);
-            EditorUtility.SetDirty(brain);
-        }
-
         static void ConfigureSelectionBrain(
             OrchestratorAIBrainData brain,
             ActivityAgentDefinitionData populationAgent,
             ActivityAgentDefinitionData selectionAgent,
-            ActivityAgentDefinitionData productionAgent,
             TaxonomyTermData populationAgentOperator,
             TaxonomyTermData selectionAgentOperator,
-            TaxonomyTermData productionAgentOperator,
             TaxonomyTermData productionInputOperator,
             TaxonomyTermData productionYieldOperator,
             TaxonomyTermData productionAvailableOperator,
@@ -1304,16 +1158,13 @@ namespace ChainRush.Editor
             var selectionOperation = new AgentDecompOpData();
             SetField(selectionOperation, "operatorId", selectionAgentOperator);
             SetField(selectionOperation, "agentDefinition", selectionAgent);
-            var productionOperation = new AgentDecompOpData();
-            SetField(productionOperation, "operatorId", productionAgentOperator);
-            SetField(productionOperation, "agentDefinition", productionAgent);
             var productionInputOperation = new ProductionInputConsumptionDecompOpData();
             SetField(productionInputOperation, "operatorId", productionInputOperator);
             var yieldOperation = new ProductionYieldDecompOpData();
             SetField(yieldOperation, "operatorId", productionYieldOperator);
             var availableOperation = new ProductionAvailableDecompOpData();
             SetField(availableOperation, "operatorId", productionAvailableOperator);
-            var materializedProductionOperation = new ProductionMaterializedEntityDecompOpData();
+            var materializedProductionOperation = new MaterializedEntityProductionDecompOpData();
             SetField(materializedProductionOperation, "operatorId", materializedProductionOperator);
 
             var graph = new OrchestrationDecisionGraphData();
@@ -1335,29 +1186,17 @@ namespace ChainRush.Editor
                         true,
                         OrchestrationDecompositionScopeType.GlobalObjective),
                     CreateDecision(
-                        "board-production-agent-materialized",
-                        OrchestrationFactType.MaterializedEntity,
-                        productionAgentOperator,
-                        true,
-                        OrchestrationDecompositionScopeType.GlobalObjective),
-                    CreateDecision(
-                        "board-production-agent-economy",
-                        OrchestrationFactType.EconomyAmount,
-                        productionAgentOperator,
-                        true,
-                        OrchestrationDecompositionScopeType.GlobalObjective),
-                    CreateDecision(
                         "board-production-input",
                         OrchestrationFactType.EconomyAmount,
                         productionInputOperator,
                         false,
-                        OrchestrationDecompositionScopeType.AgentLocal),
+                        OrchestrationDecompositionScopeType.GlobalObjective),
                     CreateDecision(
                         "board-materialized-production",
                         OrchestrationFactType.MaterializedEntity,
                         materializedProductionOperator,
                         false,
-                        OrchestrationDecompositionScopeType.AgentLocal),
+                        OrchestrationDecompositionScopeType.GlobalObjective),
                     CreateDecision(
                         "board-production-yield",
                         OrchestrationFactType.ProductionYield,
@@ -1377,7 +1216,6 @@ namespace ChainRush.Editor
                 {
                     populationOperation,
                     selectionOperation,
-                    productionOperation,
                     productionInputOperation,
                     yieldOperation,
                     availableOperation,
@@ -1943,7 +1781,6 @@ namespace ChainRush.Editor
             ProductionRecipeData waterRecipe,
             TaxonomyFamilyData operatorFamily,
             TaxonomyTermData populationAgentOperator,
-            TaxonomyTermData productionAgentOperator,
             TaxonomyTermData productionYieldOperator,
             TaxonomyTermData productionAvailableOperator)
         {
@@ -1979,11 +1816,6 @@ namespace ChainRush.Editor
                     operatorFamily,
                     0)
                 && IsEmptyOrConfiguredTerm(
-                    productionAgentOperator,
-                    "chainrush.orchestration.board.agent.production",
-                    operatorFamily,
-                    1)
-                && IsEmptyOrConfiguredTerm(
                     productionYieldOperator,
                     "chainrush.orchestration.board.production-yield",
                     operatorFamily,
@@ -2008,7 +1840,6 @@ namespace ChainRush.Editor
             ProductionRecipeData waterRecipe,
             TaxonomyFamilyData operatorFamily,
             TaxonomyTermData populationAgentOperator,
-            TaxonomyTermData productionAgentOperator,
             TaxonomyTermData productionYieldOperator,
             TaxonomyTermData productionAvailableOperator,
             TaxonomyTermData materializedProductionOperator)
@@ -2030,11 +1861,6 @@ namespace ChainRush.Editor
                     "chainrush.orchestration.board.agent.population",
                     operatorFamily,
                     0)
-                && HasConfiguredTerm(
-                    productionAgentOperator,
-                    "chainrush.orchestration.board.agent.production",
-                    operatorFamily,
-                    1)
                 && HasConfiguredTerm(
                     productionYieldOperator,
                     "chainrush.orchestration.board.production-yield",

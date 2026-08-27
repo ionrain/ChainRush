@@ -95,8 +95,6 @@ namespace ChainRush.Tests.EditMode
             BoardRoot + "/Objectives/BoardPopulationObjective.asset";
         const string BoardPopulationAgentPath =
             BoardRoot + "/Agents/BoardPopulationAgent.asset";
-        const string BoardProductionAgentPath =
-            BoardRoot + "/Agents/BoardProductionAgent.asset";
         const string BoardSelectionAgentPath =
             BoardRoot + "/Agents/BoardSelectionAgent.asset";
         const string BoardBrainPath = BoardRoot + "/Orchestration/BoardBrain.asset";
@@ -170,6 +168,8 @@ namespace ChainRush.Tests.EditMode
             AutobattleRoot + "/Production/EnemyWaveProduction.asset";
         const string PlayerBrainPath =
             AutobattleRoot + "/Orchestration/PlayerBrain.asset";
+        const string EnemyBrainPath =
+            AutobattleRoot + "/Orchestration/EnemyBrain.asset";
         const string AwaitFactOperatorPath =
             AutobattleRoot + "/Orchestration/Taxonomy/AwaitFactOperator.asset";
         const string DropProfilePath =
@@ -372,8 +372,6 @@ namespace ChainRush.Tests.EditMode
                 LoadRequiredAsset<ObjectiveTemplateData>(BoardMergeObjectivePath);
             ActivityAgentDefinitionData populationAgent =
                 LoadRequiredAsset<ActivityAgentDefinitionData>(BoardPopulationAgentPath);
-            ActivityAgentDefinitionData productionAgent =
-                LoadRequiredAsset<ActivityAgentDefinitionData>(BoardProductionAgentPath);
             ActivityAgentDefinitionData selectionAgent =
                 LoadRequiredAsset<ActivityAgentDefinitionData>(BoardSelectionAgentPath);
             OrchestratorAIBrainData boardBrain =
@@ -451,32 +449,80 @@ namespace ChainRush.Tests.EditMode
             Assert.AreEqual(
                 ActivityAgentStopPolicyType.AssignmentSuccess,
                 selectionAgent.StopPolicyType);
-            Assert.AreEqual(
-                ActivityAgentStopPolicyType.AssignmentSuccess,
-                productionAgent.StopPolicyType);
+            Assert.AreEqual(6, boardBrain.Operators.Count);
+            List<AgentDecompOpData> agentOperators = boardBrain.Operators
+                .OfType<AgentDecompOpData>()
+                .ToList();
+            Assert.AreEqual(2, agentOperators.Count);
+            CollectionAssert.AreEquivalent(
+                new[] { populationAgent, selectionAgent },
+                agentOperators.Select(operation => operation.AgentDefinition).ToList());
             ProductionInputConsumptionDecompOpData productionInput = boardBrain.Operators
                 .OfType<ProductionInputConsumptionDecompOpData>()
                 .Single();
             Assert.AreSame(productionInputOperator, productionInput.OperatorId);
+            OrchestrationDecisionData productionInputDecision = boardBrain.DecisionGraph.Nodes
+                .OfType<OrchestrationDecisionData>()
+                .Single(decision => decision.DecisionId == "board-production-input");
+            Assert.AreSame(productionInputOperator, productionInputDecision.OperatorId);
+            Assert.IsEmpty(
+                productionInputDecision.Conditions.OfType<AgentMatchDecisionConditionData>());
+            ScopeDecisionConditionData productionInputScope = productionInputDecision.Conditions
+                .OfType<ScopeDecisionConditionData>()
+                .Single();
+            Assert.AreEqual(
+                OrchestrationDecompositionScopeType.GlobalObjective,
+                ReadField<OrchestrationDecompositionScopeType>(productionInputScope, "scopeType"));
+            MaterializedEntityProductionDecompOpData materializedProduction = boardBrain.Operators
+                .OfType<MaterializedEntityProductionDecompOpData>()
+                .Single();
+            OrchestrationDecisionData materializedProductionDecision = boardBrain.DecisionGraph.Nodes
+                .OfType<OrchestrationDecisionData>()
+                .Single(decision => decision.DecisionId == "board-materialized-production");
+            Assert.AreSame(materializedProduction.OperatorId, materializedProductionDecision.OperatorId);
+            Assert.AreEqual(
+                OrchestrationDecompositionScopeType.GlobalObjective,
+                ReadField<OrchestrationDecompositionScopeType>(
+                    materializedProductionDecision.Conditions
+                        .OfType<ScopeDecisionConditionData>()
+                        .Single(),
+                    "scopeType"));
             CollectionAssert.Contains(
                 ReadObjectReferences<TaxonomyTermData>(taxonomyInstaller, "terms"),
                 productionInputOperator);
+            Assert.IsFalse(ReadObjectReferences<TaxonomyTermData>(taxonomyInstaller, "terms")
+                .Any(term => term != null
+                    && term.Id == "chainrush.orchestration.board.agent.production"));
             Assert.AreSame(orchestration, board.Teams[0].Features.Single());
             CollectionAssert.Contains(
                 ReadObjectReferences<TaxonomyTermData>(taxonomyInstaller, "terms"),
                 waterTag,
                 "The taxonomy installer must register the Water Board item term before economy queries run.");
 
-            Assert.AreEqual(1, objective.Root.ActivateConditions.Count);
-            var activation = objective.Root.ActivateConditions.Single()
-                as ObjectiveConditionEconomyMetric;
-            Assert.NotNull(activation);
-            Assert.AreSame(turnToken, activation.Asset);
-            Assert.AreEqual(EconomyFormType.Stack, activation.FormType);
-            Assert.AreEqual(CompareOperation.GreaterOrEqual, activation.CompareOperation);
-            Assert.AreEqual(1L, activation.TargetValue);
-            Assert.AreEqual(1, activation.WalletTags.Count);
-            Assert.AreSame(sharedWalletTag, activation.WalletTags[0]);
+            Assert.AreEqual(2, objective.Root.ActivateConditions.Count);
+            List<ObjectiveConditionEconomyMetric> populationActivations = objective.Root
+                .ActivateConditions
+                .OfType<ObjectiveConditionEconomyMetric>()
+                .ToList();
+            Assert.AreEqual(2, populationActivations.Count);
+            ObjectiveConditionEconomyMetric turnTokenActivation = populationActivations
+                .Single(condition => condition.Asset == turnToken);
+            Assert.AreEqual(EconomyFormType.Stack, turnTokenActivation.FormType);
+            Assert.AreEqual(
+                CompareOperation.GreaterOrEqual,
+                turnTokenActivation.CompareOperation);
+            Assert.AreEqual(1L, turnTokenActivation.TargetValue);
+            Assert.AreEqual(1, turnTokenActivation.WalletTags.Count);
+            Assert.AreSame(sharedWalletTag, turnTokenActivation.WalletTags[0]);
+            ObjectiveConditionEconomyMetric mergeCompleteActivation = populationActivations
+                .Single(condition => condition.Asset == waterBase);
+            AssertMergeSelectionMetric(
+                mergeCompleteActivation,
+                waterBase,
+                boardWalletTag,
+                mergeSelected,
+                0L,
+                CompareOperation.Equal);
 
             Assert.AreEqual(1, objective.Root.SuccessConditions.Count);
             var success = objective.Root.SuccessConditions.Single()
@@ -532,9 +578,6 @@ namespace ChainRush.Tests.EditMode
             Assert.AreEqual(
                 ObjectiveCommandFailurePolicyType.FailObjective,
                 populationAgent.CommandFailurePolicyType);
-            Assert.AreEqual(
-                ObjectiveCommandFailurePolicyType.Replan,
-                productionAgent.CommandFailurePolicyType);
             var selection = (SelectionAgentData)selectionAgent.Agent;
             CollectionAssert.AreEqual(
                 new[] { mergeSelected },
@@ -768,6 +811,8 @@ namespace ChainRush.Tests.EditMode
                 LoadRequiredAsset<ProductionData>(EnemyProductionPath);
             OrchestratorAIBrainData playerBrain =
                 LoadRequiredAsset<OrchestratorAIBrainData>(PlayerBrainPath);
+            OrchestratorAIBrainData enemyBrain =
+                LoadRequiredAsset<OrchestratorAIBrainData>(EnemyBrainPath);
             TaxonomyTermData awaitFactOperator =
                 LoadRequiredAsset<TaxonomyTermData>(AwaitFactOperatorPath);
             ProductionRecipeData merge =
@@ -864,6 +909,12 @@ namespace ChainRush.Tests.EditMode
                 enemyProduction.MaterializationProviderType.Id);
 
             Assert.AreEqual(8, playerBrain.Operators.Count);
+            Assert.AreEqual(
+                1,
+                playerBrain.Operators.OfType<MaterializedEntityProductionDecompOpData>().Count());
+            Assert.AreEqual(
+                1,
+                enemyBrain.Operators.OfType<MaterializedEntityProductionDecompOpData>().Count());
             AwaitFactDecompOpData awaitFact = playerBrain.Operators
                 .OfType<AwaitFactDecompOpData>()
                 .Single();
@@ -1353,6 +1404,38 @@ namespace ChainRush.Tests.EditMode
                 Assert.IsTrue(ReadField<bool>(controller, "_awaitingBoardRefresh"));
                 Assert.IsFalse(ReadField<SelectionIntentEvent>(controller, "_pendingBeginIntent")
                     .RequestId.IsValid);
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(instance);
+            }
+        }
+
+        [Test]
+        public void BoardUI_FirstConsumedEntity_PreservesRemainingSelection()
+        {
+            GameObject instance = InstantiateBoardUI(out MonoBehaviour controller);
+            try
+            {
+                var firstEntityId = new Core.Entities.EntityId(51);
+                var secondEntityId = new Core.Entities.EntityId(52);
+                SetField(controller, "_selectionLocked", true);
+                SetField(controller, "_awaitingBoardRefresh", true);
+                ReadListField(controller, "_selectedEntities").Add(firstEntityId);
+                ReadListField(controller, "_selectedEntities").Add(secondEntityId);
+
+                MethodInfo method = controller.GetType().GetMethod(
+                    "OnCellEntityRemoved",
+                    BindingFlags.Instance | BindingFlags.NonPublic);
+                Assert.NotNull(method);
+                method.Invoke(controller, new object[] { null, firstEntityId });
+
+                IList selectedEntities = ReadListField(controller, "_selectedEntities");
+                Assert.AreEqual(1, selectedEntities.Count);
+                Assert.AreEqual(secondEntityId, selectedEntities[0]);
+                Assert.IsTrue(ReadField<bool>(controller, "_selectionLocked"));
+                Assert.IsTrue(ReadField<bool>(controller, "_awaitingBoardRefresh"));
+                Assert.IsTrue(ReadField<bool>(controller, "_boardRefreshObserved"));
             }
             finally
             {

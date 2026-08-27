@@ -334,11 +334,12 @@ namespace ChainRush.Tests.PlayMode
             Assert.IsTrue(
                 TryFindBoardHost(board.Id, boardHost, out Core.Entities.EntityId boardHostEntityId),
                 "The hidden Board host was not registered for the Board Activity.");
-            List<Core.Entities.EntityId> selectedEntities = ResolveFirstMarkerTriple(
+            List<Core.Entities.EntityId> selectedEntities = ResolveConnectedMarkerSelection(
                 board,
                 boardCellTag,
-                waterBase);
-            Assert.AreEqual(3, selectedEntities.Count);
+                waterBase,
+                6);
+            Assert.AreEqual(6, selectedEntities.Count);
             HashSet<long> waterUnitsBeforeMerge = GetActivityHostEntityValues(
                 autobattle.Id,
                 waterUnitDefinition);
@@ -366,10 +367,9 @@ namespace ChainRush.Tests.PlayMode
             float mergeDeadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
             while (Time.realtimeSinceStartup < mergeDeadline
                 && (selectedEntities.Any(CapabilityHostService.Exists)
-                    || !HasNewActivityHost(
+                    || GetActivityHostEntityValues(
                         autobattle.Id,
-                        waterUnitDefinition,
-                        waterUnitsBeforeMerge)))
+                        waterUnitDefinition).Count < waterUnitsBeforeMerge.Count + 2))
             {
                 yield return null;
             }
@@ -428,10 +428,10 @@ namespace ChainRush.Tests.PlayMode
                 autobattle.Id,
                 waterUnitDefinition);
             Assert.AreEqual(
-                waterUnitsBeforeMerge.Count + 1,
+                waterUnitsBeforeMerge.Count + 2,
                 waterUnitsAfterMerge.Count,
                 string.Concat(
-                    "A three-token selection must resolve through one x3 recipe yield.\n",
+                    "A six-token selection must resolve through sequential x4 and x2 recipe yields.\n",
                     productionOrderCapture.BuildDiagnostic(),
                     BuildPopulationDiagnostic(
                         autobattle,
@@ -619,24 +619,22 @@ namespace ChainRush.Tests.PlayMode
             return matchingEntities.Count;
         }
 
-        static List<Core.Entities.EntityId> ResolveFirstMarkerTriple(
+        static List<Core.Entities.EntityId> ResolveConnectedMarkerSelection(
             ActivityRuntimeSnapshot board,
             TaxonomyTermData markerTag,
-            CapabilityHostData expectedAsset)
+            CapabilityHostData expectedAsset,
+            int count)
         {
             List<SpatialMarkerSnapshot> markers = SpatialMarkerService.GetMarkers(
                 board.Id,
                 board.ActivityRootEntityId,
                 new List<TaxonomyTermData> { markerTag });
-            List<SpatialMarkerSnapshot> selectedMarkers = markers
-                .OrderBy(marker => marker.LocalIndex)
-                .Take(3)
-                .ToList();
-            var selected = new List<Core.Entities.EntityId>(3);
-            for (int markerIndex = 0; markerIndex < selectedMarkers.Count; markerIndex++)
+            markers.Sort((left, right) => left.LocalIndex.CompareTo(right.LocalIndex));
+            var entitiesByMarker = new Dictionary<int, Core.Entities.EntityId>();
+            for (int markerIndex = 0; markerIndex < markers.Count; markerIndex++)
             {
                 Core.Entities.EntityId[] occupants =
-                    SpatialService.GetOccupants(selectedMarkers[markerIndex].WorldPosition);
+                    SpatialService.GetOccupants(markers[markerIndex].WorldPosition);
                 Core.Entities.EntityId match = Core.Entities.EntityId.Invalid;
                 for (int occupantIndex = 0; occupantIndex < occupants.Length; occupantIndex++)
                 {
@@ -657,10 +655,106 @@ namespace ChainRush.Tests.PlayMode
                 }
 
                 if (match.IsValid)
-                    selected.Add(match);
+                    entitiesByMarker.Add(markerIndex, match);
             }
 
-            return selected;
+            int adjacencyDistance = ResolveMinimumMarkerDistance(markers);
+            if (adjacencyDistance <= 0)
+                return new List<Core.Entities.EntityId>(0);
+
+            for (int markerIndex = 0; markerIndex < markers.Count; markerIndex++)
+            {
+                if (!entitiesByMarker.ContainsKey(markerIndex))
+                    continue;
+
+                var markerPath = new List<int>(count) { markerIndex };
+                var usedMarkers = new HashSet<int> { markerIndex };
+                if (!TryBuildConnectedMarkerPath(
+                        markers,
+                        entitiesByMarker,
+                        count,
+                        adjacencyDistance,
+                        markerPath,
+                        usedMarkers))
+                {
+                    continue;
+                }
+
+                var selected = new List<Core.Entities.EntityId>(count);
+                for (int pathIndex = 0; pathIndex < markerPath.Count; pathIndex++)
+                    selected.Add(entitiesByMarker[markerPath[pathIndex]]);
+
+                return selected;
+            }
+
+            return new List<Core.Entities.EntityId>(0);
+        }
+
+        static bool TryBuildConnectedMarkerPath(
+            List<SpatialMarkerSnapshot> markers,
+            Dictionary<int, Core.Entities.EntityId> entitiesByMarker,
+            int count,
+            int adjacencyDistance,
+            List<int> markerPath,
+            HashSet<int> usedMarkers)
+        {
+            if (markerPath.Count == count)
+                return true;
+
+            SpatialMarkerSnapshot previous = markers[markerPath[markerPath.Count - 1]];
+            for (int markerIndex = 0; markerIndex < markers.Count; markerIndex++)
+            {
+                if (usedMarkers.Contains(markerIndex)
+                    || !entitiesByMarker.ContainsKey(markerIndex)
+                    || !TopologyService.TryGetDistance(
+                        previous.WorldPosition,
+                        markers[markerIndex].WorldPosition,
+                        out int distance)
+                    || distance != adjacencyDistance)
+                {
+                    continue;
+                }
+
+                markerPath.Add(markerIndex);
+                usedMarkers.Add(markerIndex);
+                if (TryBuildConnectedMarkerPath(
+                        markers,
+                        entitiesByMarker,
+                        count,
+                        adjacencyDistance,
+                        markerPath,
+                        usedMarkers))
+                {
+                    return true;
+                }
+
+                usedMarkers.Remove(markerIndex);
+                markerPath.RemoveAt(markerPath.Count - 1);
+            }
+
+            return false;
+        }
+
+        static int ResolveMinimumMarkerDistance(List<SpatialMarkerSnapshot> markers)
+        {
+            int minimumDistance = int.MaxValue;
+            for (int leftIndex = 0; leftIndex < markers.Count; leftIndex++)
+            {
+                for (int rightIndex = leftIndex + 1; rightIndex < markers.Count; rightIndex++)
+                {
+                    if (TopologyService.TryGetDistance(
+                            markers[leftIndex].WorldPosition,
+                            markers[rightIndex].WorldPosition,
+                            out int distance)
+                        && distance > 0
+                        && distance < minimumDistance)
+                    {
+                        minimumDistance = distance;
+                    }
+                }
+            }
+
+            return minimumDistance == int.MaxValue ? 0 : minimumDistance;
         }
 
         static bool TryFindBoardHost(
@@ -1200,7 +1294,6 @@ namespace ChainRush.Tests.PlayMode
                 && (bool)issuedMethod.Invoke(null, new object[] { entityId });
 
             var reservationOwners = new StringBuilder();
-            var localDiagnostics = new StringBuilder();
             FieldInfo domainsField = serviceType.GetField("Domains", flags);
             if (domainsField?.GetValue(null) is IEnumerable domains)
             {
@@ -1223,51 +1316,6 @@ namespace ChainRush.Tests.PlayMode
                         object definition = state.GetType().GetProperty("Definition")?.GetValue(state);
                         string agentId = definition?.GetType().GetProperty("AgentId")?.GetValue(definition)
                             as string;
-                        object agent = state.GetType().GetProperty("Agent")?.GetValue(state);
-                        FieldInfo localStatesField = null;
-                        System.Type agentType = agent?.GetType();
-                        while (agentType != null && localStatesField == null)
-                        {
-                            localStatesField = agentType.GetField(
-                                "_states",
-                                BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-                            agentType = agentType.BaseType;
-                        }
-                        if (string.Equals(
-                                agentId,
-                                "chainrush-board-production",
-                                System.StringComparison.Ordinal)
-                            && localStatesField?.GetValue(agent) is IEnumerable localStates)
-                        {
-                            foreach (object localEntry in localStates)
-                            {
-                                object localAssignmentId = localEntry.GetType()
-                                    .GetProperty("Key")
-                                    ?.GetValue(localEntry);
-                                object local = localEntry.GetType()
-                                    .GetProperty("Value")
-                                    ?.GetValue(localEntry);
-                                if (local == null)
-                                    continue;
-
-                                FieldInfo terminalField = local.GetType().GetField("TerminalWorkCompleted");
-                                FieldInfo activeWorksField = local.GetType().GetField("ActiveWorks");
-                                FieldInfo startField = local.GetType().GetField("WorkStartInProgress");
-                                int activeWorkCount = activeWorksField?.GetValue(local) is ICollection works
-                                    ? works.Count
-                                    : -1;
-                                localDiagnostics
-                                    .Append(" localAssignment=")
-                                    .Append(localAssignmentId ?? "<null>")
-                                    .Append(" terminalWork=")
-                                    .Append(terminalField?.GetValue(local) ?? "<null>")
-                                    .Append(" activeWorks=")
-                                    .Append(activeWorkCount)
-                                    .Append(" starting=")
-                                    .Append(startField?.GetValue(local) ?? "<null>");
-                            }
-                        }
-
                         object reservations = state.GetType().GetProperty("ExecutorReservations")?.GetValue(state);
                         if (!(reservations is IEnumerable reservationItems))
                             continue;
@@ -1310,7 +1358,6 @@ namespace ChainRush.Tests.PlayMode
                 reserved.ToString(),
                 " issued=",
                 issued.ToString(),
-                localDiagnostics.ToString(),
                 reservationOwners.ToString(),
                 "\n");
         }

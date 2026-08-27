@@ -251,12 +251,27 @@ namespace ChainRush.Board
 
         internal void OnCellEntityRemoved(BoardCellView cell, EntityId entityId)
         {
-            if (!_selectionLocked || !_selectedEntities.Contains(entityId))
+            if (!_selectionLocked)
+                return;
+
+            int selectedIndex = _selectedEntities.IndexOf(entityId);
+            if (selectedIndex < 0)
                 return;
 
             _boardRefreshObserved = true;
             _isSelecting = false;
-            ClearSelection();
+            _selectedEntities.RemoveAt(selectedIndex);
+            if (selectedIndex < _selectedCells.Count)
+            {
+                BoardCellView selectedCell = _selectedCells[selectedIndex];
+                if (selectedCell != null)
+                    selectedCell.SetSelected(false);
+                _selectedCells.RemoveAt(selectedIndex);
+            }
+            else if (cell != null)
+            {
+                cell.SetSelected(false);
+            }
         }
 
         internal void OnCellEntityAdded()

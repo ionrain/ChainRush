@@ -370,10 +370,10 @@ namespace ChainRush.Tests.EditMode
                 LoadRequiredAsset<ObjectiveTemplateData>(BoardSelectionObjectivePath);
             ObjectiveTemplateData mergeObjective =
                 LoadRequiredAsset<ObjectiveTemplateData>(BoardMergeObjectivePath);
-            ActivityAgentDefinitionData populationAgent =
-                LoadRequiredAsset<ActivityAgentDefinitionData>(BoardPopulationAgentPath);
-            ActivityAgentDefinitionData selectionAgent =
-                LoadRequiredAsset<ActivityAgentDefinitionData>(BoardSelectionAgentPath);
+            AgentDefinitionData populationAgent =
+                LoadRequiredAsset<AgentDefinitionData>(BoardPopulationAgentPath);
+            AgentDefinitionData selectionAgent =
+                LoadRequiredAsset<AgentDefinitionData>(BoardSelectionAgentPath);
             OrchestratorAIBrainData boardBrain =
                 LoadRequiredAsset<OrchestratorAIBrainData>(BoardBrainPath);
             TaxonomyTermData productionInputOperator =
@@ -444,10 +444,10 @@ namespace ChainRush.Tests.EditMode
                 ObjectiveCompletionPolicyType.Reset,
                 mergeObjective.CompletionPolicyType);
             Assert.AreEqual(
-                ActivityAgentStopPolicyType.AssignmentSuccess,
+                AgentStopPolicyType.AssignmentSuccess,
                 populationAgent.StopPolicyType);
             Assert.AreEqual(
-                ActivityAgentStopPolicyType.AssignmentSuccess,
+                AgentStopPolicyType.AssignmentSuccess,
                 selectionAgent.StopPolicyType);
             Assert.AreEqual(6, boardBrain.Operators.Count);
             List<AgentDecompOpData> agentOperators = boardBrain.Operators
@@ -573,7 +573,7 @@ namespace ChainRush.Tests.EditMode
             Assert.IsInstanceOf<ProductionStateOrchestrationModuleData>(orchestration.Modules[1]);
             Assert.IsInstanceOf<ProjectionStateOrchestrationModuleData>(orchestration.Modules[2]);
 
-            Assert.IsInstanceOf<PopulationActivityOrchestrationAgentData>(populationAgent.Agent);
+            Assert.IsInstanceOf<PopulationAgentData>(populationAgent.Agent);
             Assert.IsInstanceOf<SelectionAgentData>(selectionAgent.Agent);
             Assert.AreEqual(
                 ObjectiveCommandFailurePolicyType.FailObjective,
@@ -592,7 +592,7 @@ namespace ChainRush.Tests.EditMode
                 new[] { waterTag },
                 targetMaterialization.RequiredAssetTags);
             Assert.AreEqual(
-                ActivityAgentOwnerSelectionType.ParticipantOwner,
+                AgentOwnerSelectionType.ParticipantOwner,
                 selectionAgent.TargetSelectionCriteria
                     .OfType<EntityOwnerSelectionCriterionData>()
                     .Single()
@@ -605,7 +605,7 @@ namespace ChainRush.Tests.EditMode
                 .Single();
             Assert.AreEqual(1000, distanceCriterion.MinimumDistance);
             Assert.AreEqual(1000, distanceCriterion.MaximumDistance);
-            var population = (PopulationActivityOrchestrationAgentData)populationAgent.Agent;
+            var population = (PopulationAgentData)populationAgent.Agent;
             Assert.NotNull(population.Planner);
             Assert.AreSame(refreshRecipe, population.CompletionRecipe);
             Assert.AreEqual(BoardCellTagId, population.MarkerTags.Single().Id);

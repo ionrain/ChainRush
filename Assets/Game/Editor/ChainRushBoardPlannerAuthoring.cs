@@ -291,8 +291,8 @@ namespace ChainRush.Editor
             CapabilityHostData waterUnit = LoadRequired<CapabilityHostData>(WaterUnitPath);
             CapabilityHostData populationProducer = LoadRequired<CapabilityHostData>(PopulationProducerPath);
             CapabilityHostData boardHost = LoadRequired<CapabilityHostData>(BoardHostPath);
-            ActivityAgentDefinitionData populationAgent =
-                LoadRequired<ActivityAgentDefinitionData>(PopulationAgentPath);
+            AgentDefinitionData populationAgent =
+                LoadRequired<AgentDefinitionData>(PopulationAgentPath);
             ProductionRecipeData refreshRecipe = LoadRequired<ProductionRecipeData>(RefreshRecipePath);
             ProductionRecipeData waterRecipe = LoadRequired<ProductionRecipeData>(WaterRecipePath);
             ProductionData populationProduction = LoadRequired<ProductionData>(PopulationProductionPath);
@@ -303,8 +303,8 @@ namespace ChainRush.Editor
             TaxonomyFamilyData operatorFamily = LoadRequired<TaxonomyFamilyData>(OperatorFamilyPath);
             TaxonomyTermData populationAgentOperator =
                 LoadRequired<TaxonomyTermData>(PopulationAgentOperatorPath);
-            ActivityAgentDefinitionData selectionAgent =
-                LoadRequired<ActivityAgentDefinitionData>(SelectionAgentPath);
+            AgentDefinitionData selectionAgent =
+                LoadRequired<AgentDefinitionData>(SelectionAgentPath);
             TaxonomyTermData selectionAgentOperator =
                 LoadRequired<TaxonomyTermData>(SelectionAgentOperatorPath);
             TaxonomyTermData productionInputOperator =
@@ -812,7 +812,7 @@ namespace ChainRush.Editor
                 new List<TaxonomyTermData> { selectedTag });
         }
 
-        static ActivityAgentDefinitionData CreateSelectionAgent(
+        static AgentDefinitionData CreateSelectionAgent(
             CapabilityHostData boardHost,
             TaxonomyTermData waterTag,
             TaxonomyTermData requestType,
@@ -825,7 +825,7 @@ namespace ChainRush.Editor
                 "resultTags",
                 new List<TaxonomyTermData> { selectedTag });
 
-            ActivityAgentDefinitionData definition = CreateAgentDefinition(
+            AgentDefinitionData definition = CreateAgentDefinition(
                 SelectionAgentPath,
                 "BoardSelectionAgent",
                 "board-selection",
@@ -838,12 +838,12 @@ namespace ChainRush.Editor
                         0L,
                         CompareOperation.Equal),
                 },
-                new List<ActivityAgentSelectionCriterionData>
+                new List<AgentSelectionCriterionData>
                 {
                     CreateMaterializedCriterion(boardHost, null),
                     CreateOwnerCriterion(),
                 },
-                new List<ActivityAgentSelectionCriterionData>
+                new List<AgentSelectionCriterionData>
                 {
                     CreateMaterializedCriterion(
                         null,
@@ -858,7 +858,7 @@ namespace ChainRush.Editor
             SetField(
                 definition,
                 "stopPolicyType",
-                ActivityAgentStopPolicyType.AssignmentSuccess);
+                AgentStopPolicyType.AssignmentSuccess);
             return definition;
         }
 
@@ -1005,7 +1005,7 @@ namespace ChainRush.Editor
             return objective;
         }
 
-        static ActivityAgentDefinitionData CreatePopulationAgent(
+        static AgentDefinitionData CreatePopulationAgent(
             ProgressivePlannerData planner,
             ProductionRecipeData refreshRecipe,
             CapabilityHostData executorHost,
@@ -1013,7 +1013,7 @@ namespace ChainRush.Editor
             TaxonomyTermData boardWalletTag,
             List<string> createdPaths)
         {
-            var agentData = new PopulationActivityOrchestrationAgentData();
+            var agentData = new PopulationAgentData();
             SetField(agentData, "planner", planner);
             SetField(agentData, "completionRecipe", refreshRecipe);
             SetField(agentData, "markerTags", new List<TaxonomyTermData> { boardCellTag });
@@ -1025,36 +1025,36 @@ namespace ChainRush.Editor
                 new List<TaxonomyTermData> { boardCellTag },
                 0L,
                 CompareOperation.Equal);
-            ActivityAgentDefinitionData definition = CreateAgentDefinition(
+            AgentDefinitionData definition = CreateAgentDefinition(
                 PopulationAgentPath,
                 "BoardPopulationAgent",
                 "chainrush-board-population",
                 100,
                 ObjectiveCommandFailurePolicyType.FailObjective,
                 new List<ObjectiveCondition> { match },
-                new List<ActivityAgentSelectionCriterionData>
+                new List<AgentSelectionCriterionData>
                 {
                     CreateMaterializedCriterion(executorHost, null),
                     CreateOwnerCriterion(),
                 },
-                new List<ActivityAgentSelectionCriterionData>(0),
+                new List<AgentSelectionCriterionData>(0),
                 agentData,
                 createdPaths);
             SetField(
                 definition,
                 "stopPolicyType",
-                ActivityAgentStopPolicyType.AssignmentSuccess);
+                AgentStopPolicyType.AssignmentSuccess);
             return definition;
         }
 
         static void ConfigurePopulationAgentExecutor(
-            ActivityAgentDefinitionData populationAgent,
+            AgentDefinitionData populationAgent,
             CapabilityHostData executorHost)
         {
             SetField(
                 populationAgent,
                 "executorSelectionCriteria",
-                new List<ActivityAgentSelectionCriterionData>
+                new List<AgentSelectionCriterionData>
                 {
                     CreateMaterializedCriterion(executorHost, null),
                     CreateOwnerCriterion(),
@@ -1063,10 +1063,10 @@ namespace ChainRush.Editor
         }
 
         static void EnsurePopulationAgentExecutor(
-            ActivityAgentDefinitionData populationAgent,
+            AgentDefinitionData populationAgent,
             CapabilityHostData executorHost)
         {
-            List<ActivityAgentSelectionCriterionData> criteria =
+            List<AgentSelectionCriterionData> criteria =
                 populationAgent.ExecutorSelectionCriteria;
             if (criteria.Count != 2
                 || !(criteria[0] is MaterializedEntitySelectionCriterionData materialized)
@@ -1078,19 +1078,19 @@ namespace ChainRush.Editor
             }
         }
 
-        static ActivityAgentDefinitionData CreateAgentDefinition(
+        static AgentDefinitionData CreateAgentDefinition(
             string path,
             string name,
             string id,
             int priority,
             ObjectiveCommandFailurePolicyType commandFailurePolicyType,
             List<ObjectiveCondition> matchConditions,
-            List<ActivityAgentSelectionCriterionData> executorCriteria,
-            List<ActivityAgentSelectionCriterionData> targetCriteria,
-            ActivityOrchestrationAgentData agent,
+            List<AgentSelectionCriterionData> executorCriteria,
+            List<AgentSelectionCriterionData> targetCriteria,
+            AgentData agent,
             List<string> createdPaths)
         {
-            ActivityAgentDefinitionData definition = ScriptableObject.CreateInstance<ActivityAgentDefinitionData>();
+            AgentDefinitionData definition = ScriptableObject.CreateInstance<AgentDefinitionData>();
             definition.name = name;
             SetField(definition, "agentId", id);
             SetField(definition, "basePriority", priority);
@@ -1099,9 +1099,9 @@ namespace ChainRush.Editor
             SetField(definition, "matchConditions", matchConditions);
             SetField(definition, "executorSelectionCriteria", executorCriteria);
             SetField(definition, "targetSelectionCriteria", targetCriteria);
-            SetField(definition, "controlType", ActivityAgentControlType.Endpoint);
+            SetField(definition, "controlType", AgentControlType.Endpoint);
             SetField(definition, "agent", agent);
-            SetField(definition, "stopPolicyType", ActivityAgentStopPolicyType.None);
+            SetField(definition, "stopPolicyType", AgentStopPolicyType.None);
             SetField(definition, "executorBusyPolicyType", AgentExecutorBusyPolicyType.Wait);
             SetField(definition, "executorReservationPolicyType", ExecutorReservationPolicyType.PerWork);
             AssetDatabase.CreateAsset(definition, path);
@@ -1115,7 +1115,7 @@ namespace ChainRush.Editor
             List<TaxonomyTermData> requiredAssetTags = null)
         {
             var criterion = new MaterializedEntitySelectionCriterionData();
-            SetField(criterion, "requirementType", ActivityAgentCriterionRequirementType.Required);
+            SetField(criterion, "requirementType", AgentCriterionRequirementType.Required);
             SetField(criterion, "weight", 1);
             SetField(criterion, "economyAsset", asset);
             SetField(criterion, "economyFormType", EconomyFormType.Token);
@@ -1135,16 +1135,16 @@ namespace ChainRush.Editor
         static EntityOwnerSelectionCriterionData CreateOwnerCriterion()
         {
             var criterion = new EntityOwnerSelectionCriterionData();
-            SetField(criterion, "requirementType", ActivityAgentCriterionRequirementType.Required);
+            SetField(criterion, "requirementType", AgentCriterionRequirementType.Required);
             SetField(criterion, "weight", 1);
-            SetField(criterion, "ownerSelectionType", ActivityAgentOwnerSelectionType.ParticipantOwner);
+            SetField(criterion, "ownerSelectionType", AgentOwnerSelectionType.ParticipantOwner);
             return criterion;
         }
 
         static void ConfigureSelectionBrain(
             OrchestratorAIBrainData brain,
-            ActivityAgentDefinitionData populationAgent,
-            ActivityAgentDefinitionData selectionAgent,
+            AgentDefinitionData populationAgent,
+            AgentDefinitionData selectionAgent,
             TaxonomyTermData populationAgentOperator,
             TaxonomyTermData selectionAgentOperator,
             TaxonomyTermData productionInputOperator,

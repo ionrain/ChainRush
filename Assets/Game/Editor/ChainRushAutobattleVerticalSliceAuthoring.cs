@@ -425,9 +425,9 @@ namespace ChainRush.Editor
             public ObjectiveTemplateData PlayerDeploymentObjective;
             public ObjectiveTemplateData TurnTokenObjective;
             public ObjectiveTemplateData EnemyWaveObjective;
-            public ActivityAgentDefinitionData PlayerDeploymentAgent;
-            public ActivityAgentDefinitionData TurnTokenAgent;
-            public ActivityAgentDefinitionData EnemyWaveAgent;
+            public AgentDefinitionData PlayerDeploymentAgent;
+            public AgentDefinitionData TurnTokenAgent;
+            public AgentDefinitionData EnemyWaveAgent;
             public EconomyStateOrchestrationModuleData EconomyState;
             public ProductionStateOrchestrationModuleData ProductionState;
             public ProjectionStateOrchestrationModuleData ProjectionState;
@@ -2667,7 +2667,7 @@ namespace ChainRush.Editor
                 SpatialMarkerRef.Invalid);
         }
 
-        static ActivityAgentDefinitionData CreateProductionAgent(
+        static AgentDefinitionData CreateProductionAgent(
             string path,
             string name,
             string id,
@@ -2675,8 +2675,8 @@ namespace ChainRush.Editor
             CapabilityHostData executor,
             List<string> createdPaths)
         {
-            ActivityAgentDefinitionData definition =
-                CreateAsset<ActivityAgentDefinitionData>(path, name, createdPaths);
+            AgentDefinitionData definition =
+                CreateAsset<AgentDefinitionData>(path, name, createdPaths);
             SetField(definition, "agentId", id);
             SetField(definition, "basePriority", 100);
             SetField(definition, "updateInterval", 1);
@@ -2691,7 +2691,7 @@ namespace ChainRush.Editor
             SetField(
                 definition,
                 "executorSelectionCriteria",
-                new List<ActivityAgentSelectionCriterionData>
+                new List<AgentSelectionCriterionData>
                 {
                     CreateMaterializedCriterion(executor),
                     CreateOwnerCriterion(),
@@ -2699,10 +2699,10 @@ namespace ChainRush.Editor
             SetField(
                 definition,
                 "targetSelectionCriteria",
-                new List<ActivityAgentSelectionCriterionData>(0));
-            SetField(definition, "controlType", ActivityAgentControlType.Endpoint);
-            SetField(definition, "agent", new ProductionActivityOrchestrationAgentData());
-            SetField(definition, "stopPolicyType", ActivityAgentStopPolicyType.None);
+                new List<AgentSelectionCriterionData>(0));
+            SetField(definition, "controlType", AgentControlType.Endpoint);
+            SetField(definition, "agent", new ProductionAgentData());
+            SetField(definition, "stopPolicyType", AgentStopPolicyType.None);
             SetField(
                 definition,
                 "executorBusyPolicyType",
@@ -2722,7 +2722,7 @@ namespace ChainRush.Editor
             SetField(
                 criterion,
                 "requirementType",
-                ActivityAgentCriterionRequirementType.Required);
+                AgentCriterionRequirementType.Required);
             SetField(criterion, "weight", 1);
             SetField(criterion, "economyAsset", asset);
             SetField(criterion, "economyFormType", EconomyFormType.Token);
@@ -2739,12 +2739,12 @@ namespace ChainRush.Editor
             SetField(
                 criterion,
                 "requirementType",
-                ActivityAgentCriterionRequirementType.Required);
+                AgentCriterionRequirementType.Required);
             SetField(criterion, "weight", 1);
             SetField(
                 criterion,
                 "ownerSelectionType",
-                ActivityAgentOwnerSelectionType.ParticipantOwner);
+                AgentOwnerSelectionType.ParticipantOwner);
             return criterion;
         }
 
@@ -2947,7 +2947,7 @@ namespace ChainRush.Editor
 
         static AgentDecompOpData CreateAgentOperation(
             TaxonomyTermData operatorId,
-            ActivityAgentDefinitionData agent)
+            AgentDefinitionData agent)
         {
             var operation = new AgentDecompOpData();
             SetField(operation, "operatorId", operatorId);

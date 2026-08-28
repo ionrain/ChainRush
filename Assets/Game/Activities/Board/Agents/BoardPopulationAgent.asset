@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 02d1a3baa20004b4c9af3160993765a5, type: 3}
   m_Name: BoardPopulationAgent
-  m_EditorClassIdentifier: Core::Core.Orchestration.ActivityAgentDefinitionData
+  m_EditorClassIdentifier: Core::Core.Orchestration.AgentDefinitionData
   agentId: chainrush-board-population
   basePriority: 100
   updateInterval: 1
@@ -48,7 +48,7 @@ MonoBehaviour:
         - {fileID: 11400000, guid: a70bd9d1bf3b1457fbe47de7812a7fed, type: 2}
         compareOperation: 0
     - rid: 2807516289745289327
-      type: {class: PopulationActivityOrchestrationAgentData, ns: Core.Orchestration,
+      type: {class: PopulationAgentData, ns: Core.Orchestration,
         asm: Core}
       data:
         planner: {fileID: 11400000, guid: 1029848a6853142608dc780bbbc34c1a, type: 2}

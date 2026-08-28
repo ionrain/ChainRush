@@ -1138,9 +1138,9 @@ namespace ChainRush.Tests.PlayMode
                 }
             }
 
-            if (ActivityAgentService.TryGetAssignmentBoardSnapshot(
+            if (AgentService.TryGetAssignmentBoardSnapshot(
                     board.DomainId,
-                    out ActivityAgentAssignmentBoardSnapshot assignments))
+                    out AgentAssignmentBoardSnapshot assignments))
             {
                 message.Append("Assignments=")
                     .Append(assignments.Assignments.Count)
@@ -1149,7 +1149,7 @@ namespace ChainRush.Tests.PlayMode
                      assignmentIndex < assignments.Assignments.Count;
                      assignmentIndex++)
                 {
-                    ActivityAgentAssignmentSnapshot assignment =
+                    AgentAssignmentSnapshot assignment =
                         assignments.Assignments[assignmentIndex];
                     message.Append("  Assignment agent=")
                         .Append(assignment.MatchedAgentId ?? "<null>")
@@ -1216,7 +1216,7 @@ namespace ChainRush.Tests.PlayMode
                     "chainrush-test-production-probe",
                     out string controlFailure);
                 bool agentAllocated =
-                    typeof(ActivityAgentService)
+                    typeof(AgentService)
                         .GetMethod(
                             "IsExecutorAllocated",
                             BindingFlags.Static | BindingFlags.NonPublic)
@@ -1284,7 +1284,7 @@ namespace ChainRush.Tests.PlayMode
                 EntityControlOwnerType.Orchestration,
                 "board-selection-playmode-probe",
                 out string controlFailure);
-            System.Type serviceType = typeof(ActivityAgentService);
+            System.Type serviceType = typeof(AgentService);
             const BindingFlags flags = BindingFlags.Static | BindingFlags.NonPublic;
             MethodInfo reservedMethod = serviceType.GetMethod("IsExecutorReserved", flags);
             MethodInfo issuedMethod = serviceType.GetMethod("IsExecutorIssuedToRequest", flags);

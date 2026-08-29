@@ -17,18 +17,23 @@ MonoBehaviour:
   - rid: 2807516701411770467
   - rid: 2807516363299750089
   - rid: 2807516363299750090
+  - rid: 9201
   decisionGraph:
     nodes:
     - rid: 2807516363299750091
     - rid: 2807516363299750092
     - rid: 2807516363299750093
     - rid: 2807516363299750094
+    - rid: 9202
   budget:
     maxDependencyDepth: 4
     maxGeneratedNodes: 64
     maxResolverExpansions: 128
     maxBranchesPerRequirement: 4
     maxPlanningWorkItemsPerPass: 128
+    maxInboxEventsPerPass: 128
+    maxProcessTransitionsPerPass: 128
+    maxEndpointAdmissionsPerPass: 32
   references:
     version: 2
     RefIds:
@@ -119,3 +124,18 @@ MonoBehaviour:
         asm: Core}
       data:
         operatorId: {fileID: 11400000, guid: 75feb13c5e1254519a15de921f8b2f4c, type: 2}
+    - rid: 9201
+      type: {class: AgentResourceRequestDecompOpData, ns: Core.Orchestration, asm: Core}
+      data:
+        operatorId: {fileID: 11400000, guid: 4aff76bb0f93f4eeb92e5459feeaca0e, type: 2}
+    - rid: 9202
+      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
+      data:
+        decisionId: agent-resource-request
+        conditions:
+        - rid: 9203
+        operatorId: {fileID: 11400000, guid: 4aff76bb0f93f4eeb92e5459feeaca0e, type: 2}
+    - rid: 9203
+      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        factType: 18

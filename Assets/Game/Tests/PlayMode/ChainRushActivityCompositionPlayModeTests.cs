@@ -15,11 +15,14 @@ using Core.Events;
 using Core.GameRuntime;
 using Core.HostValues;
 using Core.Objectives;
+using Core.Objectives.Events;
 using Core.Orchestration;
 using Core.Players;
 using Core.Production;
+using Core.Production.Authoring;
 using Core.Production.Events;
 using Core.Projection;
+using Core.Runtime;
 using Core.SimulationControl;
 using Core.Skills;
 using Core.Taxonomy;
@@ -55,6 +58,10 @@ namespace ChainRush.Tests.PlayMode
             "Assets/Game/Activities/Board/Economy/BoardHost.asset";
         const string BoardMergeSelectionPath =
             "Assets/Game/Activities/Board/Taxonomy/BoardMergeSelection.asset";
+        const string BoardMergeRecipe1Path =
+            "Assets/Game/Activities/Board/Production/BoardMergeRecipe1.asset";
+        const string BoardMergeRecipe4Path =
+            "Assets/Game/Activities/Board/Production/BoardMergeRecipe4.asset";
         const string BoardTurnTokenPath =
             "Assets/Game/Activities/Shared/Economy/BoardTurnToken.asset";
         const string WaterUnitPath =
@@ -352,9 +359,14 @@ namespace ChainRush.Tests.PlayMode
                 boardHostEntityId);
             Assert.IsTrue(mergeRequest.RequestId.IsValid);
             var selectionResultCapture = new SelectionResultCapture(mergeRequest.RequestId);
-            var productionOrderCapture = new ProductionOrderCapture(boardHostEntityId);
+            var productionOrderCapture = new ProductionOrderCapture(board.DomainId, boardHostEntityId);
             EventBus.Register<SelectionResultEvent>(selectionResultCapture);
             EventBus.Register<ProductionOrderStartedEvent>(productionOrderCapture);
+            EventBus.Register<ProductionOrderFinishedEvent>(productionOrderCapture);
+            EventBus.Register<OrchestrationProcessStateChangedEvent>(productionOrderCapture);
+            EventBus.Register<ObjectiveNodeStateChangedEvent>(productionOrderCapture);
+            EventBus.Register<ObjectiveRuntimeCompletedEvent>(productionOrderCapture);
+            EventBus.Register<ObjectiveRuntimeResetEvent>(productionOrderCapture);
             EventBus.Trigger(mergeRequest);
             for (int selectedIndex = 0; selectedIndex < selectedEntities.Count; selectedIndex++)
             {
@@ -375,6 +387,11 @@ namespace ChainRush.Tests.PlayMode
             }
             EventBus.Unregister<SelectionResultEvent>(selectionResultCapture);
             EventBus.Unregister<ProductionOrderStartedEvent>(productionOrderCapture);
+            EventBus.Unregister<ProductionOrderFinishedEvent>(productionOrderCapture);
+            EventBus.Unregister<OrchestrationProcessStateChangedEvent>(productionOrderCapture);
+            EventBus.Unregister<ObjectiveNodeStateChangedEvent>(productionOrderCapture);
+            EventBus.Unregister<ObjectiveRuntimeCompletedEvent>(productionOrderCapture);
+            EventBus.Unregister<ObjectiveRuntimeResetEvent>(productionOrderCapture);
 
             Assert.AreEqual(
                 1,
@@ -470,6 +487,25 @@ namespace ChainRush.Tests.PlayMode
                 QueryAmount(board, sharedWalletTag, EconomyFormType.Stack, turnToken),
                 "The next Board turn token remained unconsumed after population refresh.");
 
+            ProductionRecipeData mergeRecipe1 =
+                AssetDatabase.LoadAssetAtPath<ProductionRecipeData>(BoardMergeRecipe1Path);
+            ProductionRecipeData mergeRecipe4 =
+                AssetDatabase.LoadAssetAtPath<ProductionRecipeData>(BoardMergeRecipe4Path);
+            Assert.NotNull(mergeRecipe1);
+            Assert.NotNull(mergeRecipe4);
+            yield return AssertBoardMergeSequence(
+                board,
+                boardCellTag,
+                waterBase,
+                boardHostEntityId,
+                mergeSelection,
+                selectionCount: 5,
+                expectedRecipeIds: new List<string>
+                {
+                    mergeRecipe4.Id,
+                    mergeRecipe1.Id,
+                });
+
             TaxonomyTermData activation =
                 AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(BoardActivationTermPath);
             Assert.NotNull(activation);
@@ -484,6 +520,95 @@ namespace ChainRush.Tests.PlayMode
             Assert.AreEqual(ActivityState.Closed, board.State);
             Assert.AreEqual(ActivityCloseCauseType.ParentClosed, board.CloseCauseType);
             Assert.AreEqual(ActivityResultType.Cancelled, board.ResultType);
+        }
+
+        static IEnumerator AssertBoardMergeSequence(
+            ActivityRuntimeSnapshot board,
+            TaxonomyTermData boardCellTag,
+            CapabilityHostData boardItem,
+            Core.Entities.EntityId boardHostEntityId,
+            TaxonomyTermData mergeSelection,
+            int selectionCount,
+            IReadOnlyList<string> expectedRecipeIds)
+        {
+            List<Core.Entities.EntityId> selectedEntities = ResolveConnectedMarkerSelection(
+                board,
+                boardCellTag,
+                boardItem,
+                selectionCount);
+            Assert.AreEqual(selectionCount, selectedEntities.Count);
+
+            SelectionIntentEvent request = SelectionIntentEvent.Begin(
+                board.Id,
+                mergeSelection,
+                Core.Entities.EntityId.Invalid,
+                boardHostEntityId);
+            Assert.IsTrue(request.RequestId.IsValid);
+
+            var selectionCapture = new SelectionResultCapture(request.RequestId);
+            var productionCapture = new ProductionOrderCapture(board.DomainId, boardHostEntityId);
+            EventBus.Register<SelectionResultEvent>(selectionCapture);
+            EventBus.Register<ProductionOrderStartedEvent>(productionCapture);
+            EventBus.Register<ProductionOrderFinishedEvent>(productionCapture);
+            EventBus.Register<OrchestrationProcessStateChangedEvent>(productionCapture);
+            EventBus.Register<ObjectiveNodeStateChangedEvent>(productionCapture);
+            EventBus.Register<ObjectiveRuntimeCompletedEvent>(productionCapture);
+            EventBus.Register<ObjectiveRuntimeResetEvent>(productionCapture);
+            try
+            {
+                EventBus.Trigger(request);
+                for (int selectedIndex = 0; selectedIndex < selectedEntities.Count; selectedIndex++)
+                {
+                    EventBus.Trigger(SelectionIntentEvent.Target(
+                        request,
+                        selectedEntities[selectedIndex]));
+                }
+
+                EventBus.Trigger(SelectionIntentEvent.Complete(request));
+
+                float deadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
+                while (Time.realtimeSinceStartup < deadline
+                    && selectedEntities.Any(CapabilityHostService.Exists))
+                {
+                    yield return null;
+                }
+            }
+            finally
+            {
+                EventBus.Unregister<SelectionResultEvent>(selectionCapture);
+                EventBus.Unregister<ProductionOrderStartedEvent>(productionCapture);
+                EventBus.Unregister<ProductionOrderFinishedEvent>(productionCapture);
+                EventBus.Unregister<OrchestrationProcessStateChangedEvent>(productionCapture);
+                EventBus.Unregister<ObjectiveNodeStateChangedEvent>(productionCapture);
+                EventBus.Unregister<ObjectiveRuntimeCompletedEvent>(productionCapture);
+                EventBus.Unregister<ObjectiveRuntimeResetEvent>(productionCapture);
+            }
+
+            Assert.AreEqual(1, selectionCapture.Count, productionCapture.BuildDiagnostic());
+            Assert.AreEqual(
+                SelectionResultType.Committed,
+                selectionCapture.Result.Type,
+                selectionCapture.Result.Message);
+            CollectionAssert.AreEqual(
+                selectedEntities,
+                selectionCapture.Result.SelectedEntityIds);
+            Assert.IsFalse(
+                selectedEntities.Any(CapabilityHostService.Exists),
+                string.Concat(
+                    "Sequential Board merge left selected tokens materialized.\n",
+                    BuildSelectedEntityDiagnostic(selectedEntities),
+                    productionCapture.BuildDiagnostic()));
+            Assert.AreEqual(
+                expectedRecipeIds.Count,
+                productionCapture.StartedCount,
+                productionCapture.BuildDiagnostic());
+            for (int recipeIndex = 0; recipeIndex < expectedRecipeIds.Count; recipeIndex++)
+            {
+                Assert.AreEqual(
+                    1,
+                    productionCapture.CountRecipe(expectedRecipeIds[recipeIndex]),
+                    productionCapture.BuildDiagnostic());
+            }
         }
 
         static int CountBoardUICells()
@@ -1065,6 +1190,8 @@ namespace ChainRush.Tests.PlayMode
             }
 
             List<OrchestrationGoalSnapshot> goals = OrchestrationService.GetGoals(board.DomainId);
+            List<OrchestrationProcessSnapshot> processes =
+                OrchestrationService.GetProcesses(board.DomainId);
             message.Append("Goals=").Append(goals.Count).AppendLine();
             for (int goalIndex = 0; goalIndex < goals.Count; goalIndex++)
             {
@@ -1076,66 +1203,35 @@ namespace ChainRush.Tests.PlayMode
                     .Append(" message=")
                     .Append(goal.Message ?? "<null>")
                     .AppendLine();
-                if (!OrchestrationService.TryGetPlanTrace(
-                        board.DomainId,
-                        goal.ParticipantStableKey,
-                        goal.SourceObjectiveRuntimeId,
-                        out OrchestrationPlanTraceSnapshot trace))
+                int processCount = 0;
+                for (int processIndex = 0; processIndex < processes.Count; processIndex++)
                 {
-                    message.AppendLine("    PlanTrace=<missing>");
-                    continue;
-                }
-
-                message.Append("    Plan facts=")
-                    .Append(trace.PlanningFacts.Count)
-                    .Append(" endpoints=")
-                    .Append(trace.PlanningEndpoints.Count)
-                    .Append(" diagnostics=")
-                    .Append(trace.Diagnostics.Count)
-                    .AppendLine();
-                int diagnosticLimit = Mathf.Min(4, trace.Diagnostics.Count);
-                for (int diagnosticIndex = 0;
-                     diagnosticIndex < diagnosticLimit;
-                     diagnosticIndex++)
-                {
-                    OrchestrationPlanDiagnosticSnapshot diagnostic =
-                        trace.Diagnostics[diagnosticIndex];
-                    message.Append("      ")
-                        .Append(diagnostic.Code ?? "<null>")
-                        .Append(": ")
-                        .Append(diagnostic.Message ?? "<null>")
-                        .AppendLine();
-                }
-                if (trace.Diagnostics.Count > diagnosticLimit)
-                {
-                    message.Append("      ... omitted diagnostics=")
-                        .Append(trace.Diagnostics.Count - diagnosticLimit)
-                        .AppendLine();
-                }
-
-                int selectionTraceCount = 0;
-                for (int nodeIndex = trace.Nodes.Count - 1;
-                     nodeIndex >= 0 && selectionTraceCount < 16;
-                     nodeIndex--)
-                {
-                    OrchestrationPlanTraceNodeSnapshot node = trace.Nodes[nodeIndex];
-                    if (string.IsNullOrWhiteSpace(node.Message)
-                        || !node.Message.Contains("policy="))
-                    {
+                    OrchestrationProcessSnapshot process = processes[processIndex];
+                    if (process.ObjectiveRuntimeId != goal.SourceObjectiveRuntimeId)
                         continue;
-                    }
 
-                    message.Append("      SelectionTrace key=")
-                        .Append(node.StableKey ?? "<null>")
+                    message.Append("      Process id=")
+                        .Append(process.ProcessId.ToString())
+                        .Append(" fact=")
+                        .Append(process.DesiredFactStableKey ?? "<null>")
+                        .Append(" state=")
+                        .Append(process.StateType)
+                        .Append(" attempt=")
+                        .Append(process.AttemptOrdinal)
                         .Append(" utility=")
-                        .Append(node.Utility)
-                        .Append(" reason=")
-                        .Append(node.ReasonCode ?? "<null>")
+                        .Append(process.Utility)
+                        .Append(" endpoint=")
+                        .Append(process.SelectedEndpointKey.IsValid
+                            ? process.SelectedEndpointKey.ToString()
+                            : "<null>")
                         .Append(" message=")
-                        .Append(node.Message)
+                        .Append(process.Message ?? "<null>")
                         .AppendLine();
-                    selectionTraceCount++;
+                    processCount++;
                 }
+
+                if (processCount == 0)
+                    message.AppendLine("      Processes=<empty>");
             }
 
             if (AgentService.TryGetAssignmentBoardSnapshot(
@@ -1244,7 +1340,7 @@ namespace ChainRush.Tests.PlayMode
             }
 
             AppendProductionModuleDiagnostic(message, board);
-            AppendBranchDiagnostic(message, board.DomainId);
+            AppendProcessDiagnostic(message, board.DomainId);
 
             return message.ToString();
         }
@@ -1607,160 +1703,38 @@ namespace ChainRush.Tests.PlayMode
             message.Append(']');
         }
 
-        static void AppendBranchDiagnostic(
+        static void AppendProcessDiagnostic(
             StringBuilder message,
             Core.Runtime.RuntimeDomainId domainId)
         {
-            FieldInfo domainsField = typeof(OrchestrationService).GetField(
-                "Domains",
-                BindingFlags.Static | BindingFlags.NonPublic);
-            object domains = domainsField == null ? null : domainsField.GetValue(null);
-            object domainState = FindDictionaryValue(domains as IEnumerable, domainId);
-            object plannerStates = GetPropertyValue(domainState, "PlannerStates");
-            message.AppendLine("Branches:");
-            foreach (object plannerEntry in plannerStates as IEnumerable ?? new object[0])
-            {
-                object plannerState = GetPropertyValue(plannerEntry, "Value");
-                object branches = GetPropertyValue(plannerState, "Branches");
-                foreach (object branchEntry in branches as IEnumerable ?? new object[0])
-                {
-                    object branchState = GetPropertyValue(branchEntry, "Value");
-                    object planState = GetPropertyValue(branchState, "PlanState");
-                    object awaitedFacts = GetPropertyValue(planState, "AwaitedFacts");
-                    object contextValue = GetPropertyValue(planState, "Context");
-                    OrchestrationPlanningRuntimeContext planningContext =
-                        contextValue is OrchestrationPlanningRuntimeContext typedContext
-                            ? typedContext
-                            : default;
-                    message.Append("  AwaitedFacts:").AppendLine();
-                    foreach (object awaited in awaitedFacts as IEnumerable ?? new object[0])
-                    {
-                        if (!(awaited is AwaitedFactRecord record))
-                            continue;
-                        message.Append("    type=")
-                            .Append(record.Fact == null ? "<null>" : record.Fact.FactType.ToString())
-                            .Append(" data=")
-                            .Append(record.Fact == null || record.Fact.Data == null
-                                ? "<null>"
-                                : record.Fact.Data.GetType().Name)
-                            .Append(" key=")
-                            .Append(record.FactKey.ToString())
-                            .Append(" reason=")
-                            .Append(record.Reason ?? "<null>")
-                            .AppendLine();
-                    }
-
-                    message.Append("  InFlightOperationDeltas=")
-                        .Append(planningContext.InFlightOperationDeltas.Count)
-                        .AppendLine();
-                    for (int deltaSetIndex = 0;
-                         deltaSetIndex < planningContext.InFlightOperationDeltas.Count;
-                         deltaSetIndex++)
-                    {
-                        OperationDeltaSet deltaSet =
-                            planningContext.InFlightOperationDeltas[deltaSetIndex];
-                        IReadOnlyList<EconomyOperationDelta> economyDeltas =
-                            deltaSet.Get<EconomyOperationDelta>();
-                        for (int deltaIndex = 0; deltaIndex < economyDeltas.Count; deltaIndex++)
-                        {
-                            EconomyOperationDelta delta = economyDeltas[deltaIndex];
-                            message.Append("    Economy operation=")
-                                .Append(delta.Operation)
-                                .Append(" asset=")
-                                .Append(delta.Asset == null ? "<null>" : delta.Asset.Id)
-                                .Append(" amount=")
-                                .Append(delta.Amount)
-                                .Append(" owner=")
-                                .Append(delta.OwnerStableKey ?? "<null>")
-                                .Append(" source=")
-                                .Append(delta.SourceStableKey ?? "<null>")
-                                .AppendLine();
-                        }
-                    }
-
-                    object rootFrames = GetPropertyValue(planState, "RootFrames");
-                    foreach (object frame in rootFrames as IEnumerable ?? new object[0])
-                    {
-                        if (frame is OrchestrationBuildFrame buildFrame)
-                            AppendFrameDiagnostic(message, buildFrame, planningContext, "  ");
-                    }
-                }
-            }
-        }
-
-        static void AppendFrameDiagnostic(
-            StringBuilder message,
-            OrchestrationBuildFrame frame,
-            in OrchestrationPlanningRuntimeContext planningContext,
-            string indent)
-        {
-            message.Append(indent)
-                .Append("Frame type=")
-                .Append(frame.DesiredFact == null ? "<null>" : frame.DesiredFact.FactType.ToString())
-                .Append(" data=")
-                .Append(frame.DesiredFact == null || frame.DesiredFact.Data == null
-                    ? "<null>"
-                    : frame.DesiredFact.Data.GetType().Name)
-                .Append(" status=")
-                .Append(frame.Status)
-                .Append(" raw=")
-                .Append(frame.HasCurrentSnapshot
-                    ? frame.CurrentSnapshot.RawValue.ToString()
-                    : "<none>")
-                .Append(" resolution=")
-                .Append(frame.HasCurrentSnapshot
-                    ? frame.CurrentSnapshot.ResolutionState.ToString()
-                    : "<none>")
-                .Append(" intent=")
-                .Append(frame.ExecutionIntentReady)
-                .Append(" endpoint=")
-                .Append(frame.SelectedEndpoint == null
-                    ? "<null>"
-                    : frame.SelectedEndpoint.EndpointType.ToString())
-                .Append(" failure=")
-                .Append(frame.Failure ?? "<null>")
+            List<OrchestrationProcessSnapshot> processes =
+                OrchestrationService.GetProcesses(domainId);
+            message.Append("Processes=")
+                .Append(processes.Count)
                 .AppendLine();
-            if (frame.DesiredFact.TryGetData(out EconomyOrchestrationQueryData economy)
-                && planningContext.ModuleResults.TryGet(
-                    out IEconomyStateModuleResult economyState))
+            for (int i = 0; i < processes.Count; i++)
             {
-                message.Append(indent)
-                    .Append("  EconomyModuleAmount=")
-                    .Append(economyState.TryGetAmount(economy, out long moduleAmount)
-                        ? moduleAmount.ToString()
-                        : "<unresolved>")
+                OrchestrationProcessSnapshot process = processes[i];
+                message.Append("  Process id=")
+                    .Append(process.ProcessId.ToString())
+                    .Append(" objective=")
+                    .Append(process.ObjectiveRuntimeId.Value)
+                    .Append(" fact=")
+                    .Append(process.DesiredFactStableKey ?? "<null>")
+                    .Append(" status=")
+                    .Append(process.StateType)
+                    .Append(" revision=")
+                    .Append(process.FactRevision)
+                    .Append(" attempt=")
+                    .Append(process.AttemptOrdinal)
+                    .Append(" endpoint=")
+                    .Append(process.SelectedEndpointKey.IsValid
+                        ? process.SelectedEndpointKey.ToString()
+                        : "<null>")
+                    .Append(" message=")
+                    .Append(process.Message ?? "<null>")
                     .AppendLine();
             }
-            for (int i = 0; i < frame.RequiredFrames.Count; i++)
-            {
-                AppendFrameDiagnostic(
-                    message,
-                    frame.RequiredFrames[i],
-                    planningContext,
-                    string.Concat(indent, "  "));
-            }
-        }
-
-        static object FindDictionaryValue(IEnumerable dictionary, object expectedKey)
-        {
-            foreach (object entry in dictionary ?? new object[0])
-            {
-                object key = GetPropertyValue(entry, "Key");
-                if (Equals(key, expectedKey))
-                    return GetPropertyValue(entry, "Value");
-            }
-
-            return null;
-        }
-
-        static object GetPropertyValue(object source, string propertyName)
-        {
-            if (source == null)
-                return null;
-            PropertyInfo property = source.GetType().GetProperty(
-                propertyName,
-                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-            return property == null ? null : property.GetValue(source);
         }
 
         static void AppendProductionModuleDiagnostic(
@@ -1888,23 +1862,129 @@ namespace ChainRush.Tests.PlayMode
             }
         }
 
-        sealed class ProductionOrderCapture : IEventListener<ProductionOrderStartedEvent>
+        sealed class ProductionOrderCapture :
+            IEventListener<ProductionOrderStartedEvent>,
+            IEventListener<ProductionOrderFinishedEvent>,
+            IEventListener<OrchestrationProcessStateChangedEvent>,
+            IEventListener<ObjectiveNodeStateChangedEvent>,
+            IEventListener<ObjectiveRuntimeCompletedEvent>,
+            IEventListener<ObjectiveRuntimeResetEvent>
         {
             readonly List<string> _recipeIds = new List<string>(4);
+            readonly List<string> _finishedOrders = new List<string>(4);
+            readonly List<string> _processTransitions = new List<string>(16);
+            readonly List<string> _objectiveTransitions = new List<string>(8);
+            readonly RuntimeDomainId _domainId;
+            readonly Core.Entities.EntityId _productionEntityId;
 
-            public ProductionOrderCapture(Core.Entities.EntityId productionEntityId)
+            public ProductionOrderCapture(
+                RuntimeDomainId domainId,
+                Core.Entities.EntityId productionEntityId)
             {
-                _recipeIds.Add(string.Concat(
-                    "expected-production-entity:",
-                    productionEntityId.Value.ToString()));
+                _domainId = domainId;
+                _productionEntityId = productionEntityId;
             }
+
+            public int StartedCount => _recipeIds.Count;
 
             public void OnEvent(ProductionOrderStartedEvent e)
             {
-                _recipeIds.Add(string.Concat(
-                    e.ProductionEntityId.Value.ToString(),
+                if (e.ProductionEntityId == _productionEntityId)
+                    _recipeIds.Add(e.RecipeId);
+            }
+
+            public void OnEvent(ProductionOrderFinishedEvent e)
+            {
+                if (e.ProductionEntityId != _productionEntityId)
+                    return;
+
+                _finishedOrders.Add(string.Concat(
+                    e.OrderId.ToString(),
                     ":",
-                    e.RecipeId));
+                    e.RecipeId,
+                    ":",
+                    e.FinalStatus.ToString(),
+                    ":",
+                    e.Failure.Code ?? "<none>",
+                    ":",
+                    e.Failure.Message ?? "<none>"));
+            }
+
+            public void OnEvent(OrchestrationProcessStateChangedEvent e)
+            {
+                OrchestrationProcessSnapshot snapshot = e.Snapshot;
+                if (snapshot.DomainId != _domainId)
+                    return;
+
+                _processTransitions.Add(string.Concat(
+                    snapshot.ProcessId.ToString(),
+                    ":",
+                    snapshot.ObjectiveRuntimeId.Value.ToString(),
+                    ":",
+                    snapshot.AttemptOrdinal.ToString(),
+                    ":",
+                    e.PreviousStateType.ToString(),
+                    "->",
+                    snapshot.StateType.ToString(),
+                    ":",
+                    snapshot.SelectedEndpointKey.IsValid
+                        ? snapshot.SelectedEndpointKey.ToString()
+                        : "<none>",
+                    ":",
+                    snapshot.Message ?? "<none>"));
+                if (_processTransitions.Count > 64)
+                    _processTransitions.RemoveAt(0);
+            }
+
+            public void OnEvent(ObjectiveNodeStateChangedEvent e)
+            {
+                if (e.DomainId != _domainId)
+                    return;
+
+                AddObjectiveTransition(string.Concat(
+                    e.RuntimeId.Value.ToString(),
+                    ":node:",
+                    e.NodeId ?? "<none>",
+                    ":",
+                    e.OldState.ToString(),
+                    "->",
+                    e.NewState.ToString()));
+            }
+
+            public void OnEvent(ObjectiveRuntimeCompletedEvent e)
+            {
+                if (e.DomainId == _domainId)
+                    AddObjectiveTransition(string.Concat(e.RuntimeId.Value.ToString(), ":completed"));
+            }
+
+            public void OnEvent(ObjectiveRuntimeResetEvent e)
+            {
+                if (e.DomainId == _domainId)
+                    AddObjectiveTransition(string.Concat(e.RuntimeId.Value.ToString(), ":reset"));
+            }
+
+            void AddObjectiveTransition(string value)
+            {
+                _objectiveTransitions.Add(value);
+                if (_objectiveTransitions.Count > 32)
+                    _objectiveTransitions.RemoveAt(0);
+            }
+
+            public int CountRecipe(string recipeId)
+            {
+                int count = 0;
+                for (int i = 0; i < _recipeIds.Count; i++)
+                {
+                    if (string.Equals(
+                            _recipeIds[i],
+                            recipeId,
+                            System.StringComparison.Ordinal))
+                    {
+                        count++;
+                    }
+                }
+
+                return count;
             }
 
             public string BuildDiagnostic()
@@ -1912,6 +1992,12 @@ namespace ChainRush.Tests.PlayMode
                 return string.Concat(
                     "BoardProductionRecipes=[",
                     _recipeIds.Count == 0 ? "<none>" : string.Join(",", _recipeIds),
+                    "]\nBoardProductionFinished=[",
+                    _finishedOrders.Count == 0 ? "<none>" : string.Join(",", _finishedOrders),
+                    "]\nBoardProcessTransitions=[",
+                    _processTransitions.Count == 0 ? "<none>" : string.Join("\n", _processTransitions),
+                    "]\nBoardObjectiveTransitions=[",
+                    _objectiveTransitions.Count == 0 ? "<none>" : string.Join("\n", _objectiveTransitions),
                     "]\n");
             }
         }

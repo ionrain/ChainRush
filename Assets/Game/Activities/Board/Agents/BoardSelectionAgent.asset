@@ -29,9 +29,8 @@ MonoBehaviour:
   controlType: 2
   agent:
     rid: 2807516677360582761
-  stopPolicyType: 1
+  stopPolicyType: 0
   timeLimit: 0
-  commandFailurePolicyType: 1
   tokenReservationPolicyType: 0
   targetAssignmentPolicyType: 0
   movementPolicyType: 0

@@ -830,7 +830,6 @@ namespace ChainRush.Editor
                 "BoardSelectionAgent",
                 "board-selection",
                 110,
-                ObjectiveCommandFailurePolicyType.FailObjective,
                 new List<ObjectiveCondition>
                 {
                     new ObjectiveConditionSelectionRequest(
@@ -858,7 +857,7 @@ namespace ChainRush.Editor
             SetField(
                 definition,
                 "stopPolicyType",
-                AgentStopPolicyType.AssignmentSuccess);
+                AgentStopPolicyType.None);
             return definition;
         }
 
@@ -980,9 +979,11 @@ namespace ChainRush.Editor
                     selectedTag,
                     0L,
                     CompareOperation.Equal);
-            var success = new ObjectiveConditionMarkerAvailability(
-                null,
+            var success = new ObjectiveConditionMaterializedMarkerCoverage(
+                water,
                 EconomyFormType.Token,
+                null,
+                null,
                 new List<TaxonomyTermData> { boardCellTag },
                 0L,
                 CompareOperation.Equal);
@@ -1019,9 +1020,11 @@ namespace ChainRush.Editor
             SetField(agentData, "markerTags", new List<TaxonomyTermData> { boardCellTag });
             SetField(agentData, "shapeWalletTags", new List<TaxonomyTermData> { boardWalletTag });
 
-            var match = new ObjectiveConditionMarkerAvailability(
+            var match = new ObjectiveConditionMaterializedMarkerCoverage(
                 null,
                 EconomyFormType.Token,
+                null,
+                null,
                 new List<TaxonomyTermData> { boardCellTag },
                 0L,
                 CompareOperation.Equal);
@@ -1030,7 +1033,6 @@ namespace ChainRush.Editor
                 "BoardPopulationAgent",
                 "chainrush-board-population",
                 100,
-                ObjectiveCommandFailurePolicyType.FailObjective,
                 new List<ObjectiveCondition> { match },
                 new List<AgentSelectionCriterionData>
                 {
@@ -1043,7 +1045,7 @@ namespace ChainRush.Editor
             SetField(
                 definition,
                 "stopPolicyType",
-                AgentStopPolicyType.AssignmentSuccess);
+                AgentStopPolicyType.None);
             return definition;
         }
 
@@ -1083,7 +1085,6 @@ namespace ChainRush.Editor
             string name,
             string id,
             int priority,
-            ObjectiveCommandFailurePolicyType commandFailurePolicyType,
             List<ObjectiveCondition> matchConditions,
             List<AgentSelectionCriterionData> executorCriteria,
             List<AgentSelectionCriterionData> targetCriteria,
@@ -1095,7 +1096,6 @@ namespace ChainRush.Editor
             SetField(definition, "agentId", id);
             SetField(definition, "basePriority", priority);
             SetField(definition, "updateInterval", 1);
-            SetField(definition, "commandFailurePolicyType", commandFailurePolicyType);
             SetField(definition, "matchConditions", matchConditions);
             SetField(definition, "executorSelectionCriteria", executorCriteria);
             SetField(definition, "targetSelectionCriteria", targetCriteria);

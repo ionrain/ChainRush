@@ -27,7 +27,6 @@ MonoBehaviour:
     rid: 2807516363299750107
   stopPolicyType: 0
   timeLimit: 0
-  commandFailurePolicyType: 0
   tokenReservationPolicyType: 0
   targetAssignmentPolicyType: 0
   movementPolicyType: 0

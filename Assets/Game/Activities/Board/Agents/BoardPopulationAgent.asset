@@ -25,9 +25,8 @@ MonoBehaviour:
   controlType: 2
   agent:
     rid: 2807516289745289327
-  stopPolicyType: 1
+  stopPolicyType: 0
   timeLimit: 0
-  commandFailurePolicyType: 1
   tokenReservationPolicyType: 0
   targetAssignmentPolicyType: 0
   movementPolicyType: 0
@@ -39,11 +38,13 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 2807516289745289324
-      type: {class: ObjectiveConditionMarkerAvailability, ns: Core.Objectives, asm: Core}
+      type: {class: ObjectiveConditionMaterializedMarkerCoverage, ns: Core.Objectives, asm: Core}
       data:
         _targetValue: 0
         economyAsset: {fileID: 0}
         economyFormType: 1
+        requiredAssetTags: []
+        requiredCapabilityTypes: []
         markerTags:
         - {fileID: 11400000, guid: a70bd9d1bf3b1457fbe47de7812a7fed, type: 2}
         compareOperation: 0

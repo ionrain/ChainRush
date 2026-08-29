@@ -2682,10 +2682,6 @@ namespace ChainRush.Editor
             SetField(definition, "updateInterval", 1);
             SetField(
                 definition,
-                "commandFailurePolicyType",
-                ObjectiveCommandFailurePolicyType.Replan);
-            SetField(
-                definition,
                 "matchConditions",
                 new List<ObjectiveCondition> { matchCondition });
             SetField(
@@ -3986,7 +3982,7 @@ namespace ChainRush.Editor
         static void EnsureOccupancyConsumerWiring()
         {
             CapabilityHostData waterBase = LoadRequired<CapabilityHostData>(BoardWaterBasePath);
-            ObjectiveConditionMarkerAvailability condition =
+            ObjectiveConditionMaterializedMarkerCoverage condition =
                 ResolveBoardPopulationMarkerCondition();
             if (condition.EconomyAsset == waterBase)
                 return;
@@ -4018,7 +4014,7 @@ namespace ChainRush.Editor
         static void ValidateOccupancyConsumerWiring()
         {
             CapabilityHostData waterBase = LoadRequired<CapabilityHostData>(BoardWaterBasePath);
-            ObjectiveConditionMarkerAvailability condition =
+            ObjectiveConditionMaterializedMarkerCoverage condition =
                 ResolveBoardPopulationMarkerCondition();
             if (condition.EconomyAsset != waterBase)
             {
@@ -4027,15 +4023,15 @@ namespace ChainRush.Editor
             }
         }
 
-        static ObjectiveConditionMarkerAvailability ResolveBoardPopulationMarkerCondition()
+        static ObjectiveConditionMaterializedMarkerCoverage ResolveBoardPopulationMarkerCondition()
         {
             ObjectiveTemplateData objective =
                 LoadRequired<ObjectiveTemplateData>(BoardPopulationObjectivePath);
             if (objective.Root == null || objective.Root.SuccessConditions.Count != 1
-                || !(objective.Root.SuccessConditions[0] is ObjectiveConditionMarkerAvailability condition))
+                || !(objective.Root.SuccessConditions[0] is ObjectiveConditionMaterializedMarkerCoverage condition))
             {
                 throw new InvalidOperationException(
-                    "Board Population Objective does not contain the expected marker availability success condition.");
+                    "Board Population Objective does not contain the expected materialized marker coverage success condition.");
             }
 
             return condition;

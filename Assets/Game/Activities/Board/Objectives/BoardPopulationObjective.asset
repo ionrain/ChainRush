@@ -171,7 +171,7 @@ MonoBehaviour:
       Data: 1
     - Name: 
       Entry: 7
-      Data: 6|Core.Objectives.ObjectiveConditionMarkerAvailability, Core
+      Data: 6|Core.Objectives.ObjectiveConditionMaterializedMarkerCoverage, Core
     - Name: _targetValue
       Entry: 3
       Data: 0
@@ -181,6 +181,32 @@ MonoBehaviour:
     - Name: economyFormType
       Entry: 3
       Data: 1
+    - Name: requiredAssetTags
+      Entry: 7
+      Data: 100|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+        Core]], mscorlib
+    - Name:
+      Entry: 12
+      Data: 0
+    - Name:
+      Entry: 13
+      Data:
+    - Name:
+      Entry: 8
+      Data:
+    - Name: requiredCapabilityTypes
+      Entry: 7
+      Data: 101|System.Collections.Generic.List`1[[Core.CapabilityHosts.CapabilityHostType,
+        Core]], mscorlib
+    - Name:
+      Entry: 12
+      Data: 0
+    - Name:
+      Entry: 13
+      Data:
+    - Name:
+      Entry: 8
+      Data:
     - Name: markerTags
       Entry: 7
       Data: 7|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,

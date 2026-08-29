@@ -444,16 +444,23 @@ namespace ChainRush.Tests.EditMode
                 ObjectiveCompletionPolicyType.Reset,
                 mergeObjective.CompletionPolicyType);
             Assert.AreEqual(
-                AgentStopPolicyType.AssignmentSuccess,
+                AgentStopPolicyType.None,
                 populationAgent.StopPolicyType);
             Assert.AreEqual(
-                AgentStopPolicyType.AssignmentSuccess,
+                AgentStopPolicyType.None,
                 selectionAgent.StopPolicyType);
-            Assert.AreEqual(6, boardBrain.Operators.Count);
+            Assert.AreEqual(7, boardBrain.Operators.Count);
             List<AgentDecompOpData> agentOperators = boardBrain.Operators
                 .OfType<AgentDecompOpData>()
                 .ToList();
             Assert.AreEqual(2, agentOperators.Count);
+            AgentResourceRequestDecompOpData resourceRequestOperator = boardBrain.Operators
+                .OfType<AgentResourceRequestDecompOpData>()
+                .Single();
+            OrchestrationDecisionData resourceRequestDecision = boardBrain.DecisionGraph.Nodes
+                .OfType<OrchestrationDecisionData>()
+                .Single(decision => decision.DecisionId == "agent-resource-request");
+            Assert.AreSame(resourceRequestOperator.OperatorId, resourceRequestDecision.OperatorId);
             CollectionAssert.AreEquivalent(
                 new[] { populationAgent, selectionAgent },
                 agentOperators.Select(operation => operation.AgentDefinition).ToList());
@@ -490,6 +497,9 @@ namespace ChainRush.Tests.EditMode
             CollectionAssert.Contains(
                 ReadObjectReferences<TaxonomyTermData>(taxonomyInstaller, "terms"),
                 productionInputOperator);
+            CollectionAssert.Contains(
+                ReadObjectReferences<TaxonomyTermData>(taxonomyInstaller, "terms"),
+                resourceRequestOperator.OperatorId);
             Assert.IsFalse(ReadObjectReferences<TaxonomyTermData>(taxonomyInstaller, "terms")
                 .Any(term => term != null
                     && term.Id == "chainrush.orchestration.board.agent.production"));
@@ -526,10 +536,12 @@ namespace ChainRush.Tests.EditMode
 
             Assert.AreEqual(1, objective.Root.SuccessConditions.Count);
             var success = objective.Root.SuccessConditions.Single()
-                as ObjectiveConditionMarkerAvailability;
+                as ObjectiveConditionMaterializedMarkerCoverage;
             Assert.NotNull(success);
             Assert.AreSame(waterBase, success.EconomyAsset);
             Assert.AreEqual(EconomyFormType.Token, success.EconomyFormType);
+            Assert.AreEqual(0, success.RequiredAssetTags.Count);
+            Assert.AreEqual(0, success.RequiredCapabilityTypes.Count);
             Assert.AreEqual(CompareOperation.Equal, success.CompareOperation);
             Assert.AreEqual(0L, success.TargetValue);
             Assert.AreEqual(BoardCellTagId, success.MarkerTags.Single().Id);
@@ -575,9 +587,6 @@ namespace ChainRush.Tests.EditMode
 
             Assert.IsInstanceOf<PopulationAgentData>(populationAgent.Agent);
             Assert.IsInstanceOf<SelectionAgentData>(selectionAgent.Agent);
-            Assert.AreEqual(
-                ObjectiveCommandFailurePolicyType.FailObjective,
-                populationAgent.CommandFailurePolicyType);
             var selection = (SelectionAgentData)selectionAgent.Agent;
             CollectionAssert.AreEqual(
                 new[] { mergeSelected },
@@ -908,13 +917,20 @@ namespace ChainRush.Tests.EditMode
                 "chainrush.autobattle.marker.enemy-spawn",
                 enemyProduction.MaterializationProviderType.Id);
 
-            Assert.AreEqual(8, playerBrain.Operators.Count);
+            Assert.AreEqual(9, playerBrain.Operators.Count);
             Assert.AreEqual(
                 1,
                 playerBrain.Operators.OfType<MaterializedEntityProductionDecompOpData>().Count());
             Assert.AreEqual(
                 1,
                 enemyBrain.Operators.OfType<MaterializedEntityProductionDecompOpData>().Count());
+            AgentResourceRequestDecompOpData playerRequestOperator = playerBrain.Operators
+                .OfType<AgentResourceRequestDecompOpData>()
+                .Single();
+            AgentResourceRequestDecompOpData enemyRequestOperator = enemyBrain.Operators
+                .OfType<AgentResourceRequestDecompOpData>()
+                .Single();
+            Assert.AreSame(playerRequestOperator.OperatorId, enemyRequestOperator.OperatorId);
             AwaitFactDecompOpData awaitFact = playerBrain.Operators
                 .OfType<AwaitFactDecompOpData>()
                 .Single();
@@ -922,7 +938,7 @@ namespace ChainRush.Tests.EditMode
             CollectionAssert.AreEqual(
                 new[] { OrchestrationPlanningFactType.EconomyAmount },
                 awaitFact.InputFactTypes);
-            Assert.AreEqual(9, playerBrain.DecisionGraph.Nodes.Count);
+            Assert.AreEqual(10, playerBrain.DecisionGraph.Nodes.Count);
             var globalProduction = playerBrain.DecisionGraph.Nodes[2]
                 as OrchestrationDecisionData;
             var awaitExternal = playerBrain.DecisionGraph.Nodes[3]
@@ -950,6 +966,9 @@ namespace ChainRush.Tests.EditMode
             TaxonomyRuntimeInstallerData taxonomyInstaller =
                 LoadRequiredAsset<TaxonomyRuntimeInstallerData>(
                     "Assets/Game/Runtime/Installers/ChainRushTaxonomyRuntimeInstaller.asset");
+            CollectionAssert.Contains(
+                ReadObjectReferences<TaxonomyTermData>(taxonomyInstaller, "terms"),
+                playerRequestOperator.OperatorId);
             CollectionAssert.Contains(
                 ReadObjectReferences<TaxonomyTermData>(taxonomyInstaller, "terms"),
                 awaitFactOperator);

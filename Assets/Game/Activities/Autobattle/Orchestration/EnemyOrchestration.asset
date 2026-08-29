@@ -49,6 +49,9 @@ MonoBehaviour:
     maxResolverExpansions: 128
     maxBranchesPerRequirement: 4
     maxPlanningWorkItemsPerPass: 128
+    maxInboxEventsPerPass: 128
+    maxProcessTransitionsPerPass: 128
+    maxEndpointAdmissionsPerPass: 32
   utilityProfile:
     successProgressSensitivity: 1
     failureAvoidanceSensitivity: 1

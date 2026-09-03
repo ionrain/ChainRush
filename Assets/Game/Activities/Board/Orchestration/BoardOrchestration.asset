@@ -76,9 +76,6 @@ MonoBehaviour:
     targetNodeTag: {fileID: 0}
     targetStateTag: {fileID: 0}
     targetResetType: 3
-    maxExplorationFrontierCells: 64
-    maxExplorationCandidates: 8
-    maxExplorationRouteNodeExpansions: 64
   invalidationPolicy:
     factFreshnessDuration: 0.25
     replanUtilityImprovementThreshold: 0.1

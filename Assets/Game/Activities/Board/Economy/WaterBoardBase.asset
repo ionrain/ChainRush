@@ -40,6 +40,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: d65bc7797b2884444a858fec0e36bbcd, type: 2}
   slotFootprint: 1
   stackCapacity: 0
+  footprintSize: {x: 1000, y: 0, z: 1000}
   capabilities: []
   walletEntries: []
   usagePolicy:

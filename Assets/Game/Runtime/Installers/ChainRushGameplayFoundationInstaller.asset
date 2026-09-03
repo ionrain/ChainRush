@@ -32,7 +32,6 @@ MonoBehaviour:
       maxSwarmInfluence: 0.45
       blendInDuration: 12
       blendOutDuration: 18
-      separationPadding: 0
     maxSolvedAgentsPerStep: 64
     maxCandidatesPerAgent: 16
     candidateRadius: 6000
@@ -41,5 +40,9 @@ MonoBehaviour:
     allowBackwardBypass: 0
     yieldDuration: 6
     deadlockDuration: 15
+  navigationWorkBudget:
+    nodeExpansionBudget: 64
+    pathReconstructionBudget: 128
+    smoothingCheckBudget: 24
   spatialOccupancyMatrix: {fileID: 11400000, guid: 984942b2c450548aca5a4dc26c82cd46,
     type: 2}

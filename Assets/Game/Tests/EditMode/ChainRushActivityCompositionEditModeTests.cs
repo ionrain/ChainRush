@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using Core;
@@ -285,7 +286,7 @@ namespace ChainRush.Tests.EditMode
             Assert.AreEqual(new Vector3Int(4, 1, 4), boardProvider.Usage.Size);
             Assert.AreEqual(Vector3Int.zero, boardProvider.Usage.Position);
             Assert.AreEqual(new Vector3Int(1000, 1, 1000), boardProvider.Usage.CellSize);
-            Assert.AreEqual(Vector3Int.zero, boardProvider.Usage.CellOffset);
+            Assert.AreEqual(Vector3Int.zero, boardProvider.Usage.Spacing);
             Assert.AreEqual(1, boardProvider.MarkerTags.Count);
             Assert.AreEqual(BoardCellTagId, boardProvider.MarkerTags[0].Id);
             Assert.AreEqual(1, boardSpace.ProjectionMarkerTags.Count);
@@ -592,32 +593,43 @@ namespace ChainRush.Tests.EditMode
                 new[] { mergeSelected },
                 selection.ResultTags);
             Assert.AreEqual(4, selectionAgent.TargetSelectionCriteria.Count);
-            var targetMaterialization = selectionAgent.TargetSelectionCriteria
-                .OfType<MaterializedEntitySelectionCriterionData>()
+            var targetCapabilityHost = selectionAgent.TargetSelectionCriteria
+                .Select(entry => entry.Criterion)
+                .OfType<CapabilityHostCriterionData>()
                 .Single();
-            Assert.IsNull(targetMaterialization.EconomyAsset);
-            Assert.AreEqual(EconomyFormType.Token, targetMaterialization.EconomyFormType);
+            Assert.IsNull(targetCapabilityHost.Definition);
             CollectionAssert.AreEqual(
                 new[] { waterTag },
-                targetMaterialization.RequiredAssetTags);
+                targetCapabilityHost.RequiredAssetTags);
             Assert.AreEqual(
                 AgentOwnerSelectionType.ParticipantOwner,
                 selectionAgent.TargetSelectionCriteria
-                    .OfType<EntityOwnerSelectionCriterionData>()
+                    .Select(entry => entry.Criterion)
+                    .OfType<OwnerCriterionData>()
                     .Single()
                     .OwnerSelectionType);
             Assert.AreEqual(
                 1,
-                selectionAgent.TargetSelectionCriteria.OfType<SameAssetCriterionData>().Count());
+                selectionAgent.TargetSelectionCriteria
+                    .Select(entry => entry.Criterion)
+                    .OfType<AssetCountCriterionData>()
+                    .Count());
             var distanceCriterion = selectionAgent.TargetSelectionCriteria
-                .OfType<StepDistanceCriterionData>()
+                .Select(entry => entry.Criterion)
+                .OfType<SegmentLengthCriterionData>()
                 .Single();
             Assert.AreEqual(1000, distanceCriterion.MinimumDistance);
             Assert.AreEqual(1000, distanceCriterion.MaximumDistance);
             var population = (PopulationAgentData)populationAgent.Agent;
             Assert.NotNull(population.Planner);
             Assert.AreSame(refreshRecipe, population.CompletionRecipe);
-            Assert.AreEqual(BoardCellTagId, population.MarkerTags.Single().Id);
+            var populationMarker = populationAgent.TargetSelectionCriteria
+                .Select(entry => entry.Criterion)
+                .OfType<MarkerCriterionData>()
+                .Single();
+            Assert.AreEqual(BoardCellTagId, populationMarker.RequiredTags.Single().Id);
+            Assert.AreEqual(BoardCellTagId, populationMarker.ProviderType.Id);
+            Assert.AreEqual(MarkerScopeType.ActivityRoot, populationMarker.ScopeType);
             Assert.AreSame(boardWalletTag, population.ShapeWalletTags.Single());
             List<ActivityWalletSeedEntryData> shapeSeeds = board.Teams[0].Wallets
                 .SelectMany(wallet => wallet.Seed)
@@ -654,9 +666,10 @@ namespace ChainRush.Tests.EditMode
                     .FindPropertyRelative("shape")
                     .objectReferenceValue);
             var producerCriterion = populationAgent.ExecutorSelectionCriteria
-                .OfType<MaterializedEntitySelectionCriterionData>()
+                .Select(entry => entry.Criterion)
+                .OfType<CapabilityHostCriterionData>()
                 .Single();
-            Assert.AreSame(boardHost, producerCriterion.EconomyAsset);
+            Assert.AreSame(boardHost, producerCriterion.Definition);
             Assert.Contains(CapabilityHostType.ProductionOwner, populationProducer.Capabilities
                 .Select(entry => entry.CapabilityType)
                 .ToList());
@@ -1651,7 +1664,7 @@ namespace ChainRush.Tests.EditMode
             Assert.AreEqual(new Vector3Int(7, 1, 21), provider.Usage.Size);
             Assert.AreEqual(expectedPosition, provider.Usage.Position);
             Assert.AreEqual(new Vector3Int(1000, 1, 1000), provider.Usage.CellSize);
-            Assert.AreEqual(Vector3Int.zero, provider.Usage.CellOffset);
+            Assert.AreEqual(Vector3Int.zero, provider.Usage.Spacing);
             Assert.AreEqual(SpatialMarkerReusePolicyType.ReuseAllowed, provider.UsagePolicy.ReusePolicyType);
         }
 
@@ -1695,6 +1708,7 @@ namespace ChainRush.Tests.EditMode
             TaxonomyTermData expectedTag)
         {
             CapabilityHostBaseData host = LoadRequiredAsset<CapabilityHostBaseData>(path);
+            StringAssert.Contains("footprintSize:", File.ReadAllText(path), path);
             List<TaxonomyTermData> occupancyTags = host.Tags
                 .Where(tag => tag != null && tag.Family == family)
                 .ToList();

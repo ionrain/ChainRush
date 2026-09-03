@@ -78,7 +78,7 @@ MonoBehaviour:
     size: {x: 7, y: 1, z: 21}
     rotation: {x: 0, y: 0, z: 0}
     cellSize: {x: 1000, y: 1, z: 1000}
-    cellOffset: {x: 0, y: 0, z: 0}
+    spacing: {x: 0, y: 0, z: 0}
   markerTags:
   - {fileID: 11400000, guid: aa92cc0714f724a0491b75e03d6282a9, type: 2}
   drawGizmo: 1

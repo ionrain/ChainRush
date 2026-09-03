@@ -38,11 +38,7 @@ MonoBehaviour:
   tags: []
   slotFootprint: 1
   stackCapacity: 0
-  navigationSize:
-    a: 1000
-    b: 1000
-    c: 1000
-  preferredSpacing: 250
+  spacing: 250
   avoidancePriority: 0
   goalRelaxationPolicy:
     relaxationType: 1

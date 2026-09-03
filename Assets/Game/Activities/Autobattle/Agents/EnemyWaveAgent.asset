@@ -18,9 +18,15 @@ MonoBehaviour:
   matchConditions:
   - rid: 2807516363299750109
   executorSelectionCriteria:
-  - rid: 2807516363299750110
-  - rid: 2807516363299750111
+  - requirementType: 0
+    criterion:
+      rid: 6092003635567525890
+  - requirementType: 0
+    criterion:
+      rid: 6092003635567525891
+  executorTargetRankingType: 0
   targetSelectionCriteria: []
+  targetRankingType: 0
   aiBrainTargetKey: {fileID: 0}
   controlType: 2
   agent:
@@ -44,27 +50,18 @@ MonoBehaviour:
         economyAsset: {fileID: 11400000, guid: 77f66cd0292e24a4d964384f7c5ed5c9, type: 2}
         economyFormType: 1
         requiredAssetTags: []
-        requiredCapabilityTypes: 
+        requiredCapabilityTypes:
         compareOperation: 3
-    - rid: 2807516363299750110
-      type: {class: MaterializedEntitySelectionCriterionData, ns: Core.Orchestration,
-        asm: Core}
-      data:
-        requirementType: 0
-        weight: 1
-        economyAsset: {fileID: 11400000, guid: ac0f603ee0c224c8c825aa40af08b831, type: 2}
-        economyFormType: 1
-        requiredAssetTags: []
-        requiredCapabilityTypes: 
-        compareOperation: 3
-        targetValue: 1
-    - rid: 2807516363299750111
-      type: {class: EntityOwnerSelectionCriterionData, ns: Core.Orchestration, asm: Core}
-      data:
-        requirementType: 0
-        weight: 1
-        ownerSelectionType: 0
     - rid: 2807516363299750112
-      type: {class: ProductionAgentData, ns: Core.Orchestration,
-        asm: Core}
-      data: 
+      type: {class: ProductionAgentData, ns: Core.Orchestration, asm: Core}
+      data:
+    - rid: 6092003635567525890
+      type: {class: CapabilityHostCriterionData, ns: Core.Orchestration, asm: Core}
+      data:
+        definition: {fileID: 11400000, guid: ac0f603ee0c224c8c825aa40af08b831, type: 2}
+        requiredAssetTags: []
+        requiredCapabilityTypes:
+    - rid: 6092003635567525891
+      type: {class: OwnerCriterionData, ns: Core.Orchestration, asm: Core}
+      data:
+        ownerSelectionType: 0

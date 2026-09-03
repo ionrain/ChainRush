@@ -1029,8 +1029,7 @@ namespace ChainRush.Editor
                 "chainrush.movement.unit",
                 AllMutableOperations,
                 createdPaths);
-            SetField(content.Movement, "navigationSize", new NavigationSizeData(1000, 1000, 1000));
-            SetField(content.Movement, "preferredSpacing", 250);
+            SetField(content.Movement, "spacing", 250);
             SetField(content.Movement, "avoidancePriority", 0);
             SetField(
                 content.Movement,
@@ -1098,6 +1097,7 @@ namespace ChainRush.Editor
                 "chainrush.autobattle.player-spawner",
                 new List<TaxonomyTermData> { content.PlayerSpawnerRole },
                 new List<CapabilityEntry> { CreateCapability(CapabilityHostType.ProductionOwner) },
+                new Vector3Int(1000, 0, 1000),
                 createdPaths);
             content.EnemySpawner = CreateCapabilityHost(
                 EnemySpawnerPath,
@@ -1105,6 +1105,7 @@ namespace ChainRush.Editor
                 "chainrush.autobattle.enemy-spawner",
                 new List<TaxonomyTermData> { content.EnemySpawnerRole },
                 new List<CapabilityEntry> { CreateCapability(CapabilityHostType.ProductionOwner) },
+                new Vector3Int(1000, 0, 1000),
                 createdPaths);
             content.Enemy = CreateCapabilityHost(
                 EnemyPath,
@@ -1118,6 +1119,7 @@ namespace ChainRush.Editor
                     CreateCapability(CapabilityHostType.AIBrainOwner, content.CombatNode),
                     CreateCapability(CapabilityHostType.ProductionOwner),
                 },
+                new Vector3Int(1000, 0, 1000),
                 createdPaths);
             content.ExperienceDrop = CreateCapabilityHost(
                 ExperienceDropPath,
@@ -1125,6 +1127,7 @@ namespace ChainRush.Editor
                 "chainrush.autobattle.experience-drop",
                 new List<TaxonomyTermData> { content.ExperienceDropRole },
                 new List<CapabilityEntry>(0),
+                new Vector3Int(1000, 0, 1000),
                 createdPaths);
             content.ExperienceCollector = CreateCapabilityHost(
                 ExperienceCollectorPath,
@@ -1136,6 +1139,7 @@ namespace ChainRush.Editor
                     CreateCapability(CapabilityHostType.SkillOwner),
                     CreateCapability(CapabilityHostType.AIBrainOwner, content.CollectionNode),
                 },
+                Vector3Int.zero,
                 createdPaths);
 
             ConfigureEconomyAsset(content.WaterUnit, "chainrush.unit.water", AllMutableOperations);
@@ -1151,6 +1155,7 @@ namespace ChainRush.Editor
                     CreateCapability(CapabilityHostType.MovementOwner),
                     CreateCapability(CapabilityHostType.AIBrainOwner, content.CombatNode),
                 });
+            SetField(content.WaterUnit, "footprintSize", new Vector3Int(1000, 0, 1000));
             EditorUtility.SetDirty(content.WaterUnit);
 
             ConfigureEconomyAsset(content.Experience, "chainrush.resource.experience", AllMutableOperations);
@@ -2203,6 +2208,7 @@ namespace ChainRush.Editor
             string id,
             List<TaxonomyTermData> tags,
             List<CapabilityEntry> capabilities,
+            Vector3Int footprintSize,
             List<string> createdPaths)
         {
             CapabilityHostData host = CreateEconomyAsset<CapabilityHostData>(
@@ -2214,6 +2220,7 @@ namespace ChainRush.Editor
             host.Tags.Clear();
             if (tags != null)
                 host.Tags.AddRange(tags);
+            SetField(host, "footprintSize", footprintSize);
             SetField(host, "capabilities", capabilities ?? new List<CapabilityEntry>(0));
             SetField(host, "walletEntries", new List<WalletEntry>(0));
             EditorUtility.SetDirty(host);
@@ -2687,15 +2694,15 @@ namespace ChainRush.Editor
             SetField(
                 definition,
                 "executorSelectionCriteria",
-                new List<AgentSelectionCriterionData>
+                new List<EntityCriterionEntryData>
                 {
-                    CreateMaterializedCriterion(executor),
-                    CreateOwnerCriterion(),
+                    Required(CreateCapabilityHostCriterion(executor)),
+                    Required(CreateOwnerCriterion()),
                 });
             SetField(
                 definition,
                 "targetSelectionCriteria",
-                new List<AgentSelectionCriterionData>(0));
+                new List<EntityCriterionEntryData>(0));
             SetField(definition, "controlType", AgentControlType.Endpoint);
             SetField(definition, "agent", new ProductionAgentData());
             SetField(definition, "stopPolicyType", AgentStopPolicyType.None);
@@ -2711,37 +2718,29 @@ namespace ChainRush.Editor
             return definition;
         }
 
-        static MaterializedEntitySelectionCriterionData CreateMaterializedCriterion(
-            EconomyAssetData asset)
+        static CapabilityHostCriterionData CreateCapabilityHostCriterion(
+            CapabilityHostBaseData definition)
         {
-            var criterion = new MaterializedEntitySelectionCriterionData();
-            SetField(
-                criterion,
-                "requirementType",
-                AgentCriterionRequirementType.Required);
-            SetField(criterion, "weight", 1);
-            SetField(criterion, "economyAsset", asset);
-            SetField(criterion, "economyFormType", EconomyFormType.Token);
+            var criterion = new CapabilityHostCriterionData();
+            SetField(criterion, "definition", definition);
             SetField(criterion, "requiredAssetTags", new List<TaxonomyTermData>(0));
             SetField(criterion, "requiredCapabilityTypes", new List<CapabilityHostType>(0));
-            SetField(criterion, "compareOperation", CompareOperation.GreaterOrEqual);
-            SetField(criterion, "targetValue", 1L);
             return criterion;
         }
 
-        static EntityOwnerSelectionCriterionData CreateOwnerCriterion()
+        static OwnerCriterionData CreateOwnerCriterion()
         {
-            var criterion = new EntityOwnerSelectionCriterionData();
-            SetField(
-                criterion,
-                "requirementType",
-                AgentCriterionRequirementType.Required);
-            SetField(criterion, "weight", 1);
+            var criterion = new OwnerCriterionData();
             SetField(
                 criterion,
                 "ownerSelectionType",
                 AgentOwnerSelectionType.ParticipantOwner);
             return criterion;
+        }
+
+        static EntityCriterionEntryData Required(EntityCriterionData criterion)
+        {
+            return new EntityCriterionEntryData(CriterionRequirementType.Required, criterion);
         }
 
         static ActivityTeamObjectiveData CreateTeamObjective(ObjectiveTemplateData objective)

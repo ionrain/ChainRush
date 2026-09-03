@@ -309,7 +309,7 @@ namespace ChainRush.Board
 
         static bool IsShapeAvailable(
             SpatialShapeData shape,
-            List<SpatialShapeProjectionRecord> availableShapes)
+            IReadOnlyList<SpatialShapeProjectionRecord> availableShapes)
         {
             if (shape == null || availableShapes == null)
                 return false;
@@ -573,7 +573,7 @@ namespace ChainRush.Board
                     descriptor,
                     cellsByCoordinate,
                     out Vector3Int cellSize,
-                    out Vector3Int cellOffset,
+                    out Vector3Int spacing,
                     out int firstAxisSize,
                     out int secondAxisSize))
             {
@@ -607,7 +607,7 @@ namespace ChainRush.Board
                                 logicalSize,
                                 ResolveRotation(descriptor.UpAxisType, quarterTurn * 90),
                                 cellSize,
-                                cellOffset);
+                                spacing);
                             var sink = new ProjectionSink();
                             if (!SpatialShapeService.TryProject(
                                     activityId,
@@ -643,12 +643,12 @@ namespace ChainRush.Board
             TopologyDescriptor descriptor,
             Dictionary<Vector2Int, ResolvedCell> cellsByCoordinate,
             out Vector3Int cellSize,
-            out Vector3Int cellOffset,
+            out Vector3Int spacing,
             out int firstAxisSize,
             out int secondAxisSize)
         {
             cellSize = Vector3Int.one;
-            cellOffset = Vector3Int.zero;
+            spacing = Vector3Int.zero;
             firstAxisSize = 0;
             secondAxisSize = 0;
             if (cellsByCoordinate.Count == 0)
@@ -658,7 +658,7 @@ namespace ChainRush.Board
             int maximumX = int.MinValue;
             int minimumY = int.MaxValue;
             int maximumY = int.MinValue;
-            NavigationFootprint footprint = NavigationFootprint.None;
+            SpatialFootprint footprint = SpatialFootprint.None;
             bool hasFootprint = false;
             foreach (KeyValuePair<Vector2Int, ResolvedCell> pair in cellsByCoordinate)
             {
@@ -667,7 +667,7 @@ namespace ChainRush.Board
                 maximumX = Math.Max(maximumX, coordinate.x);
                 minimumY = Math.Min(minimumY, coordinate.y);
                 maximumY = Math.Max(maximumY, coordinate.y);
-                NavigationFootprint candidate = pair.Value.Snapshot.CellFootprint;
+                SpatialFootprint candidate = pair.Value.Snapshot.CellFootprint;
                 if (!candidate.HasSize || !candidate.IsValidFor(descriptor))
                     return false;
                 if (hasFootprint && !candidate.Equals(footprint))
@@ -683,11 +683,11 @@ namespace ChainRush.Board
                 descriptor.UpAxisType == TopologyUpAxisType.X ? 1 : footprint.SizeA,
                 descriptor.UpAxisType == TopologyUpAxisType.Y ? 1 : footprint.SizeB,
                 descriptor.UpAxisType == TopologyUpAxisType.Z ? 1 : footprint.SizeC);
-            cellOffset = new Vector3Int(
+            spacing = new Vector3Int(
                 descriptor.UpAxisType == TopologyUpAxisType.X ? 0 : coordinateSize - cellSize.x,
                 descriptor.UpAxisType == TopologyUpAxisType.Y ? 0 : coordinateSize - cellSize.y,
                 descriptor.UpAxisType == TopologyUpAxisType.Z ? 0 : coordinateSize - cellSize.z);
-            return cellOffset.x >= 0 && cellOffset.y >= 0 && cellOffset.z >= 0;
+            return spacing.x >= 0 && spacing.y >= 0 && spacing.z >= 0;
         }
 
         static Vector3Int ResolveLogicalSize(

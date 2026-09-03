@@ -837,20 +837,20 @@ namespace ChainRush.Editor
                         0L,
                         CompareOperation.Equal),
                 },
-                new List<AgentSelectionCriterionData>
+                new List<EntityCriterionEntryData>
                 {
-                    CreateMaterializedCriterion(boardHost, null),
-                    CreateOwnerCriterion(),
+                    Required(CreateCapabilityHostCriterion(boardHost, null)),
+                    Required(CreateOwnerCriterion()),
                 },
-                new List<AgentSelectionCriterionData>
+                new List<EntityCriterionEntryData>
                 {
-                    CreateMaterializedCriterion(
+                    Required(CreateCapabilityHostCriterion(
                         null,
                         null,
-                        new List<TaxonomyTermData> { waterTag }),
-                    CreateOwnerCriterion(),
-                    new SameAssetCriterionData(),
-                    new StepDistanceCriterionData(1000, 1000),
+                        new List<TaxonomyTermData> { waterTag })),
+                    Required(CreateOwnerCriterion()),
+                    Required(CreateAssetCountCriterion()),
+                    Required(CreateSegmentLengthCriterion(1000, 1000)),
                 },
                 agentData,
                 createdPaths);
@@ -1017,7 +1017,6 @@ namespace ChainRush.Editor
             var agentData = new PopulationAgentData();
             SetField(agentData, "planner", planner);
             SetField(agentData, "completionRecipe", refreshRecipe);
-            SetField(agentData, "markerTags", new List<TaxonomyTermData> { boardCellTag });
             SetField(agentData, "shapeWalletTags", new List<TaxonomyTermData> { boardWalletTag });
 
             var match = new ObjectiveConditionMaterializedMarkerCoverage(
@@ -1034,12 +1033,15 @@ namespace ChainRush.Editor
                 "chainrush-board-population",
                 100,
                 new List<ObjectiveCondition> { match },
-                new List<AgentSelectionCriterionData>
+                new List<EntityCriterionEntryData>
                 {
-                    CreateMaterializedCriterion(executorHost, null),
-                    CreateOwnerCriterion(),
+                    Required(CreateCapabilityHostCriterion(executorHost, null)),
+                    Required(CreateOwnerCriterion()),
                 },
-                new List<AgentSelectionCriterionData>(0),
+                new List<EntityCriterionEntryData>
+                {
+                    Required(CreateMarkerCriterion(boardCellTag)),
+                },
                 agentData,
                 createdPaths);
             SetField(
@@ -1056,10 +1058,10 @@ namespace ChainRush.Editor
             SetField(
                 populationAgent,
                 "executorSelectionCriteria",
-                new List<AgentSelectionCriterionData>
+                new List<EntityCriterionEntryData>
                 {
-                    CreateMaterializedCriterion(executorHost, null),
-                    CreateOwnerCriterion(),
+                    Required(CreateCapabilityHostCriterion(executorHost, null)),
+                    Required(CreateOwnerCriterion()),
                 });
             EditorUtility.SetDirty(populationAgent);
         }
@@ -1068,12 +1070,12 @@ namespace ChainRush.Editor
             AgentDefinitionData populationAgent,
             CapabilityHostData executorHost)
         {
-            List<AgentSelectionCriterionData> criteria =
+            List<EntityCriterionEntryData> criteria =
                 populationAgent.ExecutorSelectionCriteria;
             if (criteria.Count != 2
-                || !(criteria[0] is MaterializedEntitySelectionCriterionData materialized)
-                || materialized.EconomyAsset != executorHost
-                || !(criteria[1] is EntityOwnerSelectionCriterionData))
+                || !(criteria[0].Criterion is CapabilityHostCriterionData capabilityHost)
+                || capabilityHost.Definition != executorHost
+                || !(criteria[1].Criterion is OwnerCriterionData))
             {
                 throw new InvalidOperationException(
                     "Board Population Agent must use the Board host as its executor.");
@@ -1086,8 +1088,8 @@ namespace ChainRush.Editor
             string id,
             int priority,
             List<ObjectiveCondition> matchConditions,
-            List<AgentSelectionCriterionData> executorCriteria,
-            List<AgentSelectionCriterionData> targetCriteria,
+            List<EntityCriterionEntryData> executorCriteria,
+            List<EntityCriterionEntryData> targetCriteria,
             AgentData agent,
             List<string> createdPaths)
         {
@@ -1109,16 +1111,13 @@ namespace ChainRush.Editor
             return definition;
         }
 
-        static MaterializedEntitySelectionCriterionData CreateMaterializedCriterion(
-            EconomyAssetData asset,
+        static CapabilityHostCriterionData CreateCapabilityHostCriterion(
+            CapabilityHostBaseData definition,
             List<CapabilityHostType> capabilities,
             List<TaxonomyTermData> requiredAssetTags = null)
         {
-            var criterion = new MaterializedEntitySelectionCriterionData();
-            SetField(criterion, "requirementType", AgentCriterionRequirementType.Required);
-            SetField(criterion, "weight", 1);
-            SetField(criterion, "economyAsset", asset);
-            SetField(criterion, "economyFormType", EconomyFormType.Token);
+            var criterion = new CapabilityHostCriterionData();
+            SetField(criterion, "definition", definition);
             SetField(
                 criterion,
                 "requiredAssetTags",
@@ -1127,18 +1126,47 @@ namespace ChainRush.Editor
                 criterion,
                 "requiredCapabilityTypes",
                 capabilities ?? new List<CapabilityHostType>(0));
-            SetField(criterion, "compareOperation", CompareOperation.GreaterOrEqual);
-            SetField(criterion, "targetValue", 1L);
             return criterion;
         }
 
-        static EntityOwnerSelectionCriterionData CreateOwnerCriterion()
+        static OwnerCriterionData CreateOwnerCriterion()
         {
-            var criterion = new EntityOwnerSelectionCriterionData();
-            SetField(criterion, "requirementType", AgentCriterionRequirementType.Required);
-            SetField(criterion, "weight", 1);
+            var criterion = new OwnerCriterionData();
             SetField(criterion, "ownerSelectionType", AgentOwnerSelectionType.ParticipantOwner);
             return criterion;
+        }
+
+        static AssetCountCriterionData CreateAssetCountCriterion()
+        {
+            var criterion = new AssetCountCriterionData();
+            SetField(criterion, "compareOperation", CompareOperation.Equal);
+            SetField(criterion, "targetValue", 1);
+            return criterion;
+        }
+
+        static SegmentLengthCriterionData CreateSegmentLengthCriterion(
+            int minimumDistance,
+            int maximumDistance)
+        {
+            var criterion = new SegmentLengthCriterionData();
+            SetField(criterion, "minimumDistance", minimumDistance);
+            SetField(criterion, "maximumDistance", maximumDistance);
+            return criterion;
+        }
+
+        static MarkerCriterionData CreateMarkerCriterion(TaxonomyTermData markerTag)
+        {
+            var criterion = new MarkerCriterionData();
+            SetField(criterion, "requiredTags", new List<TaxonomyTermData> { markerTag });
+            SetField(criterion, "excludedTags", new List<TaxonomyTermData>(0));
+            SetField(criterion, "providerType", markerTag);
+            SetField(criterion, "scopeType", MarkerScopeType.ActivityRoot);
+            return criterion;
+        }
+
+        static EntityCriterionEntryData Required(EntityCriterionData criterion)
+        {
+            return new EntityCriterionEntryData(CriterionRequirementType.Required, criterion);
         }
 
         static void ConfigureSelectionBrain(

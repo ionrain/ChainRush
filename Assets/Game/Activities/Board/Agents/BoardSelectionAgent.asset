@@ -18,13 +18,27 @@ MonoBehaviour:
   matchConditions:
   - rid: 2807516677360582758
   executorSelectionCriteria:
-  - rid: 2807516677360582759
-  - rid: 2807516677360582760
+  - requirementType: 0
+    criterion:
+      rid: 6092003635567525892
+  - requirementType: 0
+    criterion:
+      rid: 6092003635567525893
+  executorTargetRankingType: 0
   targetSelectionCriteria:
-  - rid: 2807516677360582764
-  - rid: 2807516677360582765
-  - rid: 2807516677360582762
-  - rid: 2807516677360582763
+  - requirementType: 0
+    criterion:
+      rid: 6092003635567525894
+  - requirementType: 0
+    criterion:
+      rid: 6092003635567525895
+  - requirementType: 0
+    criterion:
+      rid: 6092003635567525896
+  - requirementType: 0
+    criterion:
+      rid: 6092003635567525897
+  targetRankingType: 0
   aiBrainTargetKey: {fileID: 0}
   controlType: 2
   agent:
@@ -47,57 +61,42 @@ MonoBehaviour:
         _targetValue: 0
         requestType: {fileID: 11400000, guid: 11f65a92bd4d9475cbc102ba67e7505e, type: 2}
         compareOperation: 0
-    - rid: 2807516677360582759
-      type: {class: MaterializedEntitySelectionCriterionData, ns: Core.Orchestration,
-        asm: Core}
-      data:
-        requirementType: 0
-        weight: 1
-        economyAsset: {fileID: 11400000, guid: d998acfcc5fb2426387891c381d11387, type: 2}
-        economyFormType: 1
-        requiredAssetTags: []
-        requiredCapabilityTypes: 
-        compareOperation: 3
-        targetValue: 1
-    - rid: 2807516677360582760
-      type: {class: EntityOwnerSelectionCriterionData, ns: Core.Orchestration, asm: Core}
-      data:
-        requirementType: 0
-        weight: 1
-        ownerSelectionType: 0
     - rid: 2807516677360582761
       type: {class: SelectionAgentData, ns: Core.Orchestration, asm: Core}
       data:
         resultTags:
         - {fileID: 11400000, guid: a18044d5476ae485296043e6e5ba431f, type: 2}
-    - rid: 2807516677360582762
-      type: {class: SameAssetCriterionData, ns: Core.Orchestration, asm: Core}
+        inputTiming:
+          maximumDuration: 0
+          maximumInterval: 0
+    - rid: 6092003635567525892
+      type: {class: CapabilityHostCriterionData, ns: Core.Orchestration, asm: Core}
       data:
-        requirementType: 0
-        weight: 1
-    - rid: 2807516677360582763
-      type: {class: StepDistanceCriterionData, ns: Core.Orchestration, asm: Core}
+        definition: {fileID: 11400000, guid: d998acfcc5fb2426387891c381d11387, type: 2}
+        requiredAssetTags: []
+        requiredCapabilityTypes:
+    - rid: 6092003635567525893
+      type: {class: OwnerCriterionData, ns: Core.Orchestration, asm: Core}
       data:
-        requirementType: 0
-        weight: 1
-        minimumDistance: 1000
-        maximumDistance: 1000
-    - rid: 2807516677360582764
-      type: {class: MaterializedEntitySelectionCriterionData, ns: Core.Orchestration,
-        asm: Core}
+        ownerSelectionType: 0
+    - rid: 6092003635567525894
+      type: {class: CapabilityHostCriterionData, ns: Core.Orchestration, asm: Core}
       data:
-        requirementType: 0
-        weight: 1
-        economyAsset: {fileID: 0}
-        economyFormType: 1
+        definition: {fileID: 0}
         requiredAssetTags:
         - {fileID: 11400000, guid: 6c06de2863f654107bf5774971fb5d30, type: 2}
-        requiredCapabilityTypes: 
-        compareOperation: 3
-        targetValue: 1
-    - rid: 2807516677360582765
-      type: {class: EntityOwnerSelectionCriterionData, ns: Core.Orchestration, asm: Core}
+        requiredCapabilityTypes:
+    - rid: 6092003635567525895
+      type: {class: OwnerCriterionData, ns: Core.Orchestration, asm: Core}
       data:
-        requirementType: 0
-        weight: 1
         ownerSelectionType: 0
+    - rid: 6092003635567525896
+      type: {class: AssetCountCriterionData, ns: Core.Orchestration, asm: Core}
+      data:
+        compareOperation: 0
+        targetValue: 1
+    - rid: 6092003635567525897
+      type: {class: SegmentLengthCriterionData, ns: Core.Orchestration, asm: Core}
+      data:
+        minimumDistance: 1000
+        maximumDistance: 1000

@@ -41,6 +41,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 35dd5fcbdbbc2499991c0dfcbff2a397, type: 2}
   slotFootprint: 1
   stackCapacity: 0
+  footprintSize: {x: 1000, y: 0, z: 1000}
   capabilities:
   - capabilityType: 0
     selectorTags: []

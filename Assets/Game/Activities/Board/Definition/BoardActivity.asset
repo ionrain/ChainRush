@@ -189,6 +189,6 @@ MonoBehaviour:
           size: {x: 4, y: 1, z: 4}
           rotation: {x: 0, y: 0, z: 0}
           cellSize: {x: 1000, y: 1, z: 1000}
-          cellOffset: {x: 0, y: 0, z: 0}
+          spacing: {x: 0, y: 0, z: 0}
         markerTags:
         - {fileID: 11400000, guid: a70bd9d1bf3b1457fbe47de7812a7fed, type: 2}

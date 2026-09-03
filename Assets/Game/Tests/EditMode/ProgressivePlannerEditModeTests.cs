@@ -504,7 +504,9 @@ namespace ChainRush.Tests.EditMode
                 guaranteedCellShare);
         }
 
-        PopulationPlanContext CreateContext(long generation, IEnumerable<PopulationCellSnapshot> cells)
+        PopulationPlanContext CreateContext(
+            long generation,
+            IReadOnlyList<PopulationCellSnapshot> cells)
         {
             var shapes = new List<SpatialShapeProjectionRecord>(_activeShapes.Count);
             for (int i = 0; i < _activeShapes.Count; i++)
@@ -591,16 +593,16 @@ namespace ChainRush.Tests.EditMode
             return position;
         }
 
-        static NavigationFootprint ResolveCellFootprint(TopologyUpAxisType upAxisType)
+        static SpatialFootprint ResolveCellFootprint(TopologyUpAxisType upAxisType)
         {
             switch (upAxisType)
             {
                 case TopologyUpAxisType.X:
-                    return new NavigationFootprint(0, 1000, 1000);
+                    return new SpatialFootprint(0, 1000, 1000);
                 case TopologyUpAxisType.Z:
-                    return new NavigationFootprint(1000, 1000, 0);
+                    return new SpatialFootprint(1000, 1000, 0);
                 default:
-                    return new NavigationFootprint(1000, 0, 1000);
+                    return new SpatialFootprint(1000, 0, 1000);
             }
         }
 

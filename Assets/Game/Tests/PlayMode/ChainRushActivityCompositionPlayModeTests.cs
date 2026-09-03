@@ -235,7 +235,9 @@ namespace ChainRush.Tests.PlayMode
                     autobattle.Id,
                     enemyDefinition,
                     out Core.Entities.EntityId enemyEntity),
-                "Autobattle did not materialize an enemy.");
+                string.Concat(
+                    "Autobattle did not materialize an enemy.\n",
+                    BuildOrchestrationDiagnostic(autobattle.DomainId)));
             Assert.IsTrue(
                 TryFindActivityHost(
                     autobattle.Id,
@@ -1207,7 +1209,7 @@ namespace ChainRush.Tests.PlayMode
                 for (int processIndex = 0; processIndex < processes.Count; processIndex++)
                 {
                     OrchestrationProcessSnapshot process = processes[processIndex];
-                    if (process.ObjectiveRuntimeId != goal.SourceObjectiveRuntimeId)
+                    if (!HasRootDemand(process, goal.SourceObjectiveRuntimeId))
                         continue;
 
                     message.Append("      Process id=")
@@ -1717,8 +1719,9 @@ namespace ChainRush.Tests.PlayMode
                 OrchestrationProcessSnapshot process = processes[i];
                 message.Append("  Process id=")
                     .Append(process.ProcessId.ToString())
-                    .Append(" objective=")
-                    .Append(process.ObjectiveRuntimeId.Value)
+                    .Append(" objectives=");
+                AppendRootDemandObjectives(message, process);
+                message
                     .Append(" fact=")
                     .Append(process.DesiredFactStableKey ?? "<null>")
                     .Append(" status=")
@@ -1737,6 +1740,48 @@ namespace ChainRush.Tests.PlayMode
             }
         }
 
+        static string BuildOrchestrationDiagnostic(RuntimeDomainId domainId)
+        {
+            var message = new StringBuilder(512);
+            List<OrchestrationParticipantSnapshot> participants =
+                OrchestrationService.GetParticipants(domainId);
+            message.Append("Participants=")
+                .Append(participants.Count)
+                .AppendLine();
+            for (int i = 0; i < participants.Count; i++)
+            {
+                OrchestrationParticipantSnapshot participant = participants[i];
+                message.Append("  Participant key=")
+                    .Append(participant.ParticipantStableKey ?? "<null>")
+                    .Append(" state=")
+                    .Append(participant.State)
+                    .Append(" goals=")
+                    .Append(participant.GoalCount)
+                    .AppendLine();
+            }
+
+            List<OrchestrationGoalSnapshot> goals = OrchestrationService.GetGoals(domainId);
+            message.Append("Goals=")
+                .Append(goals.Count)
+                .AppendLine();
+            for (int i = 0; i < goals.Count; i++)
+            {
+                OrchestrationGoalSnapshot goal = goals[i];
+                message.Append("  Goal objective=")
+                    .Append(goal.SourceObjectiveRuntimeId.Value)
+                    .Append(" participant=")
+                    .Append(goal.ParticipantStableKey ?? "<null>")
+                    .Append(" state=")
+                    .Append(goal.State)
+                    .Append(" message=")
+                    .Append(goal.Message ?? "<none>")
+                    .AppendLine();
+            }
+
+            AppendProcessDiagnostic(message, domainId);
+            return message.ToString();
+        }
+
         static void AppendProductionModuleDiagnostic(
             StringBuilder message,
             ActivityRuntimeSnapshot board)
@@ -1745,7 +1790,6 @@ namespace ChainRush.Tests.PlayMode
             List<OrchestrationParticipantSnapshot> participants =
                 OrchestrationService.GetParticipants(board.DomainId);
             if (definition == null
-                || board.Objectives.Count == 0
                 || participants.Count == 0
                 || board.Participants.Count == 0)
             {
@@ -1753,10 +1797,6 @@ namespace ChainRush.Tests.PlayMode
                 return;
             }
 
-            ActivityObjectiveRuntimeSnapshot objective = board.Objectives[0];
-            ObjectiveRuntimeSnapshot objectiveRuntime = ObjectiveService.GetSnapshot(
-                board.DomainId,
-                objective.RuntimeId);
             var module = new ProductionStateOrchestrationModule();
             var registry = new OrchestrationModuleResultRegistry();
             module.Collect(
@@ -1764,8 +1804,6 @@ namespace ChainRush.Tests.PlayMode
                     board.Id,
                     board.DomainId,
                     definition,
-                    objective,
-                    objectiveRuntime,
                     participants[0],
                     board.Participants[0]),
                 registry);
@@ -1798,6 +1836,46 @@ namespace ChainRush.Tests.PlayMode
                     .Append(method.OutputIndex)
                     .AppendLine();
             }
+        }
+
+        static bool HasRootDemand(
+            in OrchestrationProcessSnapshot process,
+            ObjectiveRuntimeId objectiveRuntimeId)
+        {
+            for (int i = 0; process.RootDemands != null && i < process.RootDemands.Count; i++)
+            {
+                if (process.RootDemands[i].Key.SourceObjectiveRuntimeId == objectiveRuntimeId)
+                    return true;
+            }
+
+            return false;
+        }
+
+        static void AppendRootDemandObjectives(
+            StringBuilder message,
+            in OrchestrationProcessSnapshot process)
+        {
+            if (process.RootDemands == null || process.RootDemands.Count == 0)
+            {
+                message.Append("<none>");
+                return;
+            }
+
+            message.Append('[');
+            for (int i = 0; i < process.RootDemands.Count; i++)
+            {
+                if (i > 0)
+                    message.Append(',');
+                message.Append(process.RootDemands[i].Key.SourceObjectiveRuntimeId.Value);
+            }
+            message.Append(']');
+        }
+
+        static string BuildRootDemandObjectives(in OrchestrationProcessSnapshot process)
+        {
+            var message = new StringBuilder(32);
+            AppendRootDemandObjectives(message, process);
+            return message.ToString();
         }
 
         static bool TryFindRunningActivities(
@@ -1919,7 +1997,7 @@ namespace ChainRush.Tests.PlayMode
                 _processTransitions.Add(string.Concat(
                     snapshot.ProcessId.ToString(),
                     ":",
-                    snapshot.ObjectiveRuntimeId.Value.ToString(),
+                    BuildRootDemandObjectives(snapshot),
                     ":",
                     snapshot.AttemptOrdinal.ToString(),
                     ":",

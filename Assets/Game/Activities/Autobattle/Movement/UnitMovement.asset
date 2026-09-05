@@ -40,9 +40,9 @@ MonoBehaviour:
   stackCapacity: 0
   spacing: 250
   avoidancePriority: 0
-  goalRelaxationPolicy:
-    relaxationType: 1
-    radius: 1400
+  destinationFallback:
+    fallbackType: 1
+    searchRadius: 1400
   references:
     version: 2
     RefIds: []

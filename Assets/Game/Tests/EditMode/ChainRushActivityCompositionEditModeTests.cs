@@ -863,6 +863,20 @@ namespace ChainRush.Tests.EditMode
             Assert.IsTrue(activity.Teams
                 .SelectMany(team => team.Objectives)
                 .All(entry => entry.Template.CompletionPolicyType == ObjectiveCompletionPolicyType.Reset));
+            ObjectiveTemplateData playerDeploymentObjective = activity.Teams[0].Objectives
+                .Select(entry => entry.Template)
+                .Single(template => template.Root.Id == "chainrush-autobattle-player-deployment");
+            ObjectiveConditionEconomyMetric playerDeploymentSuccess = playerDeploymentObjective
+                .Root
+                .SuccessConditions
+                .OfType<ObjectiveConditionEconomyMetric>()
+                .Single();
+            Assert.AreSame(waterUnit, playerDeploymentSuccess.Asset);
+            Assert.AreEqual(EconomyFormType.Stack, playerDeploymentSuccess.FormType);
+            Assert.AreEqual(0L, playerDeploymentSuccess.TargetValue);
+            Assert.AreEqual(CompareOperation.LessOrEqual, playerDeploymentSuccess.CompareOperation);
+            Assert.IsNull(AssetDatabase.LoadAssetAtPath<AgentDefinitionData>(
+                AutobattleRoot + "/Agents/PlayerDeploymentAgent.asset"));
             Assert.AreEqual(1, activity.Teams[0].Features.Count);
             Assert.AreEqual(1, activity.Teams[1].Features.Count);
             Assert.AreEqual(1, activity.WorldWallets.Count);
@@ -930,7 +944,7 @@ namespace ChainRush.Tests.EditMode
                 "chainrush.autobattle.marker.enemy-spawn",
                 enemyProduction.MaterializationProviderType.Id);
 
-            Assert.AreEqual(9, playerBrain.Operators.Count);
+            Assert.AreEqual(8, playerBrain.Operators.Count);
             Assert.AreEqual(
                 1,
                 playerBrain.Operators.OfType<MaterializedEntityProductionDecompOpData>().Count());
@@ -952,16 +966,47 @@ namespace ChainRush.Tests.EditMode
                 new[] { OrchestrationPlanningFactType.EconomyAmount },
                 awaitFact.InputFactTypes);
             Assert.AreEqual(10, playerBrain.DecisionGraph.Nodes.Count);
-            var globalProduction = playerBrain.DecisionGraph.Nodes[2]
-                as OrchestrationDecisionData;
-            var awaitExternal = playerBrain.DecisionGraph.Nodes[3]
-                as OrchestrationDecisionData;
+            Assert.IsFalse(playerBrain.DecisionGraph.Nodes
+                .OfType<OrchestrationDecisionData>()
+                .Any(decision => decision.DecisionId == "player-deployment-agent"));
+            OrchestrationDecisionData materializedProduction = playerBrain.DecisionGraph.Nodes
+                .OfType<OrchestrationDecisionData>()
+                .Single(decision => decision.DecisionId == "production-materialized");
+            Assert.AreEqual(
+                OrchestrationDecompositionScopeType.GlobalObjective,
+                ReadField<OrchestrationDecompositionScopeType>(
+                    materializedProduction.Conditions
+                        .OfType<ScopeDecisionConditionData>()
+                        .Single(),
+                    "scopeType"));
+            var globalProduction = playerBrain.DecisionGraph.Nodes
+                .OfType<OrchestrationDecisionData>()
+                .Single(decision => decision.DecisionId == "global-production-economy");
+            var globalProductionInput = playerBrain.DecisionGraph.Nodes
+                .OfType<OrchestrationDecisionData>()
+                .Single(decision => decision.DecisionId == "global-production-input");
+            var awaitExternal = playerBrain.DecisionGraph.Nodes
+                .OfType<OrchestrationDecisionData>()
+                .Single(decision => decision.DecisionId == "await-external-economy");
             Assert.NotNull(globalProduction);
             Assert.NotNull(awaitExternal);
             Assert.AreEqual("global-production-economy", globalProduction.DecisionId);
             Assert.IsInstanceOf<ProductionEconomyDecompOpData>(
                 playerBrain.Operators.Single(operation =>
                     operation.OperatorId == globalProduction.OperatorId));
+            Assert.AreEqual(
+                OrchestrationDecompositionScopeType.GlobalObjective,
+                ReadField<OrchestrationDecompositionScopeType>(
+                    globalProductionInput.Conditions
+                        .OfType<ScopeDecisionConditionData>()
+                        .Single(),
+                    "scopeType"));
+            Assert.IsInstanceOf<ProductionInputConsumptionDecompOpData>(
+                playerBrain.Operators.Single(operation =>
+                    operation.OperatorId == globalProductionInput.OperatorId));
+            Assert.Less(
+                playerBrain.DecisionGraph.Nodes.IndexOf(globalProductionInput),
+                playerBrain.DecisionGraph.Nodes.IndexOf(awaitExternal));
             Assert.AreEqual("await-external-economy", awaitExternal.DecisionId);
             Assert.AreSame(awaitFactOperator, awaitExternal.OperatorId);
             ScopeDecisionConditionData awaitScope = awaitExternal.Conditions
@@ -985,6 +1030,9 @@ namespace ChainRush.Tests.EditMode
             CollectionAssert.Contains(
                 ReadObjectReferences<TaxonomyTermData>(taxonomyInstaller, "terms"),
                 awaitFactOperator);
+            Assert.IsFalse(ReadObjectReferences<TaxonomyTermData>(taxonomyInstaller, "terms")
+                .Any(term => term != null
+                    && term.Id == "chainrush.autobattle.operator.agent.player-deployment"));
 
             Assert.IsTrue(enemy.WalletEntries
                 .SelectMany(entry => entry.Seed)
@@ -1000,6 +1048,10 @@ namespace ChainRush.Tests.EditMode
             Assert.IsFalse(experienceDrop.WalletEntries
                 .SelectMany(entry => entry.Seed)
                 .Any(seed => seed.Asset == movement || seed.Asset is SkillData || seed.Asset is AIBrainData));
+            Assert.AreEqual(
+                MovementDestinationFallbackType.NearestReachable,
+                movement.DestinationFallback.FallbackType);
+            Assert.AreEqual(1400, movement.DestinationFallback.SearchRadius);
             Assert.IsTrue(experienceCollector.SupportsCapability(CapabilityHostType.SkillOwner));
             Assert.IsTrue(experienceCollector.SupportsCapability(CapabilityHostType.AIBrainOwner));
             Assert.IsFalse(experienceCollector.SupportsCapability(CapabilityHostType.MovementOwner));
@@ -1750,6 +1802,36 @@ namespace ChainRush.Tests.EditMode
             T asset = AssetDatabase.LoadAssetAtPath<T>(path);
             Assert.NotNull(asset, $"Missing {typeof(T).Name} at {path}");
             return asset;
+        }
+
+        [Test]
+        public void SourcePolicy_MovementUsesDestinationFallbackNaming()
+        {
+            string[] removedNames =
+            {
+                "GoalRelaxation" + "Policy",
+                "goalRelaxation" + "Policy",
+            };
+            var offenders = new List<string>();
+            string gameRoot = Path.Combine(Application.dataPath, "Game");
+            string[] extensions = { "*.cs", "*.asset" };
+            for (int extensionIndex = 0; extensionIndex < extensions.Length; extensionIndex++)
+            {
+                foreach (string path in Directory.GetFiles(
+                    gameRoot,
+                    extensions[extensionIndex],
+                    SearchOption.AllDirectories))
+                {
+                    string source = File.ReadAllText(path);
+                    for (int nameIndex = 0; nameIndex < removedNames.Length; nameIndex++)
+                    {
+                        if (source.Contains(removedNames[nameIndex]))
+                            offenders.Add(path + ": " + removedNames[nameIndex]);
+                    }
+                }
+            }
+
+            Assert.IsEmpty(offenders, string.Join(Environment.NewLine, offenders));
         }
 
         static List<T> ReadObjectReferences<T>(UnityEngine.Object owner, string fieldName)

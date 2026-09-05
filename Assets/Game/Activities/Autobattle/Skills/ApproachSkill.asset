@@ -69,4 +69,5 @@ MonoBehaviour:
         repathDistanceThreshold: 250
         accelerationDuration: 2
         decelerationDuration: 2
+        targetGeometryType: 1
         approachInteractionTags: []

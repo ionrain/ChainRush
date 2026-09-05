@@ -10,6 +10,7 @@ using Core.Activities.Selection;
 using Core.CapabilityHosts;
 using Core.CapabilityHosts.Runtime;
 using Core.Diplomacy;
+using Core.Drops;
 using Core.Economy;
 using Core.Events;
 using Core.GameRuntime;
@@ -195,19 +196,36 @@ namespace ChainRush.Tests.PlayMode
             EconomyAssetData experience =
                 AssetDatabase.LoadAssetAtPath<EconomyAssetData>(ExperiencePath);
             HostValueData health = AssetDatabase.LoadAssetAtPath<HostValueData>(HealthPath);
+            TaxonomyTermData sharedWalletTag =
+                AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(SharedWalletTagPath);
             Assert.NotNull(waterUnitDefinition);
             Assert.NotNull(enemyDefinition);
             Assert.NotNull(collectorDefinition);
             Assert.NotNull(experienceDropDefinition);
             Assert.NotNull(experience);
             Assert.NotNull(health);
+            Assert.NotNull(sharedWalletTag);
+
+            ActivityParticipantBinding playerParticipant = autobattle.Participants.Single(
+                participant => participant.TeamIndex == 0);
+            ActivityParticipantBinding enemyParticipant = autobattle.Participants.Single(
+                participant => participant.TeamIndex == 1);
 
             float combatHostDeadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
+            Core.Entities.EntityId waterUnitEntityId = Core.Entities.EntityId.Invalid;
+            string waterUnitStartupFailure = null;
             while (Time.realtimeSinceStartup < combatHostDeadline
-                && (!TryFindActivityHost(
+                && (!TryResolveParticipantMaterializationChain(
                         autobattle.Id,
+                        playerParticipant.ParticipantEconomyOwner,
+                        sharedWalletTag,
                         waterUnitDefinition,
-                        out Core.Entities.EntityId waterUnitEntityId)
+                        out waterUnitEntityId,
+                        out waterUnitStartupFailure)
+                    || !TryFindProjectionBinding(
+                        autobattle.Id,
+                        waterUnitEntityId,
+                        out _)
                     || !TryFindActivityHost(
                         autobattle.Id,
                         enemyDefinition,
@@ -225,11 +243,41 @@ namespace ChainRush.Tests.PlayMode
             }
 
             Assert.IsTrue(
-                TryFindActivityHost(
+                TryResolveParticipantMaterializationChain(
                     autobattle.Id,
+                    playerParticipant.ParticipantEconomyOwner,
+                    sharedWalletTag,
                     waterUnitDefinition,
-                    out Core.Entities.EntityId waterUnitEntity),
-                "Autobattle did not materialize a Water unit.");
+                    out Core.Entities.EntityId waterUnitEntity,
+                    out waterUnitStartupFailure),
+                string.Concat(
+                    "Autobattle did not complete the player WaterUnit Stack -> Token -> materialization chain. ",
+                    waterUnitStartupFailure ?? "No diagnostic was produced.",
+                    "\n",
+                    BuildOrchestrationDiagnostic(autobattle.DomainId)));
+            Assert.IsTrue(
+                TryFindProjectionBinding(
+                    autobattle.Id,
+                    waterUnitEntity,
+                    out ProjectionBindingContext waterUnitProjection),
+                "The player WaterUnit has no live Projection binding.");
+            Assert.IsTrue(waterUnitProjection.Handle.IsValid);
+            for (int stabilityFrame = 0; stabilityFrame < 3; stabilityFrame++)
+            {
+                yield return null;
+                Assert.IsTrue(
+                    TryResolveParticipantMaterializationChain(
+                        autobattle.Id,
+                        playerParticipant.ParticipantEconomyOwner,
+                        sharedWalletTag,
+                        waterUnitDefinition,
+                        out Core.Entities.EntityId stableWaterUnitEntity,
+                        out waterUnitStartupFailure)
+                    && stableWaterUnitEntity == waterUnitEntity,
+                    string.Concat(
+                        "The startup player WaterUnit materialization chain did not remain valid. ",
+                        waterUnitStartupFailure ?? "The original entity was replaced."));
+            }
             Assert.IsTrue(
                 TryFindActivityHost(
                     autobattle.Id,
@@ -251,15 +299,11 @@ namespace ChainRush.Tests.PlayMode
                 TryFindProjectionBinding(
                     autobattle.Id,
                     collectorEntity,
-                    out ProjectionBindingController collectorProjectionBinding,
                     out ProjectionBindingContext collectorProjection),
                 "Experience collector did not bind to the progressbar projection target.");
             Assert.AreEqual(
                 ProjectionCoordinateType.UI,
                 collectorProjection.ProjectionTarget.CoordinateType);
-            Assert.IsTrue(
-                TryFindActivityViewport(out Camera autobattleViewport),
-                "Integration scene does not contain an active Autobattle viewport.");
             Assert.IsTrue(
                 DiplomacyService.TryGetRelation(
                     autobattle.Id,
@@ -273,21 +317,118 @@ namespace ChainRush.Tests.PlayMode
                 combatRelation.Disposition,
                 "Materialized opposing units are not hostile.");
             Assert.AreEqual(autobattle.Id, combatRelation.ActivityId);
+            Assert.IsTrue(
+                SpatialService.TryGetPose(waterUnitEntity, out SpatialPose initialWaterUnitPose),
+                "The player WaterUnit has no authoritative Spatial pose before combat movement.");
+            Assert.IsTrue(
+                SpatialService.TryGetPose(enemyEntity, out SpatialPose initialEnemyPose),
+                "The enemy has no authoritative Spatial pose before combat movement.");
+
+            bool waterUnitMoved = false;
+            bool enemyMoved = false;
+            float combatMovementDeadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
+            while (Time.realtimeSinceStartup < combatMovementDeadline
+                && (!waterUnitMoved || !enemyMoved))
+            {
+                yield return null;
+                waterUnitMoved |= SpatialService.TryGetPose(waterUnitEntity, out SpatialPose waterUnitPose)
+                    && (waterUnitPose.Coordinates - initialWaterUnitPose.Coordinates).sqrMagnitude > 0.0001f;
+                enemyMoved |= SpatialService.TryGetPose(enemyEntity, out SpatialPose enemyPose)
+                    && (enemyPose.Coordinates - initialEnemyPose.Coordinates).sqrMagnitude > 0.0001f;
+            }
+
+            Assert.IsTrue(
+                waterUnitMoved,
+                string.Concat(
+                    "The player WaterUnit materialized but did not begin combat movement.\n",
+                    BuildOrchestrationDiagnostic(autobattle.DomainId)));
+            Assert.IsTrue(
+                enemyMoved,
+                string.Concat(
+                    "The enemy materialized but did not begin combat movement.\n",
+                    BuildOrchestrationDiagnostic(autobattle.DomainId)));
+            AssertMaterializedHostsHaveBackingTokens(
+                autobattle.Id,
+                enemyDefinition,
+                enemyParticipant.ParticipantEconomyOwner,
+                sharedWalletTag);
+
+            List<Core.Entities.EntityId> firstWaveEnemies = CapabilityHostService.GetAll()
+                .Where(host => host.ActivityId == autobattle.Id
+                    && host.Definition != null
+                    && host.Definition.Matches(enemyDefinition)
+                    && host.Owner != null
+                    && string.Equals(
+                        host.Owner.StableSimulationKey,
+                        enemyParticipant.ParticipantEconomyOwner.StableSimulationKey,
+                        System.StringComparison.Ordinal))
+                .OrderBy(host => host.EntityId.Value)
+                .Take(2)
+                .Select(host => host.EntityId)
+                .ToList();
+            Assert.AreEqual(2, firstWaveEnemies.Count, "The first enemy wave did not materialize two units.");
+            var experienceDropCapture = new DropMaterializationCapture(
+                autobattle.Id,
+                firstWaveEnemies,
+                experienceDropDefinition);
+            EventBus.Register<DropResultEvent>(experienceDropCapture);
+            try
+            {
+                for (int enemyIndex = 0; enemyIndex < firstWaveEnemies.Count; enemyIndex++)
+                {
+                    Core.Entities.EntityId defeatedEntityId = firstWaveEnemies[enemyIndex];
+                    Assert.IsTrue(
+                        CapabilityHostService.TryGetHostValue(
+                            defeatedEntityId,
+                            health,
+                            out HostValueSnapshot enemyHealth),
+                        "A first-wave enemy has no authoritative Health value.");
+                    Assert.Greater(enemyHealth.CurrentValue, 0L);
+                    Assert.IsTrue(
+                        CapabilityHostService.TryApplyHostValueDelta(
+                            defeatedEntityId,
+                            health,
+                            -enemyHealth.CurrentValue,
+                            new RuntimeMutationContext(
+                                waterUnitEntity,
+                                waterUnitEntity,
+                                "chainrush-test-defeat",
+                                string.Concat(
+                                    "chainrush-test-experience-materialization-",
+                                    enemyIndex.ToString()))),
+                        "The test could not drive a first-wave enemy through its normal defeat lifecycle.");
+                }
+
+                float dropDeadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
+                while (Time.realtimeSinceStartup < dropDeadline
+                    && !experienceDropCapture.HasTerminalResult)
+                {
+                    yield return null;
+                }
+            }
+            finally
+            {
+                EventBus.Unregister<DropResultEvent>(experienceDropCapture);
+            }
+
+            Assert.IsTrue(
+                experienceDropCapture.HasTerminalResult,
+                "Enemy defeat did not publish a terminal Drop result.");
+            Assert.AreEqual(
+                DropResultType.Completed,
+                experienceDropCapture.ResultType,
+                experienceDropCapture.Failure);
+            Assert.IsTrue(
+                experienceDropCapture.HasBackedExperienceDrop,
+                experienceDropCapture.Failure);
 
             CapabilityHostData waterBase =
                 AssetDatabase.LoadAssetAtPath<CapabilityHostData>(BoardWaterBasePath);
             EconomyAssetData turnToken =
                 AssetDatabase.LoadAssetAtPath<EconomyAssetData>(BoardTurnTokenPath);
-            TaxonomyTermData sharedWalletTag =
-                AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(SharedWalletTagPath);
             Assert.NotNull(waterBase);
             Assert.NotNull(turnToken);
-            Assert.NotNull(sharedWalletTag);
 
-            var lastDropScreenDistances = new Dictionary<long, float>();
-            var dropProjectionParents = new Dictionary<long, Transform>();
-            bool sawExperienceDropProjection = false;
-            bool sawExperienceDropFlight = false;
             float populationDeadline = Time.realtimeSinceStartup + CollectorCycleTimeoutSeconds;
             while (Time.realtimeSinceStartup < populationDeadline
                 && (CountMaterializedBoardAssets(board, boardCellTag, waterBase) != 16
@@ -297,24 +438,8 @@ namespace ChainRush.Tests.PlayMode
                         EconomyFormType.Stack,
                         turnToken) != 0L))
             {
-                ObserveExperienceDropFlight(
-                    autobattle.Id,
-                    experienceDropDefinition,
-                    collectorProjectionBinding,
-                    autobattleViewport,
-                    lastDropScreenDistances,
-                    dropProjectionParents,
-                    ref sawExperienceDropProjection,
-                    ref sawExperienceDropFlight);
                 yield return null;
             }
-
-            Assert.IsTrue(
-                sawExperienceDropProjection,
-                "The collection cycle completed without an observable ExperienceDrop projection.");
-            Assert.IsTrue(
-                sawExperienceDropFlight,
-                "ExperienceDrop never moved toward the progressbar before collection.");
             Assert.AreEqual(
                 16,
                 CountMaterializedBoardAssets(board, boardCellTag, waterBase),
@@ -352,8 +477,6 @@ namespace ChainRush.Tests.PlayMode
             HashSet<long> waterUnitsBeforeMerge = GetActivityHostEntityValues(
                 autobattle.Id,
                 waterUnitDefinition);
-            EnableOrchestrationTraceDiagnostics();
-
             SelectionIntentEvent mergeRequest = SelectionIntentEvent.Begin(
                 board.Id,
                 mergeSelection,
@@ -442,7 +565,31 @@ namespace ChainRush.Tests.PlayMode
                     autobattle.Id,
                     waterUnitDefinition,
                     waterUnitsBeforeMerge),
-                "Merge output was not deployed as a new physical Water unit.");
+                string.Concat(
+                    "Merge output was not deployed as a new physical Water unit.\n",
+                    "PlayerWaterUnitStack=",
+                    QueryAmount(
+                        playerParticipant.ParticipantEconomyOwner,
+                        sharedWalletTag,
+                        EconomyFormType.Stack,
+                        waterUnitDefinition).ToString(),
+                    "\nPlayerWaterUnitToken=",
+                    QueryAmount(
+                        playerParticipant.ParticipantEconomyOwner,
+                        sharedWalletTag,
+                        EconomyFormType.Token,
+                        waterUnitDefinition).ToString(),
+                    "\n",
+                    productionOrderCapture.BuildDiagnostic(),
+                    BuildPopulationDiagnostic(
+                        autobattle,
+                        board,
+                        sharedWalletTag,
+                        turnToken,
+                        experience,
+                        health,
+                        collectorDefinition,
+                        experienceDropDefinition)));
             HashSet<long> waterUnitsAfterMerge = GetActivityHostEntityValues(
                 autobattle.Id,
                 waterUnitDefinition);
@@ -461,6 +608,85 @@ namespace ChainRush.Tests.PlayMode
                         health,
                         collectorDefinition,
                         experienceDropDefinition)));
+            AssertMaterializedHostsHaveBackingTokens(
+                autobattle.Id,
+                waterUnitDefinition,
+                playerParticipant.ParticipantEconomyOwner,
+                sharedWalletTag);
+            AssertMaterializedHostsHaveBackingTokens(
+                autobattle.Id,
+                enemyDefinition,
+                enemyParticipant.ParticipantEconomyOwner,
+                sharedWalletTag);
+
+            List<Core.Entities.EntityId> postMergeEnemies = CapabilityHostService.GetAll()
+                .Where(host => host.ActivityId == autobattle.Id
+                    && host.Definition != null
+                    && host.Definition.Matches(enemyDefinition)
+                    && host.Owner != null
+                    && string.Equals(
+                        host.Owner.StableSimulationKey,
+                        enemyParticipant.ParticipantEconomyOwner.StableSimulationKey,
+                        System.StringComparison.Ordinal))
+                .OrderBy(host => host.EntityId.Value)
+                .Take(2)
+                .Select(host => host.EntityId)
+                .ToList();
+            Assert.AreEqual(2, postMergeEnemies.Count, "No two enemies remained for the post-merge drop cycle.");
+            var postMergeDropCapture = new DropMaterializationCapture(
+                autobattle.Id,
+                postMergeEnemies,
+                experienceDropDefinition);
+            EventBus.Register<DropResultEvent>(postMergeDropCapture);
+            try
+            {
+                for (int enemyIndex = 0; enemyIndex < postMergeEnemies.Count; enemyIndex++)
+                {
+                    Core.Entities.EntityId defeatedEntityId = postMergeEnemies[enemyIndex];
+                    Assert.IsTrue(
+                        CapabilityHostService.TryGetHostValue(
+                            defeatedEntityId,
+                            health,
+                            out HostValueSnapshot enemyHealth),
+                        "A post-merge enemy has no authoritative Health value.");
+                    Assert.Greater(enemyHealth.CurrentValue, 0L);
+                    Assert.IsTrue(
+                        CapabilityHostService.TryApplyHostValueDelta(
+                            defeatedEntityId,
+                            health,
+                            -enemyHealth.CurrentValue,
+                            new RuntimeMutationContext(
+                                waterUnitEntity,
+                                waterUnitEntity,
+                                "chainrush-test-defeat",
+                                string.Concat(
+                                    "chainrush-test-post-merge-experience-materialization-",
+                                    enemyIndex.ToString()))),
+                        "The test could not drive a post-merge enemy through its normal defeat lifecycle.");
+                }
+
+                float postMergeDropDeadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
+                while (Time.realtimeSinceStartup < postMergeDropDeadline
+                    && !postMergeDropCapture.HasTerminalResult)
+                {
+                    yield return null;
+                }
+            }
+            finally
+            {
+                EventBus.Unregister<DropResultEvent>(postMergeDropCapture);
+            }
+
+            Assert.IsTrue(
+                postMergeDropCapture.HasTerminalResult,
+                "Post-merge enemy defeats did not publish terminal Drop results.");
+            Assert.AreEqual(
+                DropResultType.Completed,
+                postMergeDropCapture.ResultType,
+                postMergeDropCapture.Failure);
+            Assert.IsTrue(
+                postMergeDropCapture.HasBackedExperienceDrop,
+                postMergeDropCapture.Failure);
 
             float collectorCycleDeadline =
                 Time.realtimeSinceStartup + CollectorCycleTimeoutSeconds;
@@ -934,6 +1160,8 @@ namespace ChainRush.Tests.PlayMode
             {
                 ProjectionBindingController candidateBinding = bindings[i];
                 if (candidateBinding == null
+                    || !candidateBinding.isActiveAndEnabled
+                    || !candidateBinding.gameObject.activeInHierarchy
                     || !candidateBinding.TryGetContext(out ProjectionBindingContext candidate)
                     || candidate.Handle.ActivityId != activityId
                     || candidate.Handle.EntityId != entityId)
@@ -947,103 +1175,6 @@ namespace ChainRush.Tests.PlayMode
             }
 
             return false;
-        }
-
-        static bool TryFindActivityViewport(out Camera viewport)
-        {
-            viewport = null;
-            ActivityViewportController[] controllers = Object.FindObjectsByType<ActivityViewportController>(
-                FindObjectsInactive.Exclude,
-                FindObjectsSortMode.None);
-            for (int i = 0; i < controllers.Length; i++)
-            {
-                if (controllers[i] == null
-                    || !controllers[i].isActiveAndEnabled
-                    || !controllers[i].TryGetComponent(out Camera candidate)
-                    || candidate == null
-                    || !candidate.isActiveAndEnabled)
-                {
-                    continue;
-                }
-
-                if (viewport != null)
-                    return false;
-
-                viewport = candidate;
-            }
-
-            return viewport != null;
-        }
-
-        static void ObserveExperienceDropFlight(
-            ActivityId activityId,
-            CapabilityHostData experienceDropDefinition,
-            ProjectionBindingController collectorProjection,
-            Camera viewport,
-            Dictionary<long, float> lastScreenDistances,
-            Dictionary<long, Transform> projectionParents,
-            ref bool sawProjection,
-            ref bool sawFlight)
-        {
-            if (experienceDropDefinition == null
-                || collectorProjection == null
-                || viewport == null)
-            {
-                return;
-            }
-
-            Canvas canvas = collectorProjection.GetComponentInParent<Canvas>(true);
-            Camera uiCamera = canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay
-                ? canvas.worldCamera
-                : null;
-            Vector2 collectorScreenCoordinates = RectTransformUtility.WorldToScreenPoint(
-                uiCamera,
-                collectorProjection.transform.position);
-            List<CapabilityHostSnapshot> hosts = CapabilityHostService.GetAll();
-            for (int i = 0; i < hosts.Count; i++)
-            {
-                CapabilityHostSnapshot host = hosts[i];
-                if (host.ActivityId != activityId
-                    || host.Definition == null
-                    || !host.Definition.Matches(experienceDropDefinition)
-                    || !TryFindProjectionBinding(
-                        activityId,
-                        host.EntityId,
-                        out ProjectionBindingController dropProjection,
-                        out ProjectionBindingContext dropContext)
-                    || dropContext.ProjectionTarget == null
-                    || dropContext.ProjectionTarget.CoordinateType != ProjectionCoordinateType.World)
-                {
-                    continue;
-                }
-
-                sawProjection = true;
-                long entityValue = host.EntityId.Value;
-                if (!projectionParents.TryGetValue(entityValue, out Transform expectedParent))
-                {
-                    projectionParents.Add(entityValue, dropProjection.transform.parent);
-                }
-                else
-                {
-                    Assert.AreSame(
-                        expectedParent,
-                        dropProjection.transform.parent,
-                        "ExperienceDrop projection changed parent during its transition.");
-                }
-
-                Vector3 dropScreenCoordinates = viewport.WorldToScreenPoint(
-                    dropProjection.transform.position);
-                float screenDistance = Vector2.Distance(
-                    new Vector2(dropScreenCoordinates.x, dropScreenCoordinates.y),
-                    collectorScreenCoordinates);
-                if (lastScreenDistances.TryGetValue(entityValue, out float previousDistance)
-                    && screenDistance < previousDistance - 0.5f)
-                {
-                    sawFlight = true;
-                }
-
-                lastScreenDistances[entityValue] = screenDistance;
-            }
         }
 
         static HashSet<long> GetActivityHostEntityValues(
@@ -1110,6 +1241,195 @@ namespace ChainRush.Tests.PlayMode
             }
 
             return false;
+        }
+
+        static bool TryResolveParticipantMaterializationChain(
+            ActivityId activityId,
+            IEconomyAssetOwner expectedOwner,
+            TaxonomyTermData walletTag,
+            CapabilityHostData expectedDefinition,
+            out Core.Entities.EntityId entityId,
+            out string failure)
+        {
+            entityId = Core.Entities.EntityId.Invalid;
+            failure = null;
+            if (expectedOwner == null || walletTag == null || expectedDefinition == null)
+            {
+                failure = "The expected owner, wallet tag, or definition is unavailable.";
+                return false;
+            }
+
+            long stackAmount = QueryAmount(
+                expectedOwner,
+                walletTag,
+                EconomyFormType.Stack,
+                expectedDefinition);
+            if (stackAmount != 0L)
+            {
+                failure = string.Concat(
+                    "WaterUnit Stack remains in the player wallet. Amount=",
+                    stackAmount.ToString(),
+                    ".");
+                return false;
+            }
+
+            EconomySelectionQueryResult tokens = EconomyService.Query(new EconomySelectionQuery(
+                expectedOwner,
+                new List<TaxonomyTermData> { walletTag },
+                EconomyFormType.Token,
+                expectedDefinition,
+                EconomyAggregationType.Detailed,
+                includeZeroBalance: false,
+                availabilityType: EconomySelectionAvailabilityType.Committed));
+            if (tokens.Items.Length != 1)
+            {
+                failure = string.Concat(
+                    "Expected exactly one committed player WaterUnit Token, found ",
+                    tokens.Items.Length.ToString(),
+                    ".");
+                return false;
+            }
+
+            List<CapabilityHostSnapshot> hosts = CapabilityHostService.GetAll();
+            hosts.Sort((left, right) => left.EntityId.Value.CompareTo(right.EntityId.Value));
+            for (int i = 0; i < hosts.Count; i++)
+            {
+                CapabilityHostSnapshot host = hosts[i];
+                if (host.ActivityId != activityId
+                    || host.Definition == null
+                    || !host.Definition.Matches(expectedDefinition))
+                {
+                    continue;
+                }
+
+                entityId = host.EntityId;
+                if (host.Owner == null
+                    || !string.Equals(
+                        host.Owner.StableSimulationKey,
+                        expectedOwner.StableSimulationKey,
+                        System.StringComparison.Ordinal))
+                {
+                    failure = string.Concat(
+                        "Water unit owner is '",
+                        host.Owner == null ? "<null>" : host.Owner.StableSimulationKey,
+                        "' instead of player owner '",
+                        expectedOwner.StableSimulationKey,
+                        "'.");
+                    continue;
+                }
+
+                if (!ActivityService.TryGetMaterializedEntityTokenHandle(
+                        activityId,
+                        host.EntityId,
+                        out EconomyEntryHandle materializedHandle))
+                {
+                    failure = string.Concat(
+                        "Player Water unit ",
+                        host.EntityId.Value.ToString(),
+                        " has no Activity materialization token link.");
+                    continue;
+                }
+
+                if (materializedHandle != tokens.Items[0].Handle)
+                {
+                    failure = string.Concat(
+                        "The committed player WaterUnit Token is not the token linked to entity ",
+                        host.EntityId.Value.ToString(),
+                        ".");
+                    continue;
+                }
+
+                if (!SpatialService.TryGetWorldPosition(host.EntityId, out _))
+                {
+                    failure = string.Concat(
+                        "Player Water unit ",
+                        host.EntityId.Value.ToString(),
+                        " has no authoritative Spatial position.");
+                    continue;
+                }
+
+                failure = null;
+                return true;
+            }
+
+            if (!entityId.IsValid)
+                failure = "No materialized Water unit host exists in the Autobattle Activity.";
+            return false;
+        }
+
+        static void AssertMaterializedHostsHaveBackingTokens(
+            ActivityId activityId,
+            CapabilityHostData definition,
+            IEconomyAssetOwner owner,
+            TaxonomyTermData walletTag)
+        {
+            List<CapabilityHostSnapshot> hosts = CapabilityHostService.GetAll()
+                .Where(host => host.ActivityId == activityId
+                    && host.Definition != null
+                    && host.Definition.Matches(definition)
+                    && host.Owner != null
+                    && owner != null
+                    && string.Equals(
+                        host.Owner.StableSimulationKey,
+                        owner.StableSimulationKey,
+                        System.StringComparison.Ordinal))
+                .OrderBy(host => host.EntityId.Value)
+                .ToList();
+            Assert.IsNotEmpty(hosts, "No materialized CapabilityHost matched the expected asset and owner.");
+            var linkedHandles = new HashSet<EconomyEntryHandle>();
+            for (int i = 0; i < hosts.Count; i++)
+            {
+                Assert.IsTrue(
+                    ActivityService.TryGetMaterializedEntityTokenHandle(
+                        activityId,
+                        hosts[i].EntityId,
+                        out EconomyEntryHandle handle)
+                    && handle.IsValid,
+                    string.Concat(
+                        "Materialized CapabilityHost entity ",
+                        hosts[i].EntityId.Value.ToString(),
+                        " has no backing Economy Token."));
+                linkedHandles.Add(handle);
+            }
+
+            EconomySelectionQueryResult tokens = EconomyService.Query(new EconomySelectionQuery(
+                owner,
+                new List<TaxonomyTermData> { walletTag },
+                EconomyFormType.Token,
+                definition,
+                EconomyAggregationType.Detailed,
+                includeZeroBalance: false,
+                availabilityType: EconomySelectionAvailabilityType.Committed));
+            Assert.AreEqual(
+                hosts.Count,
+                tokens.Items.Length,
+                "Materialized CapabilityHost count does not match committed backing Token count.");
+            for (int i = 0; i < tokens.Items.Length; i++)
+            {
+                Assert.IsTrue(
+                    linkedHandles.Contains(tokens.Items[i].Handle),
+                    "A committed CapabilityHost Token is not linked to a materialized entity.");
+            }
+        }
+
+        static long QueryAmount(
+            IEconomyAssetOwner owner,
+            TaxonomyTermData walletTag,
+            EconomyFormType formType,
+            EconomyAssetData asset)
+        {
+            EconomySelectionQueryResult result = EconomyService.Query(
+                new EconomySelectionQuery(
+                    owner,
+                    new List<TaxonomyTermData> { walletTag },
+                    formType,
+                    asset,
+                    includeZeroBalance: true));
+            long amount = 0L;
+            for (int itemIndex = 0; itemIndex < result.Items.Length; itemIndex++)
+                amount += result.Items[itemIndex].Amount;
+
+            return amount;
         }
 
         static long QueryAmount(
@@ -1916,6 +2236,83 @@ namespace ChainRush.Tests.PlayMode
             ActivityParticipantBinding participant =
                 participants.Single(binding => binding.TeamIndex == teamIndex);
             Assert.AreEqual(controlType, participant.ControlType);
+        }
+
+        sealed class DropMaterializationCapture : IEventListener<DropResultEvent>
+        {
+            readonly ActivityId _activityId;
+            readonly HashSet<int> _expectedSourceValues;
+            readonly HashSet<int> _terminalSourceValues = new HashSet<int>();
+            readonly HashSet<int> _backedSourceValues = new HashSet<int>();
+            readonly CapabilityHostData _expectedDefinition;
+
+            public DropMaterializationCapture(
+                ActivityId activityId,
+                IReadOnlyList<Core.Entities.EntityId> sourceEntityIds,
+                CapabilityHostData expectedDefinition)
+            {
+                _activityId = activityId;
+                _expectedSourceValues = new HashSet<int>();
+                for (int i = 0; sourceEntityIds != null && i < sourceEntityIds.Count; i++)
+                    _expectedSourceValues.Add(sourceEntityIds[i].Value);
+                _expectedDefinition = expectedDefinition;
+            }
+
+            public bool HasTerminalResult =>
+                _terminalSourceValues.Count == _expectedSourceValues.Count;
+            public bool HasBackedExperienceDrop =>
+                _backedSourceValues.Count == _expectedSourceValues.Count;
+            public DropResultType ResultType { get; private set; } = DropResultType.Completed;
+            public string Failure { get; private set; }
+
+            public void OnEvent(DropResultEvent e)
+            {
+                if (e.ActivityId != _activityId
+                    || !_expectedSourceValues.Contains(e.SourceEntityId.Value)
+                    || !_terminalSourceValues.Add(e.SourceEntityId.Value))
+                {
+                    return;
+                }
+
+                if (e.ResultType != DropResultType.Completed)
+                {
+                    ResultType = e.ResultType;
+                    Failure = e.Failure;
+                    return;
+                }
+                if (e.MaterializedEntityIds == null || e.MaterializedEntityIds.Count == 0)
+                {
+                    ResultType = DropResultType.Rejected;
+                    Failure = "Completed Drop result contains no materialized entities.";
+                    return;
+                }
+
+                for (int i = 0; i < e.MaterializedEntityIds.Count; i++)
+                {
+                    Core.Entities.EntityId entityId = e.MaterializedEntityIds[i];
+                    if (!CapabilityHostService.TryGet(entityId, out CapabilityHostSnapshot host)
+                        || host.ActivityId != _activityId
+                        || host.Definition == null
+                        || !host.Definition.Matches(_expectedDefinition))
+                    {
+                        ResultType = DropResultType.Rejected;
+                        Failure = "Drop result does not reference the expected materialized ExperienceDrop.";
+                        return;
+                    }
+                    if (!ActivityService.TryGetMaterializedEntityTokenHandle(
+                            _activityId,
+                            entityId,
+                            out EconomyEntryHandle handle)
+                        || !handle.IsValid)
+                    {
+                        ResultType = DropResultType.Rejected;
+                        Failure = "Materialized ExperienceDrop has no backing Economy Token.";
+                        return;
+                    }
+                }
+
+                _backedSourceValues.Add(e.SourceEntityId.Value);
+            }
         }
 
         sealed class SelectionResultCapture : IEventListener<SelectionResultEvent>

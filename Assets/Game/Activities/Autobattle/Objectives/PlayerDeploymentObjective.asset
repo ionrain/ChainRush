@@ -80,6 +80,9 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
+    - Name: _requiredRuntimeTags
+      Entry: 6
+      Data:
     - Name: _formType
       Entry: 3
       Data: 0
@@ -140,6 +143,9 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
+    - Name: _requiredRuntimeTags
+      Entry: 6
+      Data:
     - Name: _formType
       Entry: 3
       Data: 0

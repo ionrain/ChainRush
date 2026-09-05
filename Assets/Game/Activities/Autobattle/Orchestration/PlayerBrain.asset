@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: PlayerBrain
   m_EditorClassIdentifier: Core::Core.Orchestration.OrchestratorAIBrainData
   operators:
-  - rid: 2807516363299750030
   - rid: 2807516363299750031
   - rid: 2807516363299750032
   - rid: 2807516363299750033
@@ -24,9 +23,9 @@ MonoBehaviour:
   - rid: 9101
   decisionGraph:
     nodes:
-    - rid: 2807516363299750037
     - rid: 2807516363299750038
     - rid: 2807516543296733293
+    - rid: 2807516363299750037
     - rid: 2807516543296733294
     - rid: 2807516363299750039
     - rid: 2807516363299750040
@@ -46,12 +45,21 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 2807516363299750030
-      type: {class: AgentDecompOpData, ns: Core.Orchestration, asm: Core}
+    - rid: 9101
+      type: {class: AgentResourceRequestDecompOpData, ns: Core.Orchestration, asm: Core}
       data:
-        operatorId: {fileID: 11400000, guid: af6e5f72cb558468fac811f78fd23262, type: 2}
-        agentDefinition: {fileID: 11400000, guid: 847d92e8655794927bbc0825603eae2b,
-          type: 2}
+        operatorId: {fileID: 11400000, guid: 4aff76bb0f93f4eeb92e5459feeaca0e, type: 2}
+    - rid: 9102
+      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
+      data:
+        decisionId: agent-resource-request
+        conditions:
+        - rid: 9103
+        operatorId: {fileID: 11400000, guid: 4aff76bb0f93f4eeb92e5459feeaca0e, type: 2}
+    - rid: 9103
+      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        factType: 18
     - rid: 2807516363299750031
       type: {class: AgentDecompOpData, ns: Core.Orchestration, asm: Core}
       data:
@@ -78,12 +86,12 @@ MonoBehaviour:
     - rid: 2807516363299750037
       type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
       data:
-        decisionId: player-deployment-agent
+        decisionId: global-production-input
         conditions:
         - rid: 2807516363299750044
         - rid: 2807516363299750045
         - rid: 2807516363299750046
-        operatorId: {fileID: 11400000, guid: af6e5f72cb558468fac811f78fd23262, type: 2}
+        operatorId: {fileID: 11400000, guid: 10545d9b2076e4c188028a187c1de4bd, type: 2}
     - rid: 2807516363299750038
       type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
       data:
@@ -144,8 +152,11 @@ MonoBehaviour:
       data:
         scopeType: 0
     - rid: 2807516363299750046
-      type: {class: AgentMatchDecisionConditionData, ns: Core.Orchestration, asm: Core}
-      data: 
+      type: {class: CompareOperationDecisionConditionData, ns: Core.Orchestration,
+        asm: Core}
+      data:
+        compareOperations: 000000000400000005000000
+        requireZeroTargetForEqual: 1
     - rid: 2807516363299750047
       type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
       data:
@@ -192,7 +203,7 @@ MonoBehaviour:
     - rid: 2807516363299750057
       type: {class: ScopeDecisionConditionData, ns: Core.Orchestration, asm: Core}
       data:
-        scopeType: 1
+        scopeType: 0
     - rid: 2807516363299750058
       type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
       data:
@@ -267,18 +278,3 @@ MonoBehaviour:
         asm: Core}
       data:
         operatorId: {fileID: 11400000, guid: 75feb13c5e1254519a15de921f8b2f4c, type: 2}
-    - rid: 9101
-      type: {class: AgentResourceRequestDecompOpData, ns: Core.Orchestration, asm: Core}
-      data:
-        operatorId: {fileID: 11400000, guid: 4aff76bb0f93f4eeb92e5459feeaca0e, type: 2}
-    - rid: 9102
-      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
-      data:
-        decisionId: agent-resource-request
-        conditions:
-        - rid: 9103
-        operatorId: {fileID: 11400000, guid: 4aff76bb0f93f4eeb92e5459feeaca0e, type: 2}
-    - rid: 9103
-      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
-      data:
-        factType: 18

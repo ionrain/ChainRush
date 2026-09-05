@@ -155,7 +155,6 @@ namespace ChainRush.Editor
             ObjectivesRoot + "/PlayerDeploymentObjective.asset";
         const string TurnTokenObjectivePath = ObjectivesRoot + "/TurnTokenObjective.asset";
         const string EnemyWaveObjectivePath = ObjectivesRoot + "/EnemyWaveObjective.asset";
-        const string PlayerDeploymentAgentPath = AgentsRoot + "/PlayerDeploymentAgent.asset";
         const string TurnTokenAgentPath = AgentsRoot + "/TurnTokenProductionAgent.asset";
         const string EnemyWaveAgentPath = AgentsRoot + "/EnemyWaveAgent.asset";
 
@@ -200,8 +199,6 @@ namespace ChainRush.Editor
 
         const string OperatorFamilyPath =
             OrchestrationTaxonomyRoot + "/AutobattleOperatorFamily.asset";
-        const string DeploymentAgentOperatorPath =
-            OrchestrationTaxonomyRoot + "/PlayerDeploymentAgentOperator.asset";
         const string TurnTokenAgentOperatorPath =
             OrchestrationTaxonomyRoot + "/TurnTokenAgentOperator.asset";
         const string EnemyWaveAgentOperatorPath =
@@ -287,7 +284,6 @@ namespace ChainRush.Editor
             PlayerDeploymentObjectivePath,
             TurnTokenObjectivePath,
             EnemyWaveObjectivePath,
-            PlayerDeploymentAgentPath,
             TurnTokenAgentPath,
             EnemyWaveAgentPath,
             EconomyStatePath,
@@ -325,7 +321,6 @@ namespace ChainRush.Editor
             CombatTargetPath,
             CollectionTargetPath,
             OperatorFamilyPath,
-            DeploymentAgentOperatorPath,
             TurnTokenAgentOperatorPath,
             EnemyWaveAgentOperatorPath,
             ProductionInputOperatorPath,
@@ -425,7 +420,6 @@ namespace ChainRush.Editor
             public ObjectiveTemplateData PlayerDeploymentObjective;
             public ObjectiveTemplateData TurnTokenObjective;
             public ObjectiveTemplateData EnemyWaveObjective;
-            public AgentDefinitionData PlayerDeploymentAgent;
             public AgentDefinitionData TurnTokenAgent;
             public AgentDefinitionData EnemyWaveAgent;
             public EconomyStateOrchestrationModuleData EconomyState;
@@ -462,7 +456,6 @@ namespace ChainRush.Editor
             public TaxonomyTermData SearchState;
             public TaxonomyTermData CombatTarget;
             public TaxonomyTermData CollectionTarget;
-            public TaxonomyTermData DeploymentAgentOperator;
             public TaxonomyTermData TurnTokenAgentOperator;
             public TaxonomyTermData EnemyWaveAgentOperator;
             public TaxonomyTermData ProductionInputOperator;
@@ -926,10 +919,6 @@ namespace ChainRush.Editor
                 "Autobattle Operator",
                 createdPaths);
             content.Families.Add(operatorFamily);
-            content.DeploymentAgentOperator = CreateTerm(
-                DeploymentAgentOperatorPath, "PlayerDeploymentAgentOperator",
-                "chainrush.autobattle.operator.agent.player-deployment", "Player Deployment Agent",
-                operatorFamily, 0, content, createdPaths);
             content.TurnTokenAgentOperator = CreateTerm(
                 TurnTokenAgentOperatorPath, "TurnTokenAgentOperator",
                 "chainrush.autobattle.operator.agent.turn-token", "Turn Token Agent",
@@ -1033,8 +1022,10 @@ namespace ChainRush.Editor
             SetField(content.Movement, "avoidancePriority", 0);
             SetField(
                 content.Movement,
-                "goalRelaxationPolicy",
-                new GoalRelaxationPolicyData(GoalRelaxationPolicyType.NearestReachable, 1400));
+                "destinationFallback",
+                new MovementDestinationFallbackData(
+                    MovementDestinationFallbackType.NearestReachable,
+                    1400));
             EditorUtility.SetDirty(content.Movement);
 
             content.ApproachSkill = CreateSkill(
@@ -1658,20 +1649,6 @@ namespace ChainRush.Editor
                 hasEnemies,
                 createdPaths);
 
-            content.PlayerDeploymentAgent = CreateProductionAgent(
-                PlayerDeploymentAgentPath,
-                "PlayerDeploymentAgent",
-                "chainrush-autobattle-agent-player-deployment",
-                new ObjectiveConditionEconomyMetric(
-                    new List<TaxonomyTermData> { content.SharedWalletTag },
-                    EconomyFormType.Stack,
-                    content.WaterUnit,
-                    0L,
-                    CompareOperation.LessOrEqual,
-                    null,
-                    null),
-                content.PlayerSpawner,
-                createdPaths);
             content.TurnTokenAgent = CreateProductionAgent(
                 TurnTokenAgentPath,
                 "TurnTokenProductionAgent",
@@ -2769,9 +2746,6 @@ namespace ChainRush.Editor
 
         static void ConfigurePlayerOrchestrationBrain(Content content)
         {
-            AgentDecompOpData deploymentAgent = CreateAgentOperation(
-                content.DeploymentAgentOperator,
-                content.PlayerDeploymentAgent);
             AgentDecompOpData turnTokenAgent = CreateAgentOperation(
                 content.TurnTokenAgentOperator,
                 content.TurnTokenAgent);
@@ -2799,12 +2773,6 @@ namespace ChainRush.Editor
                 new List<OrchestrationDecisionNodeData>
                 {
                     CreateDecision(
-                        "player-deployment-agent",
-                        OrchestrationFactType.EconomyAmount,
-                        content.DeploymentAgentOperator,
-                        OrchestrationDecompositionScopeType.GlobalObjective,
-                        matchAgent: true),
-                    CreateDecision(
                         "turn-token-agent",
                         OrchestrationFactType.EconomyAmount,
                         content.TurnTokenAgentOperator,
@@ -2820,6 +2788,17 @@ namespace ChainRush.Editor
                             CompareOperation.GreaterOrEqual,
                         },
                         requireZeroTargetForEqual: false),
+                    CreateEconomyDecision(
+                        "global-production-input",
+                        content.ProductionInputOperator,
+                        OrchestrationDecompositionScopeType.GlobalObjective,
+                        new List<CompareOperation>
+                        {
+                            CompareOperation.Equal,
+                            CompareOperation.Less,
+                            CompareOperation.LessOrEqual,
+                        },
+                        requireZeroTargetForEqual: true),
                     CreateAwaitFactDecision(content.AwaitFactOperator),
                     CreateEconomyDecision(
                         "production-input",
@@ -2846,7 +2825,7 @@ namespace ChainRush.Editor
                         "production-materialized",
                         OrchestrationFactType.MaterializedEntity,
                         content.ProductionMaterializedOperator,
-                        OrchestrationDecompositionScopeType.AgentLocal,
+                        OrchestrationDecompositionScopeType.GlobalObjective,
                         matchAgent: false),
                     CreateDecision(
                         "production-yield",
@@ -2867,7 +2846,6 @@ namespace ChainRush.Editor
                 "operators",
                 new List<OrchestrationDecompOpData>
                 {
-                    deploymentAgent,
                     turnTokenAgent,
                     input,
                     economy,

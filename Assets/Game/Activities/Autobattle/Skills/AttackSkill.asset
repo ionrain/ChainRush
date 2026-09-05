@@ -64,6 +64,7 @@ MonoBehaviour:
       data:
         distance: 1600
         compareOperation: 5
+        targetGeometryType: 1
         interactionTags: []
     - rid: 2807516363299750086
       type: {class: SkillHostValueEffectData, ns: Core.Skills, asm: Core}

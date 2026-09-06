@@ -52,6 +52,7 @@ namespace ChainRush.Tests.EditMode
         const string StaticSolidPath = OccupancyRoot + "/StaticSolid.asset";
         const string PlacementObstaclePath = OccupancyRoot + "/PlacementObstacle.asset";
         const string NonOccupyingPath = OccupancyRoot + "/NonOccupying.asset";
+        const string ExperienceDropOccupancyPath = OccupancyRoot + "/ExperienceDrop.asset";
         const string OccupancyMatrixPath = OccupancyRoot + "/SpatialOccupancyMatrix.asset";
         const string FoundationInstallerPath =
             "Assets/Game/Runtime/Installers/ChainRushGameplayFoundationInstaller.asset";
@@ -304,6 +305,8 @@ namespace ChainRush.Tests.EditMode
             TaxonomyTermData placementObstacle =
                 LoadRequiredAsset<TaxonomyTermData>(PlacementObstaclePath);
             TaxonomyTermData nonOccupying = LoadRequiredAsset<TaxonomyTermData>(NonOccupyingPath);
+            TaxonomyTermData experienceDropOccupancy =
+                LoadRequiredAsset<TaxonomyTermData>(ExperienceDropOccupancyPath);
             SpatialOccupancyMatrixData matrix =
                 LoadRequiredAsset<SpatialOccupancyMatrixData>(OccupancyMatrixPath);
 
@@ -313,22 +316,26 @@ namespace ChainRush.Tests.EditMode
             AssertOccupancyTerm(staticSolid, family, "StaticSolid");
             AssertOccupancyTerm(placementObstacle, family, "PlacementObstacle");
             AssertOccupancyTerm(nonOccupying, family, "NonOccupying");
+            AssertOccupancyTerm(experienceDropOccupancy, family, "ExperienceDrop");
 
             Assert.AreSame(family, matrix.OccupancyFamily);
-            Assert.AreEqual(4, matrix.Rows.Count);
+            Assert.AreEqual(5, matrix.Rows.Count);
             AssertOccupancyRow(matrix.Rows[0], mobileSolid, mobileSolid, staticSolid);
             AssertOccupancyRow(
                 matrix.Rows[1],
                 staticSolid,
                 mobileSolid,
                 staticSolid,
-                placementObstacle);
+                placementObstacle,
+                experienceDropOccupancy);
             AssertOccupancyRow(
                 matrix.Rows[2],
                 placementObstacle,
                 staticSolid,
-                placementObstacle);
+                placementObstacle,
+                experienceDropOccupancy);
             AssertOccupancyRow(matrix.Rows[3], nonOccupying);
+            AssertOccupancyRow(matrix.Rows[4], experienceDropOccupancy, staticSolid, placementObstacle);
 
             TaxonomyRuntimeInstallerData taxonomyInstaller =
                 LoadRequiredAsset<TaxonomyRuntimeInstallerData>(TaxonomyInstallerPath);
@@ -341,6 +348,7 @@ namespace ChainRush.Tests.EditMode
             CollectionAssert.Contains(installedTerms, staticSolid);
             CollectionAssert.Contains(installedTerms, placementObstacle);
             CollectionAssert.Contains(installedTerms, nonOccupying);
+            Assert.AreEqual(1, installedTerms.Count(term => term == experienceDropOccupancy));
 
             GameplayFoundationInstallerData foundationInstaller =
                 LoadRequiredAsset<GameplayFoundationInstallerData>(FoundationInstallerPath);
@@ -354,7 +362,7 @@ namespace ChainRush.Tests.EditMode
             AssertHostOccupancyTag(WaterUnitPath, family, mobileSolid);
             AssertHostOccupancyTag(PlayerSpawnerPath, family, staticSolid);
             AssertHostOccupancyTag(EnemySpawnerPath, family, staticSolid);
-            AssertHostOccupancyTag(ExperienceDropPath, family, placementObstacle);
+            AssertHostOccupancyTag(ExperienceDropPath, family, experienceDropOccupancy);
             AssertHostOccupancyTag(BoardWaterBasePath, family, placementObstacle);
             AssertHostOccupancyTag(ExperienceCollectorPath, family, nonOccupying);
             AssertHostOccupancyTag(BoardHostPath, family, nonOccupying);
@@ -589,6 +597,9 @@ namespace ChainRush.Tests.EditMode
             Assert.IsInstanceOf<PopulationAgentData>(populationAgent.Agent);
             Assert.IsInstanceOf<SelectionAgentData>(selectionAgent.Agent);
             var selection = (SelectionAgentData)selectionAgent.Agent;
+            Assert.NotNull(selection.InputTiming);
+            Assert.AreEqual(0, selection.InputTiming.MaximumDuration);
+            Assert.AreEqual(0, selection.InputTiming.MaximumInterval);
             CollectionAssert.AreEqual(
                 new[] { mergeSelected },
                 selection.ResultTags);

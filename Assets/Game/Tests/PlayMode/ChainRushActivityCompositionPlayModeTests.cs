@@ -9,6 +9,7 @@ using Core.Activities.Events;
 using Core.Activities.Selection;
 using Core.CapabilityHosts;
 using Core.CapabilityHosts.Runtime;
+using Core.Determinism;
 using Core.Diplomacy;
 using Core.Drops;
 using Core.Economy;
@@ -493,12 +494,7 @@ namespace ChainRush.Tests.PlayMode
             EventBus.Register<ObjectiveRuntimeCompletedEvent>(productionOrderCapture);
             EventBus.Register<ObjectiveRuntimeResetEvent>(productionOrderCapture);
             EventBus.Trigger(mergeRequest);
-            for (int selectedIndex = 0; selectedIndex < selectedEntities.Count; selectedIndex++)
-            {
-                EventBus.Trigger(SelectionIntentEvent.Target(
-                    mergeRequest,
-                    selectedEntities[selectedIndex]));
-            }
+            yield return SubmitSelectionTargetsAcrossSteps(mergeRequest, selectedEntities, selectionResultCapture);
             EventBus.Trigger(SelectionIntentEvent.Complete(mergeRequest));
 
             float mergeDeadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
@@ -785,12 +781,7 @@ namespace ChainRush.Tests.PlayMode
             try
             {
                 EventBus.Trigger(request);
-                for (int selectedIndex = 0; selectedIndex < selectedEntities.Count; selectedIndex++)
-                {
-                    EventBus.Trigger(SelectionIntentEvent.Target(
-                        request,
-                        selectedEntities[selectedIndex]));
-                }
+                yield return SubmitSelectionTargetsAcrossSteps(request, selectedEntities, selectionCapture);
 
                 EventBus.Trigger(SelectionIntentEvent.Complete(request));
 
@@ -836,6 +827,29 @@ namespace ChainRush.Tests.PlayMode
                     1,
                     productionCapture.CountRecipe(expectedRecipeIds[recipeIndex]),
                     productionCapture.BuildDiagnostic());
+            }
+        }
+
+        static IEnumerator SubmitSelectionTargetsAcrossSteps(
+            SelectionIntentEvent request,
+            IReadOnlyList<Core.Entities.EntityId> targets,
+            SelectionResultCapture capture)
+        {
+            for (int i = 0; i < targets.Count; i++)
+            {
+                EventBus.Trigger(SelectionIntentEvent.Target(request, targets[i]));
+                int inputStep = DeterminismService.CurrentTick;
+                float deadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
+                do
+                {
+                    yield return null;
+                    Assert.AreEqual(0, capture.Count, string.Concat(
+                        "Selection closed before pointer release after target ", i + 1, ": ",
+                        capture.Result.Message));
+                    Assert.Less(Time.realtimeSinceStartup, deadline,
+                        "Simulation did not advance between selection inputs.");
+                }
+                while (DeterminismService.CurrentTick - inputStep < 2);
             }
         }
 

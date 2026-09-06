@@ -56,6 +56,7 @@ namespace ChainRush.Editor
         const string StaticSolidPath = OccupancyRoot + "/StaticSolid.asset";
         const string PlacementObstaclePath = OccupancyRoot + "/PlacementObstacle.asset";
         const string NonOccupyingPath = OccupancyRoot + "/NonOccupying.asset";
+        const string ExperienceDropOccupancyPath = OccupancyRoot + "/ExperienceDrop.asset";
         const string OccupancyMatrixPath = OccupancyRoot + "/SpatialOccupancyMatrix.asset";
 
         const string ActivityPath = AutobattleRoot + "/Definition/AutobattleActivity.asset";
@@ -362,8 +363,12 @@ namespace ChainRush.Editor
 
         static readonly List<string> PlacementObstacleHostPaths = new List<string>
         {
-            ExperienceDropPath,
             BoardWaterBasePath
+        };
+
+        static readonly List<string> ExperienceDropHostPaths = new List<string>
+        {
+            ExperienceDropPath
         };
 
         static readonly List<string> NonOccupyingHostPaths = new List<string>
@@ -534,6 +539,8 @@ namespace ChainRush.Editor
                 AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(PlacementObstaclePath);
             TaxonomyTermData nonOccupying =
                 AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(NonOccupyingPath);
+            TaxonomyTermData experienceDropOccupancy =
+                AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(ExperienceDropOccupancyPath);
             SpatialOccupancyMatrixData matrix =
                 AssetDatabase.LoadAssetAtPath<SpatialOccupancyMatrixData>(OccupancyMatrixPath);
 
@@ -543,8 +550,9 @@ namespace ChainRush.Editor
                 staticSolid,
                 placementObstacle,
                 nonOccupying,
+                experienceDropOccupancy,
                 matrix);
-            if (existingCount == 6)
+            if (existingCount == 7)
             {
                 ValidateOccupancyAuthoring(
                     family,
@@ -552,6 +560,7 @@ namespace ChainRush.Editor
                     staticSolid,
                     placementObstacle,
                     nonOccupying,
+                    experienceDropOccupancy,
                     matrix);
                 EnsureOccupancyConsumerWiring();
                 ValidateOccupancyConsumerWiring();
@@ -583,7 +592,7 @@ namespace ChainRush.Editor
                 GetField<SpatialOccupancyMatrixData>(foundationInstaller, "spatialOccupancyMatrix");
             Dictionary<CapabilityHostBaseData, List<TaxonomyTermData>> originalTags =
                 CaptureOccupancyHostTags();
-            var createdPaths = new List<string>(6);
+            var createdPaths = new List<string>(7);
             bool occupancyFolderExisted = AssetDatabase.IsValidFolder(OccupancyRoot);
 
             try
@@ -621,6 +630,12 @@ namespace ChainRush.Editor
                     family,
                     NonOccupyingPath,
                     createdPaths);
+                experienceDropOccupancy = CreateOccupancyTerm(
+                    "ExperienceDrop",
+                    4,
+                    family,
+                    ExperienceDropOccupancyPath,
+                    createdPaths);
 
                 matrix = CreateAsset<SpatialOccupancyMatrixData>(
                     OccupancyMatrixPath,
@@ -641,14 +656,18 @@ namespace ChainRush.Editor
                             {
                                 mobileSolid,
                                 staticSolid,
-                                placementObstacle
+                                placementObstacle,
+                                experienceDropOccupancy
                             }),
                         new SpatialOccupancyMatrixRowData(
                             placementObstacle,
-                            new List<TaxonomyTermData> { staticSolid, placementObstacle }),
+                            new List<TaxonomyTermData> { staticSolid, placementObstacle, experienceDropOccupancy }),
                         new SpatialOccupancyMatrixRowData(
                             nonOccupying,
-                            new List<TaxonomyTermData>(0))
+                            new List<TaxonomyTermData>(0)),
+                        new SpatialOccupancyMatrixRowData(
+                            experienceDropOccupancy,
+                            new List<TaxonomyTermData> { staticSolid, placementObstacle })
                     });
                 EditorUtility.SetDirty(matrix);
 
@@ -660,6 +679,7 @@ namespace ChainRush.Editor
                 terms.Add(staticSolid);
                 terms.Add(placementObstacle);
                 terms.Add(nonOccupying);
+                terms.Add(experienceDropOccupancy);
                 SetField(taxonomyInstaller, "terms", terms.ToArray());
                 EditorUtility.SetDirty(taxonomyInstaller);
 
@@ -670,6 +690,7 @@ namespace ChainRush.Editor
                 AssignOccupancyTag(StaticSolidHostPaths, staticSolid);
                 AssignOccupancyTag(PlacementObstacleHostPaths, placementObstacle);
                 AssignOccupancyTag(NonOccupyingHostPaths, nonOccupying);
+                AssignOccupancyTag(ExperienceDropHostPaths, experienceDropOccupancy);
 
                 AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();
@@ -679,6 +700,7 @@ namespace ChainRush.Editor
                     staticSolid,
                     placementObstacle,
                     nonOccupying,
+                    experienceDropOccupancy,
                     matrix);
                 EnsureOccupancyConsumerWiring();
                 ValidateOccupancyConsumerWiring();
@@ -3714,7 +3736,8 @@ namespace ChainRush.Editor
                 "MobileSolid",
                 "StaticSolid",
                 "PlacementObstacle",
-                "NonOccupying"
+                "NonOccupying",
+                "ExperienceDrop"
             };
             TaxonomyTermData[] terms =
                 GetField<TaxonomyTermData[]>(taxonomyInstaller, "terms")
@@ -3757,7 +3780,8 @@ namespace ChainRush.Editor
                 "MobileSolid",
                 "StaticSolid",
                 "PlacementObstacle",
-                "NonOccupying"
+                "NonOccupying",
+                "ExperienceDrop"
             };
             string[] termGuids = AssetDatabase.FindAssets("t:TaxonomyTermData");
             for (int i = 0; i < termGuids.Length; i++)
@@ -3776,6 +3800,7 @@ namespace ChainRush.Editor
             AddHostPaths(expected, StaticSolidHostPaths);
             AddHostPaths(expected, PlacementObstacleHostPaths);
             AddHostPaths(expected, NonOccupyingHostPaths);
+            AddHostPaths(expected, ExperienceDropHostPaths);
 
             var actual = new HashSet<string>(StringComparer.Ordinal);
             string[] guids = AssetDatabase.FindAssets(string.Empty, new[]
@@ -3808,6 +3833,7 @@ namespace ChainRush.Editor
             CaptureHostTags(result, StaticSolidHostPaths);
             CaptureHostTags(result, PlacementObstacleHostPaths);
             CaptureHostTags(result, NonOccupyingHostPaths);
+            CaptureHostTags(result, ExperienceDropHostPaths);
             return result;
         }
 
@@ -3849,6 +3875,7 @@ namespace ChainRush.Editor
             TaxonomyTermData staticSolid,
             TaxonomyTermData placementObstacle,
             TaxonomyTermData nonOccupying,
+            TaxonomyTermData experienceDropOccupancy,
             SpatialOccupancyMatrixData matrix)
         {
             if (family == null || family.Id != "SpatialOccupancy" ||
@@ -3861,8 +3888,9 @@ namespace ChainRush.Editor
             ValidateOccupancyTerm(staticSolid, family, "StaticSolid");
             ValidateOccupancyTerm(placementObstacle, family, "PlacementObstacle");
             ValidateOccupancyTerm(nonOccupying, family, "NonOccupying");
+            ValidateOccupancyTerm(experienceDropOccupancy, family, "ExperienceDrop");
 
-            if (matrix == null || matrix.OccupancyFamily != family || matrix.Rows.Count != 4)
+            if (matrix == null || matrix.OccupancyFamily != family || matrix.Rows.Count != 5)
                 throw new InvalidOperationException("Spatial occupancy matrix is invalid.");
             ValidateOccupancyRow(matrix.Rows[0], mobileSolid, mobileSolid, staticSolid);
             ValidateOccupancyRow(
@@ -3870,13 +3898,16 @@ namespace ChainRush.Editor
                 staticSolid,
                 mobileSolid,
                 staticSolid,
-                placementObstacle);
+                placementObstacle,
+                experienceDropOccupancy);
             ValidateOccupancyRow(
                 matrix.Rows[2],
                 placementObstacle,
                 staticSolid,
-                placementObstacle);
+                placementObstacle,
+                experienceDropOccupancy);
             ValidateOccupancyRow(matrix.Rows[3], nonOccupying);
+            ValidateOccupancyRow(matrix.Rows[4], experienceDropOccupancy, staticSolid, placementObstacle);
 
             TaxonomyRuntimeInstallerData taxonomyInstaller =
                 LoadRequired<TaxonomyRuntimeInstallerData>(TaxonomyInstallerPath);
@@ -3888,6 +3919,7 @@ namespace ChainRush.Editor
             RequireSingleReference(terms, staticSolid);
             RequireSingleReference(terms, placementObstacle);
             RequireSingleReference(terms, nonOccupying);
+            RequireSingleReference(terms, experienceDropOccupancy);
 
             GameplayFoundationInstallerData foundationInstaller =
                 LoadRequired<GameplayFoundationInstallerData>(FoundationInstallerPath);
@@ -3903,6 +3935,7 @@ namespace ChainRush.Editor
             ValidateOccupancyHostTags(StaticSolidHostPaths, staticSolid, family);
             ValidateOccupancyHostTags(PlacementObstacleHostPaths, placementObstacle, family);
             ValidateOccupancyHostTags(NonOccupyingHostPaths, nonOccupying, family);
+            ValidateOccupancyHostTags(ExperienceDropHostPaths, experienceDropOccupancy, family);
             EnsureOccupancyHostPlanMatchesAssets();
         }
 

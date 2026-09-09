@@ -14,35 +14,35 @@ using UnityEngine;
 namespace ChainRush.Board
 {
     [CreateAssetMenu(
-        fileName = "ProgressivePlannerData",
-        menuName = "ChainRush/Activities/Population/Progressive Planner")]
-    public sealed class ProgressivePlannerData : PopulationPlannerData
+        fileName = "ShapePopulationPlannerData",
+        menuName = "ChainRush/Activities/Population/Shape Population Planner")]
+    public sealed class ShapePopulationPlannerData : PopulationPlannerData
     {
         [Serializable]
         public sealed class PatternRule
         {
             [SerializeField] SpatialShapeData shape;
-            [SerializeReference] LongProgressionData size;
-            [SerializeReference] LongProgressionData weight;
-            [SerializeReference] LongProgressionData minimumCount;
+            [SerializeField] long size;
+            [SerializeField] long weight;
+            [SerializeField] long minimumCount;
 
             public SpatialShapeData Shape => shape;
-            public LongProgressionData Size => size;
-            public LongProgressionData Weight => weight;
-            public LongProgressionData MinimumCount => minimumCount;
+            public long Size => size;
+            public long Weight => weight;
+            public long MinimumCount => minimumCount;
         }
 
         [Serializable]
         public sealed class ContentRule
         {
             [SerializeField] CapabilityHostBaseData asset;
-            [SerializeReference] LongProgressionData weight;
-            [SerializeReference] LongProgressionData minimumPatternCount;
+            [SerializeField] long weight;
+            [SerializeField] long minimumPatternCount;
             [SerializeField, Range(0f, 1f)] float guaranteedCellShare;
 
             public CapabilityHostBaseData Asset => asset;
-            public LongProgressionData Weight => weight;
-            public LongProgressionData MinimumPatternCount => minimumPatternCount;
+            public long Weight => weight;
+            public long MinimumPatternCount => minimumPatternCount;
             public float GuaranteedCellShare => guaranteedCellShare;
         }
 
@@ -71,7 +71,6 @@ namespace ChainRush.Board
                     out List<ResolvedPatternRule> resolvedPatternRules,
                     out failure)
                 || !TryResolveContentRules(
-                    context.Generation,
                     out List<ResolvedContentRule> resolvedContentRules,
                     out failure))
             {
@@ -82,12 +81,6 @@ namespace ChainRush.Board
             {
                 plan = new PopulationPlan(new List<PopulationPlanGroup>(0));
                 return true;
-            }
-
-            if (!DeterminismService.IsInitialized)
-            {
-                failure = "Progressive planner requires an initialized deterministic session.";
-                return false;
             }
 
             Pcg32Random random = CreateRandom(context);
@@ -101,7 +94,6 @@ namespace ChainRush.Board
                     patterns,
                     out failure)
                 || !TryAssignContent(
-                    context.Generation,
                     cells,
                     patterns,
                     resolvedContentRules,
@@ -145,27 +137,22 @@ namespace ChainRush.Board
 
             if (!context.ActivityId.IsValid)
             {
-                failure = "Progressive planner requires a valid activity.";
+                failure = "Shape population planner requires a valid activity.";
                 return false;
             }
             if (!context.DomainId.IsValid)
             {
-                failure = "Progressive planner requires a valid runtime domain.";
+                failure = "Shape population planner requires a valid runtime domain.";
                 return false;
             }
             if (!context.ParticipantEntityId.IsValid || !context.PopulationEntityId.IsValid)
             {
-                failure = "Progressive planner requires valid participant and population entities.";
-                return false;
-            }
-            if (context.Generation <= 0L)
-            {
-                failure = "Progressive planner generation must be greater than zero.";
+                failure = "Shape population planner requires valid participant and population entities.";
                 return false;
             }
             if (context.Cells == null || context.Cells.Count == 0)
             {
-                failure = "Progressive planner requires at least one population cell.";
+                failure = "Shape population planner requires at least one population cell.";
                 return false;
             }
             if (!TopologyService.TryGetTopologyDescriptor(
@@ -174,7 +161,7 @@ namespace ChainRush.Board
                 || descriptor.DimensionType != TopologyDimensionType.TwoDimensional
                 || descriptor.TopologyType != TopologyType.Grid)
             {
-                failure = "Progressive planner requires a two-dimensional grid topology.";
+                failure = "Shape population planner requires a two-dimensional grid topology.";
                 return false;
             }
 
@@ -182,7 +169,7 @@ namespace ChainRush.Board
                 / (float)descriptor.TopologyUnitsPerUnityUnit;
             if (coordinateStep <= 0f || float.IsNaN(coordinateStep) || float.IsInfinity(coordinateStep))
             {
-                failure = "Progressive planner topology coordinate step is invalid.";
+                failure = "Shape population planner topology coordinate step is invalid.";
                 return false;
             }
 
@@ -196,7 +183,7 @@ namespace ChainRush.Board
                 if (!snapshot.Marker.IsValid || snapshot.Marker.ActivityId != context.ActivityId)
                 {
                     failure = string.Concat(
-                        "Progressive planner cell ",
+                        "Shape population planner cell ",
                         i.ToString(),
                         " has an invalid marker reference.");
                     return false;
@@ -204,7 +191,7 @@ namespace ChainRush.Board
                 if (!markerRefs.Add(snapshot.Marker))
                 {
                     failure = string.Concat(
-                        "Progressive planner contains duplicate marker '",
+                        "Shape population planner contains duplicate marker '",
                         snapshot.Marker.ToString(),
                         "'.");
                     return false;
@@ -216,7 +203,7 @@ namespace ChainRush.Board
                         out Vector2Int gridCoordinate))
                 {
                     failure = string.Concat(
-                        "Progressive planner cell '",
+                        "Shape population planner cell '",
                         snapshot.Marker.ToString(),
                         " is not aligned to the activity grid.");
                     return false;
@@ -224,7 +211,7 @@ namespace ChainRush.Board
                 if (cellsByCoordinate.ContainsKey(gridCoordinate))
                 {
                     failure = string.Concat(
-                        "Progressive planner contains duplicate grid coordinate '",
+                        "Shape population planner contains duplicate grid coordinate '",
                         gridCoordinate.ToString(),
                         "'.");
                     return false;
@@ -251,7 +238,7 @@ namespace ChainRush.Board
             List<PatternRule> authored = PatternRules;
             if (authored.Count == 0)
             {
-                failure = "Progressive planner requires at least one pattern rule.";
+                failure = "Shape population planner requires at least one pattern rule.";
                 return false;
             }
 
@@ -263,7 +250,7 @@ namespace ChainRush.Board
                 if (rule == null || rule.Shape == null || string.IsNullOrWhiteSpace(rule.Shape.Id))
                 {
                     failure = string.Concat(
-                        "Progressive planner pattern rule ",
+                        "Shape population planner pattern rule ",
                         i.ToString(),
                         " requires a spatial shape with semantic identity.");
                     return false;
@@ -271,16 +258,15 @@ namespace ChainRush.Board
                 if (!IsShapeAvailable(rule.Shape, context.Shapes))
                 {
                     failure = string.Concat(
-                        "Progressive planner pattern rule ",
+                        "Shape population planner pattern rule ",
                         i.ToString(),
                         " references a shape that is not available in the population wallet projection.");
                     return false;
                 }
-                if (!TryEvaluatePositive(rule.Size, context.Generation, "pattern size", i, out int size, out failure)
-                    || !TryEvaluateNonNegative(rule.Weight, context.Generation, "pattern weight", i, out int weight, out failure)
-                    || !TryEvaluateNonNegative(
+                if (!TryResolvePositive(rule.Size, "pattern size", i, out int size, out failure)
+                    || !TryResolveNonNegative(rule.Weight, "pattern weight", i, out int weight, out failure)
+                    || !TryResolveNonNegative(
                         rule.MinimumCount,
-                        context.Generation,
                         "pattern minimum count",
                         i,
                         out int minimumCount,
@@ -300,7 +286,7 @@ namespace ChainRush.Board
 
             if (!hasActiveSingleCellRule)
             {
-                failure = "Progressive planner requires an active shape rule with a resolved size of one cell.";
+                failure = "Shape population planner requires an active shape rule with a resolved size of one cell.";
                 return false;
             }
 
@@ -329,7 +315,6 @@ namespace ChainRush.Board
         }
 
         bool TryResolveContentRules(
-            long generation,
             out List<ResolvedContentRule> resolved,
             out string failure)
         {
@@ -338,7 +323,7 @@ namespace ChainRush.Board
             List<ContentRule> authored = ContentRules;
             if (authored.Count == 0)
             {
-                failure = "Progressive planner requires at least one content rule.";
+                failure = "Shape population planner requires at least one content rule.";
                 return false;
             }
 
@@ -352,7 +337,7 @@ namespace ChainRush.Board
                 if (rule == null || rule.Asset == null || string.IsNullOrWhiteSpace(rule.Asset.Id))
                 {
                     failure = string.Concat(
-                        "Progressive planner content rule ",
+                        "Shape population planner content rule ",
                         i.ToString(),
                         " requires a capability-host asset with semantic identity.");
                     return false;
@@ -362,15 +347,14 @@ namespace ChainRush.Board
                 if (string.IsNullOrWhiteSpace(assetKey) || !assetKeys.Add(assetKey))
                 {
                     failure = string.Concat(
-                        "Progressive planner content rule ",
+                        "Shape population planner content rule ",
                         i.ToString(),
                         " contains a duplicate asset.");
                     return false;
                 }
-                if (!TryEvaluateNonNegative(rule.Weight, generation, "content weight", i, out int weight, out failure)
-                    || !TryEvaluateNonNegative(
+                if (!TryResolveNonNegative(rule.Weight, "content weight", i, out int weight, out failure)
+                    || !TryResolveNonNegative(
                         rule.MinimumPatternCount,
-                        generation,
                         "content minimum pattern count",
                         i,
                         out int minimumPatternCount,
@@ -384,7 +368,7 @@ namespace ChainRush.Board
                     || rule.GuaranteedCellShare > 1f)
                 {
                     failure = string.Concat(
-                        "Progressive planner content rule ",
+                        "Shape population planner content rule ",
                         i.ToString(),
                         " guaranteed share must be between zero and one.");
                     return false;
@@ -402,12 +386,12 @@ namespace ChainRush.Board
 
             if (totalWeight <= 0L || totalWeight > int.MaxValue)
             {
-                failure = "Progressive planner content weights must have a positive Int32 total.";
+                failure = "Shape population planner content weights must have a positive Int32 total.";
                 return false;
             }
             if (totalGuaranteedShare > 1f + 0.0001f)
             {
-                failure = "Progressive planner guaranteed content shares must not exceed one.";
+                failure = "Shape population planner guaranteed content shares must not exceed one.";
                 return false;
             }
 
@@ -441,7 +425,7 @@ namespace ChainRush.Board
                     random,
                     patterns))
             {
-                failure = "Progressive planner could not place all mandatory patterns.";
+                failure = "Shape population planner could not place all mandatory patterns.";
                 return false;
             }
 
@@ -480,7 +464,7 @@ namespace ChainRush.Board
                 if (!placed)
                 {
                     failure = string.Concat(
-                        "Progressive planner could not cover ",
+                        "Shape population planner could not cover ",
                         remaining.Count.ToString(),
                         " remaining cells with active pattern rules.");
                     return false;
@@ -753,7 +737,6 @@ namespace ChainRush.Board
         }
 
         static bool TryAssignContent(
-            long generation,
             List<ResolvedCell> cells,
             List<PatternPlacement> patterns,
             List<ResolvedContentRule> contentRules,
@@ -761,7 +744,6 @@ namespace ChainRush.Board
             out List<PlannedGroup> groups,
             out string failure)
         {
-            _ = generation;
             groups = new List<PlannedGroup>(0);
             failure = null;
             var assigned = new Dictionary<PatternPlacement, ResolvedContentRule>();
@@ -775,7 +757,7 @@ namespace ChainRush.Board
                     if (pattern == null)
                     {
                         failure = string.Concat(
-                            "Progressive planner cannot satisfy content rule ",
+                            "Shape population planner cannot satisfy content rule ",
                             rule.AuthoredIndex.ToString(),
                             " minimum pattern count.");
                         return false;
@@ -801,7 +783,7 @@ namespace ChainRush.Board
                     if (pattern == null)
                     {
                         failure = string.Concat(
-                            "Progressive planner cannot satisfy content rule ",
+                            "Shape population planner cannot satisfy content rule ",
                             rule.AuthoredIndex.ToString(),
                             " guaranteed cell share.");
                         return false;
@@ -829,7 +811,7 @@ namespace ChainRush.Board
                 PatternPlacement pattern = patterns[patternIndex];
                 if (!assigned.TryGetValue(pattern, out ResolvedContentRule rule))
                 {
-                    failure = "Progressive planner left a pattern without content.";
+                    failure = "Shape population planner left a pattern without content.";
                     return false;
                 }
 
@@ -865,7 +847,7 @@ namespace ChainRush.Board
                 totalWeight = checked(totalWeight + rules[i].Weight);
             if (totalWeight <= 0L || totalWeight > int.MaxValue)
             {
-                failure = "Progressive planner active pattern weights must have a positive Int32 total.";
+                failure = "Shape population planner active pattern weights must have a positive Int32 total.";
                 return false;
             }
 
@@ -881,7 +863,7 @@ namespace ChainRush.Board
                 }
             }
 
-            failure = "Progressive planner could not resolve a weighted pattern rule.";
+            failure = "Shape population planner could not resolve a weighted pattern rule.";
             return false;
         }
 
@@ -898,7 +880,7 @@ namespace ChainRush.Board
                 totalWeight = checked(totalWeight + rules[i].Weight);
             if (totalWeight <= 0L || totalWeight > int.MaxValue)
             {
-                failure = "Progressive planner active content weights must have a positive Int32 total.";
+                failure = "Shape population planner active content weights must have a positive Int32 total.";
                 return false;
             }
 
@@ -914,7 +896,7 @@ namespace ChainRush.Board
                 }
             }
 
-            failure = "Progressive planner could not resolve weighted content.";
+            failure = "Shape population planner could not resolve weighted content.";
             return false;
         }
 
@@ -984,21 +966,20 @@ namespace ChainRush.Board
             return count;
         }
 
-        static bool TryEvaluatePositive(
-            LongProgressionData progression,
-            long generation,
+        static bool TryResolvePositive(
+            long authoredValue,
             string field,
             int ruleIndex,
             out int value,
             out string failure)
         {
-            if (!TryEvaluateNonNegative(progression, generation, field, ruleIndex, out value, out failure))
+            if (!TryResolveNonNegative(authoredValue, field, ruleIndex, out value, out failure))
                 return false;
             if (value > 0)
                 return true;
 
             failure = string.Concat(
-                "Progressive planner ",
+                "Shape population planner ",
                 field,
                 " for rule ",
                 ruleIndex.ToString(),
@@ -1006,9 +987,8 @@ namespace ChainRush.Board
             return false;
         }
 
-        static bool TryEvaluateNonNegative(
-            LongProgressionData progression,
-            long generation,
+        static bool TryResolveNonNegative(
+            long authoredValue,
             string field,
             int ruleIndex,
             out int value,
@@ -1016,31 +996,11 @@ namespace ChainRush.Board
         {
             value = 0;
             failure = null;
-            if (progression == null)
-            {
-                failure = string.Concat(
-                    "Progressive planner ",
-                    field,
-                    " for rule ",
-                    ruleIndex.ToString(),
-                    " is missing.");
-                return false;
-            }
-            if (!progression.TryEvaluate(generation, out long evaluated, out string progressionFailure))
-            {
-                failure = string.Concat(
-                    "Progressive planner ",
-                    field,
-                    " for rule ",
-                    ruleIndex.ToString(),
-                    " failed: ",
-                    progressionFailure ?? "unknown progression failure");
-                return false;
-            }
+            long evaluated = authoredValue;
             if (evaluated < 0L || evaluated > int.MaxValue)
             {
                 failure = string.Concat(
-                    "Progressive planner ",
+                    "Shape population planner ",
                     field,
                     " for rule ",
                     ruleIndex.ToString(),
@@ -1095,21 +1055,9 @@ namespace ChainRush.Board
 
         static Pcg32Random CreateRandom(in PopulationPlanContext context)
         {
-            ulong state = 14695981039346656037UL;
-            MixSeed(ref state, unchecked((uint)DeterminismService.SessionSeed));
-            MixSeed(ref state, unchecked((uint)context.ActivityId.Value));
-            MixSeed(ref state, unchecked((uint)context.DomainId.Value));
-            MixSeed(ref state, unchecked((uint)context.ParticipantEntityId.Value));
-            MixSeed(ref state, unchecked((uint)context.PopulationEntityId.Value));
-            MixSeed(ref state, unchecked((ulong)context.Generation));
+            ulong state = context.Seed;
             ulong sequence = Mix64(state ^ 0x9E3779B97F4A7C15UL);
             return new Pcg32Random(Mix64(state), sequence);
-        }
-
-        static void MixSeed(ref ulong state, ulong value)
-        {
-            state ^= value;
-            state *= 1099511628211UL;
         }
 
         static ulong Mix64(ulong value)
@@ -1257,7 +1205,7 @@ namespace ChainRush.Board
                 failure = null;
                 if (!candidate.IsValid)
                 {
-                    failure = "Progressive planner received an invalid shape candidate.";
+                    failure = "Shape population planner received an invalid shape candidate.";
                     return false;
                 }
 

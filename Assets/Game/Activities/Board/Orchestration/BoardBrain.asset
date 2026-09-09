@@ -20,8 +20,10 @@ MonoBehaviour:
   - rid: 2807516699219197956
   - rid: 2807516701411770468
   - rid: 9301
+  - rid: 6092003813537087488
   decisionGraph:
     nodes:
+    - rid: 6092003813537087489
     - rid: 2807516699219197958
     - rid: 2807516699219197959
     - rid: 2807516699219197960
@@ -41,6 +43,21 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: 9301
+      type: {class: AgentResourceRequestDecompOpData, ns: Core.Orchestration, asm: Core}
+      data:
+        operatorId: {fileID: 11400000, guid: f4689c92e859f472fb36c4111a2516fb, type: 2}
+    - rid: 9302
+      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
+      data:
+        decisionId: agent-resource-request
+        conditions:
+        - rid: 9303
+        operatorId: {fileID: 11400000, guid: f4689c92e859f472fb36c4111a2516fb, type: 2}
+    - rid: 9303
+      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        factType: 18
     - rid: 2807516699219197952
       type: {class: AgentDecompOpData, ns: Core.Orchestration, asm: Core}
       data:
@@ -165,18 +182,34 @@ MonoBehaviour:
         asm: Core}
       data:
         operatorId: {fileID: 11400000, guid: 95c746c927eed41b2bb874e248c67257, type: 2}
-    - rid: 9301
-      type: {class: AgentResourceRequestDecompOpData, ns: Core.Orchestration, asm: Core}
+    - rid: 6092003813537087488
+      type: {class: EconomyOperationDecompOpData, ns: Core.Orchestration, asm: Core}
       data:
-        operatorId: {fileID: 11400000, guid: f4689c92e859f472fb36c4111a2516fb, type: 2}
-    - rid: 9302
+        operatorId: {fileID: 11400000, guid: 26585210313be4e038d6dce16df3f6d8, type: 2}
+        operation: 4
+        selection:
+          walletTags:
+          - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
+          formTypes: 00000000
+          exactAsset: {fileID: 11400000, guid: 854a0cd2c05d9443ead51a662d4966bf, type: 2}
+          requiredAssetTags: []
+          excludedAssetTags: []
+          requiredRuntimeTags: []
+          excludedRuntimeTags: []
+        allowCrossOwnerTransfer: 0
+    - rid: 6092003813537087489
       type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
       data:
-        decisionId: agent-resource-request
+        decisionId: board-consume-turn
         conditions:
-        - rid: 9303
-        operatorId: {fileID: 11400000, guid: f4689c92e859f472fb36c4111a2516fb, type: 2}
-    - rid: 9303
+        - rid: 6092003813537087490
+        - rid: 6092003813537087491
+        operatorId: {fileID: 11400000, guid: 26585210313be4e038d6dce16df3f6d8, type: 2}
+    - rid: 6092003813537087490
       type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
       data:
-        factType: 18
+        factType: 20
+    - rid: 6092003813537087491
+      type: {class: ScopeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        scopeType: 0

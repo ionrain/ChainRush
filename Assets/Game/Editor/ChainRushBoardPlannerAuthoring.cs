@@ -83,7 +83,6 @@ namespace ChainRush.Editor
         const string TurnTokenPath = SharedRoot + "/Economy/BoardTurnToken.asset";
         const string WaterUnitPath = SharedWaterRoot + "/WaterUnit.asset";
         const string PopulationProducerPath = BoardRoot + "/Economy/BoardPopulationProducer.asset";
-        const string RefreshRecipePath = BoardRoot + "/Production/BoardRefreshRecipe.asset";
         const string WaterRecipePath = BoardRoot + "/Production/WaterBoardBaseRecipe.asset";
         const string PopulationProductionPath = BoardRoot + "/Production/BoardPopulationProduction.asset";
         const string PopulationCatalogPath = BoardRoot + "/Production/BoardPopulationCatalog.asset";
@@ -93,6 +92,7 @@ namespace ChainRush.Editor
         const string SelectionObjectivePath = ObjectivesRoot + "/BoardSelectionObjective.asset";
         const string MergeObjectivePath = ObjectivesRoot + "/BoardMergeObjective.asset";
         const string OperatorFamilyPath = OrchestrationTaxonomyRoot + "/BoardOperatorFamily.asset";
+        const string EconomyOperationOperatorPath = OrchestrationTaxonomyRoot + "/BoardEconomyOperationOperator.asset";
         const string PopulationAgentOperatorPath = OrchestrationTaxonomyRoot + "/BoardPopulationAgentOperator.asset";
         const string ProductionYieldOperatorPath = OrchestrationTaxonomyRoot + "/BoardProductionYieldOperator.asset";
         const string ProductionAvailableOperatorPath = OrchestrationTaxonomyRoot + "/BoardProductionAvailableOperator.asset";
@@ -121,7 +121,6 @@ namespace ChainRush.Editor
             TurnTokenPath,
             WaterUnitPath,
             PopulationProducerPath,
-            RefreshRecipePath,
             WaterRecipePath,
             PopulationProductionPath,
             PopulationCatalogPath,
@@ -266,7 +265,7 @@ namespace ChainRush.Editor
             EnsureFolder(PlannerRoot);
             try
             {
-                ProgressivePlannerData planner = ScriptableObject.CreateInstance<ProgressivePlannerData>();
+                ShapePopulationPlannerData planner = ScriptableObject.CreateInstance<ShapePopulationPlannerData>();
                 planner.name = "BoardPlanner";
                 ConfigurePlanner(planner, water, shapes.Line, shapes.Single);
                 AssetDatabase.CreateAsset(planner, PlannerPath);
@@ -293,7 +292,6 @@ namespace ChainRush.Editor
             CapabilityHostData boardHost = LoadRequired<CapabilityHostData>(BoardHostPath);
             AgentDefinitionData populationAgent =
                 LoadRequired<AgentDefinitionData>(PopulationAgentPath);
-            ProductionRecipeData refreshRecipe = LoadRequired<ProductionRecipeData>(RefreshRecipePath);
             ProductionRecipeData waterRecipe = LoadRequired<ProductionRecipeData>(WaterRecipePath);
             ProductionData populationProduction = LoadRequired<ProductionData>(PopulationProductionPath);
             EconomyWalletData boardWallet = LoadRequired<EconomyWalletData>(BoardWalletPath);
@@ -325,7 +323,6 @@ namespace ChainRush.Editor
                 turnToken,
                 waterUnit,
                 populationProducer,
-                refreshRecipe,
                 waterRecipe,
                 operatorFamily,
                 populationAgentOperator,
@@ -417,11 +414,6 @@ namespace ChainRush.Editor
             EditorUtility.SetDirty(populationProducer);
 
             ConfigureEconomyAsset(
-                refreshRecipe,
-                "chainrush.production.board.refresh.recipe",
-                EconomyOperation.Require | EconomyOperation.Issue);
-            ConfigureRefreshRecipe(refreshRecipe, turnToken, sharedWalletTag);
-            ConfigureEconomyAsset(
                 waterRecipe,
                 "chainrush.production.board.water-base.recipe",
                 EconomyOperation.Require | EconomyOperation.Issue);
@@ -480,7 +472,6 @@ namespace ChainRush.Editor
                 turnToken,
                 waterUnit,
                 populationProducer,
-                refreshRecipe,
                 waterRecipe,
                 operatorFamily,
                 populationAgentOperator,
@@ -586,7 +577,7 @@ namespace ChainRush.Editor
         }
 
         static void ConfigurePlanner(
-            ProgressivePlannerData planner,
+            ShapePopulationPlannerData planner,
             CapabilityHostData water,
             SpatialShapeData line,
             SpatialShapeData single)
@@ -598,9 +589,9 @@ namespace ChainRush.Editor
             ConfigurePattern(
                 patterns.GetArrayElementAtIndex(0),
                 line,
-                3L,
+                2L,
                 1L,
-                1L);
+                0L);
             ConfigurePattern(
                 patterns.GetArrayElementAtIndex(1),
                 single,
@@ -612,10 +603,8 @@ namespace ChainRush.Editor
             contents.arraySize = 1;
             SerializedProperty content = contents.GetArrayElementAtIndex(0);
             content.FindPropertyRelative("asset").objectReferenceValue = water;
-            content.FindPropertyRelative("weight").managedReferenceValue =
-                new LongLinearProgressionData(1L, 0L);
-            content.FindPropertyRelative("minimumPatternCount").managedReferenceValue =
-                new LongLinearProgressionData(0L, 0L);
+            content.FindPropertyRelative("weight").longValue = 1L;
+            content.FindPropertyRelative("minimumPatternCount").longValue = 0L;
             content.FindPropertyRelative("guaranteedCellShare").floatValue = 1f;
             serialized.ApplyModifiedPropertiesWithoutUndo();
         }
@@ -628,29 +617,9 @@ namespace ChainRush.Editor
             long minimumCount)
         {
             property.FindPropertyRelative("shape").objectReferenceValue = shape;
-            property.FindPropertyRelative("size").managedReferenceValue =
-                new LongLinearProgressionData(size, 0L);
-            property.FindPropertyRelative("weight").managedReferenceValue =
-                new LongLinearProgressionData(weight, 0L);
-            property.FindPropertyRelative("minimumCount").managedReferenceValue =
-                new LongLinearProgressionData(minimumCount, 0L);
-        }
-
-        static void ConfigureRefreshRecipe(
-            ProductionRecipeData recipe,
-            EconomyAssetData turnToken,
-            TaxonomyTermData sharedWalletTag)
-        {
-            recipe.Inputs.Clear();
-            recipe.Inputs.Add(new ProductionInputData(
-                EconomyOperation.Consume,
-                turnToken,
-                EconomyFormType.Stack,
-                new List<TaxonomyTermData> { sharedWalletTag },
-                null,
-                new LongFlatProgressionData(1L)));
-            recipe.Outputs.Clear();
-            EditorUtility.SetDirty(recipe);
+            property.FindPropertyRelative("size").longValue = size;
+            property.FindPropertyRelative("weight").longValue = weight;
+            property.FindPropertyRelative("minimumCount").longValue = minimumCount;
         }
 
         static void ConfigureExperienceToTurnTokenRecipe(
@@ -955,60 +924,116 @@ namespace ChainRush.Editor
             EditorUtility.SetDirty(settings);
         }
 
-        static ObjectiveTemplateData CreatePopulationObjective(
+        [MenuItem("ChainRush/Activities/Board/Configure Population Objectives")]
+        public static void ConfigurePopulationObjectives()
+        {
+            var turn = LoadRequired<FrameworkResourceData>(TurnTokenPath);
+            var wallet = LoadRequired<TaxonomyTermData>(SharedWalletTagPath);
+            var water = LoadRequired<CapabilityHostData>(WaterPath);
+            var shapes = LoadBoardSpatialShapes();
+            var planner = LoadRequired<ShapePopulationPlannerData>(PlannerPath);
+            ConfigurePlanner(planner, water, shapes.Line, shapes.Single);
+            EditorUtility.SetDirty(planner);
+
+            var agent = LoadRequired<AgentDefinitionData>(PopulationAgentPath);
+            var population = new PopulationAgentData();
+            SetField(population, "planner", planner);
+            SetField(population, "shapeWalletTags",
+                new List<TaxonomyTermData> { LoadRequired<TaxonomyTermData>(BoardWalletTagPath) });
+            SetField(agent, "agent", population);
+            EditorUtility.SetDirty(agent);
+
+            var objective = LoadRequired<ObjectiveTemplateData>(PopulationObjectivePath);
+            ConfigurePopulationObjective(objective, turn, wallet, water,
+                LoadRequired<TaxonomyTermData>(BoardWalletTagPath),
+                LoadRequired<TaxonomyTermData>(MergeSelectedTagPath),
+                LoadRequired<TaxonomyTermData>(BoardCellTagPath));
+            var term = AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(EconomyOperationOperatorPath);
+            if (term == null)
+                term = CreateTaxonomyTerm(EconomyOperationOperatorPath, "BoardEconomyOperationOperator",
+                    "chainrush.orchestration.board.economy-operation", "Board Economy Operation",
+                    LoadRequired<TaxonomyFamilyData>(OperatorFamilyPath), 6, new List<string>());
+            var installer = LoadRequired<TaxonomyRuntimeInstallerData>(TaxonomyInstallerPath);
+            var terms = new List<TaxonomyTermData>(GetField<TaxonomyTermData[]>(installer, "terms"));
+            if (!terms.Contains(term))
+                terms.Add(term);
+            SetField(installer, "terms", terms.ToArray());
+            EditorUtility.SetDirty(installer);
+            ConfigureEconomyOperation(LoadRequired<OrchestratorAIBrainData>(BrainPath), term, turn, wallet);
+            AssetDatabase.SaveAssets();
+        }
+
+        static void ConfigureEconomyOperation(OrchestratorAIBrainData brain, TaxonomyTermData term,
+            EconomyAssetData turn, TaxonomyTermData wallet)
+        {
+            var operation = new EconomyOperationDecompOpData();
+            SetField(operation, "operatorId", term);
+            SetField(operation, "operation", EconomyOperation.Consume);
+            SetField(operation, "selection", new EconomyEntrySelectionData(turn, EconomyFormType.Stack,
+                new List<TaxonomyTermData> { wallet }, null, null, null, null));
+            brain.Operators.RemoveAll(item => item.OperatorId == term);
+            brain.Operators.Add(operation);
+            brain.DecisionGraph.Nodes.RemoveAll(item => item.DecisionId == "board-consume-turn");
+            brain.DecisionGraph.Nodes.Insert(0, CreateDecision("board-consume-turn",
+                OrchestrationFactType.EconomyOperation, term, false,
+                OrchestrationDecompositionScopeType.GlobalObjective));
+            EditorUtility.SetDirty(brain);
+        }
+
+        static void ConfigurePopulationObjective(
+            ObjectiveTemplateData objective,
             EconomyAssetData turnToken,
             TaxonomyTermData sharedWalletTag,
             CapabilityHostData water,
             TaxonomyTermData boardWalletTag,
             TaxonomyTermData selectedTag,
-            TaxonomyTermData boardCellTag,
-            List<string> createdPaths)
+            TaxonomyTermData boardCellTag)
         {
-            var turnTokenActivation = new ObjectiveConditionEconomyMetric(
-                new List<TaxonomyTermData> { sharedWalletTag },
-                EconomyFormType.Stack,
-                turnToken,
-                1L,
-                CompareOperation.GreaterOrEqual,
-                null,
-                null);
-            ObjectiveConditionEconomyMetric mergeCompleteActivation =
-                CreateSelectedEconomyCondition(
-                    water,
-                    boardWalletTag,
-                    selectedTag,
-                    0L,
-                    CompareOperation.Equal);
-            var success = new ObjectiveConditionMaterializedMarkerCoverage(
-                water,
-                EconomyFormType.Token,
-                null,
-                null,
-                new List<TaxonomyTermData> { boardCellTag },
-                0L,
-                CompareOperation.Equal);
-            var root = new ObjectiveNode(
-                "chainrush-board-population",
-                null,
+            var operation = new EconomyMutationOperationData();
+            SetField(operation, "mutation", new EconomyOperationData(EconomyOperation.Consume,
+                new EconomyAssetAmountEntry(turnToken, 1L, EconomyFormType.Stack),
+                new List<TaxonomyTermData> { sharedWalletTag }, null));
+            var confirmation = new ObjectiveConditionEconomyOperation();
+            SetField(confirmation, "operation", operation);
+            var payment = new ObjectiveNode("chainrush-board-consume-turn", null,
+                new List<ObjectiveCondition> { new ObjectiveConditionParentActive() },
+                new List<ObjectiveCondition> { confirmation });
+            var fill = new ObjectiveNode("chainrush-board-fill-markers", null,
                 new List<ObjectiveCondition>
                 {
-                    turnTokenActivation,
-                    mergeCompleteActivation,
+                    new ObjectiveConditionParentActive(),
+                    new ObjectiveConditionObjectiveState(payment.Id, ObjectiveState.Completed)
                 },
-                new List<ObjectiveCondition> { success },
-                new List<ObjectiveCondition>(0));
-            ObjectiveTemplateData objective = ScriptableObject.CreateInstance<ObjectiveTemplateData>();
-            objective.name = "BoardPopulationObjective";
+                new List<ObjectiveCondition>
+                {
+                    new ObjectiveConditionMaterializedMarkerCoverage(water, EconomyFormType.Token,
+                        null, null, new List<TaxonomyTermData> { boardCellTag }, 0L, CompareOperation.Equal)
+                });
+            var root = new ObjectiveNode("chainrush-board-population", null,
+                new List<ObjectiveCondition>
+                {
+                    new ObjectiveConditionEconomyMetric(new List<TaxonomyTermData> { sharedWalletTag },
+                        EconomyFormType.Stack, turnToken, 1L, CompareOperation.GreaterOrEqual, null, null),
+                    CreateSelectedEconomyCondition(water, boardWalletTag, selectedTag, 0L, CompareOperation.Equal),
+                    new ObjectiveConditionMaterializedMarkerCoverage(water, EconomyFormType.Token,
+                        null, null, new List<TaxonomyTermData> { boardCellTag }, 0L, CompareOperation.Greater)
+                },
+                new List<ObjectiveCondition>
+                {
+                    new ObjectiveConditionTargetNodesState(new List<ObjectiveNode> { payment, fill })
+                });
             SetField(objective, "root", root);
-            SetField(objective, "completionPolicyType", ObjectiveCompletionPolicyType.Reset);
-            AssetDatabase.CreateAsset(objective, PopulationObjectivePath);
-            createdPaths.Add(PopulationObjectivePath);
-            return objective;
+            SetField(objective, "completionPolicyType", ObjectiveCompletionPolicyType.ResetOnConditions);
+            SetField(objective, "resetConditions", new List<ObjectiveCondition>
+            {
+                new ObjectiveConditionMaterializedMarkerCoverage(water, EconomyFormType.Token,
+                    null, null, new List<TaxonomyTermData> { boardCellTag }, 0L, CompareOperation.Greater)
+            });
+            EditorUtility.SetDirty(objective);
         }
 
         static AgentDefinitionData CreatePopulationAgent(
-            ProgressivePlannerData planner,
-            ProductionRecipeData refreshRecipe,
+            ShapePopulationPlannerData planner,
             CapabilityHostData executorHost,
             TaxonomyTermData boardCellTag,
             TaxonomyTermData boardWalletTag,
@@ -1016,7 +1041,6 @@ namespace ChainRush.Editor
         {
             var agentData = new PopulationAgentData();
             SetField(agentData, "planner", planner);
-            SetField(agentData, "completionRecipe", refreshRecipe);
             SetField(agentData, "shapeWalletTags", new List<TaxonomyTermData> { boardWalletTag });
 
             var match = new ObjectiveConditionMaterializedMarkerCoverage(
@@ -1250,6 +1274,8 @@ namespace ChainRush.Editor
                     materializedProductionOperation,
                 });
             SetField(brain, "decisionGraph", graph);
+            ConfigureEconomyOperation(brain, LoadRequired<TaxonomyTermData>(EconomyOperationOperatorPath),
+                LoadRequired<FrameworkResourceData>(TurnTokenPath), LoadRequired<TaxonomyTermData>(SharedWalletTagPath));
             EditorUtility.SetDirty(brain);
         }
 
@@ -1805,7 +1831,6 @@ namespace ChainRush.Editor
             EconomyAssetData turnToken,
             CapabilityHostData waterUnit,
             CapabilityHostData populationProducer,
-            ProductionRecipeData refreshRecipe,
             ProductionRecipeData waterRecipe,
             TaxonomyFamilyData operatorFamily,
             TaxonomyTermData populationAgentOperator,
@@ -1825,11 +1850,6 @@ namespace ChainRush.Editor
                     || (populationProducer.Capabilities.Count == 1
                         && populationProducer.SupportsCapability(CapabilityHostType.ProductionOwner)))
                 && populationProducer.WalletEntries.Count <= 1
-                && HasEmptyOrExpectedId(
-                    refreshRecipe,
-                    "chainrush.production.board.refresh.recipe")
-                && refreshRecipe.Inputs.Count <= 1
-                && refreshRecipe.Outputs.Count == 0
                 && HasEmptyOrExpectedId(
                     waterRecipe,
                     "chainrush.production.board.water-base.recipe")
@@ -1864,7 +1884,6 @@ namespace ChainRush.Editor
             EconomyAssetData turnToken,
             CapabilityHostData waterUnit,
             CapabilityHostData populationProducer,
-            ProductionRecipeData refreshRecipe,
             ProductionRecipeData waterRecipe,
             TaxonomyFamilyData operatorFamily,
             TaxonomyTermData populationAgentOperator,
@@ -1877,9 +1896,6 @@ namespace ChainRush.Editor
                 && HasId(populationProducer, "chainrush.board.population-producer")
                 && populationProducer.SupportsCapability(CapabilityHostType.ProductionOwner)
                 && populationProducer.WalletEntries.Count == 1
-                && HasId(refreshRecipe, "chainrush.production.board.refresh.recipe")
-                && refreshRecipe.Inputs.Count == 1
-                && refreshRecipe.Outputs.Count == 0
                 && HasId(waterRecipe, "chainrush.production.board.water-base.recipe")
                 && waterRecipe.Inputs.Count == 0
                 && waterRecipe.Outputs.Count == 1

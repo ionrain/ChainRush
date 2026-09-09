@@ -18,10 +18,10 @@ MonoBehaviour:
     ReferencedUnityObjects:
     - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
     - {fileID: 11400000, guid: 854a0cd2c05d9443ead51a662d4966bf, type: 2}
-    - {fileID: 11400000, guid: 1116b7b9d35a249b18741b1309a53cd1, type: 2}
-    - {fileID: 11400000, guid: a70bd9d1bf3b1457fbe47de7812a7fed, type: 2}
     - {fileID: 11400000, guid: 9cbb4f47a974c42cfa008dda55386302, type: 2}
+    - {fileID: 11400000, guid: 1116b7b9d35a249b18741b1309a53cd1, type: 2}
     - {fileID: 11400000, guid: a18044d5476ae485296043e6e5ba431f, type: 2}
+    - {fileID: 11400000, guid: a70bd9d1bf3b1457fbe47de7812a7fed, type: 2}
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
@@ -45,7 +45,7 @@ MonoBehaviour:
         Core]], mscorlib
     - Name: 
       Entry: 12
-      Data: 2
+      Data: 3
     - Name: 
       Entry: 7
       Data: 2|Core.Objectives.ObjectiveConditionEconomyMetric, Core
@@ -84,6 +84,19 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
+    - Name: _requiredRuntimeTags
+      Entry: 7
+      Data: 5|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: _formType
       Entry: 3
       Data: 0
@@ -95,119 +108,11 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 9|Core.Objectives.ObjectiveConditionEconomyMetric, Core
+      Data: 6|Core.Objectives.ObjectiveConditionEconomyMetric, Core
     - Name: _targetValue
       Entry: 3
       Data: 0
     - Name: _walletTags
-      Entry: 7
-      Data: 10|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
-        Core]], mscorlib
-    - Name:
-      Entry: 12
-      Data: 1
-    - Name:
-      Entry: 10
-      Data: 4
-    - Name:
-      Entry: 13
-      Data:
-    - Name:
-      Entry: 8
-      Data:
-    - Name: _asset
-      Entry: 10
-      Data: 2
-    - Name: _requiredAssetTags
-      Entry: 7
-      Data: 11|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
-        Core]], mscorlib
-    - Name:
-      Entry: 12
-      Data: 0
-    - Name:
-      Entry: 13
-      Data:
-    - Name:
-      Entry: 8
-      Data:
-    - Name: _requiredRuntimeTags
-      Entry: 7
-      Data: 12|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
-        Core]], mscorlib
-    - Name:
-      Entry: 12
-      Data: 1
-    - Name:
-      Entry: 10
-      Data: 5
-    - Name:
-      Entry: 13
-      Data:
-    - Name:
-      Entry: 8
-      Data:
-    - Name: _formType
-      Entry: 3
-      Data: 1
-    - Name: _compareOperation
-      Entry: 3
-      Data: 0
-    - Name:
-      Entry: 8
-      Data:
-    - Name:
-      Entry: 13
-      Data:
-    - Name:
-      Entry: 8
-      Data:
-    - Name: _successConditions
-      Entry: 7
-      Data: 5|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition,
-        Core]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 1
-    - Name: 
-      Entry: 7
-      Data: 6|Core.Objectives.ObjectiveConditionMaterializedMarkerCoverage, Core
-    - Name: _targetValue
-      Entry: 3
-      Data: 0
-    - Name: economyAsset
-      Entry: 10
-      Data: 2
-    - Name: economyFormType
-      Entry: 3
-      Data: 1
-    - Name: requiredAssetTags
-      Entry: 7
-      Data: 100|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
-        Core]], mscorlib
-    - Name:
-      Entry: 12
-      Data: 0
-    - Name:
-      Entry: 13
-      Data:
-    - Name:
-      Entry: 8
-      Data:
-    - Name: requiredCapabilityTypes
-      Entry: 7
-      Data: 101|System.Collections.Generic.List`1[[Core.CapabilityHosts.CapabilityHostType,
-        Core]], mscorlib
-    - Name:
-      Entry: 12
-      Data: 0
-    - Name:
-      Entry: 13
-      Data:
-    - Name:
-      Entry: 8
-      Data:
-    - Name: markerTags
       Entry: 7
       Data: 7|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
         Core]], mscorlib
@@ -216,7 +121,400 @@ MonoBehaviour:
       Data: 1
     - Name: 
       Entry: 10
+      Data: 2
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: _asset
+      Entry: 10
       Data: 3
+    - Name: _requiredAssetTags
+      Entry: 7
+      Data: 8|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: _requiredRuntimeTags
+      Entry: 7
+      Data: 9|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 10
+      Data: 4
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: _formType
+      Entry: 3
+      Data: 1
+    - Name: _compareOperation
+      Entry: 3
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 10|Core.Objectives.ObjectiveConditionMaterializedMarkerCoverage, Core
+    - Name: _targetValue
+      Entry: 3
+      Data: 0
+    - Name: economyAsset
+      Entry: 10
+      Data: 3
+    - Name: economyFormType
+      Entry: 3
+      Data: 1
+    - Name: requiredAssetTags
+      Entry: 7
+      Data: 11|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: requiredCapabilityTypes
+      Entry: 7
+      Data: 12|System.Collections.Generic.List`1[[Core.CapabilityHosts.CapabilityHostType,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: markerTags
+      Entry: 7
+      Data: 13|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 10
+      Data: 5
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: compareOperation
+      Entry: 3
+      Data: 2
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: _successConditions
+      Entry: 7
+      Data: 14|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: 15|Core.Objectives.ObjectiveConditionTargetNodesState, Core
+    - Name: _targetNodes
+      Entry: 7
+      Data: 16|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveNode,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 2
+    - Name: 
+      Entry: 7
+      Data: 17|Core.Objectives.ObjectiveNode, Core
+    - Name: _id
+      Entry: 1
+      Data: chainrush-board-consume-turn
+    - Name: _data
+      Entry: 6
+      Data: 
+    - Name: _state
+      Entry: 3
+      Data: 1
+    - Name: _activateConditions
+      Entry: 7
+      Data: 18|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: 19|Core.Objectives.ObjectiveConditionParentActive, Core
+    - Name: _targetValue
+      Entry: 5
+      Data: false
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: _successConditions
+      Entry: 7
+      Data: 20|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: 21|Core.Objectives.ObjectiveConditionEconomyOperation, Core
+    - Name: operation
+      Entry: 7
+      Data: 22|Core.Economy.Authoring.EconomyMutationOperationData, Core
+    - Name: owner
+      Entry: 7
+      Data: 23|Core.Economy.Authoring.EconomyOperationOwnerBindingData, Core
+    - Name: bindingType
+      Entry: 3
+      Data: 0
+    - Name: owner
+      Entry: 7
+      Data: Core.Economy.Authoring.EconomyOwnerRef, Core
+    - Name: source
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: mutation
+      Entry: 7
+      Data: Core.Economy.Authoring.EconomyOperationData, Core
+    - Name: operation
+      Entry: 3
+      Data: 4
+    - Name: walletTags
+      Entry: 7
+      Data: 24|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 10
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: requiredRuntimeTags
+      Entry: 7
+      Data: 25|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: entry
+      Entry: 7
+      Data: Core.Economy.EconomyAssetAmountEntry, Core
+    - Name: asset
+      Entry: 10
+      Data: 1
+    - Name: formType
+      Entry: 3
+      Data: 0
+    - Name: amount
+      Entry: 3
+      Data: 1
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: excludedRuntimeTags
+      Entry: 7
+      Data: 26|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: _failConditions
+      Entry: 7
+      Data: 27|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 28|Core.Objectives.ObjectiveNode, Core
+    - Name: _id
+      Entry: 1
+      Data: chainrush-board-fill-markers
+    - Name: _data
+      Entry: 6
+      Data: 
+    - Name: _state
+      Entry: 3
+      Data: 1
+    - Name: _activateConditions
+      Entry: 7
+      Data: 29|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 2
+    - Name: 
+      Entry: 7
+      Data: 30|Core.Objectives.ObjectiveConditionParentActive, Core
+    - Name: _targetValue
+      Entry: 5
+      Data: false
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 31|Core.Objectives.ObjectiveConditionObjectiveState, Core
+    - Name: _targetValue
+      Entry: 3
+      Data: 3
+    - Name: _targetId
+      Entry: 1
+      Data: chainrush-board-consume-turn
+    - Name: _compareOperation
+      Entry: 3
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: _successConditions
+      Entry: 7
+      Data: 32|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: 33|Core.Objectives.ObjectiveConditionMaterializedMarkerCoverage, Core
+    - Name: _targetValue
+      Entry: 3
+      Data: 0
+    - Name: economyAsset
+      Entry: 10
+      Data: 3
+    - Name: economyFormType
+      Entry: 3
+      Data: 1
+    - Name: requiredAssetTags
+      Entry: 7
+      Data: 34|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: requiredCapabilityTypes
+      Entry: 7
+      Data: 35|System.Collections.Generic.List`1[[Core.CapabilityHosts.CapabilityHostType,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: markerTags
+      Entry: 7
+      Data: 36|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 10
+      Data: 5
     - Name: 
       Entry: 13
       Data: 
@@ -237,7 +535,7 @@ MonoBehaviour:
       Data: 
     - Name: _failConditions
       Entry: 7
-      Data: 8|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition,
+      Data: 37|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition,
         Core]], mscorlib
     - Name: 
       Entry: 12
@@ -251,4 +549,111 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-  completionPolicyType: 1
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: _targetState
+      Entry: 3
+      Data: 3
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: _failConditions
+      Entry: 7
+      Data: 38|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: resetConditions
+      Entry: 7
+      Data: 39|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: 40|Core.Objectives.ObjectiveConditionMaterializedMarkerCoverage, Core
+    - Name: _targetValue
+      Entry: 3
+      Data: 0
+    - Name: economyAsset
+      Entry: 10
+      Data: 3
+    - Name: economyFormType
+      Entry: 3
+      Data: 1
+    - Name: requiredAssetTags
+      Entry: 7
+      Data: 41|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: requiredCapabilityTypes
+      Entry: 7
+      Data: 42|System.Collections.Generic.List`1[[Core.CapabilityHosts.CapabilityHostType,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: markerTags
+      Entry: 7
+      Data: 43|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 10
+      Data: 5
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: compareOperation
+      Entry: 3
+      Data: 2
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+  completionPolicyType: 2

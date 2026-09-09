@@ -15,6 +15,7 @@ using Core.Drops;
 using Core.Economy;
 using Core.Events;
 using Core.GameRuntime;
+using Core.GameFlow;
 using Core.HostValues;
 using Core.Objectives;
 using Core.Objectives.Events;
@@ -114,8 +115,31 @@ namespace ChainRush.Tests.PlayMode
             SessionState.EraseBool(PlayMainEditorPrefValueSessionKey);
         }
 
+        static readonly List<int> BoardSelectionStarts = new List<int> { 1, 7, 13 };
+
+        [UnityTearDown]
+        public IEnumerator TearDownRuntime()
+        {
+            GameFlowService.ResetRuntime();
+            ActivityLauncher.ResetRuntime();
+            ActivityService.ResetRuntime();
+            ProjectionService.ResetRuntime();
+
+            foreach (GameRuntimeHost host in Object.FindObjectsByType<GameRuntimeHost>(
+                FindObjectsInactive.Include, FindObjectsSortMode.None))
+            {
+                typeof(GameRuntimeHost).GetField(
+                    "_persistentEconomySaved", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .SetValue(host, true);
+                Object.Destroy(host.gameObject);
+            }
+
+            yield return null;
+        }
+
         [UnityTest]
-        public IEnumerator RuntimeComposition_LaunchesBoardOnceAndParentCloseClosesIt()
+        public IEnumerator RuntimeComposition_LaunchesBoardOnceAndParentCloseClosesIt(
+            [ValueSource(nameof(BoardSelectionStarts))] int firstSelection)
         {
             Scene integrationScene = EditorSceneManager.LoadSceneInPlayMode(
                 IntegrationScenePath,
@@ -458,7 +482,7 @@ namespace ChainRush.Tests.PlayMode
             Assert.AreEqual(
                 0L,
                 QueryAmount(board, sharedWalletTag, EconomyFormType.Stack, turnToken),
-                "Board refresh production did not consume the first Experience-produced turn token.");
+                "Board payment Objective did not consume the first Experience-produced turn token.");
 
             CapabilityHostData boardHost =
                 AssetDatabase.LoadAssetAtPath<CapabilityHostData>(BoardHostPath);
@@ -730,6 +754,52 @@ namespace ChainRush.Tests.PlayMode
                     mergeRecipe1.Id,
                 });
 
+            // Supply turn resources for the Board contract matrix; all cells and units still use live production.
+            var turnBudget = new EconomyMutationOperationRequest(playerParticipant.ParticipantEconomyOwner,
+                EconomyOperation.Issue, new EconomyEntrySelectionData(turnToken, EconomyFormType.Stack,
+                    new List<TaxonomyTermData> { sharedWalletTag }, null, null, null, null),
+                32L, EconomyTransactionTraceContext.None);
+            Assert.IsTrue(EconomyService.TryRegisterOperation(turnBudget, out EconomyOperationHandle budgetHandle,
+                out EconomyFailure budgetFailure), budgetFailure.Message);
+            Assert.IsTrue(EconomyService.TryExecuteOperation(budgetHandle, out _, out budgetFailure), budgetFailure.Message);
+            Assert.IsTrue(EconomyService.TryCloseOperation(budgetHandle));
+            var payments = new BoardPaymentCapture(playerParticipant.ParticipantEconomyOwner, turnToken);
+            EventBus.Register<EconomyOperationChangedEvent>(payments);
+            try
+            {
+                var recipes = new List<ProductionRecipeData>();
+                for (int size = 1; size <= 4; size++)
+                    recipes.Add(AssetDatabase.LoadAssetAtPath<ProductionRecipeData>(
+                        "Assets/Game/Activities/Board/Production/BoardMergeRecipe" + size + ".asset"));
+                for (int size = firstSelection; size <= System.Math.Min(firstSelection + 5, 16); size++)
+                {
+                    yield return AwaitCompletedPopulation(board, boardCellTag, waterBase);
+                    int before = payments.Handles.Count;
+                    for (int stableFrame = 0; stableFrame < 4; stableFrame++)
+                        yield return null;
+                    Assert.AreEqual(before, payments.Handles.Count,
+                        "A full Board must not consume additional turns.");
+                    var expected = new List<string>();
+                    for (int remaining = size; remaining > 0;)
+                    {
+                        int batch = System.Math.Min(4, remaining);
+                        expected.Add(recipes[batch - 1].Id);
+                        remaining -= batch;
+                    }
+                    yield return AssertBoardMergeSequence(board, boardCellTag, waterBase, boardHostEntityId,
+                        mergeSelection, size, expected);
+                    yield return AwaitCompletedPopulation(board, boardCellTag, waterBase);
+                    Assert.AreEqual(before + 1, payments.Handles.Count,
+                        "Each Board refresh must commit exactly one payment. Selection size=" + size);
+                    Assert.IsNull(payments.Failure);
+                    TestContext.WriteLine("Board matrix completed selection=" + size + ", payments=" + payments.Handles.Count);
+                }
+            }
+            finally
+            {
+                EventBus.Unregister<EconomyOperationChangedEvent>(payments);
+            }
+
             TaxonomyTermData activation =
                 AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(BoardActivationTermPath);
             Assert.NotNull(activation);
@@ -739,11 +809,52 @@ namespace ChainRush.Tests.PlayMode
             yield return null;
             Assert.AreEqual(1, ActivityService.GetChildActivityIds(autobattle.Id).Count);
 
+            TestContext.WriteLine("Board matrix closing parent Activity.");
             Assert.IsTrue(ActivityService.Close(autobattle.Id, ActivityCloseCauseType.Manual));
             Assert.IsTrue(ActivityService.TryGetSnapshot(board.Id, out board));
             Assert.AreEqual(ActivityState.Closed, board.State);
             Assert.AreEqual(ActivityCloseCauseType.ParentClosed, board.CloseCauseType);
             Assert.AreEqual(ActivityResultType.Cancelled, board.ResultType);
+            for (int i = 0; i < payments.Handles.Count; i++)
+                Assert.IsFalse(EconomyService.TryGetOperation(payments.Handles[i], out _),
+                    "Activity close must release Objective-owned Economy receipts.");
+        }
+
+        static IEnumerator AwaitCompletedPopulation(ActivityRuntimeSnapshot board,
+            TaxonomyTermData markerTag, CapabilityHostData item)
+        {
+            ActivityObjectiveRuntimeSnapshot objective = board.Objectives.Single(
+                value => value.RootNodeId == "chainrush-board-population");
+            float deadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
+            while (Time.realtimeSinceStartup < deadline)
+            {
+                ObjectiveRuntimeSnapshot snapshot = ObjectiveService.GetSnapshot(board.DomainId, objective.RuntimeId);
+                if (CountMaterializedBoardAssets(board, markerTag, item) == 16
+                    && snapshot.Nodes.Any(node => node.NodeId == objective.RootNodeId && node.State == ObjectiveState.Completed))
+                    yield break;
+                yield return null;
+            }
+            Assert.Fail("Board did not finish its paid population cycle.\n" + BuildOrchestrationDiagnostic(board.DomainId));
+        }
+
+        sealed class BoardPaymentCapture : IEventListener<EconomyOperationChangedEvent>
+        {
+            readonly IEconomyAssetOwner _owner;
+            readonly EconomyAssetData _asset;
+            public readonly List<EconomyOperationHandle> Handles = new List<EconomyOperationHandle>();
+            public string Failure;
+            public BoardPaymentCapture(IEconomyAssetOwner owner, EconomyAssetData asset)
+            { _owner = owner; _asset = asset; }
+            public void OnEvent(EconomyOperationChangedEvent e)
+            {
+                if (e.State != EconomyOperationStateType.Committed || e.Owner != _owner
+                    || !EconomyService.TryGetOperation(e.Handle, out EconomyOperationSnapshot operation)
+                    || operation.Request.Asset != _asset || operation.Request.Operation != EconomyOperation.Consume)
+                    return;
+                if (operation.Request.Amount != 1L || Handles.Contains(e.Handle))
+                    Failure = "Board payment was repeated or consumed more than one turn.";
+                Handles.Add(e.Handle);
+            }
         }
 
         static IEnumerator AssertBoardMergeSequence(
@@ -821,11 +932,11 @@ namespace ChainRush.Tests.PlayMode
                 expectedRecipeIds.Count,
                 productionCapture.StartedCount,
                 productionCapture.BuildDiagnostic());
-            for (int recipeIndex = 0; recipeIndex < expectedRecipeIds.Count; recipeIndex++)
+            foreach (var expected in expectedRecipeIds.GroupBy(id => id))
             {
                 Assert.AreEqual(
-                    1,
-                    productionCapture.CountRecipe(expectedRecipeIds[recipeIndex]),
+                    expected.Count(),
+                    productionCapture.CountRecipe(expected.Key),
                     productionCapture.BuildDiagnostic());
             }
         }
@@ -1595,8 +1706,6 @@ namespace ChainRush.Tests.PlayMode
                         .Append(assignment.DesiredFactType ?? "<null>")
                         .Append(" status=")
                         .Append(assignment.StatusType)
-                        .Append(" generation=")
-                        .Append(assignment.Generation)
                         .Append(" message=")
                         .Append(assignment.Message ?? "<null>")
                         .AppendLine();

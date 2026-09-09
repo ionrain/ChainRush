@@ -33,7 +33,7 @@ MonoBehaviour:
   aiBrainTargetKey: {fileID: 0}
   controlType: 2
   agent:
-    rid: 2807516289745289327
+    rid: 6092003813537087492
   stopPolicyType: 0
   timeLimit: 0
   tokenReservationPolicyType: 0
@@ -54,24 +54,16 @@ MonoBehaviour:
         economyAsset: {fileID: 0}
         economyFormType: 1
         requiredAssetTags: []
-        requiredCapabilityTypes:
+        requiredCapabilityTypes: 
         markerTags:
         - {fileID: 11400000, guid: a70bd9d1bf3b1457fbe47de7812a7fed, type: 2}
         compareOperation: 0
-    - rid: 2807516289745289327
-      type: {class: PopulationAgentData, ns: Core.Orchestration, asm: Core}
-      data:
-        planner: {fileID: 11400000, guid: 1029848a6853142608dc780bbbc34c1a, type: 2}
-        completionRecipe: {fileID: 11400000, guid: d4e9db74d23374f1ca87f95dcf69864a,
-          type: 2}
-        shapeWalletTags:
-        - {fileID: 11400000, guid: 9cbb4f47a974c42cfa008dda55386302, type: 2}
     - rid: 6092003635567525900
       type: {class: CapabilityHostCriterionData, ns: Core.Orchestration, asm: Core}
       data:
         definition: {fileID: 11400000, guid: d998acfcc5fb2426387891c381d11387, type: 2}
         requiredAssetTags: []
-        requiredCapabilityTypes:
+        requiredCapabilityTypes: 
     - rid: 6092003635567525901
       type: {class: OwnerCriterionData, ns: Core.Orchestration, asm: Core}
       data:
@@ -84,3 +76,9 @@ MonoBehaviour:
         excludedTags: []
         providerType: {fileID: 11400000, guid: a70bd9d1bf3b1457fbe47de7812a7fed, type: 2}
         scopeType: 1
+    - rid: 6092003813537087492
+      type: {class: PopulationAgentData, ns: Core.Orchestration, asm: Core}
+      data:
+        planner: {fileID: 11400000, guid: 1029848a6853142608dc780bbbc34c1a, type: 2}
+        shapeWalletTags:
+        - {fileID: 11400000, guid: 9cbb4f47a974c42cfa008dda55386302, type: 2}

@@ -112,8 +112,6 @@ namespace ChainRush.Tests.EditMode
             BoardRoot + "/Economy/BoardHost.asset";
         const string BoardWaterBasePath =
             BoardRoot + "/Economy/WaterBoardBase.asset";
-        const string BoardRefreshRecipePath =
-            BoardRoot + "/Production/BoardRefreshRecipe.asset";
         const string BoardWaterBaseRecipePath =
             BoardRoot + "/Production/WaterBoardBaseRecipe.asset";
         const string BoardPopulationProductionPath =
@@ -415,8 +413,6 @@ namespace ChainRush.Tests.EditMode
                 LoadRequiredAsset<SpatialShapeData>(BoxShapePath);
             SpatialShapeData zigzagShape =
                 LoadRequiredAsset<SpatialShapeData>(ZigzagShapePath);
-            ProductionRecipeData refreshRecipe =
-                LoadRequiredAsset<ProductionRecipeData>(BoardRefreshRecipePath);
             ProductionRecipeData waterBaseRecipe =
                 LoadRequiredAsset<ProductionRecipeData>(BoardWaterBaseRecipePath);
             ProductionData populationProduction =
@@ -445,7 +441,7 @@ namespace ChainRush.Tests.EditMode
             CollectionAssert.AreEquivalent(
                 new[] { objective, selectionObjective, mergeObjective },
                 board.Teams[0].Objectives.Select(entry => entry.Template).ToList());
-            Assert.AreEqual(ObjectiveCompletionPolicyType.Reset, objective.CompletionPolicyType);
+            Assert.AreEqual(ObjectiveCompletionPolicyType.ResetOnConditions, objective.CompletionPolicyType);
             Assert.AreEqual(
                 ObjectiveCompletionPolicyType.Reset,
                 selectionObjective.CompletionPolicyType);
@@ -458,7 +454,7 @@ namespace ChainRush.Tests.EditMode
             Assert.AreEqual(
                 AgentStopPolicyType.None,
                 selectionAgent.StopPolicyType);
-            Assert.AreEqual(7, boardBrain.Operators.Count);
+            Assert.AreEqual(8, boardBrain.Operators.Count);
             List<AgentDecompOpData> agentOperators = boardBrain.Operators
                 .OfType<AgentDecompOpData>()
                 .ToList();
@@ -518,7 +514,7 @@ namespace ChainRush.Tests.EditMode
                 waterTag,
                 "The taxonomy installer must register the Water Board item term before economy queries run.");
 
-            Assert.AreEqual(2, objective.Root.ActivateConditions.Count);
+            Assert.AreEqual(3, objective.Root.ActivateConditions.Count);
             List<ObjectiveConditionEconomyMetric> populationActivations = objective.Root
                 .ActivateConditions
                 .OfType<ObjectiveConditionEconomyMetric>()
@@ -544,8 +540,26 @@ namespace ChainRush.Tests.EditMode
                 CompareOperation.Equal);
 
             Assert.AreEqual(1, objective.Root.SuccessConditions.Count);
-            var success = objective.Root.SuccessConditions.Single()
-                as ObjectiveConditionMaterializedMarkerCoverage;
+            var children = ((ObjectiveConditionTargetNodesState)objective.Root.SuccessConditions.Single()).TargetNodes;
+            Assert.AreEqual(2, children.Count);
+            ObjectiveNode payment = children.Single(node => node.Id == "chainrush-board-consume-turn");
+            ObjectiveNode fill = children.Single(node => node.Id == "chainrush-board-fill-markers");
+            var confirmation = (ObjectiveConditionEconomyOperation)payment.SuccessConditions.Single();
+            EconomyOperationRequest request = confirmation.Operation.CreateRequest(null, EconomyTransactionTraceContext.None);
+            Assert.AreEqual(EconomyOperation.Consume, request.Operation);
+            Assert.AreSame(turnToken, request.Asset);
+            Assert.AreEqual(1L, request.Amount);
+            Assert.AreEqual(EconomyFormType.Stack, request.FormType);
+            Assert.AreSame(sharedWalletTag, request.WalletTags.Single());
+            Assert.IsTrue(fill.ActivateConditions.OfType<ObjectiveConditionObjectiveState>()
+                .Any(condition => condition.TargetId == payment.Id && condition.TargetValue == ObjectiveState.Completed));
+            var reset = (ObjectiveConditionMaterializedMarkerCoverage)objective.ResetConditions.Single();
+            Assert.AreEqual(CompareOperation.Greater, reset.CompareOperation);
+            Assert.AreEqual(0L, reset.TargetValue);
+            var operation = boardBrain.Operators.OfType<EconomyOperationDecompOpData>().Single();
+            Assert.AreEqual(EconomyOperation.Consume, ReadField<EconomyOperation>(operation, "operation"));
+            Assert.AreSame(turnToken, ReadField<EconomyEntrySelectionData>(operation, "selection").ExactAsset);
+            var success = fill.SuccessConditions.Single() as ObjectiveConditionMaterializedMarkerCoverage;
             Assert.NotNull(success);
             Assert.AreSame(waterBase, success.EconomyAsset);
             Assert.AreEqual(EconomyFormType.Token, success.EconomyFormType);
@@ -633,7 +647,6 @@ namespace ChainRush.Tests.EditMode
             Assert.AreEqual(1000, distanceCriterion.MaximumDistance);
             var population = (PopulationAgentData)populationAgent.Agent;
             Assert.NotNull(population.Planner);
-            Assert.AreSame(refreshRecipe, population.CompletionRecipe);
             var populationMarker = populationAgent.TargetSelectionCriteria
                 .Select(entry => entry.Criterion)
                 .OfType<MarkerCriterionData>()
@@ -666,6 +679,8 @@ namespace ChainRush.Tests.EditMode
             SerializedProperty patternRules = planner.FindProperty("patternRules");
             Assert.NotNull(patternRules);
             Assert.AreEqual(2, patternRules.arraySize);
+            Assert.AreEqual(2L, patternRules.GetArrayElementAtIndex(0).FindPropertyRelative("size").longValue);
+            Assert.AreEqual(1L, patternRules.GetArrayElementAtIndex(1).FindPropertyRelative("size").longValue);
             Assert.AreSame(
                 lineShape,
                 patternRules.GetArrayElementAtIndex(0)
@@ -690,14 +705,6 @@ namespace ChainRush.Tests.EditMode
                     && seed.FormType == EconomyFormType.Stack
                     && seed.Amount == 1L));
 
-            Assert.AreEqual(1, refreshRecipe.Inputs.Count);
-            AssertEconomyOperation(
-                refreshRecipe.Inputs[0],
-                turnToken,
-                EconomyFormType.Stack,
-                1L,
-                sharedWalletTag);
-            Assert.AreEqual(0, refreshRecipe.Outputs.Count);
 
             Assert.AreEqual(0, waterBaseRecipe.Inputs.Count);
             Assert.AreEqual(1, waterBaseRecipe.Outputs.Count);

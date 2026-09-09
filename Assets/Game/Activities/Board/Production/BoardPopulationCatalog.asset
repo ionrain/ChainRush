@@ -39,10 +39,6 @@ MonoBehaviour:
   slotFootprint: 1
   stackCapacity: 0
   entries:
-  - recipe: {fileID: 11400000, guid: d4e9db74d23374f1ca87f95dcf69864a, type: 2}
-    workDuration: 1
-    recoveryDuration: 0
-    reservationPolicy: 0
   - recipe: {fileID: 11400000, guid: e30a05f8fdca94b2ab5d68d244faaa83, type: 2}
     workDuration: 1
     recoveryDuration: 0

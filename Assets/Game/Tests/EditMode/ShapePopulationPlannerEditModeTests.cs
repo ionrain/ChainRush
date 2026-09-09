@@ -22,10 +22,10 @@ using Object = UnityEngine.Object;
 
 namespace ChainRush.Tests.EditMode
 {
-    public sealed class ProgressivePlannerEditModeTests
+    public sealed class ShapePopulationPlannerEditModeTests
     {
         const string PlannerScriptPath =
-            "Assets/Game/Activities/Board/Runtime/Population/ProgressivePlannerData.cs";
+            "Assets/Game/Activities/Board/Runtime/Population/ShapePopulationPlannerData.cs";
 
         static readonly ActivityId ActivityId = new ActivityId(7101);
         static readonly RuntimeDomainId DomainId = new RuntimeDomainId(7102);
@@ -84,14 +84,14 @@ namespace ChainRush.Tests.EditMode
         }
 
         [Test]
-        public void Generation_IsTheOnlyProgressionOrdinal()
+        public void Seed_DoesNotChangeAuthoredPatternSize()
         {
             OpenGridTopology(TopologyUpAxisType.Y);
             CapabilityHostData water = CreateHost("planner-water");
             PopulationPlannerData planner = CreatePlanner(
                 new[]
                 {
-                    Pattern(ShapeFixtureType.Line, 3L, 1L, 1L, sizeStep: 1L),
+                    Pattern(ShapeFixtureType.Line, 3L, 1L, 1L),
                     Pattern(ShapeFixtureType.Single, 1L, 1L, 0L),
                 },
                 new[] { Content(water, 1L, 0L, 1f) });
@@ -101,8 +101,8 @@ namespace ChainRush.Tests.EditMode
             Assert.IsTrue(
                 planner.TryBuild(CreateContext(1L, cells), out _, out string firstFailure),
                 firstFailure);
-            Assert.IsFalse(planner.TryBuild(CreateContext(2L, cells), out _, out string secondFailure));
-            StringAssert.Contains("mandatory patterns", secondFailure);
+            Assert.IsTrue(planner.TryBuild(CreateContext(2L, cells), out PopulationPlan second, out string secondFailure), secondFailure);
+            Assert.AreEqual(3, second.Groups.Single(group => group.Shape == _activeShapes[0]).Markers.Count);
         }
 
         [Test]
@@ -258,15 +258,15 @@ namespace ChainRush.Tests.EditMode
             PopulationPlannerData missingSingle = CreatePlanner(
                 new[] { Pattern(ShapeFixtureType.Line, 3L, 1L, 0L) },
                 new[] { Content(water, 1L, 0L, 1f) });
-            PopulationPlannerData missingProgression = CreatePlanner(
-                new[] { new PatternSpec(CreateShape(ShapeFixtureType.Single), null, Constant(1L), Constant(0L)) },
+            PopulationPlannerData invalidSize = CreatePlanner(
+                new[] { new PatternSpec(CreateShape(ShapeFixtureType.Single), 0L, 1L, 0L) },
                 new[] { Content(water, 1L, 0L, 1f) });
             PopulationPlanContext context = CreateContext(1L, CreateGridCells(2, 2));
 
             Assert.IsFalse(missingSingle.TryBuild(context, out _, out string singleFailure));
             StringAssert.Contains("resolved size of one cell", singleFailure);
-            Assert.IsFalse(missingProgression.TryBuild(context, out _, out string progressionFailure));
-            StringAssert.Contains("is missing", progressionFailure);
+            Assert.IsFalse(invalidSize.TryBuild(context, out _, out string sizeFailure));
+            StringAssert.Contains("must be greater than zero", sizeFailure);
         }
 
         [Test]
@@ -307,7 +307,7 @@ namespace ChainRush.Tests.EditMode
         }
 
         [Test]
-        public void ProgressionAuthoring_IsInlineAndSelfContained()
+        public void ShapeAuthoring_UsesConstantNumericParameters()
         {
             Type plannerType = AssetDatabase.LoadAssetAtPath<MonoScript>(PlannerScriptPath)?.GetClass();
             Assert.NotNull(plannerType);
@@ -322,7 +322,8 @@ namespace ChainRush.Tests.EditMode
             {
                 FieldInfo field = patternRuleType.GetField(patternFields[i], Flags);
                 Assert.NotNull(field);
-                Assert.NotNull(field.GetCustomAttribute<SerializeReference>());
+                Assert.AreEqual(typeof(long), field.FieldType);
+                Assert.NotNull(field.GetCustomAttribute<SerializeField>());
             }
 
             string[] contentFields = { "weight", "minimumPatternCount" };
@@ -330,7 +331,8 @@ namespace ChainRush.Tests.EditMode
             {
                 FieldInfo field = contentRuleType.GetField(contentFields[i], Flags);
                 Assert.NotNull(field);
-                Assert.NotNull(field.GetCustomAttribute<SerializeReference>());
+                Assert.AreEqual(typeof(long), field.FieldType);
+                Assert.NotNull(field.GetCustomAttribute<SerializeField>());
             }
 
             Assert.IsFalse(AssetDatabase.IsValidFolder(
@@ -359,7 +361,7 @@ namespace ChainRush.Tests.EditMode
             IReadOnlyList<ContentSpec> contents)
         {
             Type plannerType = AssetDatabase.LoadAssetAtPath<MonoScript>(PlannerScriptPath)?.GetClass();
-            Assert.NotNull(plannerType, "ProgressivePlannerData MonoScript did not resolve to a compiled type.");
+            Assert.NotNull(plannerType, "ShapePopulationPlannerData MonoScript did not resolve to a compiled type.");
             var planner = ScriptableObject.CreateInstance(plannerType) as PopulationPlannerData;
             Assert.NotNull(planner);
             _ownedObjects.Add(planner);
@@ -398,11 +400,6 @@ namespace ChainRush.Tests.EditMode
             return planner;
         }
 
-        LongLinearProgressionData Constant(long value, long step = 0L)
-        {
-            return new LongLinearProgressionData(value, step);
-        }
-
         CapabilityHostData CreateHost(string id)
         {
             CapabilityHostData host = ScriptableObject.CreateInstance<CapabilityHostData>();
@@ -415,14 +412,13 @@ namespace ChainRush.Tests.EditMode
             ShapeFixtureType type,
             long size,
             long weight,
-            long minimumCount,
-            long sizeStep = 0L)
+            long minimumCount)
         {
             return new PatternSpec(
                 CreateShape(type),
-                Constant(size, sizeStep),
-                Constant(weight),
-                Constant(minimumCount));
+                size,
+                weight,
+                minimumCount);
         }
 
         SpatialShapeData CreateShape(ShapeFixtureType type)
@@ -499,13 +495,13 @@ namespace ChainRush.Tests.EditMode
         {
             return new ContentSpec(
                 asset,
-                Constant(weight),
-                Constant(minimumPatternCount),
+                weight,
+                minimumPatternCount,
                 guaranteedCellShare);
         }
 
         PopulationPlanContext CreateContext(
-            long generation,
+            long seed,
             IReadOnlyList<PopulationCellSnapshot> cells)
         {
             var shapes = new List<SpatialShapeProjectionRecord>(_activeShapes.Count);
@@ -516,7 +512,7 @@ namespace ChainRush.Tests.EditMode
                 DomainId,
                 ParticipantEntityId,
                 PopulationEntityId,
-                generation,
+                unchecked((ulong)seed),
                 cells,
                 shapes);
         }
@@ -737,9 +733,9 @@ namespace ChainRush.Tests.EditMode
         {
             public PatternSpec(
                 SpatialShapeData shape,
-                LongProgressionData size,
-                LongProgressionData weight,
-                LongProgressionData minimumCount)
+                long size,
+                long weight,
+                long minimumCount)
             {
                 Shape = shape;
                 Size = size;
@@ -748,17 +744,17 @@ namespace ChainRush.Tests.EditMode
             }
 
             public SpatialShapeData Shape { get; }
-            public LongProgressionData Size { get; }
-            public LongProgressionData Weight { get; }
-            public LongProgressionData MinimumCount { get; }
+            public long Size { get; }
+            public long Weight { get; }
+            public long MinimumCount { get; }
         }
 
         readonly struct ContentSpec
         {
             public ContentSpec(
                 CapabilityHostData asset,
-                LongProgressionData weight,
-                LongProgressionData minimumPatternCount,
+                long weight,
+                long minimumPatternCount,
                 float guaranteedCellShare)
             {
                 Asset = asset;
@@ -768,8 +764,8 @@ namespace ChainRush.Tests.EditMode
             }
 
             public CapabilityHostData Asset { get; }
-            public LongProgressionData Weight { get; }
-            public LongProgressionData MinimumPatternCount { get; }
+            public long Weight { get; }
+            public long MinimumPatternCount { get; }
             public float GuaranteedCellShare { get; }
         }
     }

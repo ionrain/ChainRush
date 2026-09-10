@@ -867,6 +867,7 @@ namespace ChainRush.Tests.PlayMode
                     "Activity close must release Objective-owned Economy receipts.");
         }
 
+
         static IEnumerator AwaitCompletedPopulation(ActivityRuntimeSnapshot board,
             TaxonomyTermData markerTag, CapabilityHostData item)
         {

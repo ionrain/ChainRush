@@ -2185,7 +2185,7 @@ namespace ChainRush.Editor
                 AllMutableOperations,
                 createdPaths);
             SetField(skill, "targetType", targetType);
-            SetField(skill, "targetCount", new BoundIntValue(1, 1));
+            SetField(skill, "targetCount", new IntRange(1, 1));
             SetField(skill, "analyticSupposedTarget", supposedTarget);
             SetField(skill, "targetTags", targetTags ?? new List<TaxonomyTermData>(0));
             SetField<TaxonomyTermData>(skill, "targetSlot", null);

@@ -35,6 +35,7 @@ namespace ChainRush.Tests.EditMode
 
         readonly List<Object> _ownedObjects = new List<Object>();
         readonly List<SpatialShapeData> _activeShapes = new List<SpatialShapeData>();
+        readonly Dictionary<PopulationPlannerData, List<PopulationShapeRuleData>> _rulesByPlanner = new Dictionary<PopulationPlannerData, List<PopulationShapeRuleData>>();
         bool _topologyOpen;
         TopologyUpAxisType _upAxisType;
 
@@ -53,7 +54,32 @@ namespace ChainRush.Tests.EditMode
 
             _ownedObjects.Clear();
             _activeShapes.Clear();
+            _rulesByPlanner.Clear();
             _topologyOpen = false;
+        }
+
+        [Test]
+        public void EmptyDistribution_CompletesWithCompatibleContentRequirements()
+        {
+            OpenGridTopology(TopologyUpAxisType.Y);
+            var planner = CreatePlanner(new[] { Pattern(ShapeFixtureType.Single, 1L, 1L, 0L) },
+                new[] { Content(CreateHost("empty-content"), 1L, 0L, 0f) });
+            var context = CreateContext(1L, new List<PopulationCellSnapshot>());
+
+            Assert.IsTrue(Build(planner, context, out var plan, out var failure), failure);
+            Assert.IsEmpty(plan.Groups);
+        }
+
+        [Test]
+        public void EmptyDistribution_DoesNotBypassContentMinimum()
+        {
+            OpenGridTopology(TopologyUpAxisType.Y);
+            var planner = CreatePlanner(new[] { Pattern(ShapeFixtureType.Single, 1L, 1L, 0L) },
+                new[] { Content(CreateHost("required-content"), 1L, 1L, 0f) });
+            var context = CreateContext(1L, new List<PopulationCellSnapshot>());
+
+            Assert.IsFalse(Build(planner, context, out _, out var failure));
+            StringAssert.Contains("minimum pattern count", failure);
         }
 
         [Test]
@@ -70,8 +96,8 @@ namespace ChainRush.Tests.EditMode
                 new[] { Content(water, 1L, 0L, 1f) });
             PopulationPlanContext context = CreateContext(1L, CreateGridCells(4, 4));
 
-            Assert.IsTrue(planner.TryBuild(context, out PopulationPlan first, out string firstFailure), firstFailure);
-            Assert.IsTrue(planner.TryBuild(context, out PopulationPlan second, out string secondFailure), secondFailure);
+            Assert.IsTrue(Build(planner, context, out PopulationPlan first, out string firstFailure), firstFailure);
+            Assert.IsTrue(Build(planner, context, out PopulationPlan second, out string secondFailure), secondFailure);
 
             Assert.AreEqual(first.Groups.Count, second.Groups.Count);
             for (int i = 0; i < first.Groups.Count; i++)
@@ -99,9 +125,9 @@ namespace ChainRush.Tests.EditMode
                 new[] { new Vector2Int(0, 0), new Vector2Int(1, 0), new Vector2Int(2, 0) });
 
             Assert.IsTrue(
-                planner.TryBuild(CreateContext(1L, cells), out _, out string firstFailure),
+                Build(planner, CreateContext(1L, cells), out _, out string firstFailure),
                 firstFailure);
-            Assert.IsTrue(planner.TryBuild(CreateContext(2L, cells), out PopulationPlan second, out string secondFailure), secondFailure);
+            Assert.IsTrue(Build(planner, CreateContext(2L, cells), out PopulationPlan second, out string secondFailure), secondFailure);
             Assert.AreEqual(3, second.Groups.Single(group => group.Shape == _activeShapes[0]).Cells.Count);
         }
 
@@ -117,7 +143,7 @@ namespace ChainRush.Tests.EditMode
             cells[2] = Occupy(cells[2], water);
 
             Assert.IsTrue(
-                planner.TryBuild(CreateContext(1L, cells), out PopulationPlan plan, out string failure),
+                Build(planner, CreateContext(1L, cells), out PopulationPlan plan, out string failure),
                 failure);
 
             List<SpaceRegionCellReference> markers = FlattenCells(plan);
@@ -139,7 +165,7 @@ namespace ChainRush.Tests.EditMode
             cells[2] = MakeUnavailable(cells[2]);
 
             Assert.IsTrue(
-                planner.TryBuild(CreateContext(1L, cells), out PopulationPlan plan, out string failure),
+                Build(planner, CreateContext(1L, cells), out PopulationPlan plan, out string failure),
                 failure);
 
             List<SpaceRegionCellReference> markers = FlattenCells(plan);
@@ -168,7 +194,7 @@ namespace ChainRush.Tests.EditMode
                 new[] { Content(water, 1L, 0L, 1f) });
 
             Assert.IsTrue(
-                planner.TryBuild(
+                Build(planner,
                     CreateContext(1L, CreateCells(coordinates)),
                     out PopulationPlan plan,
                     out string failure),
@@ -178,7 +204,7 @@ namespace ChainRush.Tests.EditMode
         }
 
         [Test]
-        public void MandatoryPattern_CannotBeReplacedByWeightedSingles()
+        public void UnattainableDesiredShapeCount_AllowsWeightedSingles()
         {
             OpenGridTopology(TopologyUpAxisType.Y);
             CapabilityHostData water = CreateHost("planner-water");
@@ -196,8 +222,8 @@ namespace ChainRush.Tests.EditMode
                 new Vector2Int(0, 2),
             };
 
-            Assert.IsFalse(planner.TryBuild(CreateContext(1L, CreateCells(disconnected)), out _, out string failure));
-            StringAssert.Contains("mandatory patterns", failure);
+            Assert.IsTrue(Build(planner, CreateContext(1L, CreateCells(disconnected)), out var plan, out string failure), failure);
+            Assert.AreEqual(3, FlattenCells(plan).Count);
         }
 
         [Test]
@@ -217,7 +243,7 @@ namespace ChainRush.Tests.EditMode
             cells[0] = Occupy(cells[0], water);
 
             Assert.IsTrue(
-                planner.TryBuild(CreateContext(1L, cells), out PopulationPlan plan, out string failure),
+                Build(planner, CreateContext(1L, cells), out PopulationPlan plan, out string failure),
                 failure);
 
             Assert.AreEqual(1, CountPlannedCells(plan, water));
@@ -243,7 +269,7 @@ namespace ChainRush.Tests.EditMode
                 upAxisType);
 
             Assert.IsTrue(
-                planner.TryBuild(CreateContext(1L, cells), out PopulationPlan plan, out string failure),
+                Build(planner, CreateContext(1L, cells), out PopulationPlan plan, out string failure),
                 failure);
             CollectionAssert.AreEqual(
                 new[] { 0, 1, 2 },
@@ -251,22 +277,15 @@ namespace ChainRush.Tests.EditMode
         }
 
         [Test]
-        public void InvalidAuthoring_IsRejectedExplicitly()
+        public void PartialDistribution_DoesNotRelaxContentGuarantees()
         {
             OpenGridTopology(TopologyUpAxisType.Y);
-            CapabilityHostData water = CreateHost("planner-water");
-            PopulationPlannerData missingSingle = CreatePlanner(
+            var water = CreateHost("partial-content");
+            var planner = CreatePlanner(
                 new[] { Pattern(ShapeFixtureType.Line, 3L, 1L, 0L) },
                 new[] { Content(water, 1L, 0L, 1f) });
-            PopulationPlannerData invalidSize = CreatePlanner(
-                new[] { new PatternSpec(CreateShape(ShapeFixtureType.Single), 0L, 1L, 0L) },
-                new[] { Content(water, 1L, 0L, 1f) });
-            PopulationPlanContext context = CreateContext(1L, CreateGridCells(2, 2));
-
-            Assert.IsFalse(missingSingle.TryBuild(context, out _, out string singleFailure));
-            StringAssert.Contains("resolved size of one cell", singleFailure);
-            Assert.IsFalse(invalidSize.TryBuild(context, out _, out string sizeFailure));
-            StringAssert.Contains("must be greater than zero", sizeFailure);
+            Assert.IsFalse(Build(planner, CreateContext(1L, CreateGridCells(2, 2)), out _, out string failure));
+            StringAssert.Contains("guaranteed cell share", failure);
         }
 
         [Test]
@@ -283,8 +302,8 @@ namespace ChainRush.Tests.EditMode
                 CreateCell(1, new Vector2Int(0, 0), TopologyUpAxisType.Y),
             };
 
-            Assert.IsFalse(planner.TryBuild(CreateContext(1L, cells), out _, out string failure));
-            StringAssert.Contains("duplicate grid coordinate", failure);
+            Assert.IsFalse(Build(planner, CreateContext(1L, cells), out _, out string failure));
+            StringAssert.Contains("distinct", failure);
         }
 
         [Test]
@@ -311,21 +330,11 @@ namespace ChainRush.Tests.EditMode
         {
             Type plannerType = AssetDatabase.LoadAssetAtPath<MonoScript>(PlannerScriptPath)?.GetClass();
             Assert.NotNull(plannerType);
-            Type patternRuleType = plannerType.GetNestedType("PatternRule", BindingFlags.Public);
+            Assert.IsNull(plannerType.GetNestedType("PatternRule", BindingFlags.Public));
+            Assert.AreEqual(typeof(IntRange), typeof(PopulationShapeRuleData).GetProperty("DesiredCount").PropertyType);
             Type contentRuleType = plannerType.GetNestedType("ContentRule", BindingFlags.Public);
-            Assert.NotNull(patternRuleType);
             Assert.NotNull(contentRuleType);
-
             const BindingFlags Flags = BindingFlags.Instance | BindingFlags.NonPublic;
-            string[] patternFields = { "size", "weight", "minimumCount" };
-            for (int i = 0; i < patternFields.Length; i++)
-            {
-                FieldInfo field = patternRuleType.GetField(patternFields[i], Flags);
-                Assert.NotNull(field);
-                Assert.AreEqual(typeof(long), field.FieldType);
-                Assert.NotNull(field.GetCustomAttribute<SerializeField>());
-            }
-
             string[] contentFields = { "weight", "minimumPatternCount" };
             for (int i = 0; i < contentFields.Length; i++)
             {
@@ -356,6 +365,22 @@ namespace ChainRush.Tests.EditMode
             _topologyOpen = true;
         }
 
+        bool Build(PopulationPlannerData planner, in PopulationPlanContext context, out PopulationPlan plan, out string failure)
+        {
+            plan = null;
+            var algorithm = new GridPopulationDistributionAlgorithmData();
+            if (!algorithm.TryCreateSession(context, _rulesByPlanner[planner], context.Cells.Count,
+                out var session, out failure)) return false;
+            using (session)
+            {
+                for (int step = 0; step < 10000 && session.State == PopulationDistributionStateType.Pending; step++)
+                    session.Advance(256);
+                if (session.State != PopulationDistributionStateType.Ready)
+                { failure = session.Failure; return false; }
+                return planner.TryBuild(context, session.Groups, out plan, out failure);
+            }
+        }
+
         PopulationPlannerData CreatePlanner(
             IReadOnlyList<PatternSpec> patterns,
             IReadOnlyList<ContentSpec> contents)
@@ -366,22 +391,15 @@ namespace ChainRush.Tests.EditMode
             Assert.NotNull(planner);
             _ownedObjects.Add(planner);
 
-            Type patternRuleType = plannerType.GetNestedType("PatternRule", BindingFlags.Public);
             Type contentRuleType = plannerType.GetNestedType("ContentRule", BindingFlags.Public);
-            Assert.NotNull(patternRuleType);
-            Assert.NotNull(contentRuleType);
-
-            IList patternList = CreateList(patternRuleType);
+            var rules = new List<PopulationShapeRuleData>();
             for (int i = 0; i < patterns.Count; i++)
             {
                 PatternSpec spec = patterns[i];
-                object rule = Activator.CreateInstance(patternRuleType);
-                SetField(rule, "shape", spec.Shape);
-                SetField(rule, "size", spec.Size);
-                SetField(rule, "weight", spec.Weight);
-                SetField(rule, "minimumCount", spec.MinimumCount);
-                patternList.Add(rule);
+                rules.Add(new PopulationShapeRuleData(spec.Shape, spec.Usages, checked((int)spec.Weight),
+                    new IntRange(checked((int)spec.MinimumCount), 64)));
             }
+            _rulesByPlanner.Add(planner, rules);
 
             IList contentList = CreateList(contentRuleType);
             for (int i = 0; i < contents.Count; i++)
@@ -395,7 +413,6 @@ namespace ChainRush.Tests.EditMode
                 contentList.Add(rule);
             }
 
-            SetField(planner, "patternRules", patternList);
             SetField(planner, "contentRules", contentList);
             return planner;
         }
@@ -414,11 +431,17 @@ namespace ChainRush.Tests.EditMode
             long weight,
             long minimumCount)
         {
-            return new PatternSpec(
-                CreateShape(type),
-                size,
-                weight,
-                minimumCount);
+            Vector2Int[] coordinates = CoordinatesFor(type);
+            int width = type == ShapeFixtureType.Line ? checked((int)size) : coordinates.Max(cell => cell.x) + 1;
+            int height = type == ShapeFixtureType.Line ? 1 : coordinates.Max(cell => cell.y) + 1;
+            ResolvePlanarDirections(_upAxisType, out var first, out var second);
+            Vector3Int up = Vector3Int.one - first - second;
+            Vector3Int dimensions = first * width + second * height + up;
+            var usages = new List<SpatialShapeUsageData>();
+            for (int angle = 0; angle < 360; angle += 90)
+                usages.Add(new SpatialShapeUsageData(SpatialShapeFillType.Inside, Vector3Int.zero, dimensions,
+                    up * angle, first * 1000 + second * 1000 + up, Vector3Int.zero));
+            return new PatternSpec(CreateShape(type), usages, weight, minimumCount);
         }
 
         SpatialShapeData CreateShape(ShapeFixtureType type)
@@ -754,18 +777,18 @@ namespace ChainRush.Tests.EditMode
         {
             public PatternSpec(
                 SpatialShapeData shape,
-                long size,
+                List<SpatialShapeUsageData> usages,
                 long weight,
                 long minimumCount)
             {
                 Shape = shape;
-                Size = size;
+                Usages = usages;
                 Weight = weight;
                 MinimumCount = minimumCount;
             }
 
             public SpatialShapeData Shape { get; }
-            public long Size { get; }
+            public List<SpatialShapeUsageData> Usages { get; }
             public long Weight { get; }
             public long MinimumCount { get; }
         }

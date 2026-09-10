@@ -563,12 +563,8 @@ namespace ChainRush.Tests.EditMode
             Assert.AreSame(turnToken, ReadField<EconomyEntrySelectionData>(operation, "selection").ExactAsset);
             var success = fill.SuccessConditions.Single() as ObjectiveConditionMaterializedRegionCoverage;
             Assert.NotNull(success);
-            Assert.AreSame(waterBase, success.EconomyAsset);
-            Assert.AreEqual(EconomyFormType.Token, success.EconomyFormType);
-            Assert.AreEqual(0, success.RequiredAssetTags.Count);
-            Assert.AreEqual(0, success.RequiredCapabilityTypes.Count);
-            Assert.AreEqual(CompareOperation.Equal, success.CompareOperation);
             Assert.AreEqual(0L, success.TargetValue);
+            Assert.AreEqual(CompareOperation.Equal, success.CompareOperation);
             Assert.AreEqual(BoardCellTagId, success.Space.RequiredTags.Single().Id);
             Assert.AreEqual(SpaceRegionScopeType.ActivityRoot, success.Space.ScopeType);
 
@@ -651,9 +647,21 @@ namespace ChainRush.Tests.EditMode
             var population = (PopulationAgentData)populationAgent.Agent;
             Assert.NotNull(population.Planner);
             Assert.IsEmpty(populationAgent.TargetSelectionCriteria);
-            Assert.AreEqual(BoardCellTagId, population.Space.RequiredTags.Single().Id);
-            Assert.AreEqual(SpaceRegionScopeType.ActivityRoot, population.Space.ScopeType);
-            Assert.IsTrue(population.Space.Matches(success.Space));
+            Assert.IsInstanceOf<PopulationFillAllData>(population.Fill);
+            Assert.IsInstanceOf<GridPopulationDistributionAlgorithmData>(population.Distribution);
+            Assert.AreEqual(256, population.WorkBudget);
+            Assert.AreEqual(8, population.ShapeRules[0].DesiredCount.Max);
+            Assert.AreEqual(16, population.ShapeRules[1].DesiredCount.Max);
+            Assert.AreEqual(0, population.ShapeRules[0].DesiredCount.Min);
+            Assert.AreEqual(0, population.ShapeRules[1].DesiredCount.Min);
+            Assert.AreEqual(2, population.ShapeRules[0].Usages.Count);
+            Assert.AreEqual(1, population.ShapeRules[1].Usages.Count);
+            var match = populationAgent.MatchConditions.OfType<ObjectiveConditionMaterializedRegionCoverage>().Single();
+            Assert.IsTrue(match.Space.Matches(success.Space));
+            Assert.AreSame(match.EconomyAsset, success.EconomyAsset);
+            var populationDecision = boardBrain.DecisionGraph.Nodes.Single(node => node.DecisionId == "board-population-agent");
+            Assert.AreEqual(OrchestrationFactType.MaterializedRegionCoverage,
+                ReadField<OrchestrationFactType>(populationDecision.Conditions.OfType<FactTypeDecisionConditionData>().Single(), "factType"));
             Assert.AreSame(boardWalletTag, population.ShapeWalletTags.Single());
             List<ActivityWalletSeedEntryData> shapeSeeds = board.Teams[0].Wallets
                 .SelectMany(wallet => wallet.Seed)
@@ -676,21 +684,31 @@ namespace ChainRush.Tests.EditMode
                 && seed.Seed.Amount == 1L
                 && seed.MaterializationType == ActivitySeedMaterializationType.None));
             var planner = new SerializedObject(population.Planner);
-            SerializedProperty patternRules = planner.FindProperty("patternRules");
-            Assert.NotNull(patternRules);
-            Assert.AreEqual(2, patternRules.arraySize);
-            Assert.AreEqual(2L, patternRules.GetArrayElementAtIndex(0).FindPropertyRelative("size").longValue);
-            Assert.AreEqual(1L, patternRules.GetArrayElementAtIndex(1).FindPropertyRelative("size").longValue);
-            Assert.AreSame(
-                lineShape,
-                patternRules.GetArrayElementAtIndex(0)
-                    .FindPropertyRelative("shape")
-                    .objectReferenceValue);
-            Assert.AreSame(
-                singleShape,
-                patternRules.GetArrayElementAtIndex(1)
-                    .FindPropertyRelative("shape")
-                    .objectReferenceValue);
+            Assert.IsNull(planner.FindProperty("patternRules"));
+            Assert.AreEqual(2, population.ShapeRules.Count);
+            Assert.AreSame(lineShape, population.ShapeRules[0].Shape);
+            Assert.AreSame(singleShape, population.ShapeRules[1].Shape);
+            Assert.AreEqual(new Vector3Int(2, 1, 1), population.ShapeRules[0].Usages[0].Size);
+            Assert.AreEqual(new Vector3Int(2, 1, 1), population.ShapeRules[0].Usages[1].Size);
+            Assert.AreEqual(Vector3Int.zero, population.ShapeRules[0].Usages[0].Rotation);
+            Assert.AreEqual(new Vector3Int(0, 90, 0), population.ShapeRules[0].Usages[1].Rotation);
+            Assert.AreEqual(Vector3Int.one, population.ShapeRules[1].Usages[0].Size);
+            foreach (var rule in population.ShapeRules)
+            {
+                Assert.AreEqual(1, rule.Weight);
+                foreach (var usage in rule.Usages)
+                {
+                    Assert.AreEqual(new Vector3Int(1000, 1, 1000), usage.CellSize);
+                    Assert.AreEqual(Vector3Int.zero, usage.Spacing);
+                }
+            }
+            var content = planner.FindProperty("contentRules");
+            Assert.AreEqual(1, content.arraySize);
+            var waterRule = content.GetArrayElementAtIndex(0);
+            Assert.AreSame(waterBase, waterRule.FindPropertyRelative("asset").objectReferenceValue);
+            Assert.AreEqual(1L, waterRule.FindPropertyRelative("weight").longValue);
+            Assert.AreEqual(0L, waterRule.FindPropertyRelative("minimumPatternCount").longValue);
+            Assert.AreEqual(1f, waterRule.FindPropertyRelative("guaranteedCellShare").floatValue);
             var producerCriterion = populationAgent.ExecutorSelectionCriteria
                 .Select(entry => entry.Criterion)
                 .OfType<CapabilityHostCriterionData>()

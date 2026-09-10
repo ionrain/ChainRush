@@ -18,19 +18,6 @@ namespace ChainRush.Board
         menuName = "ChainRush/Activities/Population/Shape Population Planner")]
     public sealed class ShapePopulationPlannerData : PopulationPlannerData
     {
-        [Serializable]
-        public sealed class PatternRule
-        {
-            [SerializeField] SpatialShapeData shape;
-            [SerializeField] long size;
-            [SerializeField] long weight;
-            [SerializeField] long minimumCount;
-
-            public SpatialShapeData Shape => shape;
-            public long Size => size;
-            public long Weight => weight;
-            public long MinimumCount => minimumCount;
-        }
 
         [Serializable]
         public sealed class ContentRule
@@ -46,79 +33,51 @@ namespace ChainRush.Board
             public float GuaranteedCellShare => guaranteedCellShare;
         }
 
-        [SerializeField] List<PatternRule> patternRules = new List<PatternRule>(0);
         [SerializeField] List<ContentRule> contentRules = new List<ContentRule>(0);
 
-        public List<PatternRule> PatternRules => patternRules ?? new List<PatternRule>(0);
         public List<ContentRule> ContentRules => contentRules ?? new List<ContentRule>(0);
 
         public override bool TryBuild(
             in PopulationPlanContext context,
+            IReadOnlyList<PopulationDistributionGroup> distribution,
             out PopulationPlan plan,
             out string failure)
         {
             plan = null;
-            failure = null;
-
-            if (!TryBuildCells(
-                    context,
-                    out List<ResolvedCell> cells,
-                    out Dictionary<Vector2Int, ResolvedCell> cellsByCoordinate,
-                    out HashSet<Vector2Int> remaining,
-                    out failure)
-                || !TryResolvePatternRules(
-                    context,
-                    out List<ResolvedPatternRule> resolvedPatternRules,
-                    out failure)
-                || !TryResolveContentRules(
-                    out List<ResolvedContentRule> resolvedContentRules,
-                    out failure))
+            if (!TryBuildCells(context, out var cells, out failure)
+                || !TryResolveContentRules(out var rules, out failure)) return false;
+            if (distribution == null)
+            { failure = "Population content requires a completed distribution."; return false; }
+            var byReference = new Dictionary<SpaceRegionCellReference, ResolvedCell>(cells.Count);
+            for (int i = 0; i < cells.Count; i++) byReference.Add(cells[i].Snapshot.Cell, cells[i]);
+            var patterns = new List<PatternPlacement>(distribution.Count);
+            var assignedCells = new HashSet<SpaceRegionCellReference>();
+            for (int i = 0; i < distribution.Count; i++)
             {
+                PopulationDistributionGroup group = distribution[i];
+                var selected = new List<ResolvedCell>(group.Cells.Count);
+                var coordinates = new List<Vector2Int>(group.Cells.Count);
+                for (int j = 0; j < group.Cells.Count; j++)
+                {
+                    if (!byReference.TryGetValue(group.Cells[j], out var cell)
+                        || !cell.Snapshot.AvailableForPlacement || cell.Snapshot.IsOccupied
+                        || !assignedCells.Add(group.Cells[j]))
+                    { failure = "Distribution contains an unavailable or duplicate content position."; return false; }
+                    selected.Add(cell);
+                }
+                selected.Sort(CompareCells);
+                for (int j = 0; j < selected.Count; j++) coordinates.Add(selected[j].GridCoordinate);
+                patterns.Add(new PatternPlacement(group, selected, BuildCoordinateKey(coordinates)));
+            }
+            if (!TryAssignContent(cells, patterns, rules, CreateRandom(context), out var groups, out failure))
                 return false;
-            }
-
-            if (remaining.Count == 0)
-            {
-                plan = new PopulationPlan(new List<PopulationPlanGroup>(0));
-                return true;
-            }
-
-            Pcg32Random random = CreateRandom(context);
-            var patterns = new List<PatternPlacement>(remaining.Count);
-            if (!TryBuildPatterns(
-                    context,
-                    resolvedPatternRules,
-                    cellsByCoordinate,
-                    remaining,
-                    random,
-                    patterns,
-                    out failure)
-                || !TryAssignContent(
-                    cells,
-                    patterns,
-                    resolvedContentRules,
-                    random,
-                    out List<PlannedGroup> groups,
-                    out failure))
-            {
-                return false;
-            }
-
-            groups.Sort(ComparePlannedGroups);
             var result = new List<PopulationPlanGroup>(groups.Count);
             for (int i = 0; i < groups.Count; i++)
             {
                 PlannedGroup group = groups[i];
-                var markers = new List<SpaceRegionCellReference>(group.Pattern.Cells.Count);
-                for (int cellIndex = 0; cellIndex < group.Pattern.Cells.Count; cellIndex++)
-                    markers.Add(group.Pattern.Cells[cellIndex].Snapshot.Cell);
-                result.Add(new PopulationPlanGroup(
-                    group.Pattern.Rule.Shape,
-                    group.Asset,
-                    EconomyFormType.Token,
-                    markers));
+                result.Add(new PopulationPlanGroup(group.Pattern.Distribution.Shape, group.Asset,
+                    EconomyFormType.Token, group.Pattern.Distribution.Cells));
             }
-
             plan = new PopulationPlan(result);
             return true;
         }
@@ -126,13 +85,9 @@ namespace ChainRush.Board
         static bool TryBuildCells(
             in PopulationPlanContext context,
             out List<ResolvedCell> cells,
-            out Dictionary<Vector2Int, ResolvedCell> cellsByCoordinate,
-            out HashSet<Vector2Int> remaining,
             out string failure)
         {
             cells = new List<ResolvedCell>(0);
-            cellsByCoordinate = new Dictionary<Vector2Int, ResolvedCell>();
-            remaining = new HashSet<Vector2Int>();
             failure = null;
 
             if (!context.ActivityId.IsValid)
@@ -150,9 +105,9 @@ namespace ChainRush.Board
                 failure = "Shape population planner requires valid participant and population entities.";
                 return false;
             }
-            if (context.Cells == null || context.Cells.Count == 0)
+            if (context.Cells == null)
             {
-                failure = "Shape population planner requires at least one population cell.";
+                failure = "Shape population planner requires a population cell snapshot.";
                 return false;
             }
             if (context.Regions == null || context.Regions.Count != 1
@@ -182,8 +137,7 @@ namespace ChainRush.Board
 
             var cellRefs = new HashSet<SpaceRegionCellReference>();
             cells = new List<ResolvedCell>(context.Cells.Count);
-            cellsByCoordinate = new Dictionary<Vector2Int, ResolvedCell>(context.Cells.Count);
-            remaining = new HashSet<Vector2Int>();
+            var cellsByCoordinate = new Dictionary<Vector2Int, ResolvedCell>(context.Cells.Count);
             for (int i = 0; i < context.Cells.Count; i++)
             {
                 PopulationCellSnapshot snapshot = context.Cells[i];
@@ -228,99 +182,13 @@ namespace ChainRush.Board
                 var cell = new ResolvedCell(snapshot, gridCoordinate);
                 cells.Add(cell);
                 cellsByCoordinate.Add(gridCoordinate, cell);
-                if (snapshot.AvailableForPlacement)
-                    remaining.Add(gridCoordinate);
             }
 
             cells.Sort(CompareCells);
             return true;
         }
 
-        bool TryResolvePatternRules(
-            in PopulationPlanContext context,
-            out List<ResolvedPatternRule> resolved,
-            out string failure)
-        {
-            resolved = new List<ResolvedPatternRule>(0);
-            failure = null;
-            List<PatternRule> authored = PatternRules;
-            if (authored.Count == 0)
-            {
-                failure = "Shape population planner requires at least one pattern rule.";
-                return false;
-            }
 
-            resolved = new List<ResolvedPatternRule>(authored.Count);
-            bool hasActiveSingleCellRule = false;
-            for (int i = 0; i < authored.Count; i++)
-            {
-                PatternRule rule = authored[i];
-                if (rule == null || rule.Shape == null || string.IsNullOrWhiteSpace(rule.Shape.Id))
-                {
-                    failure = string.Concat(
-                        "Shape population planner pattern rule ",
-                        i.ToString(),
-                        " requires a spatial shape with semantic identity.");
-                    return false;
-                }
-                if (!IsShapeAvailable(rule.Shape, context.Shapes))
-                {
-                    failure = string.Concat(
-                        "Shape population planner pattern rule ",
-                        i.ToString(),
-                        " references a shape that is not available in the population wallet projection.");
-                    return false;
-                }
-                if (!TryResolvePositive(rule.Size, "pattern size", i, out int size, out failure)
-                    || !TryResolveNonNegative(rule.Weight, "pattern weight", i, out int weight, out failure)
-                    || !TryResolveNonNegative(
-                        rule.MinimumCount,
-                        "pattern minimum count",
-                        i,
-                        out int minimumCount,
-                        out failure))
-                {
-                    return false;
-                }
-                resolved.Add(new ResolvedPatternRule(
-                    rule.Shape,
-                    size,
-                    weight,
-                    minimumCount,
-                    i));
-                if (size == 1 && weight > 0)
-                    hasActiveSingleCellRule = true;
-            }
-
-            if (!hasActiveSingleCellRule)
-            {
-                failure = "Shape population planner requires an active shape rule with a resolved size of one cell.";
-                return false;
-            }
-
-            return true;
-        }
-
-        static bool IsShapeAvailable(
-            SpatialShapeData shape,
-            IReadOnlyList<SpatialShapeProjectionRecord> availableShapes)
-        {
-            if (shape == null || availableShapes == null)
-                return false;
-
-            for (int i = 0; i < availableShapes.Count; i++)
-            {
-                SpatialShapeProjectionRecord available = availableShapes[i];
-                if (available.Amount > 0L
-                    && available.Shape != null
-                    && available.Shape.Matches(shape))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
 
         bool TryResolveContentRules(
             out List<ResolvedContentRule> resolved,
@@ -406,343 +274,13 @@ namespace ChainRush.Board
             return true;
         }
 
-        static bool TryBuildPatterns(
-            in PopulationPlanContext context,
-            List<ResolvedPatternRule> rules,
-            Dictionary<Vector2Int, ResolvedCell> cellsByCoordinate,
-            HashSet<Vector2Int> remaining,
-            Pcg32Random random,
-            List<PatternPlacement> patterns,
-            out string failure)
-        {
-            failure = null;
-            var mandatory = new List<ResolvedPatternRule>();
-            for (int ruleIndex = 0; ruleIndex < rules.Count; ruleIndex++)
-            {
-                ResolvedPatternRule rule = rules[ruleIndex];
-                for (int count = 0; count < rule.MinimumCount; count++)
-                    mandatory.Add(rule);
-            }
 
-            if (!TryPlaceMandatoryPatterns(
-                    context.ActivityId,
-                    0,
-                    mandatory,
-                    cellsByCoordinate,
-                    remaining,
-                    random,
-                    patterns))
-            {
-                failure = "Shape population planner could not place all mandatory patterns.";
-                return false;
-            }
 
-            var weightedRules = new List<ResolvedPatternRule>(rules.Count);
-            for (int i = 0; i < rules.Count; i++)
-            {
-                if (rules[i].Weight > 0)
-                    weightedRules.Add(rules[i]);
-            }
 
-            while (remaining.Count > 0)
-            {
-                if (!TryChooseWeightedPatternRule(weightedRules, random, out int selectedIndex, out failure))
-                    return false;
 
-                bool placed = false;
-                for (int offset = 0; offset < weightedRules.Count; offset++)
-                {
-                    int ruleIndex = (selectedIndex + offset) % weightedRules.Count;
-                    if (!TryPlacePattern(
-                            context.ActivityId,
-                            weightedRules[ruleIndex],
-                            cellsByCoordinate,
-                            remaining,
-                            random,
-                            out PatternPlacement placement))
-                    {
-                        continue;
-                    }
 
-                    patterns.Add(placement);
-                    placed = true;
-                    break;
-                }
 
-                if (!placed)
-                {
-                    failure = string.Concat(
-                        "Shape population planner could not cover ",
-                        remaining.Count.ToString(),
-                        " remaining cells with active pattern rules.");
-                    return false;
-                }
-            }
 
-            patterns.Sort(ComparePatterns);
-            return true;
-        }
-
-        static bool TryPlaceMandatoryPatterns(
-            ActivityId activityId,
-            int mandatoryIndex,
-            List<ResolvedPatternRule> mandatory,
-            Dictionary<Vector2Int, ResolvedCell> cellsByCoordinate,
-            HashSet<Vector2Int> remaining,
-            Pcg32Random random,
-            List<PatternPlacement> patterns)
-        {
-            if (mandatoryIndex >= mandatory.Count)
-                return true;
-
-            List<PatternPlacement> candidates = BuildPatternCandidates(
-                activityId,
-                mandatory[mandatoryIndex],
-                cellsByCoordinate,
-                remaining);
-            if (candidates.Count == 0)
-                return false;
-
-            int startIndex = random.NextInt(0, candidates.Count);
-            for (int offset = 0; offset < candidates.Count; offset++)
-            {
-                PatternPlacement candidate = candidates[(startIndex + offset) % candidates.Count];
-                RemovePattern(candidate, remaining);
-                patterns.Add(candidate);
-                if (TryPlaceMandatoryPatterns(
-                        activityId,
-                        mandatoryIndex + 1,
-                        mandatory,
-                        cellsByCoordinate,
-                        remaining,
-                        random,
-                        patterns))
-                {
-                    return true;
-                }
-
-                patterns.RemoveAt(patterns.Count - 1);
-                RestorePattern(candidate, remaining);
-            }
-
-            return false;
-        }
-
-        static bool TryPlacePattern(
-            ActivityId activityId,
-            ResolvedPatternRule rule,
-            Dictionary<Vector2Int, ResolvedCell> cellsByCoordinate,
-            HashSet<Vector2Int> remaining,
-            Pcg32Random random,
-            out PatternPlacement placement)
-        {
-            placement = null;
-            List<PatternPlacement> candidates = BuildPatternCandidates(
-                activityId,
-                rule,
-                cellsByCoordinate,
-                remaining);
-            if (candidates.Count == 0)
-                return false;
-
-            placement = candidates[random.NextInt(0, candidates.Count)];
-            RemovePattern(placement, remaining);
-            return true;
-        }
-
-        static List<PatternPlacement> BuildPatternCandidates(
-            ActivityId activityId,
-            ResolvedPatternRule rule,
-            Dictionary<Vector2Int, ResolvedCell> cellsByCoordinate,
-            HashSet<Vector2Int> remaining)
-        {
-            var candidates = new List<PatternPlacement>();
-            var keys = new HashSet<string>(StringComparer.Ordinal);
-            var starts = new List<Vector2Int>(remaining);
-            starts.Sort(CompareCoordinates);
-            if (!TopologyService.TryGetTopologyDescriptor(activityId, out TopologyDescriptor descriptor)
-                || !TryResolveProjectionMetrics(
-                    descriptor,
-                    cellsByCoordinate,
-                    out Vector3Int cellSize,
-                    out Vector3Int spacing,
-                    out int firstAxisSize,
-                    out int secondAxisSize))
-            {
-                return candidates;
-            }
-
-            var cellsByPosition = new Dictionary<WorldPosition, ResolvedCell>(cellsByCoordinate.Count);
-            foreach (KeyValuePair<Vector2Int, ResolvedCell> pair in cellsByCoordinate)
-                cellsByPosition.Add(pair.Value.Snapshot.Position, pair.Value);
-
-            for (int startIndex = 0; startIndex < starts.Count; startIndex++)
-            {
-                ResolvedCell start = cellsByCoordinate[starts[startIndex]];
-                var anchor = new SpatialPose(
-                    start.Snapshot.Position,
-                    start.Snapshot.Coordinates,
-                    start.Snapshot.Rotation);
-                for (int firstSize = 1; firstSize <= firstAxisSize; firstSize++)
-                {
-                    for (int secondSize = 1; secondSize <= secondAxisSize; secondSize++)
-                    {
-                        Vector3Int logicalSize = ResolveLogicalSize(
-                            descriptor.UpAxisType,
-                            firstSize,
-                            secondSize);
-                        for (int quarterTurn = 0; quarterTurn < 4; quarterTurn++)
-                        {
-                            var usage = new SpatialShapeUsageData(
-                                SpatialShapeFillType.Inside,
-                                Vector3Int.zero,
-                                logicalSize,
-                                ResolveRotation(descriptor.UpAxisType, quarterTurn * 90),
-                                cellSize,
-                                spacing);
-                            var sink = new ProjectionSink();
-                            if (!SpatialShapeService.TryProject(
-                                    activityId,
-                                    rule.Shape,
-                                    usage,
-                                    anchor,
-                                    default,
-                                    SpatialOccupancyType.Any,
-                                    sink,
-                                    out _,
-                                    out _))
-                            {
-                                continue;
-                            }
-
-                            TryAddProjectedCandidate(
-                                sink.Candidates,
-                                rule,
-                                cellsByPosition,
-                                remaining,
-                                keys,
-                                candidates);
-                        }
-                    }
-                }
-            }
-
-            candidates.Sort(ComparePatterns);
-            return candidates;
-        }
-
-        static bool TryResolveProjectionMetrics(
-            TopologyDescriptor descriptor,
-            Dictionary<Vector2Int, ResolvedCell> cellsByCoordinate,
-            out Vector3Int cellSize,
-            out Vector3Int spacing,
-            out int firstAxisSize,
-            out int secondAxisSize)
-        {
-            cellSize = Vector3Int.one;
-            spacing = Vector3Int.zero;
-            firstAxisSize = 0;
-            secondAxisSize = 0;
-            if (cellsByCoordinate.Count == 0)
-                return false;
-
-            int minimumX = int.MaxValue;
-            int maximumX = int.MinValue;
-            int minimumY = int.MaxValue;
-            int maximumY = int.MinValue;
-            SpatialFootprint footprint = SpatialFootprint.None;
-            bool hasFootprint = false;
-            foreach (KeyValuePair<Vector2Int, ResolvedCell> pair in cellsByCoordinate)
-            {
-                Vector2Int coordinate = pair.Key;
-                minimumX = Math.Min(minimumX, coordinate.x);
-                maximumX = Math.Max(maximumX, coordinate.x);
-                minimumY = Math.Min(minimumY, coordinate.y);
-                maximumY = Math.Max(maximumY, coordinate.y);
-                SpatialFootprint candidate = pair.Value.Snapshot.CellFootprint;
-                if (!candidate.HasSize || !candidate.IsValidFor(descriptor))
-                    return false;
-                if (hasFootprint && !candidate.Equals(footprint))
-                    return false;
-                footprint = candidate;
-                hasFootprint = true;
-            }
-
-            firstAxisSize = checked(maximumX - minimumX + 1);
-            secondAxisSize = checked(maximumY - minimumY + 1);
-            int coordinateSize = descriptor.TopologyCoordinateSize;
-            cellSize = new Vector3Int(
-                descriptor.UpAxisType == TopologyUpAxisType.X ? 1 : footprint.SizeA,
-                descriptor.UpAxisType == TopologyUpAxisType.Y ? 1 : footprint.SizeB,
-                descriptor.UpAxisType == TopologyUpAxisType.Z ? 1 : footprint.SizeC);
-            spacing = new Vector3Int(
-                descriptor.UpAxisType == TopologyUpAxisType.X ? 0 : coordinateSize - cellSize.x,
-                descriptor.UpAxisType == TopologyUpAxisType.Y ? 0 : coordinateSize - cellSize.y,
-                descriptor.UpAxisType == TopologyUpAxisType.Z ? 0 : coordinateSize - cellSize.z);
-            return spacing.x >= 0 && spacing.y >= 0 && spacing.z >= 0;
-        }
-
-        static Vector3Int ResolveLogicalSize(
-            TopologyUpAxisType upAxisType,
-            int firstAxisSize,
-            int secondAxisSize)
-        {
-            switch (upAxisType)
-            {
-                case TopologyUpAxisType.X:
-                    return new Vector3Int(1, firstAxisSize, secondAxisSize);
-                case TopologyUpAxisType.Z:
-                    return new Vector3Int(firstAxisSize, secondAxisSize, 1);
-                default:
-                    return new Vector3Int(firstAxisSize, 1, secondAxisSize);
-            }
-        }
-
-        static Vector3Int ResolveRotation(TopologyUpAxisType upAxisType, int degrees)
-        {
-            switch (upAxisType)
-            {
-                case TopologyUpAxisType.X:
-                    return new Vector3Int(degrees, 0, 0);
-                case TopologyUpAxisType.Z:
-                    return new Vector3Int(0, 0, degrees);
-                default:
-                    return new Vector3Int(0, degrees, 0);
-            }
-        }
-
-        static void TryAddProjectedCandidate(
-            List<SpatialShapeCandidate> projected,
-            ResolvedPatternRule rule,
-            Dictionary<WorldPosition, ResolvedCell> cellsByPosition,
-            HashSet<Vector2Int> remaining,
-            HashSet<string> keys,
-            List<PatternPlacement> candidates)
-        {
-            if (projected == null || projected.Count != rule.Size)
-                return;
-
-            var cells = new List<ResolvedCell>(projected.Count);
-            var unique = new HashSet<Vector2Int>();
-            for (int i = 0; i < projected.Count; i++)
-            {
-                if (!cellsByPosition.TryGetValue(projected[i].Pose.WorldPosition, out ResolvedCell cell)
-                    || !unique.Add(cell.GridCoordinate)
-                    || !remaining.Contains(cell.GridCoordinate))
-                {
-                    return;
-                }
-                cells.Add(cell);
-            }
-
-            cells.Sort(CompareCells);
-            var coordinates = new List<Vector2Int>(cells.Count);
-            for (int i = 0; i < cells.Count; i++)
-                coordinates.Add(cells[i].GridCoordinate);
-            string key = BuildCoordinateKey(coordinates);
-            if (keys.Add(key))
-                candidates.Add(new PatternPlacement(rule, cells, key));
-        }
 
         static bool TryAssignContent(
             List<ResolvedCell> cells,
@@ -842,38 +380,6 @@ namespace ChainRush.Board
             return count;
         }
 
-        static bool TryChooseWeightedPatternRule(
-            List<ResolvedPatternRule> rules,
-            Pcg32Random random,
-            out int selectedIndex,
-            out string failure)
-        {
-            selectedIndex = -1;
-            failure = null;
-            long totalWeight = 0L;
-            for (int i = 0; i < rules.Count; i++)
-                totalWeight = checked(totalWeight + rules[i].Weight);
-            if (totalWeight <= 0L || totalWeight > int.MaxValue)
-            {
-                failure = "Shape population planner active pattern weights must have a positive Int32 total.";
-                return false;
-            }
-
-            int selection = random.NextInt(0, (int)totalWeight);
-            int accumulated = 0;
-            for (int i = 0; i < rules.Count; i++)
-            {
-                accumulated += rules[i].Weight;
-                if (selection < accumulated)
-                {
-                    selectedIndex = i;
-                    return true;
-                }
-            }
-
-            failure = "Shape population planner could not resolve a weighted pattern rule.";
-            return false;
-        }
 
         static bool TryChooseWeightedContentRule(
             List<ResolvedContentRule> rules,
@@ -974,26 +480,6 @@ namespace ChainRush.Board
             return count;
         }
 
-        static bool TryResolvePositive(
-            long authoredValue,
-            string field,
-            int ruleIndex,
-            out int value,
-            out string failure)
-        {
-            if (!TryResolveNonNegative(authoredValue, field, ruleIndex, out value, out failure))
-                return false;
-            if (value > 0)
-                return true;
-
-            failure = string.Concat(
-                "Shape population planner ",
-                field,
-                " for rule ",
-                ruleIndex.ToString(),
-                " must be greater than zero.");
-            return false;
-        }
 
         static bool TryResolveNonNegative(
             long authoredValue,
@@ -1076,17 +562,7 @@ namespace ChainRush.Board
             return z ^ (z >> 31);
         }
 
-        static void RemovePattern(PatternPlacement pattern, HashSet<Vector2Int> remaining)
-        {
-            for (int i = 0; i < pattern.Cells.Count; i++)
-                remaining.Remove(pattern.Cells[i].GridCoordinate);
-        }
 
-        static void RestorePattern(PatternPlacement pattern, HashSet<Vector2Int> remaining)
-        {
-            for (int i = 0; i < pattern.Cells.Count; i++)
-                remaining.Add(pattern.Cells[i].GridCoordinate);
-        }
 
         static string BuildCoordinateKey(List<Vector2Int> coordinates)
         {
@@ -1123,10 +599,6 @@ namespace ChainRush.Board
             return string.Compare(left.Key, right.Key, StringComparison.Ordinal);
         }
 
-        static int ComparePlannedGroups(PlannedGroup left, PlannedGroup right)
-        {
-            return ComparePatterns(left.Pattern, right.Pattern);
-        }
 
         sealed class ResolvedCell
         {
@@ -1140,28 +612,6 @@ namespace ChainRush.Board
             public Vector2Int GridCoordinate { get; }
         }
 
-        sealed class ResolvedPatternRule
-        {
-            public ResolvedPatternRule(
-                SpatialShapeData shape,
-                int size,
-                int weight,
-                int minimumCount,
-                int authoredIndex)
-            {
-                Shape = shape;
-                Size = size;
-                Weight = weight;
-                MinimumCount = minimumCount;
-                AuthoredIndex = authoredIndex;
-            }
-
-            public SpatialShapeData Shape { get; }
-            public int Size { get; }
-            public int Weight { get; }
-            public int MinimumCount { get; }
-            public int AuthoredIndex { get; }
-        }
 
         sealed class ResolvedContentRule
         {
@@ -1189,38 +639,20 @@ namespace ChainRush.Board
         sealed class PatternPlacement
         {
             public PatternPlacement(
-                ResolvedPatternRule rule,
+                PopulationDistributionGroup distribution,
                 List<ResolvedCell> cells,
                 string key)
             {
-                Rule = rule;
+                Distribution = distribution;
                 Cells = cells;
                 Key = key;
             }
 
-            public ResolvedPatternRule Rule { get; }
+            public PopulationDistributionGroup Distribution { get; }
             public List<ResolvedCell> Cells { get; }
             public string Key { get; }
         }
 
-        sealed class ProjectionSink : ISpatialShapeSink
-        {
-            public List<SpatialShapeCandidate> Candidates { get; } =
-                new List<SpatialShapeCandidate>(16);
-
-            public bool TryAdd(in SpatialShapeCandidate candidate, out string failure)
-            {
-                failure = null;
-                if (!candidate.IsValid)
-                {
-                    failure = "Shape population planner received an invalid shape candidate.";
-                    return false;
-                }
-
-                Candidates.Add(candidate);
-                return true;
-            }
-        }
 
         readonly struct PlannedGroup
         {

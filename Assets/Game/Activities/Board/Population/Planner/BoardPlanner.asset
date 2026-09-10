@@ -12,15 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03518e4a6879b4f1bb2580fdad128b19, type: 3}
   m_Name: BoardPlanner
   m_EditorClassIdentifier: Assembly-CSharp::ChainRush.Board.ShapePopulationPlannerData
-  patternRules:
-  - shape: {fileID: 11400000, guid: bb87873e608bd483d86718dbdd98536c, type: 2}
-    size: 2
-    weight: 1
-    minimumCount: 0
-  - shape: {fileID: 11400000, guid: 109337a645aed4c8aa505efd3b08e7bb, type: 2}
-    size: 1
-    weight: 1
-    minimumCount: 0
   contentRules:
   - asset: {fileID: 11400000, guid: 1116b7b9d35a249b18741b1309a53cd1, type: 2}
     weight: 1

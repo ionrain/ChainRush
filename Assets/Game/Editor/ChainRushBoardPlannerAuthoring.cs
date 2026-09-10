@@ -938,9 +938,17 @@ namespace ChainRush.Editor
             var agent = LoadRequired<AgentDefinitionData>(PopulationAgentPath);
             var population = new PopulationAgentData();
             SetField(population, "planner", planner);
+            var regionTag = LoadRequired<TaxonomyTermData>(BoardCellTagPath);
+            SetField(population, "space", CreateBoardRegionQuery(regionTag));
             SetField(population, "shapeWalletTags",
                 new List<TaxonomyTermData> { LoadRequired<TaxonomyTermData>(BoardWalletTagPath) });
             SetField(agent, "agent", population);
+            SetField(agent, "targetSelectionCriteria", new List<EntityCriterionEntryData>());
+            SetField(agent, "matchConditions", new List<ObjectiveCondition>
+            {
+                new ObjectiveConditionMaterializedRegionCoverage(null, EconomyFormType.Token, null, null,
+                    CreateBoardRegionQuery(regionTag), 0L, CompareOperation.Equal)
+            });
             EditorUtility.SetDirty(agent);
 
             var objective = LoadRequired<ObjectiveTemplateData>(PopulationObjectivePath);
@@ -960,6 +968,28 @@ namespace ChainRush.Editor
             SetField(installer, "terms", terms.ToArray());
             EditorUtility.SetDirty(installer);
             ConfigureEconomyOperation(LoadRequired<OrchestratorAIBrainData>(BrainPath), term, turn, wallet);
+            AssetDatabase.SaveAssets();
+        }
+
+        [MenuItem("ChainRush/Activities/Board/Configure Population Regions")]
+        public static void ConfigurePopulationRegions()
+        {
+            var tag = LoadRequired<TaxonomyTermData>(BoardCellTagPath);
+            var agent = LoadRequired<AgentDefinitionData>(PopulationAgentPath);
+            if (!(agent.Agent is PopulationAgentData population))
+                throw new InvalidOperationException("Board requires its Population agent before region authoring.");
+            SetField(population, "space", CreateBoardRegionQuery(tag));
+            SetField(agent, "targetSelectionCriteria", new List<EntityCriterionEntryData>());
+            SetField(agent, "matchConditions", new List<ObjectiveCondition>
+            {
+                new ObjectiveConditionMaterializedRegionCoverage(null, EconomyFormType.Token, null, null,
+                    CreateBoardRegionQuery(tag), 0L, CompareOperation.Equal)
+            });
+            EditorUtility.SetDirty(agent);
+            ConfigurePopulationObjective(LoadRequired<ObjectiveTemplateData>(PopulationObjectivePath),
+                LoadRequired<FrameworkResourceData>(TurnTokenPath), LoadRequired<TaxonomyTermData>(SharedWalletTagPath),
+                LoadRequired<CapabilityHostData>(WaterPath), LoadRequired<TaxonomyTermData>(BoardWalletTagPath),
+                LoadRequired<TaxonomyTermData>(MergeSelectedTagPath), tag);
             AssetDatabase.SaveAssets();
         }
 
@@ -1006,8 +1036,8 @@ namespace ChainRush.Editor
                 },
                 new List<ObjectiveCondition>
                 {
-                    new ObjectiveConditionMaterializedMarkerCoverage(water, EconomyFormType.Token,
-                        null, null, new List<TaxonomyTermData> { boardCellTag }, 0L, CompareOperation.Equal)
+                    new ObjectiveConditionMaterializedRegionCoverage(water, EconomyFormType.Token,
+                        null, null, CreateBoardRegionQuery(boardCellTag), 0L, CompareOperation.Equal)
                 });
             var root = new ObjectiveNode("chainrush-board-population", null,
                 new List<ObjectiveCondition>
@@ -1015,8 +1045,8 @@ namespace ChainRush.Editor
                     new ObjectiveConditionEconomyMetric(new List<TaxonomyTermData> { sharedWalletTag },
                         EconomyFormType.Stack, turnToken, 1L, CompareOperation.GreaterOrEqual, null, null),
                     CreateSelectedEconomyCondition(water, boardWalletTag, selectedTag, 0L, CompareOperation.Equal),
-                    new ObjectiveConditionMaterializedMarkerCoverage(water, EconomyFormType.Token,
-                        null, null, new List<TaxonomyTermData> { boardCellTag }, 0L, CompareOperation.Greater)
+                    new ObjectiveConditionMaterializedRegionCoverage(water, EconomyFormType.Token,
+                        null, null, CreateBoardRegionQuery(boardCellTag), 0L, CompareOperation.Greater)
                 },
                 new List<ObjectiveCondition>
                 {
@@ -1026,8 +1056,8 @@ namespace ChainRush.Editor
             SetField(objective, "completionPolicyType", ObjectiveCompletionPolicyType.ResetOnConditions);
             SetField(objective, "resetConditions", new List<ObjectiveCondition>
             {
-                new ObjectiveConditionMaterializedMarkerCoverage(water, EconomyFormType.Token,
-                    null, null, new List<TaxonomyTermData> { boardCellTag }, 0L, CompareOperation.Greater)
+                new ObjectiveConditionMaterializedRegionCoverage(water, EconomyFormType.Token,
+                    null, null, CreateBoardRegionQuery(boardCellTag), 0L, CompareOperation.Greater)
             });
             EditorUtility.SetDirty(objective);
         }
@@ -1041,14 +1071,15 @@ namespace ChainRush.Editor
         {
             var agentData = new PopulationAgentData();
             SetField(agentData, "planner", planner);
+            SetField(agentData, "space", CreateBoardRegionQuery(boardCellTag));
             SetField(agentData, "shapeWalletTags", new List<TaxonomyTermData> { boardWalletTag });
 
-            var match = new ObjectiveConditionMaterializedMarkerCoverage(
+            var match = new ObjectiveConditionMaterializedRegionCoverage(
                 null,
                 EconomyFormType.Token,
                 null,
                 null,
-                new List<TaxonomyTermData> { boardCellTag },
+                CreateBoardRegionQuery(boardCellTag),
                 0L,
                 CompareOperation.Equal);
             AgentDefinitionData definition = CreateAgentDefinition(
@@ -1062,10 +1093,7 @@ namespace ChainRush.Editor
                     Required(CreateCapabilityHostCriterion(executorHost, null)),
                     Required(CreateOwnerCriterion()),
                 },
-                new List<EntityCriterionEntryData>
-                {
-                    Required(CreateMarkerCriterion(boardCellTag)),
-                },
+                new List<EntityCriterionEntryData>(),
                 agentData,
                 createdPaths);
             SetField(
@@ -1073,6 +1101,12 @@ namespace ChainRush.Editor
                 "stopPolicyType",
                 AgentStopPolicyType.None);
             return definition;
+        }
+
+        static SpaceRegionQueryData CreateBoardRegionQuery(TaxonomyTermData tag)
+        {
+            return new SpaceRegionQueryData(SpaceRegionScopeType.ActivityRoot,
+                new List<TaxonomyTermData> { tag }, null, null, null);
         }
 
         static void ConfigurePopulationAgentExecutor(
@@ -1175,16 +1209,6 @@ namespace ChainRush.Editor
             var criterion = new SegmentLengthCriterionData();
             SetField(criterion, "minimumDistance", minimumDistance);
             SetField(criterion, "maximumDistance", maximumDistance);
-            return criterion;
-        }
-
-        static MarkerCriterionData CreateMarkerCriterion(TaxonomyTermData markerTag)
-        {
-            var criterion = new MarkerCriterionData();
-            SetField(criterion, "requiredTags", new List<TaxonomyTermData> { markerTag });
-            SetField(criterion, "excludedTags", new List<TaxonomyTermData>(0));
-            SetField(criterion, "providerType", markerTag);
-            SetField(criterion, "scopeType", MarkerScopeType.ActivityRoot);
             return criterion;
         }
 
@@ -1400,6 +1424,12 @@ namespace ChainRush.Editor
 
             if (activity.Space == null)
                 throw new InvalidOperationException("BoardActivity requires an Activity space.");
+            if (!(activity.Space is ActivityUISpaceData uiSpace))
+                throw new InvalidOperationException("BoardActivity requires UI space authoring.");
+            var projectionRegion = new SpaceRegionQueryData();
+            SetField(projectionRegion, "scopeType", SpaceRegionScopeType.ActivityRoot);
+            SetField(projectionRegion, "requiredTags", new List<TaxonomyTermData> { boardCellTag });
+            SetField(uiSpace, "projectionRegion", projectionRegion);
             SetField(
                 activity.Space,
                 "markerProviders",
@@ -1663,6 +1693,10 @@ namespace ChainRush.Editor
             TaxonomyTermData boardCellTag)
         {
             var provider = new SpatialShapeProviderData();
+            SetField(provider, "publishMarkers", true);
+            SetField(provider, "regionTags", new List<TaxonomyTermData> { boardCellTag });
+            SetField(provider, "cellTags", new List<TaxonomyTermData>());
+            SetField(provider, "cellMetadata", new List<SpaceRegionCellMetadataData>());
             SetField(provider, "providerType", boardCellTag);
             SetField(
                 provider,

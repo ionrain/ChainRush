@@ -138,6 +138,53 @@ namespace ChainRush.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator BoardUI_RegionHolesKeepViewAndProjectionCoordinates()
+        {
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Activities/Board/UI/BoardUI.prefab");
+            Assert.NotNull(prefab);
+            GameObject instance = Object.Instantiate(prefab);
+            var presentation = instance.GetComponent<Core.UI.Flow.UIPresentationController>();
+            var probe = new GameObject("projection-probe");
+            try
+            {
+                var settings = new UIProjectionSettingsData();
+                typeof(UIProjectionSettingsData).GetField("cellSize", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .SetValue(settings, new Vector2(140, 140));
+                typeof(UIProjectionSettingsData).GetField("spacing", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .SetValue(settings, new Vector2(10, 10));
+                var spaceId = new WorldSpaceId(731);
+                var cells = new List<ActivityUICell>
+                {
+                    new ActivityUICell(0, new Vector2Int(0, 0), new WorldPosition(spaceId, 1), Vector3.zero),
+                    new ActivityUICell(1, new Vector2Int(2, 0), new WorldPosition(spaceId, 2), new Vector3(2, 0, 0)),
+                    new ActivityUICell(2, new Vector2Int(0, 2), new WorldPosition(spaceId, 3), new Vector3(0, 0, 2)),
+                };
+                var projection = new UIProjectionTarget(3);
+                var context = new ActivityUIContext(new ActivityId(731), default, cells, settings, projection);
+                Assert.IsTrue(presentation.TryApplyUIContext(context));
+                Assert.IsTrue(projection.IsReady);
+                var expected = new List<Vector2> { new Vector2(-150, 150), new Vector2(150, 150), new Vector2(-150, -150) };
+                for (int i = 0; i < cells.Count; i++)
+                {
+                    Assert.IsTrue(projection.TryApplyPose(probe.transform, cells[i].WorldPosition,
+                        cells[i].Coordinates, Quaternion.identity, Vector3.one));
+                    var view = (RectTransform)probe.transform.parent;
+                    Assert.AreEqual(expected[i], view.anchoredPosition);
+                    Assert.AreEqual(settings.CellSize, view.sizeDelta);
+                }
+                Assert.IsFalse(projection.TryApplyPose(probe.transform, new WorldPosition(spaceId, 4),
+                    Vector3.one, Quaternion.identity, Vector3.one));
+                Assert.IsNull(instance.GetComponentInChildren<UnityEngine.UI.GridLayoutGroup>());
+            }
+            finally
+            {
+                Object.Destroy(probe);
+                Object.Destroy(instance);
+            }
+            yield return null;
+        }
+
+        [UnityTest]
         public IEnumerator RuntimeComposition_LaunchesBoardOnceAndParentCloseClosesIt(
             [ValueSource(nameof(BoardSelectionStarts))] int firstSelection)
         {

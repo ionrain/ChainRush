@@ -109,9 +109,9 @@ namespace ChainRush.Board
             for (int i = 0; i < groups.Count; i++)
             {
                 PlannedGroup group = groups[i];
-                var markers = new List<SpatialMarkerRef>(group.Pattern.Cells.Count);
+                var markers = new List<SpaceRegionCellReference>(group.Pattern.Cells.Count);
                 for (int cellIndex = 0; cellIndex < group.Pattern.Cells.Count; cellIndex++)
-                    markers.Add(group.Pattern.Cells[cellIndex].Snapshot.Marker);
+                    markers.Add(group.Pattern.Cells[cellIndex].Snapshot.Cell);
                 result.Add(new PopulationPlanGroup(
                     group.Pattern.Rule.Shape,
                     group.Asset,
@@ -155,6 +155,13 @@ namespace ChainRush.Board
                 failure = "Shape population planner requires at least one population cell.";
                 return false;
             }
+            if (context.Regions == null || context.Regions.Count != 1
+                || context.Regions[0].GeometryType != SpaceRegionGeometryType.Cells
+                || context.Regions[0].ActivityId != context.ActivityId)
+            {
+                failure = "Shape population planner requires one cellular region in its Activity.";
+                return false;
+            }
             if (!TopologyService.TryGetTopologyDescriptor(
                     context.ActivityId,
                     out TopologyDescriptor descriptor)
@@ -173,14 +180,15 @@ namespace ChainRush.Board
                 return false;
             }
 
-            var markerRefs = new HashSet<SpatialMarkerRef>();
+            var cellRefs = new HashSet<SpaceRegionCellReference>();
             cells = new List<ResolvedCell>(context.Cells.Count);
             cellsByCoordinate = new Dictionary<Vector2Int, ResolvedCell>(context.Cells.Count);
             remaining = new HashSet<Vector2Int>();
             for (int i = 0; i < context.Cells.Count; i++)
             {
                 PopulationCellSnapshot snapshot = context.Cells[i];
-                if (!snapshot.Marker.IsValid || snapshot.Marker.ActivityId != context.ActivityId)
+                if (!snapshot.Cell.IsValid || snapshot.Cell.Handle != context.Regions[0].Handle
+                    || snapshot.Cell.Revision != context.Regions[0].Revision)
                 {
                     failure = string.Concat(
                         "Shape population planner cell ",
@@ -188,11 +196,11 @@ namespace ChainRush.Board
                         " has an invalid marker reference.");
                     return false;
                 }
-                if (!markerRefs.Add(snapshot.Marker))
+                if (!cellRefs.Add(snapshot.Cell))
                 {
                     failure = string.Concat(
                         "Shape population planner contains duplicate marker '",
-                        snapshot.Marker.ToString(),
+                        snapshot.Cell.ToString(),
                         "'.");
                     return false;
                 }
@@ -204,7 +212,7 @@ namespace ChainRush.Board
                 {
                     failure = string.Concat(
                         "Shape population planner cell '",
-                        snapshot.Marker.ToString(),
+                        snapshot.Cell.ToString(),
                         " is not aligned to the activity grid.");
                     return false;
                 }

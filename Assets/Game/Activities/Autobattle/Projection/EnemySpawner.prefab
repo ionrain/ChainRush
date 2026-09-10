@@ -70,7 +70,6 @@ MonoBehaviour:
   usagePolicy:
     selectionType: 0
     reusePolicyType: 0
-  refreshPolicyType: 1
   shape: {fileID: 11400000, guid: 1ffd8c4e50eea4ebd84c03248bcbb087, type: 2}
   usage:
     fillType: 0
@@ -79,6 +78,11 @@ MonoBehaviour:
     rotation: {x: 0, y: 0, z: 0}
     cellSize: {x: 1000, y: 1, z: 1000}
     spacing: {x: 0, y: 0, z: 0}
+  regionTags:
+  - {fileID: 11400000, guid: aa92cc0714f724a0491b75e03d6282a9, type: 2}
+  cellTags: []
+  cellMetadata: []
+  publishMarkers: 1
   markerTags:
   - {fileID: 11400000, guid: aa92cc0714f724a0491b75e03d6282a9, type: 2}
   drawGizmo: 1

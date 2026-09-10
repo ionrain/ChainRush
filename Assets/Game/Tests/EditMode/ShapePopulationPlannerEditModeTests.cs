@@ -79,7 +79,7 @@ namespace ChainRush.Tests.EditMode
                 Assert.AreSame(first.Groups[i].Shape, second.Groups[i].Shape);
                 Assert.AreSame(first.Groups[i].Asset, second.Groups[i].Asset);
                 Assert.AreEqual(first.Groups[i].FormType, second.Groups[i].FormType);
-                CollectionAssert.AreEqual(first.Groups[i].Markers, second.Groups[i].Markers);
+                CollectionAssert.AreEqual(first.Groups[i].Cells, second.Groups[i].Cells);
             }
         }
 
@@ -102,7 +102,7 @@ namespace ChainRush.Tests.EditMode
                 planner.TryBuild(CreateContext(1L, cells), out _, out string firstFailure),
                 firstFailure);
             Assert.IsTrue(planner.TryBuild(CreateContext(2L, cells), out PopulationPlan second, out string secondFailure), secondFailure);
-            Assert.AreEqual(3, second.Groups.Single(group => group.Shape == _activeShapes[0]).Markers.Count);
+            Assert.AreEqual(3, second.Groups.Single(group => group.Shape == _activeShapes[0]).Cells.Count);
         }
 
         [Test]
@@ -120,10 +120,10 @@ namespace ChainRush.Tests.EditMode
                 planner.TryBuild(CreateContext(1L, cells), out PopulationPlan plan, out string failure),
                 failure);
 
-            List<SpatialMarkerRef> markers = FlattenMarkers(plan);
+            List<SpaceRegionCellReference> markers = FlattenCells(plan);
             Assert.AreEqual(5, markers.Count);
             Assert.AreEqual(5, markers.Distinct().Count());
-            Assert.IsFalse(markers.Contains(cells[2].Marker));
+            Assert.IsFalse(markers.Contains(cells[2].Cell));
             Assert.IsTrue(plan.Groups.All(group => group.FormType == EconomyFormType.Token));
         }
 
@@ -142,11 +142,11 @@ namespace ChainRush.Tests.EditMode
                 planner.TryBuild(CreateContext(1L, cells), out PopulationPlan plan, out string failure),
                 failure);
 
-            List<SpatialMarkerRef> markers = FlattenMarkers(plan);
+            List<SpaceRegionCellReference> markers = FlattenCells(plan);
             Assert.AreEqual(5, markers.Count);
             Assert.IsFalse(cells[2].IsOccupied);
             Assert.IsFalse(cells[2].AvailableForPlacement);
-            Assert.IsFalse(markers.Contains(cells[2].Marker));
+            Assert.IsFalse(markers.Contains(cells[2].Cell));
         }
 
         [TestCase(ShapeFixtureType.Single)]
@@ -173,7 +173,7 @@ namespace ChainRush.Tests.EditMode
                     out PopulationPlan plan,
                     out string failure),
                 failure);
-            Assert.AreEqual(coordinates.Length, FlattenMarkers(plan).Count);
+            Assert.AreEqual(coordinates.Length, FlattenCells(plan).Count);
             Assert.IsTrue(plan.Groups.All(group => ReferenceEquals(group.Asset, water)));
         }
 
@@ -247,7 +247,7 @@ namespace ChainRush.Tests.EditMode
                 failure);
             CollectionAssert.AreEqual(
                 new[] { 0, 1, 2 },
-                FlattenMarkers(plan).Select(marker => marker.LocalIndex));
+                FlattenCells(plan).Select(marker => marker.LocalIndex));
         }
 
         [Test]
@@ -513,6 +513,7 @@ namespace ChainRush.Tests.EditMode
                 ParticipantEntityId,
                 PopulationEntityId,
                 unchecked((ulong)seed),
+                CreateRegions(cells),
                 cells,
                 shapes);
         }
@@ -563,7 +564,10 @@ namespace ChainRush.Tests.EditMode
             }
 
             return new PopulationCellSnapshot(
-                new SpatialMarkerRef(ActivityId, MarkerScopeEntityId, "planner-grid", index),
+                new SpaceRegionCellReference(new SpaceRegionCellSnapshot(TestRegionHandle(), 1L, index,
+                    new Vector3Int(coordinate.x, 0, coordinate.y),
+                    new SpatialPose(ResolvePosition(topologyCoordinates, upAxisType), topologyCoordinates, Quaternion.identity),
+                    ResolveCellFootprint(upAxisType), default)),
                 ResolvePosition(topologyCoordinates, upAxisType),
                 topologyCoordinates,
                 Quaternion.identity,
@@ -572,6 +576,23 @@ namespace ChainRush.Tests.EditMode
                 EntityId.Invalid,
                 null,
                 EconomyFormType.Token);
+        }
+
+        static SpaceRegionHandle TestRegionHandle()
+        {
+            return (SpaceRegionHandle)Activator.CreateInstance(typeof(SpaceRegionHandle),
+                BindingFlags.Instance | BindingFlags.NonPublic, null, new object[] { 1L }, null);
+        }
+
+        static List<SpaceRegionSnapshot> CreateRegions(IReadOnlyList<PopulationCellSnapshot> cells)
+        {
+            Assert.IsTrue(TopologyService.TryGetTopologyDescriptor(ActivityId, out var topology));
+            return new List<SpaceRegionSnapshot>
+            {
+                new SpaceRegionSnapshot(TestRegionHandle(), 1L, ActivityId, MarkerScopeEntityId,
+                    new SpaceRegionId("planner-grid"), default, default, topology, SpaceRegionGeometryType.Cells,
+                    cells.Count, default, SpaceRegionStateType.Active, SpaceRegionPlanningAvailabilityType.Available, default, false)
+            };
         }
 
         static WorldPosition ResolvePosition(
@@ -602,11 +623,11 @@ namespace ChainRush.Tests.EditMode
             }
         }
 
-        static List<SpatialMarkerRef> FlattenMarkers(PopulationPlan plan)
+        static List<SpaceRegionCellReference> FlattenCells(PopulationPlan plan)
         {
-            var markers = new List<SpatialMarkerRef>();
+            var markers = new List<SpaceRegionCellReference>();
             for (int i = 0; i < plan.Groups.Count; i++)
-                markers.AddRange(plan.Groups[i].Markers);
+                markers.AddRange(plan.Groups[i].Cells);
             return markers;
         }
 
@@ -616,7 +637,7 @@ namespace ChainRush.Tests.EditMode
             for (int i = 0; i < plan.Groups.Count; i++)
             {
                 if (ReferenceEquals(plan.Groups[i].Asset, asset))
-                    count += plan.Groups[i].Markers.Count;
+                    count += plan.Groups[i].Cells.Count;
             }
             return count;
         }
@@ -626,13 +647,13 @@ namespace ChainRush.Tests.EditMode
             CapabilityHostData asset)
         {
             return new PopulationCellSnapshot(
-                cell.Marker,
+                cell.Cell,
                 cell.Position,
                 cell.Coordinates,
                 cell.Rotation,
                 cell.CellFootprint,
                 false,
-                new EntityId(9000 + cell.Marker.LocalIndex),
+                new EntityId(9000 + cell.Cell.LocalIndex),
                 asset,
                 EconomyFormType.Token);
         }
@@ -640,7 +661,7 @@ namespace ChainRush.Tests.EditMode
         static PopulationCellSnapshot MakeUnavailable(PopulationCellSnapshot cell)
         {
             return new PopulationCellSnapshot(
-                cell.Marker,
+                cell.Cell,
                 cell.Position,
                 cell.Coordinates,
                 cell.Rotation,

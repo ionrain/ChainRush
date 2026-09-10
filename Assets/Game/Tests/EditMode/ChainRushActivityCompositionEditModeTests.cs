@@ -288,8 +288,10 @@ namespace ChainRush.Tests.EditMode
             Assert.AreEqual(Vector3Int.zero, boardProvider.Usage.Spacing);
             Assert.AreEqual(1, boardProvider.MarkerTags.Count);
             Assert.AreEqual(BoardCellTagId, boardProvider.MarkerTags[0].Id);
-            Assert.AreEqual(1, boardSpace.ProjectionMarkerTags.Count);
-            Assert.AreSame(boardProvider.MarkerTags[0], boardSpace.ProjectionMarkerTags[0]);
+            Assert.IsTrue(boardProvider.PublishMarkers);
+            Assert.AreEqual(SpaceRegionScopeType.ActivityRoot, boardSpace.ProjectionRegion.ScopeType);
+            Assert.AreEqual(1, boardSpace.ProjectionRegion.RequiredTags.Count);
+            Assert.AreSame(boardProvider.MarkerTags[0], boardSpace.ProjectionRegion.RequiredTags[0]);
             Assert.NotNull(boardSpace.ProjectionSettings);
             Assert.IsTrue(boardSpace.ProjectionSettings.IsValid);
         }
@@ -553,13 +555,13 @@ namespace ChainRush.Tests.EditMode
             Assert.AreSame(sharedWalletTag, request.WalletTags.Single());
             Assert.IsTrue(fill.ActivateConditions.OfType<ObjectiveConditionObjectiveState>()
                 .Any(condition => condition.TargetId == payment.Id && condition.TargetValue == ObjectiveState.Completed));
-            var reset = (ObjectiveConditionMaterializedMarkerCoverage)objective.ResetConditions.Single();
+            var reset = (ObjectiveConditionMaterializedRegionCoverage)objective.ResetConditions.Single();
             Assert.AreEqual(CompareOperation.Greater, reset.CompareOperation);
             Assert.AreEqual(0L, reset.TargetValue);
             var operation = boardBrain.Operators.OfType<EconomyOperationDecompOpData>().Single();
             Assert.AreEqual(EconomyOperation.Consume, ReadField<EconomyOperation>(operation, "operation"));
             Assert.AreSame(turnToken, ReadField<EconomyEntrySelectionData>(operation, "selection").ExactAsset);
-            var success = fill.SuccessConditions.Single() as ObjectiveConditionMaterializedMarkerCoverage;
+            var success = fill.SuccessConditions.Single() as ObjectiveConditionMaterializedRegionCoverage;
             Assert.NotNull(success);
             Assert.AreSame(waterBase, success.EconomyAsset);
             Assert.AreEqual(EconomyFormType.Token, success.EconomyFormType);
@@ -567,7 +569,8 @@ namespace ChainRush.Tests.EditMode
             Assert.AreEqual(0, success.RequiredCapabilityTypes.Count);
             Assert.AreEqual(CompareOperation.Equal, success.CompareOperation);
             Assert.AreEqual(0L, success.TargetValue);
-            Assert.AreEqual(BoardCellTagId, success.MarkerTags.Single().Id);
+            Assert.AreEqual(BoardCellTagId, success.Space.RequiredTags.Single().Id);
+            Assert.AreEqual(SpaceRegionScopeType.ActivityRoot, success.Space.ScopeType);
 
             var selectionActivation = selectionObjective.Root.ActivateConditions.Single()
                 as ObjectiveConditionSelectionRequest;
@@ -647,13 +650,10 @@ namespace ChainRush.Tests.EditMode
             Assert.AreEqual(1000, distanceCriterion.MaximumDistance);
             var population = (PopulationAgentData)populationAgent.Agent;
             Assert.NotNull(population.Planner);
-            var populationMarker = populationAgent.TargetSelectionCriteria
-                .Select(entry => entry.Criterion)
-                .OfType<MarkerCriterionData>()
-                .Single();
-            Assert.AreEqual(BoardCellTagId, populationMarker.RequiredTags.Single().Id);
-            Assert.AreEqual(BoardCellTagId, populationMarker.ProviderType.Id);
-            Assert.AreEqual(MarkerScopeType.ActivityRoot, populationMarker.ScopeType);
+            Assert.IsEmpty(populationAgent.TargetSelectionCriteria);
+            Assert.AreEqual(BoardCellTagId, population.Space.RequiredTags.Single().Id);
+            Assert.AreEqual(SpaceRegionScopeType.ActivityRoot, population.Space.ScopeType);
+            Assert.IsTrue(population.Space.Matches(success.Space));
             Assert.AreSame(boardWalletTag, population.ShapeWalletTags.Single());
             List<ActivityWalletSeedEntryData> shapeSeeds = board.Teams[0].Wallets
                 .SelectMany(wallet => wallet.Seed)
@@ -1730,7 +1730,7 @@ namespace ChainRush.Tests.EditMode
                 projection.GetComponent<SpatialShapeProviderController>();
             Assert.NotNull(provider);
             Assert.AreSame(shape, provider.Shape);
-            Assert.AreEqual(SpatialMarkerRefreshPolicyType.OnUse, provider.RefreshPolicyType);
+            Assert.IsTrue(provider.PublishMarkers);
             Assert.AreEqual(new Vector3Int(7, 1, 21), provider.Usage.Size);
             Assert.AreEqual(expectedPosition, provider.Usage.Position);
             Assert.AreEqual(new Vector3Int(1000, 1, 1000), provider.Usage.CellSize);

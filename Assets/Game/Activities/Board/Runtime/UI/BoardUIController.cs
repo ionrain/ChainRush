@@ -9,7 +9,6 @@ using Core.Events;
 using Core.Taxonomy;
 using Core.UI.Flow;
 using UnityEngine;
-using UnityEngine.UI;
 using EntityId = Core.Entities.EntityId;
 
 namespace ChainRush.Board
@@ -23,7 +22,6 @@ namespace ChainRush.Board
         IEventListener<SelectionResultEvent>
     {
         [SerializeField] RectTransform gridRoot;
-        [SerializeField] GridLayoutGroup gridLayout;
         [SerializeField] BoardCellView cellPrefab;
         [SerializeField] CapabilityHostBaseData boardHostDefinition;
         [SerializeField] TaxonomyTermData selectionRequestType;
@@ -71,7 +69,6 @@ namespace ChainRush.Board
                 || activityUIContext.ProjectionTarget == null
                 || activityUIContext.ProjectionSettings == null
                 || gridRoot == null
-                || gridLayout == null
                 || cellPrefab == null)
             {
                 return false;
@@ -82,7 +79,7 @@ namespace ChainRush.Board
 
             ReleaseGrid();
             _context = activityUIContext;
-            ConfigureGrid(activityUIContext);
+            Vector2 gridCenter = ResolveGridCenter(activityUIContext.Cells);
             _selectionLocked = true;
             _awaitingBoardRefresh = true;
             _boardRefreshObserved = true;
@@ -91,6 +88,14 @@ namespace ChainRush.Board
             {
                 ActivityUICell cellData = activityUIContext.Cells[i];
                 BoardCellView cell = Instantiate(cellPrefab, gridRoot, false);
+                RectTransform cellTransform = cell.RectTransform;
+                cellTransform.anchorMin = cellTransform.anchorMax = new Vector2(0.5f, 0.5f);
+                cellTransform.pivot = new Vector2(0.5f, 0.5f);
+                cellTransform.sizeDelta = activityUIContext.ProjectionSettings.CellSize;
+                Vector2 pitch = activityUIContext.ProjectionSettings.CellSize + activityUIContext.ProjectionSettings.Spacing;
+                cellTransform.anchoredPosition = new Vector2(
+                    (cellData.GridCoordinates.x - gridCenter.x) * pitch.x,
+                    (gridCenter.y - cellData.GridCoordinates.y) * pitch.y);
                 cell.Bind(this, cellData);
                 if (!activityUIContext.ProjectionTarget.RegisterCell(cellData.WorldPosition, cell.RectTransform))
                 {
@@ -350,15 +355,6 @@ namespace ChainRush.Board
             _selectedEntities.Clear();
         }
 
-        void ConfigureGrid(ActivityUIContext context)
-        {
-            int columnCount = ResolveColumnCount(context.Cells);
-            gridLayout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
-            gridLayout.constraintCount = Math.Max(1, columnCount);
-            gridLayout.cellSize = context.ProjectionSettings.CellSize;
-            gridLayout.spacing = context.ProjectionSettings.Spacing;
-        }
-
         void ReleaseGrid()
         {
             ClearSelection();
@@ -399,21 +395,20 @@ namespace ChainRush.Board
                     StringComparison.Ordinal);
         }
 
-        static int ResolveColumnCount(IReadOnlyList<ActivityUICell> cells)
+        static Vector2 ResolveGridCenter(IReadOnlyList<ActivityUICell> cells)
         {
             if (cells == null || cells.Count == 0)
-                return 1;
+                return Vector2.zero;
 
-            int min = cells[0].GridCoordinates.x;
-            int max = min;
+            Vector2Int min = cells[0].GridCoordinates;
+            Vector2Int max = min;
             for (int i = 1; i < cells.Count; i++)
             {
-                int column = cells[i].GridCoordinates.x;
-                min = Math.Min(min, column);
-                max = Math.Max(max, column);
+                min = Vector2Int.Min(min, cells[i].GridCoordinates);
+                max = Vector2Int.Max(max, cells[i].GridCoordinates);
             }
 
-            return checked(max - min + 1);
+            return new Vector2(((long)min.x + max.x) * 0.5f, ((long)min.y + max.y) * 0.5f);
         }
     }
 }

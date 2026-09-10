@@ -165,8 +165,13 @@ MonoBehaviour:
         - rid: 2807516545835073674
         presentation:
           rid: 2807516141394329705
-        projectionMarkerTags:
-        - {fileID: 11400000, guid: a70bd9d1bf3b1457fbe47de7812a7fed, type: 2}
+        projectionRegion:
+          scopeType: 1
+          requiredTags:
+          - {fileID: 11400000, guid: a70bd9d1bf3b1457fbe47de7812a7fed, type: 2}
+          excludedTags: []
+          requiredCellTags: []
+          excludedCellTags: []
         projectionSettings:
           cellSize: {x: 140, y: 140}
           spacing: {x: 10, y: 10}
@@ -190,5 +195,10 @@ MonoBehaviour:
           rotation: {x: 0, y: 0, z: 0}
           cellSize: {x: 1000, y: 1, z: 1000}
           spacing: {x: 0, y: 0, z: 0}
+        regionTags:
+        - {fileID: 11400000, guid: a70bd9d1bf3b1457fbe47de7812a7fed, type: 2}
+        cellTags: []
+        cellMetadata: []
+        publishMarkers: 1
         markerTags:
         - {fileID: 11400000, guid: a70bd9d1bf3b1457fbe47de7812a7fed, type: 2}

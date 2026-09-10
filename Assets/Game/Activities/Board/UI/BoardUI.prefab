@@ -91,7 +91,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ChainRush.Board.BoardUIController
   requiresManualCloseRelease: 0
   gridRoot: {fileID: 400101}
-  gridLayout: {fileID: 400102}
   cellPrefab: {fileID: 100004, guid: fb7cb8b3bd465410488c0a34a8c2be14, type: 3}
   boardHostDefinition: {fileID: 11400000, guid: d998acfcc5fb2426387891c381d11387,
     type: 2}
@@ -106,7 +105,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 400101}
-  - component: {fileID: 400102}
   m_Layer: 5
   m_Name: Grid
   m_TagString: Untagged
@@ -133,27 +131,3 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -100, y: -100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &400102
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 400100}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8a8695521f0d02e499659fee002a26c2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.GridLayoutGroup
-  m_Padding:
-    m_Left: 0
-    m_Right: 0
-    m_Top: 0
-    m_Bottom: 0
-  m_ChildAlignment: 4
-  m_StartCorner: 0
-  m_StartAxis: 0
-  m_CellSize: {x: 140, y: 140}
-  m_Spacing: {x: 10, y: 10}
-  m_Constraint: 1
-  m_ConstraintCount: 6

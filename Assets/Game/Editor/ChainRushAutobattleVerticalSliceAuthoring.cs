@@ -3105,8 +3105,11 @@ namespace ChainRush.Editor
                     string.Concat(name.ToLowerInvariant(), "-spawn-provider"),
                     providerType,
                     SpatialMarkerReusePolicyType.ReuseAllowed);
-                SetField(provider, "refreshPolicyType", SpatialMarkerRefreshPolicyType.OnUse);
                 SetField(provider, "shape", shape);
+                SetField(provider, "publishMarkers", true);
+                SetField(provider, "regionTags", new List<TaxonomyTermData> { providerType });
+                SetField(provider, "cellTags", new List<TaxonomyTermData>());
+                SetField(provider, "cellMetadata", new List<SpaceRegionCellMetadataData>());
                 SetField(
                     provider,
                     "usage",
@@ -3992,7 +3995,7 @@ namespace ChainRush.Editor
         static void EnsureOccupancyConsumerWiring()
         {
             CapabilityHostData waterBase = LoadRequired<CapabilityHostData>(BoardWaterBasePath);
-            ObjectiveConditionMaterializedMarkerCoverage condition =
+            ObjectiveConditionMaterializedRegionCoverage condition =
                 ResolveBoardPopulationMarkerCondition();
             if (condition.EconomyAsset == waterBase)
                 return;
@@ -4024,7 +4027,7 @@ namespace ChainRush.Editor
         static void ValidateOccupancyConsumerWiring()
         {
             CapabilityHostData waterBase = LoadRequired<CapabilityHostData>(BoardWaterBasePath);
-            ObjectiveConditionMaterializedMarkerCoverage condition =
+            ObjectiveConditionMaterializedRegionCoverage condition =
                 ResolveBoardPopulationMarkerCondition();
             if (condition.EconomyAsset != waterBase)
             {
@@ -4033,12 +4036,12 @@ namespace ChainRush.Editor
             }
         }
 
-        static ObjectiveConditionMaterializedMarkerCoverage ResolveBoardPopulationMarkerCondition()
+        static ObjectiveConditionMaterializedRegionCoverage ResolveBoardPopulationMarkerCondition()
         {
             ObjectiveTemplateData objective =
                 LoadRequired<ObjectiveTemplateData>(BoardPopulationObjectivePath);
             if (objective.Root == null || objective.Root.SuccessConditions.Count != 1
-                || !(objective.Root.SuccessConditions[0] is ObjectiveConditionMaterializedMarkerCoverage condition))
+                || !(objective.Root.SuccessConditions[0] is ObjectiveConditionMaterializedRegionCoverage condition))
             {
                 throw new InvalidOperationException(
                     "Board Population Objective does not contain the expected materialized marker coverage success condition.");

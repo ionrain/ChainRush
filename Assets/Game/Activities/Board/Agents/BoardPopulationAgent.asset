@@ -16,7 +16,7 @@ MonoBehaviour:
   basePriority: 100
   updateInterval: 1
   matchConditions:
-  - rid: 2807516289745289324
+  - rid: 6092003820956286976
   executorSelectionCriteria:
   - requirementType: 0
     criterion:
@@ -25,10 +25,7 @@ MonoBehaviour:
     criterion:
       rid: 6092003635567525901
   executorTargetRankingType: 0
-  targetSelectionCriteria:
-  - requirementType: 0
-    criterion:
-      rid: 6092003635567525902
+  targetSelectionCriteria: []
   targetRankingType: 0
   aiBrainTargetKey: {fileID: 0}
   controlType: 2
@@ -46,39 +43,43 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 2807516289745289324
-      type: {class: ObjectiveConditionMaterializedMarkerCoverage, ns: Core.Objectives,
+    - rid: 6092003635567525900
+      type: {class: CapabilityHostCriterionData, ns: Core.Orchestration, asm: Core}
+      data:
+        definition: {fileID: 11400000, guid: d998acfcc5fb2426387891c381d11387, type: 2}
+        requiredAssetTags: []
+        requiredCapabilityTypes:
+    - rid: 6092003635567525901
+      type: {class: OwnerCriterionData, ns: Core.Orchestration, asm: Core}
+      data:
+        ownerSelectionType: 0
+    - rid: 6092003813537087492
+      type: {class: PopulationAgentData, ns: Core.Orchestration, asm: Core}
+      data:
+        space:
+          scopeType: 1
+          requiredTags:
+          - {fileID: 11400000, guid: a70bd9d1bf3b1457fbe47de7812a7fed, type: 2}
+          excludedTags: []
+          requiredCellTags: []
+          excludedCellTags: []
+        planner: {fileID: 11400000, guid: 1029848a6853142608dc780bbbc34c1a, type: 2}
+        shapeWalletTags:
+        - {fileID: 11400000, guid: 9cbb4f47a974c42cfa008dda55386302, type: 2}
+    - rid: 6092003820956286976
+      type: {class: ObjectiveConditionMaterializedRegionCoverage, ns: Core.Objectives,
         asm: Core}
       data:
         _targetValue: 0
         economyAsset: {fileID: 0}
         economyFormType: 1
         requiredAssetTags: []
-        requiredCapabilityTypes: 
-        markerTags:
-        - {fileID: 11400000, guid: a70bd9d1bf3b1457fbe47de7812a7fed, type: 2}
+        requiredCapabilityTypes:
+        space:
+          scopeType: 1
+          requiredTags:
+          - {fileID: 11400000, guid: a70bd9d1bf3b1457fbe47de7812a7fed, type: 2}
+          excludedTags: []
+          requiredCellTags: []
+          excludedCellTags: []
         compareOperation: 0
-    - rid: 6092003635567525900
-      type: {class: CapabilityHostCriterionData, ns: Core.Orchestration, asm: Core}
-      data:
-        definition: {fileID: 11400000, guid: d998acfcc5fb2426387891c381d11387, type: 2}
-        requiredAssetTags: []
-        requiredCapabilityTypes: 
-    - rid: 6092003635567525901
-      type: {class: OwnerCriterionData, ns: Core.Orchestration, asm: Core}
-      data:
-        ownerSelectionType: 0
-    - rid: 6092003635567525902
-      type: {class: MarkerCriterionData, ns: Core.Orchestration, asm: Core}
-      data:
-        requiredTags:
-        - {fileID: 11400000, guid: a70bd9d1bf3b1457fbe47de7812a7fed, type: 2}
-        excludedTags: []
-        providerType: {fileID: 11400000, guid: a70bd9d1bf3b1457fbe47de7812a7fed, type: 2}
-        scopeType: 1
-    - rid: 6092003813537087492
-      type: {class: PopulationAgentData, ns: Core.Orchestration, asm: Core}
-      data:
-        planner: {fileID: 11400000, guid: 1029848a6853142608dc780bbbc34c1a, type: 2}
-        shapeWalletTags:
-        - {fileID: 11400000, guid: 9cbb4f47a974c42cfa008dda55386302, type: 2}

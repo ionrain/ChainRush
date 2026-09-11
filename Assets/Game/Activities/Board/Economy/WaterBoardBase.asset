@@ -32,12 +32,13 @@ MonoBehaviour:
     m_FallbackState: 0
     m_WaitForCompletion: 0
     m_LocalVariables: []
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: ca61d7b760e884bf897678a2f3b4c871, type: 3}
   precision: 0
   allowedOperations: 31
   tags:
-  - {fileID: 11400000, guid: 6c06de2863f654107bf5774971fb5d30, type: 2}
   - {fileID: 11400000, guid: d65bc7797b2884444a858fec0e36bbcd, type: 2}
+  - {fileID: 11400000, guid: 6f53cac79ea6a43cdb056ccd6396f4fe, type: 2}
+  - {fileID: 11400000, guid: 6c06de2863f654107bf5774971fb5d30, type: 2}
   slotFootprint: 1
   stackCapacity: 0
   footprintSize: {x: 1000, y: 0, z: 1000}

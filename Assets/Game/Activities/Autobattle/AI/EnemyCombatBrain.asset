@@ -64,7 +64,8 @@ MonoBehaviour:
       - rid: 2807516363299750080
       - rid: 2807516363299750081
       onTickActions: []
-      onExitActions: []
+      onExitActions:
+      - rid: 2807516363299750085
   transitions:
   - fromStates:
     - {fileID: 11400000, guid: e357fa830bfc04273bb8b6d3739c4e0b, type: 2}
@@ -166,6 +167,10 @@ MonoBehaviour:
         asm: Core}
       data:
         requiredResults: 6
+    - rid: 2807516363299750085
+      type: {class: RemoveEntityAIBrainExitActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        triggerResults: 2
     - rid: 2807516363299750084
       type: {class: CurrentStateResultMatchesAIBrainConditionData, ns: Core.AI.Conditions,
         asm: Core}

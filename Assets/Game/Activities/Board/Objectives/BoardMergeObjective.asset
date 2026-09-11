@@ -29,7 +29,7 @@ MonoBehaviour:
       Data: 0|Core.Objectives.ObjectiveNode, Core
     - Name: _id
       Entry: 1
-      Data: board-merge
+      Data: board-selected-water
     - Name: _data
       Entry: 6
       Data: 
@@ -200,6 +200,19 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: resetConditions
+      Entry: 7
+      Data: 12|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
       Data: 
     - Name: 
       Entry: 8

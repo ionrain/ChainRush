@@ -15,8 +15,23 @@ MonoBehaviour:
   clearExistingDefinitionsOnInstall: 1
   values:
   - {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
+  - {fileID: 11400000, guid: 8a6fcf936818f4e3ea4bc4b5b30177c7, type: 2}
   definitions:
   - value: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
+    initializationType: 0
+    minCap:
+      value: 0
+      capAttribute:
+        attribute: {fileID: 0}
+        qualifiers: []
+      boundryPolicy: 0
+    maxCap:
+      value: 0
+      capAttribute:
+        attribute: {fileID: 0}
+        qualifiers: []
+      boundryPolicy: 1
+  - value: {fileID: 11400000, guid: 8a6fcf936818f4e3ea4bc4b5b30177c7, type: 2}
     initializationType: 0
     minCap:
       value: 0

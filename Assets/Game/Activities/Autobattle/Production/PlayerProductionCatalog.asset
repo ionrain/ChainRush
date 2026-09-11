@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07d96d3a8a82b460f99ce3205f5f6949, type: 3}
   m_Name: PlayerProductionCatalog
   m_EditorClassIdentifier: Core::Core.Production.Authoring.ProductionCatalogData
-  domainTypePreview: 0
+  domainTypePreview: 9
   id: chainrush.production.autobattle.player.catalog
   title:
     m_TableReference:
@@ -40,6 +40,34 @@ MonoBehaviour:
   stackCapacity: 0
   entries:
   - recipe: {fileID: 11400000, guid: 58be81972ffcd423e945e7ac6dc9f0d5, type: 2}
+    workDuration: 1
+    recoveryDuration: 0
+    reservationPolicy: 0
+  - recipe: {fileID: 11400000, guid: 57764071d3097428d809e361f15c7009, type: 2}
+    workDuration: 1
+    recoveryDuration: 0
+    reservationPolicy: 0
+  - recipe: {fileID: 11400000, guid: 13fe3ef9a842442d78c43048bda73e62, type: 2}
+    workDuration: 1
+    recoveryDuration: 0
+    reservationPolicy: 0
+  - recipe: {fileID: 11400000, guid: e04bb36511294429b9444346fd7d04e3, type: 2}
+    workDuration: 1
+    recoveryDuration: 0
+    reservationPolicy: 0
+  - recipe: {fileID: 11400000, guid: eb4b3e771cc6948279bbc5ab45b6fd93, type: 2}
+    workDuration: 1
+    recoveryDuration: 0
+    reservationPolicy: 0
+  - recipe: {fileID: 11400000, guid: be431de43af3f48a2be6e4a0b52eb062, type: 2}
+    workDuration: 1
+    recoveryDuration: 0
+    reservationPolicy: 0
+  - recipe: {fileID: 11400000, guid: f77fe4bd048074867bfa2d91bb296a21, type: 2}
+    workDuration: 1
+    recoveryDuration: 0
+    reservationPolicy: 0
+  - recipe: {fileID: 11400000, guid: ebc3ba1b5b82841e4824328f961ea0d2, type: 2}
     workDuration: 1
     recoveryDuration: 0
     reservationPolicy: 0

@@ -28,7 +28,7 @@ MonoBehaviour:
       Data: 0|Core.Objectives.ObjectiveNode, Core
     - Name: _id
       Entry: 1
-      Data: chainrush-autobattle-player-deployment
+      Data: deploy-waterunit
     - Name: _data
       Entry: 6
       Data: 
@@ -81,8 +81,18 @@ MonoBehaviour:
       Entry: 8
       Data: 
     - Name: _requiredRuntimeTags
-      Entry: 6
-      Data:
+      Entry: 7
+      Data: 5|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: _formType
       Entry: 3
       Data: 0
@@ -100,33 +110,20 @@ MonoBehaviour:
       Data: 
     - Name: _successConditions
       Entry: 7
-      Data: 5|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition,
+      Data: 6|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition,
         Core]], mscorlib
     - Name: 
       Entry: 12
       Data: 1
     - Name: 
       Entry: 7
-      Data: 6|Core.Objectives.ObjectiveConditionEconomyMetric, Core
+      Data: 7|Core.Objectives.ObjectiveConditionEconomyMetric, Core
     - Name: _targetValue
       Entry: 3
       Data: 0
     - Name: _walletTags
-      Entry: 7
-      Data: 7|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
-        Core]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 1
-    - Name: 
-      Entry: 10
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
+      Entry: 9
+      Data: 3
     - Name: _asset
       Entry: 10
       Data: 1
@@ -144,14 +141,24 @@ MonoBehaviour:
       Entry: 8
       Data: 
     - Name: _requiredRuntimeTags
-      Entry: 6
-      Data:
+      Entry: 7
+      Data: 9|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: _formType
       Entry: 3
       Data: 0
     - Name: _compareOperation
       Entry: 3
-      Data: 5
+      Data: 0
     - Name: 
       Entry: 8
       Data: 
@@ -163,7 +170,7 @@ MonoBehaviour:
       Data: 
     - Name: _failConditions
       Entry: 7
-      Data: 9|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition,
+      Data: 10|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition,
         Core]], mscorlib
     - Name: 
       Entry: 12
@@ -173,6 +180,19 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: resetConditions
+      Entry: 7
+      Data: 11|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
       Data: 
     - Name: 
       Entry: 8

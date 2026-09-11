@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: BoardPopulationProducer
   m_EditorClassIdentifier: Core::Core.CapabilityHosts.CapabilityHostData
   domainTypePreview: 3
-  id: chainrush.board.population-producer
+  id: chainrush.board.population-producer.water
   title:
     m_TableReference:
       m_TableCollectionName: 
@@ -37,6 +37,7 @@ MonoBehaviour:
   allowedOperations: 31
   tags:
   - {fileID: 11400000, guid: 6fbd221e1449243cdb5158b822822c2b, type: 2}
+  - {fileID: 11400000, guid: 0328972f738e34ee387f4f0f67224f9a, type: 2}
   slotFootprint: 1
   stackCapacity: 0
   footprintSize: {x: 0, y: 0, z: 0}

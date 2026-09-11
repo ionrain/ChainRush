@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0de7c27447f764d15a95c544378b86c8, type: 3}
   m_Name: BoardPopulationProduction
   m_EditorClassIdentifier: Core::Core.Production.Authoring.ProductionData
-  domainTypePreview: 0
-  id: chainrush.production.board.population
+  domainTypePreview: 9
+  id: chainrush.production.board.population.water
   title:
     m_TableReference:
       m_TableCollectionName: 

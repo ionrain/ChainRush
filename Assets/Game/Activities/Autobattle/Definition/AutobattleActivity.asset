@@ -61,6 +61,27 @@ MonoBehaviour:
     - template: {fileID: 11400000, guid: 6d5a77e70f73c43108cf633f3a1092e0, type: 2}
       successScoreDelta: 0
       failScoreDelta: 0
+    - template: {fileID: 11400000, guid: 2e2d345eb996d4679b2acd725cea239a, type: 2}
+      successScoreDelta: 0
+      failScoreDelta: 0
+    - template: {fileID: 11400000, guid: a4ce0d9d8d2d54c568fb0755594109e4, type: 2}
+      successScoreDelta: 0
+      failScoreDelta: 0
+    - template: {fileID: 11400000, guid: 521b01099cf4b46a3941f1ceb6e86d5f, type: 2}
+      successScoreDelta: 0
+      failScoreDelta: 0
+    - template: {fileID: 11400000, guid: 13b144e475568419d859e791e369c1a0, type: 2}
+      successScoreDelta: 0
+      failScoreDelta: 0
+    - template: {fileID: 11400000, guid: 175568ddfafd34459a8db669072f9b8d, type: 2}
+      successScoreDelta: 0
+      failScoreDelta: 0
+    - template: {fileID: 11400000, guid: 335fc5c0ee9fb4cafacd544d52e6a37b, type: 2}
+      successScoreDelta: 0
+      failScoreDelta: 0
+    - template: {fileID: 11400000, guid: 21f1975ee1db34eeb8aeaed42a000149, type: 2}
+      successScoreDelta: 0
+      failScoreDelta: 0
     - template: {fileID: 11400000, guid: 6462f655bcb0c48b1953b7803ffe072b, type: 2}
       successScoreDelta: 0
       failScoreDelta: 0
@@ -89,12 +110,13 @@ MonoBehaviour:
         - {fileID: 11400000, guid: 2b644075a9b584a7a82b24b61a91b748, type: 2}
       - seed:
           entry:
-            asset: {fileID: 11400000, guid: ba6dc7b2969654c0c96dd451c9a18987, type: 2}
-            formType: 0
+            asset: {fileID: 11400000, guid: 7070d9e2c0c244d008f0b10c7c645d5f, type: 2}
+            formType: 1
             amount: 1
           runtimeTags: []
-        materializationType: 0
-        materializationMarkerTags: []
+        materializationType: 1
+        materializationMarkerTags:
+        - {fileID: 11400000, guid: dff54a12e3d9149bbb614308f1b2d9c9, type: 2}
         projectionTargetTags: []
     features:
     - {fileID: 11400000, guid: 847659956c5e7433da259fcf9cb220da, type: 2}

@@ -91,6 +91,11 @@ MonoBehaviour:
         formType: 0
         amount: 1
       runtimeTags: []
+    - entry:
+        asset: {fileID: 11400000, guid: 6b29ec00e6b024f9286fd606c38404de, type: 2}
+        formType: 0
+        amount: 1
+      runtimeTags: []
   usagePolicy:
     accessType: 0
     diplomacyCompareOperation: 3

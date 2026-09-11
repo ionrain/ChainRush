@@ -55,6 +55,22 @@ MonoBehaviour:
     workDuration: 1
     recoveryDuration: 0
     reservationPolicy: 0
+  - recipe: {fileID: 11400000, guid: c42d7ed0eb2ba4d96bd8c724658acf6a, type: 2}
+    workDuration: 1
+    recoveryDuration: 0
+    reservationPolicy: 0
+  - recipe: {fileID: 11400000, guid: 67bba419565f34055afa8a214a4702ae, type: 2}
+    workDuration: 1
+    recoveryDuration: 0
+    reservationPolicy: 0
+  - recipe: {fileID: 11400000, guid: 7849a6ead02484c6db73ff45e127e2cd, type: 2}
+    workDuration: 1
+    recoveryDuration: 0
+    reservationPolicy: 0
+  - recipe: {fileID: 11400000, guid: 9dfcd879f696846ff931e7b90d6f0d78, type: 2}
+    workDuration: 1
+    recoveryDuration: 0
+    reservationPolicy: 0
   references:
     version: 2
     RefIds: []

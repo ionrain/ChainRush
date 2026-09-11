@@ -19,7 +19,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
     - {fileID: 11400000, guid: 854a0cd2c05d9443ead51a662d4966bf, type: 2}
     - {fileID: 11400000, guid: 9cbb4f47a974c42cfa008dda55386302, type: 2}
-    - {fileID: 11400000, guid: 1116b7b9d35a249b18741b1309a53cd1, type: 2}
+    - {fileID: 11400000, guid: 6f53cac79ea6a43cdb056ccd6396f4fe, type: 2}
     - {fileID: 11400000, guid: a18044d5476ae485296043e6e5ba431f, type: 2}
     - {fileID: 11400000, guid: a70bd9d1bf3b1457fbe47de7812a7fed, type: 2}
     SerializedBytesString: 
@@ -129,15 +129,18 @@ MonoBehaviour:
       Entry: 8
       Data: 
     - Name: _asset
-      Entry: 10
-      Data: 3
+      Entry: 6
+      Data: 
     - Name: _requiredAssetTags
       Entry: 7
       Data: 8|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
         Core]], mscorlib
     - Name: 
       Entry: 12
-      Data: 0
+      Data: 1
+    - Name: 
+      Entry: 10
+      Data: 3
     - Name: 
       Entry: 13
       Data: 
@@ -176,8 +179,8 @@ MonoBehaviour:
       Entry: 3
       Data: 0
     - Name: economyAsset
-      Entry: 10
-      Data: 3
+      Entry: 6
+      Data: 
     - Name: economyFormType
       Entry: 3
       Data: 1
@@ -187,7 +190,10 @@ MonoBehaviour:
         Core]], mscorlib
     - Name: 
       Entry: 12
-      Data: 0
+      Data: 1
+    - Name: 
+      Entry: 10
+      Data: 3
     - Name: 
       Entry: 13
       Data: 
@@ -522,8 +528,8 @@ MonoBehaviour:
       Entry: 3
       Data: 0
     - Name: economyAsset
-      Entry: 10
-      Data: 3
+      Entry: 6
+      Data: 
     - Name: economyFormType
       Entry: 3
       Data: 1
@@ -533,7 +539,10 @@ MonoBehaviour:
         Core]], mscorlib
     - Name: 
       Entry: 12
-      Data: 0
+      Data: 1
+    - Name: 
+      Entry: 10
+      Data: 3
     - Name: 
       Entry: 13
       Data: 
@@ -693,8 +702,8 @@ MonoBehaviour:
       Entry: 3
       Data: 0
     - Name: economyAsset
-      Entry: 10
-      Data: 3
+      Entry: 6
+      Data: 
     - Name: economyFormType
       Entry: 3
       Data: 1
@@ -704,7 +713,10 @@ MonoBehaviour:
         Core]], mscorlib
     - Name: 
       Entry: 12
-      Data: 0
+      Data: 1
+    - Name: 
+      Entry: 10
+      Data: 3
     - Name: 
       Entry: 13
       Data: 

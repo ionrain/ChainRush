@@ -174,7 +174,6 @@ namespace ChainRush.Tests.EditMode
             AutobattleRoot + "/Orchestration/Taxonomy/AwaitFactOperator.asset";
         const string DropProfilePath =
             AutobattleRoot + "/Drops/ExperienceDropProfile.asset";
-        const string AlliedCombatBrainPath = AutobattleRoot + "/AI/AlliedCombatBrain.asset";
         const string EnemyCombatBrainPath = AutobattleRoot + "/AI/EnemyCombatBrain.asset";
         const string CollectionBrainPath =
             AutobattleRoot + "/AI/ExperienceCollectorBrain.asset";
@@ -235,7 +234,7 @@ namespace ChainRush.Tests.EditMode
             Assert.AreEqual(1, autobattle.Teams[1].SlotCount);
             Assert.IsTrue(autobattle.AllowBots);
             Assert.AreEqual(ActivityEndMode.Manual, autobattle.Result.EndMode);
-            Assert.AreEqual(2, autobattle.Teams[0].Objectives.Count);
+            Assert.AreEqual(9, autobattle.Teams[0].Objectives.Count);
             Assert.AreEqual(1, autobattle.Teams[1].Objectives.Count);
             Assert.AreEqual(1, autobattle.Teams[0].Features.Count);
             Assert.AreEqual(1, autobattle.Teams[1].Features.Count);
@@ -251,7 +250,7 @@ namespace ChainRush.Tests.EditMode
             Assert.AreEqual(1, board.Teams[0].SlotCount);
             Assert.IsFalse(board.AllowBots);
             Assert.AreEqual(ActivityEndMode.Manual, board.Result.EndMode);
-            Assert.AreEqual(3, board.Teams[0].Objectives.Count);
+            Assert.AreEqual(11, board.Teams[0].Objectives.Count);
             Assert.AreEqual(1, board.Teams[0].Features.Count);
             AssertTopology(
                 board.Topology,
@@ -434,13 +433,13 @@ namespace ChainRush.Tests.EditMode
                 LoadRequiredAsset<ActivityOrchestrationConfigData>(BoardOrchestrationPath);
             TaxonomyFamilyData occupancyFamily =
                 LoadRequiredAsset<TaxonomyFamilyData>(OccupancyFamilyPath);
-            TaxonomyTermData waterTag = waterBase.Tags.Single(
-                tag => tag != null && tag.Family != occupancyFamily);
+            TaxonomyTermData waterTag = waterBase.Tags.Single(tag => tag != null && tag.Id == "chainrush.board.item.water");
+            var contentTag = LoadRequiredAsset<TaxonomyTermData>(BoardRoot + "/Taxonomy/BoardContent.asset");
             TaxonomyRuntimeInstallerData taxonomyInstaller =
                 LoadRequiredAsset<TaxonomyRuntimeInstallerData>(
                     "Assets/Game/Runtime/Installers/ChainRushTaxonomyRuntimeInstaller.asset");
 
-            CollectionAssert.AreEquivalent(
+            CollectionAssert.IsSubsetOf(
                 new[] { objective, selectionObjective, mergeObjective },
                 board.Teams[0].Objectives.Select(entry => entry.Template).ToList());
             Assert.AreEqual(ObjectiveCompletionPolicyType.ResetOnConditions, objective.CompletionPolicyType);
@@ -456,7 +455,7 @@ namespace ChainRush.Tests.EditMode
             Assert.AreEqual(
                 AgentStopPolicyType.None,
                 selectionAgent.StopPolicyType);
-            Assert.AreEqual(8, boardBrain.Operators.Count);
+            Assert.AreEqual(15, boardBrain.Operators.Count);
             List<AgentDecompOpData> agentOperators = boardBrain.Operators
                 .OfType<AgentDecompOpData>()
                 .ToList();
@@ -532,10 +531,10 @@ namespace ChainRush.Tests.EditMode
             Assert.AreEqual(1, turnTokenActivation.WalletTags.Count);
             Assert.AreSame(sharedWalletTag, turnTokenActivation.WalletTags[0]);
             ObjectiveConditionEconomyMetric mergeCompleteActivation = populationActivations
-                .Single(condition => condition.Asset == waterBase);
+                .Single(condition => condition.Asset == null);
             AssertMergeSelectionMetric(
                 mergeCompleteActivation,
-                waterBase,
+                null,
                 boardWalletTag,
                 mergeSelected,
                 0L,
@@ -558,7 +557,9 @@ namespace ChainRush.Tests.EditMode
             var reset = (ObjectiveConditionMaterializedRegionCoverage)objective.ResetConditions.Single();
             Assert.AreEqual(CompareOperation.Greater, reset.CompareOperation);
             Assert.AreEqual(0L, reset.TargetValue);
-            var operation = boardBrain.Operators.OfType<EconomyOperationDecompOpData>().Single();
+            CollectionAssert.AreEqual(new[] { contentTag }, mergeCompleteActivation.RequiredAssetTags);
+            var operation = boardBrain.Operators.OfType<EconomyOperationDecompOpData>()
+                .Single(item => ReadField<EconomyEntrySelectionData>(item, "selection").ExactAsset == turnToken);
             Assert.AreEqual(EconomyOperation.Consume, ReadField<EconomyOperation>(operation, "operation"));
             Assert.AreSame(turnToken, ReadField<EconomyEntrySelectionData>(operation, "selection").ExactAsset);
             var success = fill.SuccessConditions.Single() as ObjectiveConditionMaterializedRegionCoverage;
@@ -568,8 +569,7 @@ namespace ChainRush.Tests.EditMode
             Assert.AreEqual(BoardCellTagId, success.Space.RequiredTags.Single().Id);
             Assert.AreEqual(SpaceRegionScopeType.ActivityRoot, success.Space.ScopeType);
 
-            var selectionActivation = selectionObjective.Root.ActivateConditions.Single()
-                as ObjectiveConditionSelectionRequest;
+            var selectionActivation = selectionObjective.Root.ActivateConditions.OfType<ObjectiveConditionSelectionRequest>().Single();
             var selectionSuccess = selectionObjective.Root.SuccessConditions.Single()
                 as ObjectiveConditionSelectionRequest;
             Assert.NotNull(selectionActivation);
@@ -623,7 +623,7 @@ namespace ChainRush.Tests.EditMode
                 .Single();
             Assert.IsNull(targetCapabilityHost.Definition);
             CollectionAssert.AreEqual(
-                new[] { waterTag },
+                new[] { contentTag },
                 targetCapabilityHost.RequiredAssetTags);
             Assert.AreEqual(
                 AgentOwnerSelectionType.ParticipantOwner,
@@ -645,8 +645,11 @@ namespace ChainRush.Tests.EditMode
             Assert.AreEqual(1000, distanceCriterion.MinimumDistance);
             Assert.AreEqual(1000, distanceCriterion.MaximumDistance);
             var population = (PopulationAgentData)populationAgent.Agent;
-            Assert.AreSame(populationProducer, populationAgent.TargetSelectionCriteria
-                .Select(entry => entry.Criterion).OfType<CapabilityHostCriterionData>().Single().Definition);
+            var populationTargets = populationAgent.TargetSelectionCriteria
+                .Select(entry => entry.Criterion).OfType<CapabilityHostCriterionData>().Single();
+            Assert.IsNull(populationTargets.Definition);
+            CollectionAssert.AreEqual(new[] { LoadRequiredAsset<TaxonomyTermData>(BoardRoot + "/Taxonomy/BoardContentProducer.asset") },
+                populationTargets.RequiredAssetTags);
             Assert.AreEqual(AgentOwnerSelectionType.ParticipantOwner, populationAgent.TargetSelectionCriteria
                 .Select(entry => entry.Criterion).OfType<OwnerCriterionData>().Single().OwnerSelectionType);
             Assert.IsInstanceOf<PopulationFillAllData>(population.Fill);
@@ -745,7 +748,7 @@ namespace ChainRush.Tests.EditMode
                 Assert.AreEqual(1, mergeRecipe.Outputs.Count);
                 AssertEconomyOutput(
                     mergeRecipe.Outputs[0],
-                    waterUnit,
+                    LoadRequiredAsset<CapabilityHostData>(SharedRoot + "/Units/Water/WaterUnit" + (selectedAmount == 1 ? "" : selectedAmount.ToString()) + ".asset"),
                     EconomyFormType.Stack,
                     1L,
                     sharedWalletTag);
@@ -753,7 +756,8 @@ namespace ChainRush.Tests.EditMode
 
             CollectionAssert.AreEqual(
                 mergeRecipes,
-                mergeCatalog.Entries.Select(entry => entry.Recipe).ToList());
+                mergeCatalog.Entries.Take(4).Select(entry => entry.Recipe).ToList());
+            Assert.AreEqual(8, mergeCatalog.Entries.Count);
             CollectionAssert.AreEqual(
                 new[] { mergeCatalog },
                 mergeProduction.SupportedCatalogs);
@@ -870,7 +874,7 @@ namespace ChainRush.Tests.EditMode
                 LoadRequiredAsset<ProductionRecipeData>(BoardMergeRecipe4Path);
             DropProfileData dropProfile = LoadRequiredAsset<DropProfileData>(DropProfilePath);
             AIBrainData alliedCombatBrain =
-                LoadRequiredAsset<AIBrainData>(AlliedCombatBrainPath);
+                LoadRequiredAsset<AIBrainData>(AutobattleRoot + "/AI/WaterUnitBrain.asset");
             AIBrainData enemyCombatBrain =
                 LoadRequiredAsset<AIBrainData>(EnemyCombatBrainPath);
             AIBrainData collectionBrain = LoadRequiredAsset<AIBrainData>(CollectionBrainPath);
@@ -887,14 +891,14 @@ namespace ChainRush.Tests.EditMode
             TaxonomyTermData integrationRuntimeTag =
                 LoadRequiredAsset<TaxonomyTermData>(IntegrationRuntimeTagPath);
 
-            Assert.AreEqual(2, activity.Teams[0].Objectives.Count);
+            Assert.AreEqual(9, activity.Teams[0].Objectives.Count);
             Assert.AreEqual(1, activity.Teams[1].Objectives.Count);
             Assert.IsTrue(activity.Teams
                 .SelectMany(team => team.Objectives)
                 .All(entry => entry.Template.CompletionPolicyType == ObjectiveCompletionPolicyType.Reset));
             ObjectiveTemplateData playerDeploymentObjective = activity.Teams[0].Objectives
                 .Select(entry => entry.Template)
-                .Single(template => template.Root.Id == "chainrush-autobattle-player-deployment");
+                .Single(template => template == LoadRequiredAsset<ObjectiveTemplateData>(AutobattleRoot + "/Objectives/PlayerDeploymentObjective.asset"));
             ObjectiveConditionEconomyMetric playerDeploymentSuccess = playerDeploymentObjective
                 .Root
                 .SuccessConditions
@@ -903,7 +907,7 @@ namespace ChainRush.Tests.EditMode
             Assert.AreSame(waterUnit, playerDeploymentSuccess.Asset);
             Assert.AreEqual(EconomyFormType.Stack, playerDeploymentSuccess.FormType);
             Assert.AreEqual(0L, playerDeploymentSuccess.TargetValue);
-            Assert.AreEqual(CompareOperation.LessOrEqual, playerDeploymentSuccess.CompareOperation);
+            Assert.AreEqual(CompareOperation.Equal, playerDeploymentSuccess.CompareOperation);
             Assert.IsNull(AssetDatabase.LoadAssetAtPath<AgentDefinitionData>(
                 AutobattleRoot + "/Agents/PlayerDeploymentAgent.asset"));
             Assert.AreEqual(1, activity.Teams[0].Features.Count);
@@ -922,11 +926,11 @@ namespace ChainRush.Tests.EditMode
             Assert.AreEqual(1, collectorSeed.ProjectionTargetTags.Count);
             Assert.AreSame(experienceProgressTarget, collectorSeed.ProjectionTargetTags[0]);
             Assert.AreEqual(0, collectorSeed.MaterializationMarkerTags.Count);
+            Assert.IsFalse(playerWallet.Seed.Any(seed => seed.Seed.Asset == waterUnit));
             Assert.IsTrue(playerWallet.Seed.Any(seed =>
-                seed.Seed.Asset == waterUnit
-                && seed.Seed.FormType == EconomyFormType.Stack
-                && seed.Seed.Amount == 1L
-                && seed.MaterializationType == ActivitySeedMaterializationType.None));
+                seed.Seed.Asset == LoadRequiredAsset<CapabilityHostData>(SharedRoot + "/Units/Perfume/Perfume.asset")
+                && seed.Seed.FormType == EconomyFormType.Token && seed.Seed.Amount == 1
+                && seed.MaterializationType == ActivitySeedMaterializationType.Spatial));
             ActivityTeamWalletData enemyWallet = activity.Teams[1].Wallets.Single();
             Assert.IsTrue(enemyWallet.Seed.Any(seed =>
                 seed.Seed.Asset == enemySpawner
@@ -1219,7 +1223,7 @@ namespace ChainRush.Tests.EditMode
             Assert.AreEqual(1, merge.Outputs.Count);
             AssertEconomyOutput(
                 merge.Outputs[0],
-                waterUnit,
+                LoadRequiredAsset<CapabilityHostData>(SharedRoot + "/Units/Water/WaterUnit4.asset"),
                 EconomyFormType.Stack,
                 1L,
                 sharedWalletTag);

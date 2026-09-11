@@ -44,7 +44,7 @@ namespace ChainRush.Editor
     /// Explicit authoring for the Autobattle + Board working model.
     /// Existing assets are rewritten only after their expected pre-wiring state is verified.
     /// </summary>
-    public static class ChainRushAutobattleVerticalSliceAuthoring
+    public static partial class ChainRushAutobattleVerticalSliceAuthoring
     {
         const string AutobattleRoot = "Assets/Game/Activities/Autobattle";
         const string BoardRoot = "Assets/Game/Activities/Board";
@@ -730,25 +730,31 @@ namespace ChainRush.Editor
             if (EditorApplication.isPlayingOrWillChangePlaymode)
                 throw new InvalidOperationException("Exit Play Mode before applying Autobattle runtime bindings.");
 
-            CapabilityHostData waterUnit = LoadRequired<CapabilityHostData>(WaterUnitPath);
             CapabilityHostData enemy = LoadRequired<CapabilityHostData>(EnemyPath);
             CapabilityHostData experienceCollector =
                 LoadRequired<CapabilityHostData>(ExperienceCollectorPath);
-            AIBrainData alliedCombatBrain = LoadRequired<AIBrainData>(AlliedCombatBrainPath);
             AIBrainData enemyCombatBrain = LoadRequired<AIBrainData>(EnemyCombatBrainPath);
             AIBrainData collectorBrain = LoadRequired<AIBrainData>(CollectorBrainPath);
             TaxonomyTermData combatSelector = LoadRequired<TaxonomyTermData>(CombatNodePath);
             TaxonomyTermData collectionSelector = LoadRequired<TaxonomyTermData>(CollectionNodePath);
 
-            ConfigureAIBrainBinding(waterUnit, alliedCombatBrain, combatSelector);
+            foreach (string family in new[] { "Water", "Cola", "Perfume" })
+            {
+                int formCount = family == "Perfume" ? 1 : 4;
+                for (int form = 1; form <= formCount; form++)
+                {
+                    string name = family == "Perfume" ? family : family + "Unit" + (form == 1 ? "" : form.ToString());
+                    var unit = LoadRequired<CapabilityHostData>(SharedRoot + "/Units/" + family + "/" + name + ".asset");
+                    ConfigureAIBrainBinding(unit, LoadRequired<AIBrainData>(AIRoot + "/" + name + "Brain.asset"), combatSelector);
+                    SetProjectionPoolKey(ProjectionRoot + "/" + name + ".prefab", unit.Id);
+                }
+            }
             ConfigureAIBrainBinding(enemy, enemyCombatBrain, combatSelector);
             ConfigureAIBrainBinding(experienceCollector, collectorBrain, collectionSelector);
-            ConfigureCombatRetryTransitions(alliedCombatBrain);
             ConfigureCombatRetryTransitions(enemyCombatBrain);
 
             SetProjectionPoolKey(PlayerSpawnerPrefabPath, PlayerSpawnerPoolKey);
             SetProjectionPoolKey(EnemySpawnerPrefabPath, EnemySpawnerPoolKey);
-            SetProjectionPoolKey(WaterUnitPrefabPath, WaterUnitPoolKey);
             SetProjectionPoolKey(EnemyPrefabPath, EnemyPoolKey);
             SetProjectionPoolKey(ExperienceDropPrefabPath, ExperienceDropPoolKey);
             SetProjectionPoolKey(ExperienceCollectorPrefabPath, ExperienceCollectorPoolKey);
@@ -1420,6 +1426,7 @@ namespace ChainRush.Editor
                 {
                     new RemoveEntityAIBrainActionData(),
                 },
+                new List<AIBrainExitActionData>(),
                 createdPaths);
             content.EnemyCombatBrain = CreateCombatBrain(
                 content,
@@ -1431,6 +1438,7 @@ namespace ChainRush.Editor
                     CreateDropAction(content.DropProfile),
                     new RemoveEntityAIBrainActionData(),
                 },
+                new List<AIBrainExitActionData> { CreateRemovalOnFailureAction() },
                 createdPaths);
 
             content.CollectorBrain = CreateEconomyAsset<AIBrainData>(
@@ -1570,6 +1578,7 @@ namespace ChainRush.Editor
             string name,
             string id,
             List<AIBrainActionData> defeatActions,
+            List<AIBrainExitActionData> defeatExitActions,
             List<string> createdPaths)
         {
             AIBrainData brain = CreateEconomyAsset<AIBrainData>(
@@ -1587,7 +1596,7 @@ namespace ChainRush.Editor
             SetField(defeat, "tag", content.DefeatState);
             SetField(defeat, "onEnterActions", defeatActions);
             SetField(defeat, "onTickActions", new List<AIBrainActionData>(0));
-            SetField(defeat, "onExitActions", new List<AIBrainExitActionData>(0));
+            SetField(defeat, "onExitActions", defeatExitActions);
 
             var combatNode = new AIBrainNodeData();
             SetField(combatNode, "nodeId", content.CombatNode);
@@ -2578,6 +2587,13 @@ namespace ChainRush.Editor
         {
             var action = new DropAIBrainActionData();
             SetField(action, "profile", profile);
+            return action;
+        }
+
+        static RemoveEntityAIBrainExitActionData CreateRemovalOnFailureAction()
+        {
+            var action = new RemoveEntityAIBrainExitActionData();
+            SetField(action, "triggerResults", AIBrainStateResultMask.Fail);
             return action;
         }
 
@@ -3601,7 +3617,7 @@ namespace ChainRush.Editor
                     "Floor",
                     PrimitiveType.Cube,
                     floorMaterial,
-                    new Vector3(14f, 0.1f, 10f));
+                    new Vector3(30f, 0.1f, 30f));
                 floor.transform.localPosition = new Vector3(0f, -0.1f, 0f);
                 floor.AddComponent<NavigationSurfaceController>();
 
@@ -3620,12 +3636,12 @@ namespace ChainRush.Editor
                 CreateMarkerSocket(
                     root.transform,
                     "PlayerSpawnerAnchor",
-                    new Vector3Int(-6000, 0, 0),
+                    new Vector3Int(-15000, 0, 0),
                     new List<TaxonomyTermData> { content.PlayerAnchor });
                 CreateMarkerSocket(
                     root.transform,
                     "EnemySpawnerAnchor",
-                    new Vector3Int(6000, 0, 0),
+                    new Vector3Int(15000, 0, 0),
                     new List<TaxonomyTermData> { content.EnemyAnchor });
 
                 PrefabUtility.SaveAsPrefabAsset(root, SpacePrefabPath);
@@ -3994,46 +4010,19 @@ namespace ChainRush.Editor
 
         static void EnsureOccupancyConsumerWiring()
         {
-            CapabilityHostData waterBase = LoadRequired<CapabilityHostData>(BoardWaterBasePath);
-            ObjectiveConditionMaterializedRegionCoverage condition =
-                ResolveBoardPopulationCoverageCondition();
-            if (condition.EconomyAsset == waterBase)
-                return;
-            if (condition.EconomyAsset != null)
-            {
-                throw new InvalidOperationException(
-                    "Board Population coverage condition references an unexpected content asset.");
-            }
-
-            try
-            {
-                SetField(condition, "economyAsset", waterBase);
-                EditorUtility.SetDirty(
-                    LoadRequired<ObjectiveTemplateData>(BoardPopulationObjectivePath));
-                AssetDatabase.SaveAssets();
-                AssetDatabase.Refresh();
-                ValidateOccupancyConsumerWiring();
-            }
-            catch
-            {
-                SetField<CapabilityHostBaseData>(condition, "economyAsset", null);
-                EditorUtility.SetDirty(
-                    LoadRequired<ObjectiveTemplateData>(BoardPopulationObjectivePath));
-                AssetDatabase.SaveAssets();
-                throw;
-            }
+            ValidateOccupancyConsumerWiring();
         }
 
         static void ValidateOccupancyConsumerWiring()
         {
             ChainRushBoardPlannerAuthoring.ValidatePopulationProducerWiring();
-            CapabilityHostData waterBase = LoadRequired<CapabilityHostData>(BoardWaterBasePath);
+            var contentTag = LoadRequired<TaxonomyTermData>(ChainRushBoardPlannerAuthoring.BoardContentTagPath);
             ObjectiveConditionMaterializedRegionCoverage condition =
                 ResolveBoardPopulationCoverageCondition();
-            if (condition.EconomyAsset != waterBase)
+            if (condition.EconomyAsset != null || !condition.RequiredAssetTags.Contains(contentTag))
             {
                 throw new InvalidOperationException(
-                    "Board Population coverage condition must require WaterBoardBase.");
+                    "Board Population coverage must accept the authored Board content category.");
             }
         }
 

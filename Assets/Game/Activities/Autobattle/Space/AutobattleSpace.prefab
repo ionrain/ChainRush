@@ -1,5 +1,53 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2360587120536511742
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6627756266092799010}
+  - component: {fileID: 6435131217845347708}
+  m_Layer: 0
+  m_Name: HeroSpawn
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6627756266092799010
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2360587120536511742}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4305023672100259356}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6435131217845347708
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2360587120536511742}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1dd798c8b96144f1b993c75220d2780c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Core::Core.World.SpatialMarkerSocket
+  tags:
+  - {fileID: 11400000, guid: dff54a12e3d9149bbb614308f1b2d9c9, type: 2}
+  topologyCoordinates: {x: -10000, y: 0, z: 0}
+  cellSize: {x: 0, y: 0, z: 0}
 --- !u!1 &3901288278772878558
 GameObject:
   m_ObjectHideFlags: 0
@@ -47,6 +95,7 @@ MonoBehaviour:
   tags:
   - {fileID: 11400000, guid: ffd72531a038d4e2b9d368cb5752f29a, type: 2}
   topologyCoordinates: {x: 15000, y: 0, z: 0}
+  cellSize: {x: 0, y: 0, z: 0}
 --- !u!1 &5377253934661751569
 GameObject:
   m_ObjectHideFlags: 0
@@ -80,6 +129,7 @@ Transform:
   - {fileID: 6786260381132632849}
   - {fileID: 7484653824833480847}
   - {fileID: 7812453148825675789}
+  - {fileID: 6627756266092799010}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &529461393093868893
@@ -148,6 +198,7 @@ MonoBehaviour:
   tags:
   - {fileID: 11400000, guid: 450f265c94828495fa654ec2c4ee93a3, type: 2}
   topologyCoordinates: {x: -15000, y: 0, z: 0}
+  cellSize: {x: 0, y: 0, z: 0}
 --- !u!1 &6766125950364642319
 GameObject:
   m_ObjectHideFlags: 0

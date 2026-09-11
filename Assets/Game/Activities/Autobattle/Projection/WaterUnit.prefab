@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &4766125040133634362
+--- !u!1 &5774993132251924942
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,47 +8,39 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 2218821776684529922}
-  - component: {fileID: 902574192976373105}
-  - component: {fileID: 251415740199299724}
-  - component: {fileID: 2668464453321196213}
-  m_Layer: 10
-  m_Name: Spine
+  - component: {fileID: 7498548028729204581}
+  - component: {fileID: 604235084133361760}
+  - component: {fileID: 7452557613286588694}
+  - component: {fileID: 7282299688158348242}
+  m_Layer: 0
+  m_Name: New Spine GameObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &2218821776684529922
+--- !u!4 &7498548028729204581
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4766125040133634362}
+  m_GameObject: {fileID: 5774993132251924942}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.2, y: 0.2, z: 1}
+  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7709383830106594323}
-  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
---- !u!33 &902574192976373105
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4766125040133634362}
-  m_Mesh: {fileID: 0}
---- !u!23 &251415740199299724
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!23 &604235084133361760
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4766125040133634362}
+  m_GameObject: {fileID: 5774993132251924942}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -86,27 +78,27 @@ MeshRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 47421343
-  m_SortingLayer: 4
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &2668464453321196213
+--- !u!114 &7452557613286588694
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4766125040133634362}
+  m_GameObject: {fileID: 5774993132251924942}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d247ba06193faa74d9335f5481b2b56c, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: spine-unity::Spine.Unity.SkeletonAnimation
   skeletonDataAsset: {fileID: 11400000, guid: f8fe3606a80064215a7826444e880edc, type: 2}
   initialSkinName: 
   fixPrefabOverrideViaMeshFilter: 2
-  initialFlipX: 1
+  initialFlipX: 0
   initialFlipY: 0
   updateWhenInvisible: 3
   separatorSlotNames: []
@@ -131,9 +123,17 @@ MonoBehaviour:
   physicsMovementRelativeTo: {fileID: 0}
   updateTiming: 1
   unscaledTime: 0
-  _animationName: Idle
-  loop: 1
+  _animationName: 
+  loop: 0
   timeScale: 1
+--- !u!33 &7282299688158348242
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5774993132251924942}
+  m_Mesh: {fileID: 0}
 --- !u!1 &5888909149116212688
 GameObject:
   m_ObjectHideFlags: 0
@@ -144,7 +144,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7709383830106594323}
   - component: {fileID: 5466650519751879969}
-  - component: {fileID: 7814824039234022001}
   m_Layer: 0
   m_Name: WaterUnit
   m_TagString: Untagged
@@ -165,7 +164,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 2218821776684529922}
+  - {fileID: 7498548028729204581}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5466650519751879969
@@ -180,7 +179,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98617caacf99c41c8bce03f9ab420f59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Core::Core.Projection.ProjectionBindingController
-  poolKey: chainrush.autobattle.water-unit
+  poolKey: chainrush.unit.water
   autoReturnOnDisable: 0
   onBound:
     m_PersistentCalls:
@@ -188,17 +187,3 @@ MonoBehaviour:
   onUnbound:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &7814824039234022001
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5888909149116212688}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 71560613c7d8d41998701ebe8d5b5dd0, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Core::Core.Projection.ProjectionMovementController
-  poseUpdateType: 0
-  poseTransitionSeconds: 0.05

@@ -15,8 +15,48 @@ MonoBehaviour:
   m_GroupName: ChainRush-Activity-Board
   m_GUID: 80d3bbb64a3094b6db045491dcd4e9c6
   m_SerializeEntries:
+  - m_GUID: 5dd86dcc6f602475ba9211b2366803c1
+    m_Address: Assets/Game/Activities/Board/Projection/ColaBoardBase.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 62238c1ff22704a0884511796cd14f3c
+    m_Address: Assets/Game/Activities/Board/Projection/SpeedBoardBase.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 811996975f3364fa5abf2b4600a890d2
+    m_Address: Assets/Game/Activities/Board/Projection/LightningBoltBoardBase.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 95b0d23046b524438a929ec9fd36bdcc
+    m_Address: Assets/Game/Activities/Board/Projection/GoldBoardBase.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 975b5009d17ee45ddaf26f1364a4ee50
     m_Address: Assets/Game/Activities/Board/Projection/WaterBoardBase.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d820e5c431074447d9f72c8a666bfba3
+    m_Address: Assets/Game/Activities/Board/Projection/DefenseBoardBase.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dcbfdd2064f0f4a89995bb3bb273242d
+    m_Address: Assets/Game/Activities/Board/Projection/HealthBoardBase.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e876236e6fd9f43b1844f5cbc23c4ca8
+    m_Address: Assets/Game/Activities/Board/Projection/PowerBoardBase.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f4e10f825c7c74a468459a5efba64ebe
+    m_Address: Assets/Game/Activities/Board/Projection/SkillSpeedBoardBase.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

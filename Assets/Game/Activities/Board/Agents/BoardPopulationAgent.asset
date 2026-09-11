@@ -16,7 +16,7 @@ MonoBehaviour:
   basePriority: 100
   updateInterval: 1
   matchConditions:
-  - rid: 6092003860859322368
+  - rid: 6092003862744662049
   executorSelectionCriteria:
   - requirementType: 0
     criterion:
@@ -28,15 +28,15 @@ MonoBehaviour:
   targetSelectionCriteria:
   - requirementType: 0
     criterion:
-      rid: 6092003860859322369
+      rid: 6092003862744662050
   - requirementType: 0
     criterion:
-      rid: 6092003860859322370
+      rid: 6092003862744662051
   targetRankingType: 0
   aiBrainTargetKey: {fileID: 0}
   controlType: 2
   agent:
-    rid: 6092003813537087492
+    rid: 6092003862744662052
   stopPolicyType: 0
   timeLimit: 0
   tokenReservationPolicyType: 0
@@ -54,18 +54,47 @@ MonoBehaviour:
       data:
         definition: {fileID: 11400000, guid: d998acfcc5fb2426387891c381d11387, type: 2}
         requiredAssetTags: []
-        requiredCapabilityTypes:
+        requiredCapabilityTypes: 
     - rid: 6092003635567525901
       type: {class: OwnerCriterionData, ns: Core.Orchestration, asm: Core}
       data:
         ownerSelectionType: 0
-    - rid: 6092003813537087492
+    - rid: 6092003862744662049
+      type: {class: ObjectiveConditionMaterializedRegionCoverage, ns: Core.Objectives,
+        asm: Core}
+      data:
+        _targetValue: 0
+        economyAsset: {fileID: 0}
+        economyFormType: 1
+        requiredAssetTags:
+        - {fileID: 11400000, guid: 6f53cac79ea6a43cdb056ccd6396f4fe, type: 2}
+        requiredCapabilityTypes: 
+        space:
+          scopeType: 1
+          requiredTags:
+          - {fileID: 11400000, guid: a70bd9d1bf3b1457fbe47de7812a7fed, type: 2}
+          excludedTags: []
+          requiredCellTags: []
+          excludedCellTags: []
+        compareOperation: 0
+    - rid: 6092003862744662050
+      type: {class: CapabilityHostCriterionData, ns: Core.Orchestration, asm: Core}
+      data:
+        definition: {fileID: 0}
+        requiredAssetTags:
+        - {fileID: 11400000, guid: 0328972f738e34ee387f4f0f67224f9a, type: 2}
+        requiredCapabilityTypes: 
+    - rid: 6092003862744662051
+      type: {class: OwnerCriterionData, ns: Core.Orchestration, asm: Core}
+      data:
+        ownerSelectionType: 0
+    - rid: 6092003862744662052
       type: {class: PopulationAgentData, ns: Core.Orchestration, asm: Core}
       data:
         fill:
-          rid: 6092003860859322371
+          rid: 6092003862744662053
         distribution:
-          rid: 6092003860859322372
+          rid: 6092003862744662054
         workBudget: 256
         shapeRules:
         - shape: {fileID: 11400000, guid: bb87873e608bd483d86718dbdd98536c, type: 2}
@@ -100,37 +129,10 @@ MonoBehaviour:
             max: 16
         shapeWalletTags:
         - {fileID: 11400000, guid: 9cbb4f47a974c42cfa008dda55386302, type: 2}
-    - rid: 6092003860859322368
-      type: {class: ObjectiveConditionMaterializedRegionCoverage, ns: Core.Objectives,
-        asm: Core}
-      data:
-        _targetValue: 0
-        economyAsset: {fileID: 11400000, guid: 1116b7b9d35a249b18741b1309a53cd1, type: 2}
-        economyFormType: 1
-        requiredAssetTags: []
-        requiredCapabilityTypes:
-        space:
-          scopeType: 1
-          requiredTags:
-          - {fileID: 11400000, guid: a70bd9d1bf3b1457fbe47de7812a7fed, type: 2}
-          excludedTags: []
-          requiredCellTags: []
-          excludedCellTags: []
-        compareOperation: 0
-    - rid: 6092003860859322369
-      type: {class: CapabilityHostCriterionData, ns: Core.Orchestration, asm: Core}
-      data:
-        definition: {fileID: 11400000, guid: 98384777501f34b01bdb949ca92adda2, type: 2}
-        requiredAssetTags: []
-        requiredCapabilityTypes:
-    - rid: 6092003860859322370
-      type: {class: OwnerCriterionData, ns: Core.Orchestration, asm: Core}
-      data:
-        ownerSelectionType: 0
-    - rid: 6092003860859322371
+    - rid: 6092003862744662053
       type: {class: PopulationFillAllData, ns: Core.Orchestration, asm: Core}
       data: 
-    - rid: 6092003860859322372
+    - rid: 6092003862744662054
       type: {class: GridPopulationDistributionAlgorithmData, ns: Core.Orchestration,
         asm: Core}
       data: 

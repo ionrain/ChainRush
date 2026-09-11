@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Text;
 using Core.AI;
 using Core.Activities;
@@ -21,6 +22,7 @@ using Core.Objectives;
 using Core.Objectives.Events;
 using Core.Orchestration;
 using Core.Players;
+using Core.Pooling;
 using Core.Production;
 using Core.Production.Authoring;
 using Core.Production.Events;
@@ -55,32 +57,12 @@ namespace ChainRush.Tests.PlayMode
             "Assets/Game/Activities/Shared/Taxonomy/BoardActivationTerm.asset";
         const string BoardCellTagPath =
             "Assets/Game/Activities/Board/Taxonomy/BoardCellTag.asset";
-        const string BoardWaterBasePath =
-            "Assets/Game/Activities/Board/Economy/WaterBoardBase.asset";
         const string BoardHostPath =
             "Assets/Game/Activities/Board/Economy/BoardHost.asset";
         const string BoardMergeSelectionPath =
             "Assets/Game/Activities/Board/Taxonomy/BoardMergeSelection.asset";
-        const string BoardMergeRecipe1Path =
-            "Assets/Game/Activities/Board/Production/BoardMergeRecipe1.asset";
-        const string BoardMergeRecipe4Path =
-            "Assets/Game/Activities/Board/Production/BoardMergeRecipe4.asset";
         const string BoardTurnTokenPath =
             "Assets/Game/Activities/Shared/Economy/BoardTurnToken.asset";
-        const string WaterUnitPath =
-            "Assets/Game/Activities/Shared/Units/Water/WaterUnit.asset";
-        const string EnemyPath =
-            "Assets/Game/Activities/Autobattle/Economy/BugBrownSmall.asset";
-        const string ExperienceCollectorPath =
-            "Assets/Game/Activities/Autobattle/Economy/ExperienceCollector.asset";
-        const string ExperienceDropPath =
-            "Assets/Game/Activities/Autobattle/Economy/ExperienceDrop.asset";
-        const string ExperiencePath =
-            "Assets/Game/Activities/Shared/Economy/Experience.asset";
-        const string HealthPath =
-            "Assets/Game/Activities/Autobattle/HostValues/Health.asset";
-        const string IntegrationRuntimeTagPath =
-            "Assets/Game/Activities/Autobattle/Definition/IntegrationAutobattle.asset";
         const string SharedWalletTagPath =
             "Assets/Game/Activities/Shared/Economy/ActivityWalletTag.asset";
         const string AutobattleActivityTypeId = "chainrush.activity-type.autobattle";
@@ -124,6 +106,10 @@ namespace ChainRush.Tests.PlayMode
             ActivityLauncher.ResetRuntime();
             ActivityService.ResetRuntime();
             ProjectionService.ResetRuntime();
+            _restoreBoardSeeds?.Invoke();
+            _restoreBoardSeeds = null;
+            _restoreBattleSeeds?.Invoke();
+            _restoreBattleSeeds = null;
 
             foreach (GameRuntimeHost host in Object.FindObjectsByType<GameRuntimeHost>(
                 FindObjectsInactive.Include, FindObjectsSortMode.None))
@@ -184,687 +170,500 @@ namespace ChainRush.Tests.PlayMode
             yield return null;
         }
 
+        const string PerfumePath = "Assets/Game/Activities/Shared/Units/Perfume/Perfume.asset";
+        System.Action _restoreBoardSeeds;
+
         [UnityTest]
-        public IEnumerator RuntimeComposition_LaunchesBoardOnceAndParentCloseClosesIt(
+        public IEnumerator RuntimeComposition_LaunchesBoardOnceAndParentCloseClosesIt()
+        {
+            var capture = new PlayableRuntimeCapture();
+            capture.Register();
+            try
+            {
+                yield return LaunchPlayableActivities();
+                Assert.IsTrue(TryFindRunningActivities(out var battle, out var board));
+                var hero = AssetDatabase.LoadAssetAtPath<CapabilityHostData>(PerfumePath);
+                float deadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
+                while (!TryFindActivityHost(battle.Id, hero, out _) && Time.realtimeSinceStartup < deadline)
+                    yield return null;
+                Assert.IsTrue(TryFindActivityHost(battle.Id, hero, out var heroEntity), "Perfume was not materialized.");
+                Assert.IsTrue(SpatialService.TryGetPose(heroEntity, out var pose));
+                var heroMarkerTag = AssetDatabase.LoadAssetAtPath<TaxonomyTermData>("Assets/Game/Activities/Autobattle/Taxonomy/HeroSpawn.asset");
+                var heroMarker = SpatialMarkerService.GetMarkers(battle.Id, battle.ActivityRootEntityId,
+                    new List<TaxonomyTermData> { heroMarkerTag }).Single();
+                Assert.AreEqual(heroMarker.WorldPosition, pose.WorldPosition);
+                deadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
+                while (Time.realtimeSinceStartup < deadline && !TryFindProjectionBinding(battle.Id, heroEntity, out _))
+                    yield return null;
+                Assert.IsTrue(TryFindProjectionBinding(battle.Id, heroEntity, out _), "Perfume has no projected view.");
+                Assert.IsFalse(hero.SupportsCapability(CapabilityHostType.MovementOwner));
+                Assert.IsFalse(CapabilityHostService.GetAll().Any(host => host.ActivityId == battle.Id
+                    && host.Definition != null && (host.Definition.Id.StartsWith("chainrush.unit.water")
+                        || host.Definition.Id.StartsWith("chainrush.unit.cola"))),
+                    "Ordinary units must not exist before a Board selection.");
+
+                deadline = Time.realtimeSinceStartup + CollectorCycleTimeoutSeconds;
+                while (Time.realtimeSinceStartup < deadline
+                    && (!capture.Hits.Any(hit => hit.OwnerEntityId == heroEntity) || capture.CompletedDrops == 0))
+                {
+                    yield return null;
+                    Assert.IsTrue(SpatialService.TryGetPose(heroEntity, out var current));
+                    Assert.AreEqual(pose.Coordinates, current.Coordinates, "Perfume moved while firing.");
+                }
+                Assert.IsTrue(capture.Hits.Any(hit => hit.OwnerEntityId == heroEntity),
+                    "Perfume did not land a carried-skill hit.\n" + BuildExecutorDiagnostic(heroEntity));
+                Assert.Greater(capture.CompletedDrops, 0, "Real combat did not complete an enemy defeat/drop.");
+                Assert.IsNull(capture.Failure);
+                var cellTag = AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(BoardCellTagPath);
+                deadline = Time.realtimeSinceStartup + CollectorCycleTimeoutSeconds;
+                while (Time.realtimeSinceStartup < deadline && CountMaterializedBoardAssets(board, cellTag, null) != 16)
+                    yield return null;
+                Assert.AreEqual(16, CountMaterializedBoardAssets(board, cellTag, null),
+                    "Combat -> Experience -> turn payment -> Population did not fill the Board.\n" + BuildOrchestrationDiagnostic(board.DomainId));
+                var activation = AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(BoardActivationTermPath);
+                EventBus.Trigger(new ActivityChildActivationEvent(battle.Id, new List<TaxonomyTermData> { activation }));
+                yield return null;
+                Assert.AreEqual(1, ActivityService.GetChildActivityIds(battle.Id).Count);
+                Assert.IsTrue(ActivityService.Close(battle.Id, ActivityCloseCauseType.Manual));
+                Assert.IsTrue(ActivityService.TryGetSnapshot(board.Id, out board));
+                Assert.AreEqual(ActivityState.Closed, board.State);
+                Assert.AreEqual(ActivityCloseCauseType.ParentClosed, board.CloseCauseType);
+                Assert.AreEqual(ActivityResultType.Cancelled, board.ResultType);
+                yield return null;
+                Assert.IsFalse(capture.Carriers.Any(Core.Entities.EntityService.Exists), "A carrier Entity survived Activity close.");
+            }
+            finally { capture.Unregister(); }
+        }
+
+        [UnityTest]
+        public IEnumerator EnemyDefeat_ProjectionCapacityFailure_LogsReasonRemovesEnemyAndStartsNextWave(
+            [Values(false, true)] bool occupyPool)
+        {
+            var capture = new DefeatPoolCapture { ExpectFailedDrops = occupyPool };
+            var held = new List<IPoolObject>();
+            IPoolContext pool = null;
+            capture.Register();
+            try
+            {
+                yield return LaunchPlayableActivities();
+                Assert.IsTrue(TryFindRunningActivities(out var battle, out _));
+                pool = PoolService.Current.OpenContext("projection:activity:" + battle.Id.Value);
+                var key = new PoolKey("chainrush.autobattle.experience-drop");
+                float deadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
+                while (Time.realtimeSinceStartup < deadline && !pool.TryGetSnapshot(key, out _)) yield return null;
+                Assert.IsTrue(pool.TryGetSnapshot(key, out var initial), "Experience projection pool was not prepared.");
+                Assert.AreEqual(32, initial.MaxCapacity, "This reproduction uses the unchanged authored limit.");
+                if (occupyPool)
+                {
+                    // Hold views only: no Entity, occupancy, token or enemy health is changed.
+                    while (pool.TryRent(key, out var instance)) held.Add(instance);
+                    Assert.IsTrue(pool.TryGetSnapshot(key, out var full));
+                    Assert.AreEqual(full.MaxCapacity, full.ActiveCount);
+                    Assert.AreEqual(0, full.FreeCount);
+                    TestContext.WriteLine($"Pool occupied: total={full.TotalCount}, active={full.ActiveCount}, free={full.FreeCount}.");
+                }
+
+                deadline = Time.realtimeSinceStartup + CollectorCycleTimeoutSeconds;
+                while (Time.realtimeSinceStartup < deadline
+                    && (capture.Defeated.Count < 2 || capture.PreparedDrops < 2
+                        || capture.Defeated.Take(2).Any(Core.Entities.EntityService.Exists)
+                        || capture.WaveOrders < 2))
+                {
+                    if (occupyPool)
+                        while (pool.TryRent(key, out var returned)) held.Add(returned);
+                    yield return null;
+                }
+                Assert.GreaterOrEqual(capture.Defeated.Count, 2, "Natural combat did not defeat the initial enemies.");
+                Assert.GreaterOrEqual(capture.PreparedDrops, 2, "Drop preparation did not finish.");
+                var defeated = capture.Defeated.Take(2).ToList();
+                if (occupyPool)
+                {
+                    while (pool.TryRent(key, out var returned)) held.Add(returned);
+                    Assert.IsTrue(pool.TryGetSnapshot(key, out var occupied));
+                    Assert.AreEqual(0, occupied.FreeCount, "Removal must not require projection capacity to return.");
+                }
+
+                string diagnostic = $"HeldPool={occupyPool}; WaveOrders={capture.WaveOrders}; "
+                    + "Remaining=" + string.Join(",", defeated.Where(Core.Entities.EntityService.Exists).Select(entity => entity.Value))
+                    + "; DropResults=" + string.Join(" | ", capture.Results.Select(result =>
+                        result.SourceEntityId.Value + ":" + result.ResultType + ":" + result.Failure))
+                    + "; BrainFailures=" + string.Join(" | ", capture.Failures.Select(failure =>
+                        failure.OwnerEntityId.Value + ":" + failure.Message));
+                TestContext.WriteLine(diagnostic);
+                foreach (var entity in defeated)
+                {
+                    Assert.IsFalse(Core.Entities.EntityService.Exists(entity), diagnostic);
+                    var result = capture.Results.Single(item => item.SourceEntityId == entity);
+                    if (!occupyPool) Assert.AreEqual(DropResultType.Completed, result.ResultType, diagnostic);
+                    if (result.ResultType != DropResultType.Completed)
+                    {
+                        Assert.IsNotEmpty(result.Failure, diagnostic);
+                        Assert.IsTrue(capture.DropErrors.Any(error => error.Contains("Entity='" + entity.Value + "'")
+                            && error.Contains(result.Failure)), diagnostic);
+                    }
+                    Assert.IsFalse(TryFindProjectionBinding(battle.Id, entity, out _), diagnostic);
+                }
+                if (occupyPool)
+                    Assert.IsTrue(capture.Results.Any(result => defeated.Contains(result.SourceEntityId)
+                        && result.ResultType != DropResultType.Completed), "The pool failure branch was not reached.");
+                Assert.GreaterOrEqual(capture.WaveOrders, 2, diagnostic);
+            }
+            finally
+            {
+                foreach (var instance in held) pool.Return(instance);
+                capture.Unregister();
+            }
+        }
+
+        sealed class DefeatPoolCapture :
+            IEventListener<HostValueChangedEvent>, IEventListener<DropResultEvent>,
+            IEventListener<AIBrainDebugEvent>, IEventListener<ProductionOrderStartedEvent>,
+            IEventListener<ProductionOrderFinishedEvent>
+        {
+            readonly CapabilityHostData _enemy = AssetDatabase.LoadAssetAtPath<CapabilityHostData>(
+                "Assets/Game/Activities/Autobattle/Economy/BugBrownSmall.asset");
+            readonly HostValueData _health = AssetDatabase.LoadAssetAtPath<HostValueData>(
+                "Assets/Game/Activities/Autobattle/HostValues/Health.asset");
+            readonly string _waveRecipe = AssetDatabase.LoadAssetAtPath<ProductionRecipeData>(
+                "Assets/Game/Activities/Autobattle/Production/EnemyWaveRecipe.asset").Id;
+            readonly string _dropRecipe = AssetDatabase.LoadAssetAtPath<ProductionRecipeData>(
+                "Assets/Game/Activities/Autobattle/Production/ExperienceDropRecipe.asset").Id;
+            public readonly List<Core.Entities.EntityId> Defeated = new List<Core.Entities.EntityId>();
+            public readonly List<DropResultEvent> Results = new List<DropResultEvent>();
+            public readonly List<AIBrainDebugEvent> Failures = new List<AIBrainDebugEvent>();
+            public readonly List<string> DropErrors = new List<string>();
+            public bool ExpectFailedDrops;
+            public int WaveOrders;
+            public int PreparedDrops;
+
+            public void Register()
+            {
+                EventBus.Register<HostValueChangedEvent>(this);
+                EventBus.Register<DropResultEvent>(this);
+                EventBus.Register<AIBrainDebugEvent>(this);
+                EventBus.Register<ProductionOrderStartedEvent>(this);
+                EventBus.Register<ProductionOrderFinishedEvent>(this);
+                Application.logMessageReceived += OnLog;
+            }
+
+            public void Unregister()
+            {
+                EventBus.Unregister<HostValueChangedEvent>(this);
+                EventBus.Unregister<DropResultEvent>(this);
+                EventBus.Unregister<AIBrainDebugEvent>(this);
+                EventBus.Unregister<ProductionOrderStartedEvent>(this);
+                EventBus.Unregister<ProductionOrderFinishedEvent>(this);
+                Application.logMessageReceived -= OnLog;
+            }
+
+            public void OnEvent(HostValueChangedEvent e)
+            {
+                if (e.Value == _health && e.PreviousRawValue > 0 && e.CurrentRawValue <= 0
+                    && CapabilityHostService.TryGet(e.EntityId, out var host)
+                    && host.Definition.Id == _enemy.Id) Defeated.Add(e.EntityId);
+            }
+            public void OnEvent(DropResultEvent e)
+            {
+                Results.Add(e);
+                if (ExpectFailedDrops && e.ResultType != DropResultType.Completed)
+                    LogAssert.Expect(LogType.Error, new Regex(@"\[DropAIBrainAction\] Drop failed\..*Entity='"
+                        + e.SourceEntityId.Value + @"'.*Reason='" + Regex.Escape(e.Failure) + @"'"));
+            }
+
+            void OnLog(string message, string stackTrace, LogType type)
+            {
+                if (type == LogType.Error && message.StartsWith("[DropAIBrainAction]")) DropErrors.Add(message);
+            }
+            public void OnEvent(AIBrainDebugEvent e)
+            {
+                if (e.Type == AIBrainDebugEventType.ActionFailed && Defeated.Contains(e.OwnerEntityId)) Failures.Add(e);
+            }
+            public void OnEvent(ProductionOrderStartedEvent e)
+            {
+                if (e.RecipeId == _waveRecipe) WaveOrders++;
+            }
+            public void OnEvent(ProductionOrderFinishedEvent e)
+            {
+                if (e.RecipeId == _dropRecipe && e.FinalStatus == ProductionOrderStatus.Completed) PreparedDrops++;
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator BoardSelection_OneToSixteen_ProducesExactFormsAndMaterializes(
+            [Values("Water", "Cola")] string content,
             [ValueSource(nameof(BoardSelectionStarts))] int firstSelection)
         {
-            Scene integrationScene = EditorSceneManager.LoadSceneInPlayMode(
-                IntegrationScenePath,
-                new LoadSceneParameters(LoadSceneMode.Single));
-            Assert.IsTrue(integrationScene.IsValid(), "Integration scene did not load.");
-            float sceneDeadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
-            while (!integrationScene.isLoaded && Time.realtimeSinceStartup < sceneDeadline)
-                yield return null;
-            Assert.IsTrue(integrationScene.isLoaded, "Integration scene is not marked as loaded.");
-
-            yield return null;
-
-            GameRuntimeHost host = Object.FindFirstObjectByType<GameRuntimeHost>(
-                FindObjectsInactive.Include);
-            Assert.NotNull(host, "Integration scene does not contain GameRuntimeHost.");
-
-            float startupDeadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
-            while (Time.realtimeSinceStartup < startupDeadline)
+            SelectOnlyBoardProducer(content);
+            var capture = new PlayableRuntimeCapture();
+            capture.Register();
+            try
             {
-                if (host.RuntimeContext != null
-                    && host.RuntimeContext.IsInitialized
-                    && TryFindRunningActivities(out _, out _))
+                yield return LaunchPlayableActivities();
+                Assert.IsTrue(TryFindRunningActivities(out var battle, out var board));
+                var player = battle.Participants.Single(participant => participant.TeamIndex == 0);
+                var wallet = AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(SharedWalletTagPath);
+                var turn = AssetDatabase.LoadAssetAtPath<EconomyAssetData>(BoardTurnTokenPath);
+                IssueTestTurns(player.ParticipantEconomyOwner, wallet, turn, 32);
+                var cell = AssetDatabase.LoadAssetAtPath<CapabilityHostData>(
+                    "Assets/Game/Activities/Board/Economy/" + content + "BoardBase.asset");
+                var cellTag = AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(BoardCellTagPath);
+                var selection = AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(BoardMergeSelectionPath);
+                var hostDefinition = AssetDatabase.LoadAssetAtPath<CapabilityHostData>(BoardHostPath);
+                Assert.IsTrue(TryFindBoardHost(board.Id, hostDefinition, out var boardHost));
+                var forms = new List<CapabilityHostData>();
+                var recipes = new List<ProductionRecipeData>();
+                for (int form = 1; form <= 4; form++)
                 {
-                    break;
+                    forms.Add(AssetDatabase.LoadAssetAtPath<CapabilityHostData>(
+                        "Assets/Game/Activities/Shared/Units/" + content + "/" + content + "Unit" + (form == 1 ? "" : form.ToString()) + ".asset"));
+                    recipes.Add(AssetDatabase.LoadAssetAtPath<ProductionRecipeData>(
+                        "Assets/Game/Activities/Board/Production/" + (content == "Water" ? "BoardMergeRecipe" : "ColaMergeRecipe") + form + ".asset"));
                 }
-
-                yield return null;
+                var payments = new BoardPaymentCapture(player.ParticipantEconomyOwner, turn);
+                EventBus.Register<EconomyOperationChangedEvent>(payments);
+                try
+                {
+                    for (int size = firstSelection; size <= System.Math.Min(firstSelection + 5, 16); size++)
+                    {
+                        yield return AwaitCompletedPopulation(board, cellTag, cell);
+                        int paidBefore = payments.Handles.Count;
+                        int[] before = forms.Select(form => capture.Count(form)).ToArray();
+                        for (int frame = 0; frame < 4; frame++) yield return null;
+                        Assert.AreEqual(paidBefore, payments.Handles.Count, "A full Board was charged again.");
+                        var expected = new List<string>();
+                        for (int remaining = size; remaining > 0;)
+                        {
+                            int form = System.Math.Min(4, remaining);
+                            expected.Add(recipes[form - 1].Id);
+                            remaining -= form;
+                        }
+                        yield return AssertBoardMergeSequence(board, cellTag, cell, boardHost, selection, size, expected);
+                        float deadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
+                        while (Time.realtimeSinceStartup < deadline
+                            && forms.Select((form, index) => capture.Count(form) - before[index]).Sum() < expected.Count)
+                            yield return null;
+                        for (int form = 1; form <= 4; form++)
+                        {
+                            int expectedCount = form == 4 ? size / 4 : size % 4 == form ? 1 : 0;
+                            Assert.AreEqual(expectedCount, capture.Count(forms[form - 1]) - before[form - 1],
+                                content + " selection=" + size + " form=" + form + "\n" + BuildOrchestrationDiagnostic(battle.DomainId));
+                            Assert.AreEqual(0, QueryAmount(player.ParticipantEconomyOwner, wallet, EconomyFormType.Stack, forms[form - 1]),
+                                "Deployment left a unit Stack instead of a materialized Token.");
+                            if (expectedCount > 0)
+                                AssertMaterializedHostsHaveBackingTokens(battle.Id, forms[form - 1], player.ParticipantEconomyOwner, wallet);
+                        }
+                        Assert.IsNull(capture.Failure);
+                        yield return AwaitCompletedPopulation(board, cellTag, cell);
+                        Assert.AreEqual(paidBefore + 1, payments.Handles.Count, "Refresh must consume exactly one turn.");
+                        Assert.IsNull(payments.Failure);
+                        TestContext.WriteLine(content + " selection=" + size + ": real merge/deployment/materialization passed.");
+                    }
+                    Assert.IsTrue(ActivityService.Close(battle.Id, ActivityCloseCauseType.Manual));
+                    foreach (var handle in payments.Handles)
+                        Assert.IsFalse(EconomyService.TryGetOperation(handle, out _));
+                }
+                finally { EventBus.Unregister<EconomyOperationChangedEvent>(payments); }
             }
+            finally { capture.Unregister(); }
+        }
 
-            Assert.IsTrue(host.RuntimeContext != null && host.RuntimeContext.IsInitialized);
-            Assert.IsTrue(
-                TryFindRunningActivities(out ActivityRuntimeSnapshot autobattle, out ActivityRuntimeSnapshot board),
-                "Autobattle and Board did not both reach Running state.");
+        System.Action _restoreBattleSeeds;
 
-            TaxonomyTermData integrationRuntimeTag =
-                AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(IntegrationRuntimeTagPath);
-            Assert.NotNull(integrationRuntimeTag);
-            Assert.IsFalse(autobattle.ParentActivityId.IsValid);
-            Assert.NotNull(autobattle.Definition);
-            Assert.AreEqual(1, autobattle.RuntimeTags.Count);
-            Assert.AreSame(integrationRuntimeTag, autobattle.RuntimeTags[0]);
-            Assert.AreEqual(2, autobattle.Participants.Count);
-            AssertParticipant(autobattle.Participants, 0, PlayerControlType.LocalHuman);
-            AssertParticipant(autobattle.Participants, 1, PlayerControlType.Bot);
+        [UnityTest]
+        public IEnumerator SelectedUnit_ApproachesAndDamagesEnemy([Values("Water", "Cola")] string content)
+        {
+            SelectOnlyBoardProducer(content);
+            var activity = AssetDatabase.LoadAssetAtPath<ActivityData>("Assets/Game/Activities/Autobattle/Definition/AutobattleActivity.asset");
+            var hero = AssetDatabase.LoadAssetAtPath<CapabilityHostData>(PerfumePath);
+            var seeds = activity.Teams[0].Wallets.Single(wallet => wallet.Seed.Any(entry => entry.Seed.Asset == hero)).Seed;
+            var original = new List<ActivityWalletSeedEntryData>(seeds);
+            seeds.RemoveAll(entry => entry.Seed.Asset == hero);
+            _restoreBattleSeeds = () => { seeds.Clear(); seeds.AddRange(original); };
+            var capture = new PlayableRuntimeCapture();
+            capture.Register();
+            try
+            {
+                yield return LaunchPlayableActivities();
+                Assert.IsTrue(TryFindRunningActivities(out var battle, out var board));
+                var player = battle.Participants.Single(participant => participant.TeamIndex == 0);
+                IssueTestTurns(player.ParticipantEconomyOwner,
+                    AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(SharedWalletTagPath),
+                    AssetDatabase.LoadAssetAtPath<EconomyAssetData>(BoardTurnTokenPath), 1);
+                var cell = AssetDatabase.LoadAssetAtPath<CapabilityHostData>("Assets/Game/Activities/Board/Economy/" + content + "BoardBase.asset");
+                var cellTag = AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(BoardCellTagPath);
+                yield return AwaitCompletedPopulation(board, cellTag, cell);
+                Assert.IsTrue(TryFindBoardHost(board.Id, AssetDatabase.LoadAssetAtPath<CapabilityHostData>(BoardHostPath), out var boardHost));
+                var recipe = AssetDatabase.LoadAssetAtPath<ProductionRecipeData>("Assets/Game/Activities/Board/Production/"
+                    + (content == "Water" ? "BoardMergeRecipe1" : "ColaMergeRecipe1") + ".asset");
+                yield return AssertBoardMergeSequence(board, cellTag, cell, boardHost,
+                    AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(BoardMergeSelectionPath), 1, new List<string> { recipe.Id });
+                var unit = AssetDatabase.LoadAssetAtPath<CapabilityHostData>("Assets/Game/Activities/Shared/Units/" + content + "/" + content + "Unit.asset");
+                float deadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
+                while (Time.realtimeSinceStartup < deadline && !TryFindActivityHost(battle.Id, unit, out _)) yield return null;
+                Assert.IsTrue(TryFindActivityHost(battle.Id, unit, out var entity), "Selected unit was not materialized.");
+                Assert.IsTrue(SpatialService.TryGetPose(entity, out var initialPose));
+                deadline = Time.realtimeSinceStartup + CollectorCycleTimeoutSeconds;
+                bool moved = false;
+                while (Time.realtimeSinceStartup < deadline)
+                {
+                    yield return null;
+                    if (SpatialService.TryGetPose(entity, out var pose)) moved |= pose.Coordinates != initialPose.Coordinates;
+                    bool hit = content == "Water"
+                        ? capture.Damage.Any(change => change.MutationContext.SourceEntityId == entity)
+                        : capture.Hits.Any(value => value.OwnerEntityId == entity
+                            && capture.Damage.Any(change => change.EntityId == value.TargetEntityId));
+                    if (hit) break;
+                }
+                if (content == "Water")
+                {
+                    Assert.IsTrue(moved, "Water never approached its enemy.");
+                    Assert.IsTrue(capture.Damage.Any(change => change.MutationContext.SourceEntityId == entity),
+                        "Water did not apply attack damage.\n" + BuildExecutorDiagnostic(entity));
+                }
+                else
+                    Assert.IsTrue(capture.Hits.Any(hit => hit.OwnerEntityId == entity
+                        && capture.Damage.Any(change => change.EntityId == hit.TargetEntityId)),
+                        "Cola did not land a damaging carrier hit.\n" + BuildExecutorDiagnostic(entity));
+                Assert.IsNull(capture.Failure);
+            }
+            finally { capture.Unregister(); }
+        }
 
-            Assert.AreEqual(autobattle.Id, board.ParentActivityId);
-            Assert.AreEqual(0, board.RuntimeTags.Count);
-            Assert.AreEqual(1, board.Participants.Count);
-            AssertParticipant(board.Participants, 0, PlayerControlType.LocalHuman);
-            Assert.AreEqual(3, board.ObjectiveRuntimeIds.Count);
-            Assert.AreEqual(
-                3,
-                board.Objectives.Count(objective =>
-                    objective.SourceType == ActivityObjectiveSourceType.Definition));
-            CollectionAssert.AreEqual(
-                new List<ActivityId> { board.Id },
-                ActivityService.GetChildActivityIds(autobattle.Id));
+        [UnityTest]
+        public IEnumerator BoardStubSelection_ConsumesOnlySelectedCellsAndRefills(
+            [Values("LightningBolt", "Power", "Defense", "Health", "Speed", "SkillSpeed", "Gold")] string content)
+        {
+            SelectOnlyBoardProducer(content);
+            yield return LaunchPlayableActivities();
+            Assert.IsTrue(TryFindRunningActivities(out var battle, out var board));
+            var player = battle.Participants.Single(participant => participant.TeamIndex == 0);
+            var wallet = AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(SharedWalletTagPath);
+            IssueTestTurns(player.ParticipantEconomyOwner, wallet, AssetDatabase.LoadAssetAtPath<EconomyAssetData>(BoardTurnTokenPath), 4);
+            var cell = AssetDatabase.LoadAssetAtPath<CapabilityHostData>("Assets/Game/Activities/Board/Economy/" + content + "BoardBase.asset");
+            var cellTag = AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(BoardCellTagPath);
+            var selection = AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(BoardMergeSelectionPath);
+            Assert.IsTrue(TryFindBoardHost(board.Id, AssetDatabase.LoadAssetAtPath<CapabilityHostData>(BoardHostPath), out var host));
+            yield return AwaitCompletedPopulation(board, cellTag, cell);
+            var untouched = ResolveConnectedMarkerSelection(board, cellTag, cell, 16).Skip(3).ToList();
+            yield return AssertBoardMergeSequence(board, cellTag, cell, host, selection, 3, new List<string>());
+            Assert.IsTrue(untouched.All(CapabilityHostService.Exists), "Consume removed unselected tokens.");
+            yield return AwaitCompletedPopulation(board, cellTag, cell);
+            Assert.AreEqual(16, CountMaterializedBoardAssets(board, cellTag, cell));
+            Assert.IsTrue(ActivityService.Close(battle.Id, ActivityCloseCauseType.Manual));
+        }
 
-            TaxonomyTermData boardCellTag =
-                AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(BoardCellTagPath);
-            Assert.NotNull(boardCellTag);
-            Assert.AreEqual(
-                16,
-                SpatialMarkerService.GetMarkers(
-                    board.Id,
-                    board.ActivityRootEntityId,
-                    new List<TaxonomyTermData> { boardCellTag }).Count);
+        void SelectOnlyBoardProducer(string content)
+        {
+            var board = AssetDatabase.LoadAssetAtPath<ActivityData>(BoardActivityPath);
+            var tag = AssetDatabase.LoadAssetAtPath<TaxonomyTermData>("Assets/Game/Activities/Board/Taxonomy/BoardContentProducer.asset");
+            string name = content == "Water" ? "BoardPopulationProducer" : content + "PopulationProducer";
+            var selected = AssetDatabase.LoadAssetAtPath<CapabilityHostData>("Assets/Game/Activities/Board/Economy/" + name + ".asset");
+            Assert.NotNull(selected);
+            var seed = board.Teams[0].Wallets.Single(wallet => wallet.Seed.Any(entry => entry.Seed.Asset == selected)).Seed;
+            var original = new List<ActivityWalletSeedEntryData>(seed);
+            // This fixture limits available producers, not the production or materialization path.
+            seed.RemoveAll(entry => entry.Seed.Asset.Tags.Contains(tag) && entry.Seed.Asset != selected);
+            _restoreBoardSeeds = () => { seed.Clear(); seed.AddRange(original); };
+        }
+
+        static void IssueTestTurns(IEconomyAssetOwner owner, TaxonomyTermData wallet, EconomyAssetData turn, int count)
+        {
+            var request = new EconomyMutationOperationRequest(owner, EconomyOperation.Issue,
+                new EconomyEntrySelectionData(turn, EconomyFormType.Stack, new List<TaxonomyTermData> { wallet }, null, null, null, null),
+                count, EconomyTransactionTraceContext.None);
+            Assert.IsTrue(EconomyService.TryRegisterOperation(request, out var handle, out var failure), failure.Message);
+            Assert.IsTrue(EconomyService.TryExecuteOperation(handle, out _, out failure), failure.Message);
+            Assert.IsTrue(EconomyService.TryCloseOperation(handle));
+        }
+
+        static IEnumerator LaunchPlayableActivities()
+        {
+            Scene scene = EditorSceneManager.LoadSceneInPlayMode(IntegrationScenePath, new LoadSceneParameters(LoadSceneMode.Single));
+            float deadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
+            while (Time.realtimeSinceStartup < deadline && !scene.isLoaded) yield return null;
+            yield return null;
+            var host = Object.FindFirstObjectByType<GameRuntimeHost>(FindObjectsInactive.Include);
+            Assert.NotNull(host);
+            deadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
+            while (Time.realtimeSinceStartup < deadline
+                && (host.RuntimeContext == null || !host.RuntimeContext.IsInitialized || !TryFindRunningActivities(out _, out _)))
+                yield return null;
+            Assert.IsTrue(TryFindRunningActivities(out var battle, out var board), "Activities did not start.");
+            Assert.AreEqual(battle.Id, board.ParentActivityId);
+            Assert.AreEqual(11, board.ObjectiveRuntimeIds.Count);
             Assert.AreEqual(16, CountBoardUICells());
             AssertBoardUIVisible(host);
+            Assert.AreEqual(2, battle.Participants.Count);
+            AssertParticipant(battle.Participants, 0, PlayerControlType.LocalHuman);
+            AssertParticipant(battle.Participants, 1, PlayerControlType.Bot);
+        }
 
-            CapabilityHostData waterUnitDefinition =
-                AssetDatabase.LoadAssetAtPath<CapabilityHostData>(WaterUnitPath);
-            CapabilityHostData enemyDefinition =
-                AssetDatabase.LoadAssetAtPath<CapabilityHostData>(EnemyPath);
-            CapabilityHostData collectorDefinition =
-                AssetDatabase.LoadAssetAtPath<CapabilityHostData>(ExperienceCollectorPath);
-            CapabilityHostData experienceDropDefinition =
-                AssetDatabase.LoadAssetAtPath<CapabilityHostData>(ExperienceDropPath);
-            EconomyAssetData experience =
-                AssetDatabase.LoadAssetAtPath<EconomyAssetData>(ExperiencePath);
-            HostValueData health = AssetDatabase.LoadAssetAtPath<HostValueData>(HealthPath);
-            TaxonomyTermData sharedWalletTag =
-                AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(SharedWalletTagPath);
-            Assert.NotNull(waterUnitDefinition);
-            Assert.NotNull(enemyDefinition);
-            Assert.NotNull(collectorDefinition);
-            Assert.NotNull(experienceDropDefinition);
-            Assert.NotNull(experience);
-            Assert.NotNull(health);
-            Assert.NotNull(sharedWalletTag);
-
-            ActivityParticipantBinding playerParticipant = autobattle.Participants.Single(
-                participant => participant.TeamIndex == 0);
-            ActivityParticipantBinding enemyParticipant = autobattle.Participants.Single(
-                participant => participant.TeamIndex == 1);
-
-            float combatHostDeadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
-            Core.Entities.EntityId waterUnitEntityId = Core.Entities.EntityId.Invalid;
-            string waterUnitStartupFailure = null;
-            while (Time.realtimeSinceStartup < combatHostDeadline
-                && (!TryResolveParticipantMaterializationChain(
-                        autobattle.Id,
-                        playerParticipant.ParticipantEconomyOwner,
-                        sharedWalletTag,
-                        waterUnitDefinition,
-                        out waterUnitEntityId,
-                        out waterUnitStartupFailure)
-                    || !TryFindProjectionBinding(
-                        autobattle.Id,
-                        waterUnitEntityId,
-                        out _)
-                    || !TryFindActivityHost(
-                        autobattle.Id,
-                        enemyDefinition,
-                        out Core.Entities.EntityId enemyEntityId)
-                    || !TryFindActivityHost(
-                        autobattle.Id,
-                        collectorDefinition,
-                        out Core.Entities.EntityId collectorEntityId)
-                    || !TryFindProjectionBinding(
-                        autobattle.Id,
-                        collectorEntityId,
-                        out _)))
+        sealed class PlayableRuntimeCapture :
+            IEventListener<SkillCarrierLifecycleEvent>,
+            IEventListener<ProjectionLifecycleEvent>,
+            IEventListener<HostValueChangedEvent>,
+            IEventListener<DropResultEvent>
+        {
+            public readonly List<SkillCarrierLifecycleEvent> Hits = new List<SkillCarrierLifecycleEvent>();
+            public readonly List<HostValueChangedEvent> Damage = new List<HostValueChangedEvent>();
+            readonly HostValueData _health = AssetDatabase.LoadAssetAtPath<HostValueData>(
+                "Assets/Game/Activities/Autobattle/HostValues/Health.asset");
+            public readonly HashSet<Core.Entities.EntityId> Carriers = new HashSet<Core.Entities.EntityId>();
+            readonly HashSet<Core.Entities.EntityId> _ready = new HashSet<Core.Entities.EntityId>();
+            readonly Dictionary<string, HashSet<Core.Entities.EntityId>> _materialized =
+                new Dictionary<string, HashSet<Core.Entities.EntityId>>();
+            public int CompletedDrops;
+            public string Failure;
+            public int Count(CapabilityHostBaseData asset)
             {
-                yield return null;
-            }
-
-            Assert.IsTrue(
-                TryResolveParticipantMaterializationChain(
-                    autobattle.Id,
-                    playerParticipant.ParticipantEconomyOwner,
-                    sharedWalletTag,
-                    waterUnitDefinition,
-                    out Core.Entities.EntityId waterUnitEntity,
-                    out waterUnitStartupFailure),
-                string.Concat(
-                    "Autobattle did not complete the player WaterUnit Stack -> Token -> materialization chain. ",
-                    waterUnitStartupFailure ?? "No diagnostic was produced.",
-                    "\n",
-                    BuildOrchestrationDiagnostic(autobattle.DomainId)));
-            Assert.IsTrue(
-                TryFindProjectionBinding(
-                    autobattle.Id,
-                    waterUnitEntity,
-                    out ProjectionBindingContext waterUnitProjection),
-                "The player WaterUnit has no live Projection binding.");
-            Assert.IsTrue(waterUnitProjection.Handle.IsValid);
-            for (int stabilityFrame = 0; stabilityFrame < 3; stabilityFrame++)
-            {
-                yield return null;
-                Assert.IsTrue(
-                    TryResolveParticipantMaterializationChain(
-                        autobattle.Id,
-                        playerParticipant.ParticipantEconomyOwner,
-                        sharedWalletTag,
-                        waterUnitDefinition,
-                        out Core.Entities.EntityId stableWaterUnitEntity,
-                        out waterUnitStartupFailure)
-                    && stableWaterUnitEntity == waterUnitEntity,
-                    string.Concat(
-                        "The startup player WaterUnit materialization chain did not remain valid. ",
-                        waterUnitStartupFailure ?? "The original entity was replaced."));
-            }
-            Assert.IsTrue(
-                TryFindActivityHost(
-                    autobattle.Id,
-                    enemyDefinition,
-                    out Core.Entities.EntityId enemyEntity),
-                string.Concat(
-                    "Autobattle did not materialize an enemy.\n",
-                    BuildOrchestrationDiagnostic(autobattle.DomainId)));
-            Assert.IsTrue(
-                TryFindActivityHost(
-                    autobattle.Id,
-                    collectorDefinition,
-                    out Core.Entities.EntityId collectorEntity),
-                "Autobattle did not register the Experience collector.");
-            Assert.IsFalse(
-                SpatialService.TryGetPosition(collectorEntity, out _),
-                "Experience collector unexpectedly received a Spatial position.");
-            Assert.IsTrue(
-                TryFindProjectionBinding(
-                    autobattle.Id,
-                    collectorEntity,
-                    out ProjectionBindingContext collectorProjection),
-                "Experience collector did not bind to the progressbar projection target.");
-            Assert.AreEqual(
-                ProjectionCoordinateType.UI,
-                collectorProjection.ProjectionTarget.CoordinateType);
-            Assert.IsTrue(
-                DiplomacyService.TryGetRelation(
-                    autobattle.Id,
-                    waterUnitEntity,
-                    enemyEntity,
-                    DiplomacyChannelType.Military,
-                    out DiplomacyRelationSnapshot combatRelation),
-                "Diplomacy relation between materialized opposing units is unavailable.");
-            Assert.AreEqual(
-                DiplomacyDispositionType.Hostile,
-                combatRelation.Disposition,
-                "Materialized opposing units are not hostile.");
-            Assert.AreEqual(autobattle.Id, combatRelation.ActivityId);
-            Assert.IsTrue(
-                SpatialService.TryGetPose(waterUnitEntity, out SpatialPose initialWaterUnitPose),
-                "The player WaterUnit has no authoritative Spatial pose before combat movement.");
-            Assert.IsTrue(
-                SpatialService.TryGetPose(enemyEntity, out SpatialPose initialEnemyPose),
-                "The enemy has no authoritative Spatial pose before combat movement.");
-
-            bool waterUnitMoved = false;
-            bool enemyMoved = false;
-            float combatMovementDeadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
-            while (Time.realtimeSinceStartup < combatMovementDeadline
-                && (!waterUnitMoved || !enemyMoved))
-            {
-                yield return null;
-                waterUnitMoved |= SpatialService.TryGetPose(waterUnitEntity, out SpatialPose waterUnitPose)
-                    && (waterUnitPose.Coordinates - initialWaterUnitPose.Coordinates).sqrMagnitude > 0.0001f;
-                enemyMoved |= SpatialService.TryGetPose(enemyEntity, out SpatialPose enemyPose)
-                    && (enemyPose.Coordinates - initialEnemyPose.Coordinates).sqrMagnitude > 0.0001f;
-            }
-
-            Assert.IsTrue(
-                waterUnitMoved,
-                string.Concat(
-                    "The player WaterUnit materialized but did not begin combat movement.\n",
-                    BuildOrchestrationDiagnostic(autobattle.DomainId)));
-            Assert.IsTrue(
-                enemyMoved,
-                string.Concat(
-                    "The enemy materialized but did not begin combat movement.\n",
-                    BuildOrchestrationDiagnostic(autobattle.DomainId)));
-            AssertMaterializedHostsHaveBackingTokens(
-                autobattle.Id,
-                enemyDefinition,
-                enemyParticipant.ParticipantEconomyOwner,
-                sharedWalletTag);
-
-            List<Core.Entities.EntityId> firstWaveEnemies = CapabilityHostService.GetAll()
-                .Where(host => host.ActivityId == autobattle.Id
-                    && host.Definition != null
-                    && host.Definition.Matches(enemyDefinition)
-                    && host.Owner != null
-                    && string.Equals(
-                        host.Owner.StableSimulationKey,
-                        enemyParticipant.ParticipantEconomyOwner.StableSimulationKey,
-                        System.StringComparison.Ordinal))
-                .OrderBy(host => host.EntityId.Value)
-                .Take(2)
-                .Select(host => host.EntityId)
-                .ToList();
-            Assert.AreEqual(2, firstWaveEnemies.Count, "The first enemy wave did not materialize two units.");
-            var experienceDropCapture = new DropMaterializationCapture(
-                autobattle.Id,
-                firstWaveEnemies,
-                experienceDropDefinition);
-            EventBus.Register<DropResultEvent>(experienceDropCapture);
-            try
-            {
-                for (int enemyIndex = 0; enemyIndex < firstWaveEnemies.Count; enemyIndex++)
+                foreach (var entity in _ready)
                 {
-                    Core.Entities.EntityId defeatedEntityId = firstWaveEnemies[enemyIndex];
-                    Assert.IsTrue(
-                        CapabilityHostService.TryGetHostValue(
-                            defeatedEntityId,
-                            health,
-                            out HostValueSnapshot enemyHealth),
-                        "A first-wave enemy has no authoritative Health value.");
-                    Assert.Greater(enemyHealth.CurrentValue, 0L);
-                    Assert.IsTrue(
-                        CapabilityHostService.TryApplyHostValueDelta(
-                            defeatedEntityId,
-                            health,
-                            -enemyHealth.CurrentValue,
-                            new RuntimeMutationContext(
-                                waterUnitEntity,
-                                waterUnitEntity,
-                                "chainrush-test-defeat",
-                                string.Concat(
-                                    "chainrush-test-experience-materialization-",
-                                    enemyIndex.ToString()))),
-                        "The test could not drive a first-wave enemy through its normal defeat lifecycle.");
+                    if (!CapabilityHostService.TryGet(entity, out var host) || host.Definition == null
+                        || !ActivityService.TryGetMaterializedEntityTokenHandle(host.ActivityId, entity, out var token)
+                        || !token.IsValid) continue;
+                    if (!_materialized.TryGetValue(host.Definition.Id, out var entities))
+                        _materialized.Add(host.Definition.Id, entities = new HashSet<Core.Entities.EntityId>());
+                    entities.Add(entity);
                 }
-
-                float dropDeadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
-                while (Time.realtimeSinceStartup < dropDeadline
-                    && !experienceDropCapture.HasTerminalResult)
-                {
-                    yield return null;
-                }
+                return _materialized.TryGetValue(asset.Id, out var entries) ? entries.Count : 0;
             }
-            finally
+            public void Register()
             {
-                EventBus.Unregister<DropResultEvent>(experienceDropCapture);
+                EventBus.Register<SkillCarrierLifecycleEvent>(this);
+                EventBus.Register<ProjectionLifecycleEvent>(this);
+                EventBus.Register<HostValueChangedEvent>(this);
+                EventBus.Register<DropResultEvent>(this);
             }
-
-            Assert.IsTrue(
-                experienceDropCapture.HasTerminalResult,
-                "Enemy defeat did not publish a terminal Drop result.");
-            Assert.AreEqual(
-                DropResultType.Completed,
-                experienceDropCapture.ResultType,
-                experienceDropCapture.Failure);
-            Assert.IsTrue(
-                experienceDropCapture.HasBackedExperienceDrop,
-                experienceDropCapture.Failure);
-
-            CapabilityHostData waterBase =
-                AssetDatabase.LoadAssetAtPath<CapabilityHostData>(BoardWaterBasePath);
-            EconomyAssetData turnToken =
-                AssetDatabase.LoadAssetAtPath<EconomyAssetData>(BoardTurnTokenPath);
-            Assert.NotNull(waterBase);
-            Assert.NotNull(turnToken);
-
-            float populationDeadline = Time.realtimeSinceStartup + CollectorCycleTimeoutSeconds;
-            while (Time.realtimeSinceStartup < populationDeadline
-                && (CountMaterializedBoardAssets(board, boardCellTag, waterBase) != 16
-                    || QueryAmount(
-                        board,
-                        sharedWalletTag,
-                        EconomyFormType.Stack,
-                        turnToken) != 0L))
+            public void Unregister()
             {
-                yield return null;
+                EventBus.Unregister<SkillCarrierLifecycleEvent>(this);
+                EventBus.Unregister<ProjectionLifecycleEvent>(this);
+                EventBus.Unregister<HostValueChangedEvent>(this);
+                EventBus.Unregister<DropResultEvent>(this);
             }
-            Assert.AreEqual(
-                16,
-                CountMaterializedBoardAssets(board, boardCellTag, waterBase),
-                string.Concat(
-                    "The first Experience collection cycle did not produce a turn token and populate every Board marker.\n",
-                    BuildPopulationDiagnostic(
-                        autobattle,
-                        board,
-                        sharedWalletTag,
-                        turnToken,
-                        experience,
-                        health,
-                        collectorDefinition,
-                        experienceDropDefinition)));
-            Assert.AreEqual(
-                0L,
-                QueryAmount(board, sharedWalletTag, EconomyFormType.Stack, turnToken),
-                "Board payment Objective did not consume the first Experience-produced turn token.");
-
-            CapabilityHostData boardHost =
-                AssetDatabase.LoadAssetAtPath<CapabilityHostData>(BoardHostPath);
-            TaxonomyTermData mergeSelection =
-                AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(BoardMergeSelectionPath);
-            Assert.NotNull(boardHost);
-            Assert.NotNull(mergeSelection);
-            Assert.IsTrue(
-                TryFindBoardHost(board.Id, boardHost, out Core.Entities.EntityId boardHostEntityId),
-                "The hidden Board host was not registered for the Board Activity.");
-            List<Core.Entities.EntityId> selectedEntities = ResolveConnectedMarkerSelection(
-                board,
-                boardCellTag,
-                waterBase,
-                6);
-            Assert.AreEqual(6, selectedEntities.Count);
-            HashSet<long> waterUnitsBeforeMerge = GetActivityHostEntityValues(
-                autobattle.Id,
-                waterUnitDefinition);
-            SelectionIntentEvent mergeRequest = SelectionIntentEvent.Begin(
-                board.Id,
-                mergeSelection,
-                Core.Entities.EntityId.Invalid,
-                boardHostEntityId);
-            Assert.IsTrue(mergeRequest.RequestId.IsValid);
-            var selectionResultCapture = new SelectionResultCapture(mergeRequest.RequestId);
-            var productionOrderCapture = new ProductionOrderCapture(board.DomainId, boardHostEntityId);
-            EventBus.Register<SelectionResultEvent>(selectionResultCapture);
-            EventBus.Register<ProductionOrderStartedEvent>(productionOrderCapture);
-            EventBus.Register<ProductionOrderFinishedEvent>(productionOrderCapture);
-            EventBus.Register<OrchestrationProcessStateChangedEvent>(productionOrderCapture);
-            EventBus.Register<ObjectiveNodeStateChangedEvent>(productionOrderCapture);
-            EventBus.Register<ObjectiveRuntimeCompletedEvent>(productionOrderCapture);
-            EventBus.Register<ObjectiveRuntimeResetEvent>(productionOrderCapture);
-            EventBus.Trigger(mergeRequest);
-            yield return SubmitSelectionTargetsAcrossSteps(mergeRequest, selectedEntities, selectionResultCapture);
-            EventBus.Trigger(SelectionIntentEvent.Complete(mergeRequest));
-
-            float mergeDeadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
-            while (Time.realtimeSinceStartup < mergeDeadline
-                && (selectedEntities.Any(CapabilityHostService.Exists)
-                    || GetActivityHostEntityValues(
-                        autobattle.Id,
-                        waterUnitDefinition).Count < waterUnitsBeforeMerge.Count + 2))
+            public void OnEvent(SkillCarrierLifecycleEvent e)
             {
-                yield return null;
+                if (e.EventType == SkillCarrierLifecycleEventType.Spawned) Carriers.Add(e.CarrierEntityId);
+                if (e.EventType != SkillCarrierLifecycleEventType.Hit) return;
+                Hits.Add(e);
+                if (!DiplomacyService.TryGetRelation(ActivityIdFor(e.OwnerEntityId), e.OwnerEntityId, e.TargetEntityId,
+                        DiplomacyChannelType.Military, out var relation) || relation.Disposition != DiplomacyDispositionType.Hostile)
+                    Failure = "A combat carrier hit a non-hostile target.";
             }
-            EventBus.Unregister<SelectionResultEvent>(selectionResultCapture);
-            EventBus.Unregister<ProductionOrderStartedEvent>(productionOrderCapture);
-            EventBus.Unregister<ProductionOrderFinishedEvent>(productionOrderCapture);
-            EventBus.Unregister<OrchestrationProcessStateChangedEvent>(productionOrderCapture);
-            EventBus.Unregister<ObjectiveNodeStateChangedEvent>(productionOrderCapture);
-            EventBus.Unregister<ObjectiveRuntimeCompletedEvent>(productionOrderCapture);
-            EventBus.Unregister<ObjectiveRuntimeResetEvent>(productionOrderCapture);
-
-            Assert.AreEqual(
-                1,
-                selectionResultCapture.Count,
-                string.Concat(
-                    "Selection request did not publish exactly one terminal result.\n",
-                    BuildExecutorDiagnostic(boardHostEntityId),
-                    BuildPopulationDiagnostic(
-                        autobattle,
-                        board,
-                        sharedWalletTag,
-                        turnToken,
-                        experience,
-                        health,
-                        collectorDefinition,
-                        experienceDropDefinition)));
-            Assert.AreEqual(
-                SelectionResultType.Committed,
-                selectionResultCapture.Result.Type,
-                selectionResultCapture.Result.Message);
-            CollectionAssert.AreEqual(
-                selectedEntities,
-                selectionResultCapture.Result.SelectedEntityIds);
-
-            for (int selectedIndex = 0; selectedIndex < selectedEntities.Count; selectedIndex++)
+            static ActivityId ActivityIdFor(Core.Entities.EntityId entity) =>
+                CapabilityHostService.GetAll().Single(host => host.EntityId == entity).ActivityId;
+            public void OnEvent(ProjectionLifecycleEvent e)
             {
-                Assert.IsFalse(
-                    CapabilityHostService.Exists(selectedEntities[selectedIndex]),
-                    string.Concat(
-                        "A selected Board token remained materialized after committed merge production.\n",
-                        BuildSelectedEntityDiagnostic(selectedEntities),
-                        productionOrderCapture.BuildDiagnostic(),
-                        BuildExecutorDiagnostic(boardHostEntityId),
-                        BuildPopulationDiagnostic(
-                            autobattle,
-                            board,
-                            sharedWalletTag,
-                            turnToken,
-                            experience,
-                            health,
-                            collectorDefinition,
-                            experienceDropDefinition)));
+                if (e.EventType == ProjectionLifecycleEventType.BoundReady) _ready.Add(e.Handle.EntityId);
             }
-            Assert.IsTrue(
-                HasNewActivityHost(
-                    autobattle.Id,
-                    waterUnitDefinition,
-                    waterUnitsBeforeMerge),
-                string.Concat(
-                    "Merge output was not deployed as a new physical Water unit.\n",
-                    "PlayerWaterUnitStack=",
-                    QueryAmount(
-                        playerParticipant.ParticipantEconomyOwner,
-                        sharedWalletTag,
-                        EconomyFormType.Stack,
-                        waterUnitDefinition).ToString(),
-                    "\nPlayerWaterUnitToken=",
-                    QueryAmount(
-                        playerParticipant.ParticipantEconomyOwner,
-                        sharedWalletTag,
-                        EconomyFormType.Token,
-                        waterUnitDefinition).ToString(),
-                    "\n",
-                    productionOrderCapture.BuildDiagnostic(),
-                    BuildPopulationDiagnostic(
-                        autobattle,
-                        board,
-                        sharedWalletTag,
-                        turnToken,
-                        experience,
-                        health,
-                        collectorDefinition,
-                        experienceDropDefinition)));
-            HashSet<long> waterUnitsAfterMerge = GetActivityHostEntityValues(
-                autobattle.Id,
-                waterUnitDefinition);
-            Assert.AreEqual(
-                waterUnitsBeforeMerge.Count + 2,
-                waterUnitsAfterMerge.Count,
-                string.Concat(
-                    "A six-token selection must resolve through sequential x4 and x2 recipe yields.\n",
-                    productionOrderCapture.BuildDiagnostic(),
-                    BuildPopulationDiagnostic(
-                        autobattle,
-                        board,
-                        sharedWalletTag,
-                        turnToken,
-                        experience,
-                        health,
-                        collectorDefinition,
-                        experienceDropDefinition)));
-            AssertMaterializedHostsHaveBackingTokens(
-                autobattle.Id,
-                waterUnitDefinition,
-                playerParticipant.ParticipantEconomyOwner,
-                sharedWalletTag);
-            AssertMaterializedHostsHaveBackingTokens(
-                autobattle.Id,
-                enemyDefinition,
-                enemyParticipant.ParticipantEconomyOwner,
-                sharedWalletTag);
-
-            List<Core.Entities.EntityId> postMergeEnemies = CapabilityHostService.GetAll()
-                .Where(host => host.ActivityId == autobattle.Id
-                    && host.Definition != null
-                    && host.Definition.Matches(enemyDefinition)
-                    && host.Owner != null
-                    && string.Equals(
-                        host.Owner.StableSimulationKey,
-                        enemyParticipant.ParticipantEconomyOwner.StableSimulationKey,
-                        System.StringComparison.Ordinal))
-                .OrderBy(host => host.EntityId.Value)
-                .Take(2)
-                .Select(host => host.EntityId)
-                .ToList();
-            Assert.AreEqual(2, postMergeEnemies.Count, "No two enemies remained for the post-merge drop cycle.");
-            var postMergeDropCapture = new DropMaterializationCapture(
-                autobattle.Id,
-                postMergeEnemies,
-                experienceDropDefinition);
-            EventBus.Register<DropResultEvent>(postMergeDropCapture);
-            try
+            public void OnEvent(DropResultEvent e)
             {
-                for (int enemyIndex = 0; enemyIndex < postMergeEnemies.Count; enemyIndex++)
-                {
-                    Core.Entities.EntityId defeatedEntityId = postMergeEnemies[enemyIndex];
-                    Assert.IsTrue(
-                        CapabilityHostService.TryGetHostValue(
-                            defeatedEntityId,
-                            health,
-                            out HostValueSnapshot enemyHealth),
-                        "A post-merge enemy has no authoritative Health value.");
-                    Assert.Greater(enemyHealth.CurrentValue, 0L);
-                    Assert.IsTrue(
-                        CapabilityHostService.TryApplyHostValueDelta(
-                            defeatedEntityId,
-                            health,
-                            -enemyHealth.CurrentValue,
-                            new RuntimeMutationContext(
-                                waterUnitEntity,
-                                waterUnitEntity,
-                                "chainrush-test-defeat",
-                                string.Concat(
-                                    "chainrush-test-post-merge-experience-materialization-",
-                                    enemyIndex.ToString()))),
-                        "The test could not drive a post-merge enemy through its normal defeat lifecycle.");
-                }
-
-                float postMergeDropDeadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
-                while (Time.realtimeSinceStartup < postMergeDropDeadline
-                    && !postMergeDropCapture.HasTerminalResult)
-                {
-                    yield return null;
-                }
+                if (e.ResultType == DropResultType.Completed) CompletedDrops++;
             }
-            finally
+            public void OnEvent(HostValueChangedEvent e)
             {
-                EventBus.Unregister<DropResultEvent>(postMergeDropCapture);
+                if (e.Value == _health && e.DeltaRawValue < 0) Damage.Add(e);
             }
-
-            Assert.IsTrue(
-                postMergeDropCapture.HasTerminalResult,
-                "Post-merge enemy defeats did not publish terminal Drop results.");
-            Assert.AreEqual(
-                DropResultType.Completed,
-                postMergeDropCapture.ResultType,
-                postMergeDropCapture.Failure);
-            Assert.IsTrue(
-                postMergeDropCapture.HasBackedExperienceDrop,
-                postMergeDropCapture.Failure);
-
-            float collectorCycleDeadline =
-                Time.realtimeSinceStartup + CollectorCycleTimeoutSeconds;
-            while (Time.realtimeSinceStartup < collectorCycleDeadline
-                && CountMaterializedBoardAssets(board, boardCellTag, waterBase) != 16)
-            {
-                yield return null;
-            }
-
-            Assert.AreEqual(
-                16,
-                CountMaterializedBoardAssets(board, boardCellTag, waterBase),
-                string.Concat(
-                    "Collected Experience did not produce and consume the next Board turn token.\n",
-                    BuildPopulationDiagnostic(
-                        autobattle,
-                        board,
-                        sharedWalletTag,
-                        turnToken,
-                        experience,
-                        health,
-                        collectorDefinition,
-                        experienceDropDefinition)));
-            Assert.AreEqual(
-                0L,
-                QueryAmount(board, sharedWalletTag, EconomyFormType.Stack, turnToken),
-                "The next Board turn token remained unconsumed after population refresh.");
-
-            ProductionRecipeData mergeRecipe1 =
-                AssetDatabase.LoadAssetAtPath<ProductionRecipeData>(BoardMergeRecipe1Path);
-            ProductionRecipeData mergeRecipe4 =
-                AssetDatabase.LoadAssetAtPath<ProductionRecipeData>(BoardMergeRecipe4Path);
-            Assert.NotNull(mergeRecipe1);
-            Assert.NotNull(mergeRecipe4);
-            yield return AssertBoardMergeSequence(
-                board,
-                boardCellTag,
-                waterBase,
-                boardHostEntityId,
-                mergeSelection,
-                selectionCount: 5,
-                expectedRecipeIds: new List<string>
-                {
-                    mergeRecipe4.Id,
-                    mergeRecipe1.Id,
-                });
-
-            // Supply turn resources for the Board contract matrix; all cells and units still use live production.
-            var turnBudget = new EconomyMutationOperationRequest(playerParticipant.ParticipantEconomyOwner,
-                EconomyOperation.Issue, new EconomyEntrySelectionData(turnToken, EconomyFormType.Stack,
-                    new List<TaxonomyTermData> { sharedWalletTag }, null, null, null, null),
-                32L, EconomyTransactionTraceContext.None);
-            Assert.IsTrue(EconomyService.TryRegisterOperation(turnBudget, out EconomyOperationHandle budgetHandle,
-                out EconomyFailure budgetFailure), budgetFailure.Message);
-            Assert.IsTrue(EconomyService.TryExecuteOperation(budgetHandle, out _, out budgetFailure), budgetFailure.Message);
-            Assert.IsTrue(EconomyService.TryCloseOperation(budgetHandle));
-            var payments = new BoardPaymentCapture(playerParticipant.ParticipantEconomyOwner, turnToken);
-            EventBus.Register<EconomyOperationChangedEvent>(payments);
-            try
-            {
-                var recipes = new List<ProductionRecipeData>();
-                for (int size = 1; size <= 4; size++)
-                    recipes.Add(AssetDatabase.LoadAssetAtPath<ProductionRecipeData>(
-                        "Assets/Game/Activities/Board/Production/BoardMergeRecipe" + size + ".asset"));
-                for (int size = firstSelection; size <= System.Math.Min(firstSelection + 5, 16); size++)
-                {
-                    yield return AwaitCompletedPopulation(board, boardCellTag, waterBase);
-                    int before = payments.Handles.Count;
-                    for (int stableFrame = 0; stableFrame < 4; stableFrame++)
-                        yield return null;
-                    Assert.AreEqual(before, payments.Handles.Count,
-                        "A full Board must not consume additional turns.");
-                    var expected = new List<string>();
-                    for (int remaining = size; remaining > 0;)
-                    {
-                        int batch = System.Math.Min(4, remaining);
-                        expected.Add(recipes[batch - 1].Id);
-                        remaining -= batch;
-                    }
-                    yield return AssertBoardMergeSequence(board, boardCellTag, waterBase, boardHostEntityId,
-                        mergeSelection, size, expected);
-                    yield return AwaitCompletedPopulation(board, boardCellTag, waterBase);
-                    Assert.AreEqual(before + 1, payments.Handles.Count,
-                        "Each Board refresh must commit exactly one payment. Selection size=" + size);
-                    Assert.IsNull(payments.Failure);
-                    TestContext.WriteLine("Board matrix completed selection=" + size + ", payments=" + payments.Handles.Count);
-                }
-            }
-            finally
-            {
-                EventBus.Unregister<EconomyOperationChangedEvent>(payments);
-            }
-
-            TaxonomyTermData activation =
-                AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(BoardActivationTermPath);
-            Assert.NotNull(activation);
-            EventBus.Trigger(new ActivityChildActivationEvent(
-                autobattle.Id,
-                new List<TaxonomyTermData> { activation }));
-            yield return null;
-            Assert.AreEqual(1, ActivityService.GetChildActivityIds(autobattle.Id).Count);
-
-            TestContext.WriteLine("Board matrix closing parent Activity.");
-            Assert.IsTrue(ActivityService.Close(autobattle.Id, ActivityCloseCauseType.Manual));
-            Assert.IsTrue(ActivityService.TryGetSnapshot(board.Id, out board));
-            Assert.AreEqual(ActivityState.Closed, board.State);
-            Assert.AreEqual(ActivityCloseCauseType.ParentClosed, board.CloseCauseType);
-            Assert.AreEqual(ActivityResultType.Cancelled, board.ResultType);
-            for (int i = 0; i < payments.Handles.Count; i++)
-                Assert.IsFalse(EconomyService.TryGetOperation(payments.Handles[i], out _),
-                    "Activity close must release Objective-owned Economy receipts.");
         }
 
 
@@ -1121,6 +920,7 @@ namespace ChainRush.Tests.PlayMode
                 board.ActivityRootEntityId,
                 new List<TaxonomyTermData> { markerTag });
             var matchingEntities = new HashSet<long>();
+            var contentTag = AssetDatabase.LoadAssetAtPath<TaxonomyTermData>("Assets/Game/Activities/Board/Taxonomy/BoardContent.asset");
             for (int markerIndex = 0; markerIndex < markers.Count; markerIndex++)
             {
                 Core.Entities.EntityId[] occupants =
@@ -1130,10 +930,7 @@ namespace ChainRush.Tests.PlayMode
                     Core.Entities.EntityId entityId = occupants[occupantIndex];
                     if (!CapabilityHostService.TryGet(entityId, out CapabilityHostSnapshot host)
                         || host.Definition == null
-                        || !string.Equals(
-                            host.Definition.Id,
-                            expectedAsset.Id,
-                            System.StringComparison.Ordinal))
+                        || (expectedAsset != null ? !host.Definition.Matches(expectedAsset) : !host.Definition.Tags.Contains(contentTag)))
                     {
                         continue;
                     }
@@ -1350,46 +1147,6 @@ namespace ChainRush.Tests.PlayMode
             return false;
         }
 
-        static HashSet<long> GetActivityHostEntityValues(
-            ActivityId activityId,
-            CapabilityHostData expectedDefinition)
-        {
-            var values = new HashSet<long>();
-            List<CapabilityHostSnapshot> hosts = CapabilityHostService.GetAll();
-            for (int i = 0; i < hosts.Count; i++)
-            {
-                CapabilityHostSnapshot host = hosts[i];
-                if (host.ActivityId == activityId
-                    && host.Definition != null
-                    && host.Definition.Matches(expectedDefinition))
-                {
-                    values.Add(host.EntityId.Value);
-                }
-            }
-
-            return values;
-        }
-
-        static bool HasNewActivityHost(
-            ActivityId activityId,
-            CapabilityHostData expectedDefinition,
-            HashSet<long> previousEntityValues)
-        {
-            List<CapabilityHostSnapshot> hosts = CapabilityHostService.GetAll();
-            for (int i = 0; i < hosts.Count; i++)
-            {
-                CapabilityHostSnapshot host = hosts[i];
-                if (host.ActivityId == activityId
-                    && host.Definition != null
-                    && host.Definition.Matches(expectedDefinition)
-                    && !previousEntityValues.Contains(host.EntityId.Value))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
 
         static bool TryFindActivityHost(
             ActivityId activityId,
@@ -1416,119 +1173,6 @@ namespace ChainRush.Tests.PlayMode
             return false;
         }
 
-        static bool TryResolveParticipantMaterializationChain(
-            ActivityId activityId,
-            IEconomyAssetOwner expectedOwner,
-            TaxonomyTermData walletTag,
-            CapabilityHostData expectedDefinition,
-            out Core.Entities.EntityId entityId,
-            out string failure)
-        {
-            entityId = Core.Entities.EntityId.Invalid;
-            failure = null;
-            if (expectedOwner == null || walletTag == null || expectedDefinition == null)
-            {
-                failure = "The expected owner, wallet tag, or definition is unavailable.";
-                return false;
-            }
-
-            long stackAmount = QueryAmount(
-                expectedOwner,
-                walletTag,
-                EconomyFormType.Stack,
-                expectedDefinition);
-            if (stackAmount != 0L)
-            {
-                failure = string.Concat(
-                    "WaterUnit Stack remains in the player wallet. Amount=",
-                    stackAmount.ToString(),
-                    ".");
-                return false;
-            }
-
-            EconomySelectionQueryResult tokens = EconomyService.Query(new EconomySelectionQuery(
-                expectedOwner,
-                new List<TaxonomyTermData> { walletTag },
-                EconomyFormType.Token,
-                expectedDefinition,
-                EconomyAggregationType.Detailed,
-                includeZeroBalance: false,
-                availabilityType: EconomySelectionAvailabilityType.Committed));
-            if (tokens.Items.Length != 1)
-            {
-                failure = string.Concat(
-                    "Expected exactly one committed player WaterUnit Token, found ",
-                    tokens.Items.Length.ToString(),
-                    ".");
-                return false;
-            }
-
-            List<CapabilityHostSnapshot> hosts = CapabilityHostService.GetAll();
-            hosts.Sort((left, right) => left.EntityId.Value.CompareTo(right.EntityId.Value));
-            for (int i = 0; i < hosts.Count; i++)
-            {
-                CapabilityHostSnapshot host = hosts[i];
-                if (host.ActivityId != activityId
-                    || host.Definition == null
-                    || !host.Definition.Matches(expectedDefinition))
-                {
-                    continue;
-                }
-
-                entityId = host.EntityId;
-                if (host.Owner == null
-                    || !string.Equals(
-                        host.Owner.StableSimulationKey,
-                        expectedOwner.StableSimulationKey,
-                        System.StringComparison.Ordinal))
-                {
-                    failure = string.Concat(
-                        "Water unit owner is '",
-                        host.Owner == null ? "<null>" : host.Owner.StableSimulationKey,
-                        "' instead of player owner '",
-                        expectedOwner.StableSimulationKey,
-                        "'.");
-                    continue;
-                }
-
-                if (!ActivityService.TryGetMaterializedEntityTokenHandle(
-                        activityId,
-                        host.EntityId,
-                        out EconomyEntryHandle materializedHandle))
-                {
-                    failure = string.Concat(
-                        "Player Water unit ",
-                        host.EntityId.Value.ToString(),
-                        " has no Activity materialization token link.");
-                    continue;
-                }
-
-                if (materializedHandle != tokens.Items[0].Handle)
-                {
-                    failure = string.Concat(
-                        "The committed player WaterUnit Token is not the token linked to entity ",
-                        host.EntityId.Value.ToString(),
-                        ".");
-                    continue;
-                }
-
-                if (!SpatialService.TryGetWorldPosition(host.EntityId, out _))
-                {
-                    failure = string.Concat(
-                        "Player Water unit ",
-                        host.EntityId.Value.ToString(),
-                        " has no authoritative Spatial position.");
-                    continue;
-                }
-
-                failure = null;
-                return true;
-            }
-
-            if (!entityId.IsValid)
-                failure = "No materialized Water unit host exists in the Autobattle Activity.";
-            return false;
-        }
 
         static void AssertMaterializedHostsHaveBackingTokens(
             ActivityId activityId,
@@ -1605,239 +1249,6 @@ namespace ChainRush.Tests.PlayMode
             return amount;
         }
 
-        static long QueryAmount(
-            ActivityRuntimeSnapshot activity,
-            TaxonomyTermData walletTag,
-            EconomyFormType formType,
-            EconomyAssetData asset)
-        {
-            ActivityParticipantBinding participant =
-                activity.Participants.Single(binding => binding.TeamIndex == 0);
-            EconomySelectionQueryResult result = EconomyService.Query(
-                new EconomySelectionQuery(
-                    participant.ParticipantEconomyOwner,
-                    new List<TaxonomyTermData> { walletTag },
-                    formType,
-                    asset,
-                    includeZeroBalance: true));
-            long amount = 0L;
-            for (int itemIndex = 0; itemIndex < result.Items.Length; itemIndex++)
-                amount += result.Items[itemIndex].Amount;
-
-            return amount;
-        }
-
-        static string BuildPopulationDiagnostic(
-            ActivityRuntimeSnapshot autobattle,
-            ActivityRuntimeSnapshot board,
-            TaxonomyTermData sharedWalletTag,
-            EconomyAssetData turnToken,
-            EconomyAssetData experience,
-            HostValueData health,
-            CapabilityHostData collectorDefinition,
-            CapabilityHostData experienceDropDefinition)
-        {
-            var message = new StringBuilder(1024);
-            message.Append("TurnToken=")
-                .Append(QueryAmount(
-                    board,
-                    sharedWalletTag,
-                    EconomyFormType.Stack,
-                    turnToken))
-                .AppendLine();
-            message.Append("Experience=")
-                .Append(QueryAmount(
-                    autobattle,
-                    sharedWalletTag,
-                    EconomyFormType.Stack,
-                    experience))
-                .AppendLine();
-            AppendAutobattleHostDiagnostic(
-                message,
-                autobattle,
-                experience,
-                health,
-                collectorDefinition,
-                experienceDropDefinition);
-
-            for (int objectiveIndex = 0;
-                 objectiveIndex < board.ObjectiveRuntimeIds.Count;
-                 objectiveIndex++)
-            {
-                ObjectiveRuntimeId runtimeId = board.ObjectiveRuntimeIds[objectiveIndex];
-                ObjectiveRuntimeSnapshot objective = ObjectiveService.GetSnapshot(
-                    board.DomainId,
-                    runtimeId);
-                message.Append("Objective ")
-                    .Append(runtimeId.Value)
-                    .Append(": ");
-                for (int nodeIndex = 0;
-                     objective.Nodes != null && nodeIndex < objective.Nodes.Length;
-                     nodeIndex++)
-                {
-                    if (nodeIndex > 0)
-                        message.Append(", ");
-                    message.Append(objective.Nodes[nodeIndex].NodeId)
-                        .Append('=')
-                        .Append(objective.Nodes[nodeIndex].State);
-                }
-                message.AppendLine();
-            }
-
-            List<OrchestrationGoalSnapshot> goals = OrchestrationService.GetGoals(board.DomainId);
-            List<OrchestrationProcessSnapshot> processes =
-                OrchestrationService.GetProcesses(board.DomainId);
-            message.Append("Goals=").Append(goals.Count).AppendLine();
-            for (int goalIndex = 0; goalIndex < goals.Count; goalIndex++)
-            {
-                OrchestrationGoalSnapshot goal = goals[goalIndex];
-                message.Append("  Goal ")
-                    .Append(goal.SourceObjectiveRuntimeId.Value)
-                    .Append(" state=")
-                    .Append(goal.State)
-                    .Append(" message=")
-                    .Append(goal.Message ?? "<null>")
-                    .AppendLine();
-                int processCount = 0;
-                for (int processIndex = 0; processIndex < processes.Count; processIndex++)
-                {
-                    OrchestrationProcessSnapshot process = processes[processIndex];
-                    if (!HasRootDemand(process, goal.SourceObjectiveRuntimeId))
-                        continue;
-
-                    message.Append("      Process id=")
-                        .Append(process.ProcessId.ToString())
-                        .Append(" fact=")
-                        .Append(process.DesiredFactStableKey ?? "<null>")
-                        .Append(" state=")
-                        .Append(process.StateType)
-                        .Append(" attempt=")
-                        .Append(process.AttemptOrdinal)
-                        .Append(" utility=")
-                        .Append(process.Utility)
-                        .Append(" endpoint=")
-                        .Append(process.SelectedEndpointKey.IsValid
-                            ? process.SelectedEndpointKey.ToString()
-                            : "<null>")
-                        .Append(" message=")
-                        .Append(process.Message ?? "<null>")
-                        .AppendLine();
-                    processCount++;
-                }
-
-                if (processCount == 0)
-                    message.AppendLine("      Processes=<empty>");
-            }
-
-            if (AgentService.TryGetAssignmentBoardSnapshot(
-                    board.DomainId,
-                    out AgentAssignmentBoardSnapshot assignments))
-            {
-                message.Append("Assignments=")
-                    .Append(assignments.Assignments.Count)
-                    .AppendLine();
-                for (int assignmentIndex = 0;
-                     assignmentIndex < assignments.Assignments.Count;
-                     assignmentIndex++)
-                {
-                    AgentAssignmentSnapshot assignment =
-                        assignments.Assignments[assignmentIndex];
-                    message.Append("  Assignment agent=")
-                        .Append(assignment.MatchedAgentId ?? "<null>")
-                        .Append(" objective=")
-                        .Append(assignment.ObjectiveId ?? "<null>")
-                        .Append(" runtime=")
-                        .Append(assignment.RuntimeId.Value)
-                        .Append(" node=")
-                        .Append(assignment.NodeId ?? "<null>")
-                        .Append(" fact=")
-                        .Append(assignment.DesiredFactType ?? "<null>")
-                        .Append(" status=")
-                        .Append(assignment.StatusType)
-                        .Append(" message=")
-                        .Append(assignment.Message ?? "<null>")
-                        .AppendLine();
-                }
-            }
-            else
-            {
-                message.AppendLine("Assignments=<missing board>");
-            }
-
-            List<ProductionSnapshot> productions = ProductionService.GetSnapshots(board.DomainId);
-            ActivityParticipantBinding participant = board.Participants.Single();
-            message.Append("ParticipantOwner=")
-                .Append(participant.ParticipantEconomyOwner == null
-                    ? "<null>"
-                    : participant.ParticipantEconomyOwner.StableSimulationKey)
-                .AppendLine();
-            message.Append("Productions=").Append(productions.Count).AppendLine();
-            for (int productionIndex = 0; productionIndex < productions.Count; productionIndex++)
-            {
-                ProductionSnapshot production = productions[productionIndex];
-                message.Append("  Production entity=")
-                    .Append(production.EntityId.Value)
-                    .Append(" definition=")
-                    .Append(production.Definition == null ? "<null>" : production.Definition.Id)
-                    .Append(" catalog=")
-                    .Append(production.Catalog == null ? "<null>" : production.Catalog.Id)
-                    .Append(" owner=")
-                    .Append(production.Owner == null
-                        ? "<null>"
-                        : production.Owner.StableSimulationKey)
-                    .Append(" selfOwner=")
-                    .Append(production.SelfEconomyOwner == null
-                        ? "<null>"
-                        : production.SelfEconomyOwner.StableSimulationKey)
-                    .Append(" enabled=")
-                    .Append(production.Enabled)
-                    .Append(" accepts=")
-                    .Append(production.AcceptsOrders)
-                    .Append(" queued=")
-                    .Append(production.QueueCount)
-                    .Append(" active=")
-                    .Append(production.ActivePipelineCount)
-                    .AppendLine();
-
-                bool controlAvailable = EntityControlAuthorityService.CanClaim(
-                    production.EntityId,
-                    EntityControlOwnerType.Orchestration,
-                    "chainrush-test-production-probe",
-                    out string controlFailure);
-                bool agentAllocated =
-                    typeof(AgentService)
-                        .GetMethod(
-                            "IsExecutorAllocated",
-                            BindingFlags.Static | BindingFlags.NonPublic)
-                        ?.Invoke(null, new object[] { production.EntityId }) is true;
-                message.Append("    Control available=")
-                    .Append(controlAvailable)
-                    .Append(" failure=")
-                    .Append(controlFailure ?? "<none>")
-                    .Append(" agentAllocated=")
-                    .Append(agentAllocated)
-                    .AppendLine();
-
-                if (CapabilityHostService.TryGet(
-                        production.EntityId,
-                        out CapabilityHostSnapshot host))
-                {
-                    message.Append("    Host definition=")
-                        .Append(host.Definition == null ? "<null>" : host.Definition.Id)
-                        .Append(" owner=")
-                        .Append(host.Owner == null ? "<null>" : host.Owner.StableSimulationKey)
-                        .Append(" activity=")
-                        .Append(host.ActivityId.Value)
-                        .AppendLine();
-                }
-            }
-
-            AppendProductionModuleDiagnostic(message, board);
-            AppendProcessDiagnostic(message, board.DomainId);
-
-            return message.ToString();
-        }
-
         static string BuildSelectedEntityDiagnostic(
             IReadOnlyList<Core.Entities.EntityId> selectedEntities)
         {
@@ -1853,18 +1264,6 @@ namespace ChainRush.Tests.PlayMode
             return message.AppendLine("]").ToString();
         }
 
-        static void EnableOrchestrationTraceDiagnostics()
-        {
-            RuntimeDiagnosticsProfile profile = default;
-            object boxedProfile = profile;
-            typeof(RuntimeDiagnosticsProfile)
-                .GetField("orchestrationTrace", BindingFlags.Instance | BindingFlags.NonPublic)
-                ?.SetValue(boxedProfile, true);
-            profile = (RuntimeDiagnosticsProfile)boxedProfile;
-            typeof(GameRuntimeDiagnostics)
-                .GetField("_profile", BindingFlags.Static | BindingFlags.NonPublic)
-                ?.SetValue(null, profile);
-        }
 
         static string BuildExecutorDiagnostic(Core.Entities.EntityId entityId)
         {
@@ -1949,230 +1348,6 @@ namespace ChainRush.Tests.PlayMode
                 issued.ToString(),
                 reservationOwners.ToString(),
                 "\n");
-        }
-
-        static void AppendAutobattleHostDiagnostic(
-            StringBuilder message,
-            ActivityRuntimeSnapshot autobattle,
-            EconomyAssetData experience,
-            HostValueData health,
-            CapabilityHostData collectorDefinition,
-            CapabilityHostData experienceDropDefinition)
-        {
-            List<CapabilityHostSnapshot> hosts = CapabilityHostService.GetAll()
-                .Where(host => host.ActivityId == autobattle.Id)
-                .OrderBy(host => host.EntityId.Value)
-                .ToList();
-            message.Append("AutobattleHosts=").Append(hosts.Count).AppendLine();
-            for (int hostIndex = 0; hostIndex < hosts.Count; hostIndex++)
-            {
-                CapabilityHostSnapshot host = hosts[hostIndex];
-                message.Append("  Host entity=")
-                    .Append(host.EntityId.Value)
-                    .Append(" definition=")
-                    .Append(host.Definition == null ? "<null>" : host.Definition.Id)
-                    .Append(" placement=")
-                    .Append(host.PlacementType);
-
-                if (CapabilityHostService.TryGetHostValue(
-                        host.EntityId,
-                        health,
-                        out HostValueSnapshot healthSnapshot))
-                {
-                    message.Append(" health=").Append(healthSnapshot.CurrentValue);
-                }
-
-                if (SpatialService.TryGetWorldPosition(host.EntityId, out WorldPosition position))
-                    message.Append(" position=").Append(position.ToString());
-                else
-                    message.Append(" position=<none>");
-
-                if (host.SelfEconomyOwner != null)
-                {
-                    EconomySelectionQueryResult payload = EconomyService.Query(
-                        new EconomySelectionQuery(
-                            host.SelfEconomyOwner,
-                            new List<TaxonomyTermData>(0),
-                            EconomyFormType.Stack,
-                            experience,
-                            includeZeroBalance: true));
-                    long amount = 0L;
-                    for (int itemIndex = 0; itemIndex < payload.Items.Length; itemIndex++)
-                        amount += payload.Items[itemIndex].Amount;
-                    if (amount != 0L)
-                        message.Append(" localExperience=").Append(amount);
-                }
-
-                if (AIBrainService.TryGetState(host.EntityId, out AIBrainRuntimeState aiState))
-                {
-                    AIBrainNodeRuntimeState node = aiState.ActiveNode;
-                    message.Append(" ai=")
-                        .Append(aiState.ActiveBrain == null ? "<null>" : aiState.ActiveBrain.Id)
-                        .Append(" state=")
-                        .Append(node == null || node.CurrentState == null
-                            ? "<null>"
-                            : node.CurrentState.Id)
-                        .Append(" completed=")
-                        .Append(node != null && node.CurrentStateIsCompleted)
-                        .Append(" result=")
-                        .Append(node == null ? "<none>" : node.CurrentStateResultType.ToString())
-                        .Append(" message=")
-                        .Append(node == null || string.IsNullOrWhiteSpace(node.CurrentStateResultMessage)
-                            ? "<null>"
-                            : node.CurrentStateResultMessage);
-
-                    foreach (KeyValuePair<TaxonomyTermData, AIBrainTargetControlData> target
-                             in aiState.TargetControls)
-                    {
-                        if (target.Key == null || !target.Value.SelectedTargetEntityId.IsValid)
-                            continue;
-                        message.Append(" target[")
-                            .Append(target.Key.Id)
-                            .Append("]=")
-                            .Append(target.Value.SelectedTargetEntityId.Value);
-                    }
-                }
-
-                message.AppendLine();
-            }
-
-            CapabilityHostSnapshot? collector = hosts
-                .Where(host => host.Definition != null
-                    && host.Definition.Matches(collectorDefinition))
-                .Cast<CapabilityHostSnapshot?>()
-                .FirstOrDefault();
-            List<CapabilityHostSnapshot> drops = hosts
-                .Where(host => host.Definition != null
-                    && host.Definition.Matches(experienceDropDefinition))
-                .ToList();
-            message.Append("CollectorTargetEligibility collector=")
-                .Append(collector.HasValue ? collector.Value.EntityId.Value.ToString() : "<missing>")
-                .Append(" owner=")
-                .Append(collector.HasValue && collector.Value.Owner != null
-                    ? collector.Value.Owner.StableSimulationKey
-                    : "<null>")
-                .Append(" tags=");
-            AppendTargetTags(message, collector.HasValue ? collector.Value.EntityId : default);
-            message.AppendLine();
-
-            for (int dropIndex = 0; dropIndex < drops.Count; dropIndex++)
-            {
-                CapabilityHostSnapshot drop = drops[dropIndex];
-                message.Append("  Drop entity=")
-                    .Append(drop.EntityId.Value)
-                    .Append(" owner=")
-                    .Append(drop.Owner == null ? "<null>" : drop.Owner.StableSimulationKey)
-                    .Append(" entityExists=")
-                    .Append(Core.Entities.EntityService.Exists(drop.EntityId))
-                    .Append(" hostExists=")
-                    .Append(CapabilityHostService.Exists(drop.EntityId))
-                    .Append(" tags=");
-                AppendTargetTags(message, drop.EntityId);
-                message.Append(" relation=");
-
-                if (collector.HasValue
-                    && DiplomacyService.TryGetRelation(
-                        autobattle.Id,
-                        collector.Value.EntityId,
-                        drop.EntityId,
-                        DiplomacyChannelType.Military,
-                        out DiplomacyRelationSnapshot relation))
-                {
-                    message.Append(relation.Disposition)
-                        .Append(" score=")
-                        .Append(relation.Score)
-                        .Append(" from=")
-                        .Append(relation.FromAffiliation.ToString())
-                        .Append(" to=")
-                        .Append(relation.ToAffiliation.ToString());
-                }
-                else
-                {
-                    message.Append("<unavailable>");
-                }
-
-                message.Append(" eligibility=");
-                if (collector.HasValue
-                    && TryEvaluateCollectorTarget(
-                        autobattle.Id,
-                        collector.Value.EntityId,
-                        drop.EntityId,
-                        out string eligibility))
-                {
-                    message.Append(eligibility);
-                }
-                else
-                {
-                    message.Append("<diagnostic-unavailable>");
-                }
-
-                message.AppendLine();
-            }
-        }
-
-        static bool TryEvaluateCollectorTarget(
-            ActivityId activityId,
-            Core.Entities.EntityId collectorEntityId,
-            Core.Entities.EntityId dropEntityId,
-            out string result)
-        {
-            result = null;
-            if (!AIBrainService.TryGetState(
-                    collectorEntityId,
-                    out AIBrainRuntimeState collectorState)
-                || collectorState?.ActiveBrain == null)
-            {
-                return false;
-            }
-
-            SelectActivityTargetAIBrainActionData selector = collectorState.ActiveBrain.Nodes
-                .SelectMany(node => node.States)
-                .SelectMany(state => state.OnEnterActions)
-                .OfType<SelectActivityTargetAIBrainActionData>()
-                .FirstOrDefault();
-            if (selector == null)
-                return false;
-
-            MethodInfo createPolicy = typeof(SelectActivityTargetAIBrainActionData).GetMethod(
-                "CreateEligibilityPolicy",
-                BindingFlags.Instance | BindingFlags.NonPublic);
-            System.Type utilityType = typeof(AIBrainService).Assembly.GetType(
-                "Core.AI.AIBrainTargetEligibilityUtility");
-            MethodInfo evaluate = utilityType?.GetMethod(
-                "TryEvaluateTarget",
-                BindingFlags.Static | BindingFlags.Public);
-            if (createPolicy == null || evaluate == null)
-                return false;
-
-            var policy = createPolicy.Invoke(selector, null) as AIBrainTargetEligibilityPolicy;
-            if (policy == null)
-                return false;
-
-            object[] arguments =
-            {
-                activityId,
-                collectorEntityId,
-                dropEntityId,
-                policy,
-                null,
-            };
-            try
-            {
-                bool eligible = (bool)evaluate.Invoke(null, arguments);
-                result = eligible
-                    ? "eligible"
-                    : arguments[4] as string ?? "rejected without reason";
-                return true;
-            }
-            catch (TargetInvocationException exception)
-            {
-                result = string.Concat(
-                    "diagnostic threw ",
-                    exception.InnerException?.GetType().Name ?? exception.GetType().Name,
-                    ": ",
-                    exception.InnerException?.Message ?? exception.Message);
-                return true;
-            }
         }
 
         static void AppendTargetTags(StringBuilder message, Core.Entities.EntityId entityId)
@@ -2409,82 +1584,6 @@ namespace ChainRush.Tests.PlayMode
             Assert.AreEqual(controlType, participant.ControlType);
         }
 
-        sealed class DropMaterializationCapture : IEventListener<DropResultEvent>
-        {
-            readonly ActivityId _activityId;
-            readonly HashSet<int> _expectedSourceValues;
-            readonly HashSet<int> _terminalSourceValues = new HashSet<int>();
-            readonly HashSet<int> _backedSourceValues = new HashSet<int>();
-            readonly CapabilityHostData _expectedDefinition;
-
-            public DropMaterializationCapture(
-                ActivityId activityId,
-                IReadOnlyList<Core.Entities.EntityId> sourceEntityIds,
-                CapabilityHostData expectedDefinition)
-            {
-                _activityId = activityId;
-                _expectedSourceValues = new HashSet<int>();
-                for (int i = 0; sourceEntityIds != null && i < sourceEntityIds.Count; i++)
-                    _expectedSourceValues.Add(sourceEntityIds[i].Value);
-                _expectedDefinition = expectedDefinition;
-            }
-
-            public bool HasTerminalResult =>
-                _terminalSourceValues.Count == _expectedSourceValues.Count;
-            public bool HasBackedExperienceDrop =>
-                _backedSourceValues.Count == _expectedSourceValues.Count;
-            public DropResultType ResultType { get; private set; } = DropResultType.Completed;
-            public string Failure { get; private set; }
-
-            public void OnEvent(DropResultEvent e)
-            {
-                if (e.ActivityId != _activityId
-                    || !_expectedSourceValues.Contains(e.SourceEntityId.Value)
-                    || !_terminalSourceValues.Add(e.SourceEntityId.Value))
-                {
-                    return;
-                }
-
-                if (e.ResultType != DropResultType.Completed)
-                {
-                    ResultType = e.ResultType;
-                    Failure = e.Failure;
-                    return;
-                }
-                if (e.MaterializedEntityIds == null || e.MaterializedEntityIds.Count == 0)
-                {
-                    ResultType = DropResultType.Rejected;
-                    Failure = "Completed Drop result contains no materialized entities.";
-                    return;
-                }
-
-                for (int i = 0; i < e.MaterializedEntityIds.Count; i++)
-                {
-                    Core.Entities.EntityId entityId = e.MaterializedEntityIds[i];
-                    if (!CapabilityHostService.TryGet(entityId, out CapabilityHostSnapshot host)
-                        || host.ActivityId != _activityId
-                        || host.Definition == null
-                        || !host.Definition.Matches(_expectedDefinition))
-                    {
-                        ResultType = DropResultType.Rejected;
-                        Failure = "Drop result does not reference the expected materialized ExperienceDrop.";
-                        return;
-                    }
-                    if (!ActivityService.TryGetMaterializedEntityTokenHandle(
-                            _activityId,
-                            entityId,
-                            out EconomyEntryHandle handle)
-                        || !handle.IsValid)
-                    {
-                        ResultType = DropResultType.Rejected;
-                        Failure = "Materialized ExperienceDrop has no backing Economy Token.";
-                        return;
-                    }
-                }
-
-                _backedSourceValues.Add(e.SourceEntityId.Value);
-            }
-        }
 
         sealed class SelectionResultCapture : IEventListener<SelectionResultEvent>
         {

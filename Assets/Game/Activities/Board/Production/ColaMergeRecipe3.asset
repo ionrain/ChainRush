@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85e184825c3ab43e5a64ac84b7ab1ba9, type: 3}
+  m_Name: ColaMergeRecipe3
+  m_EditorClassIdentifier: Core::Core.Production.Authoring.ProductionRecipeData
+  domainTypePreview: 9
+  id: chainrush.production.board.merge.cola.3
+  title:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  description:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  icon: {fileID: 0}
+  precision: 0
+  allowedOperations: 3
+  tags: []
+  slotFootprint: 1
+  stackCapacity: 0
+  inputs:
+  - operation: 4
+    asset: {fileID: 11400000, guid: 3c69c74b28eea44aa87c88015c1871a3, type: 2}
+    formType: 1
+    walletTags:
+    - {fileID: 11400000, guid: 9cbb4f47a974c42cfa008dda55386302, type: 2}
+    requiredRuntimeTags:
+    - {fileID: 11400000, guid: a18044d5476ae485296043e6e5ba431f, type: 2}
+    amountProgression:
+      rid: 6092003862744662136
+  outputs:
+  - asset: {fileID: 11400000, guid: b4a4c433485254435b271353bd9448f0, type: 2}
+    formType: 0
+    walletTags:
+    - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
+    amountProgression:
+      rid: 6092003862744662137
+  limitMode: 0
+  capValue: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: 6092003862744662136
+      type: {class: LongFlatProgressionData, ns: Core, asm: Core}
+      data:
+        value: 3
+    - rid: 6092003862744662137
+      type: {class: LongFlatProgressionData, ns: Core, asm: Core}
+      data:
+        value: 1

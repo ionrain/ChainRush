@@ -25,7 +25,7 @@ using FrameworkResourceData = Core.Economy.Modules.ResourceEconomyModule.Resourc
 
 namespace ChainRush.Editor
 {
-    public static class ChainRushBoardPlannerAuthoring
+    public static partial class ChainRushBoardPlannerAuthoring
     {
         const string AutobattleRoot = "Assets/Game/Activities/Autobattle";
         const string BoardRoot = "Assets/Game/Activities/Board";
@@ -48,18 +48,11 @@ namespace ChainRush.Editor
         const string WaterTagPath = BoardRoot + "/Taxonomy/WaterBoardItem.asset";
         const string BoardCellTagPath = BoardRoot + "/Taxonomy/BoardCellTag.asset";
         const string BoardItemFamilyPath = BoardRoot + "/Taxonomy/BoardItemFamily.asset";
-        const string MergeSelectionTypePath = BoardRoot + "/Taxonomy/BoardMergeSelection.asset";
         const string MergeSelectedTagPath = BoardRoot + "/Taxonomy/BoardMergeSelected.asset";
-        const string MergeRecipe4Path = BoardRoot + "/Production/BoardMergeRecipe4.asset";
-        const string MergeRecipe3Path = BoardRoot + "/Production/BoardMergeRecipe3.asset";
-        const string MergeRecipe2Path = BoardRoot + "/Production/BoardMergeRecipe2.asset";
         const string MergeRecipe1Path = BoardRoot + "/Production/BoardMergeRecipe1.asset";
-        const string MergeProductionPath = BoardRoot + "/Production/BoardProduction.asset";
         const string MergeCatalogPath = BoardRoot + "/Production/BoardProductionCatalog.asset";
-        const string BoardUIPrefabPath = BoardRoot + "/UI/BoardUI.prefab";
         const string WaterProjectionPrefabPath =
             BoardRoot + "/Projection/WaterBoardBase.prefab";
-        const string SharedWalletPath = SharedRoot + "/Economy/ActivityWallet.asset";
         const string SharedWalletTagPath = SharedRoot + "/Economy/ActivityWalletTag.asset";
         const string ExperiencePath = SharedRoot + "/Economy/Experience.asset";
         const string ExperienceToTurnTokenRecipePath =
@@ -93,24 +86,14 @@ namespace ChainRush.Editor
         const string ProductionYieldOperatorPath = OrchestrationTaxonomyRoot + "/BoardProductionYieldOperator.asset";
         const string ProductionAvailableOperatorPath = OrchestrationTaxonomyRoot + "/BoardProductionAvailableOperator.asset";
         const string MaterializedProductionOperatorPath = OrchestrationTaxonomyRoot + "/BoardMaterializedProductionOperator.asset";
-        const string SelectionAgentOperatorPath = OrchestrationTaxonomyRoot + "/BoardSelectionAgentOperator.asset";
-        const string ProductionInputOperatorPath = OrchestrationTaxonomyRoot + "/BoardProductionInputOperator.asset";
         const string EconomyStateModulePath = OrchestrationModulesRoot + "/BoardEconomyState.asset";
         const string ProductionStateModulePath = OrchestrationModulesRoot + "/BoardProductionState.asset";
         const string ProjectionStateModulePath = OrchestrationModulesRoot + "/BoardProjectionState.asset";
         const string BrainPath = OrchestrationRoot + "/BoardBrain.asset";
         const string OrchestrationPath = OrchestrationRoot + "/BoardOrchestration.asset";
 
-        const string RuntimeProfilePath = "Assets/Game/Runtime/Host/ChainRushGameRuntimeProfile.asset";
         const string EconomyDefinitionsInstallerPath = "Assets/Game/Runtime/Installers/ChainRushEconomyDefinitionsInstaller.asset";
-        const string EconomyRuntimeInstallerPath = "Assets/Game/Runtime/Installers/ChainRushEconomyRuntimeInstaller.asset";
         const string TaxonomyInstallerPath = "Assets/Game/Runtime/Installers/ChainRushTaxonomyRuntimeInstaller.asset";
-        const string FoundationInstallerPath = "Assets/Game/Runtime/Installers/ChainRushGameplayFoundationInstaller.asset";
-        const string ProductionInstallerPath = "Assets/Game/Runtime/Installers/ChainRushProductionRuntimeInstaller.asset";
-        const string ProjectionInstallerPath = "Assets/Game/Runtime/Installers/ChainRushProjectionRuntimeInstaller.asset";
-
-        const string UpgradedAssetPath = BoardRoot + "/Economy/WaterBoardUpgraded.asset";
-        const string UpgradedPrefabPath = BoardRoot + "/Projection/WaterBoardUpgraded.prefab";
 
         static readonly string[] VerticalSliceCreatedPaths =
         {
@@ -251,215 +234,6 @@ namespace ChainRush.Editor
             }
         }
 
-        [MenuItem("ChainRush/Activities/Board/Complete Vertical Slice Wiring")]
-        public static void CompleteVerticalSliceWiring()
-        {
-            FrameworkResourceData turnToken = LoadRequired<FrameworkResourceData>(TurnTokenPath);
-            CapabilityHostData waterUnit = LoadRequired<CapabilityHostData>(WaterUnitPath);
-            CapabilityHostData populationProducer = LoadRequired<CapabilityHostData>(PopulationProducerPath);
-            CapabilityHostData boardHost = LoadRequired<CapabilityHostData>(BoardHostPath);
-            AgentDefinitionData populationAgent =
-                LoadRequired<AgentDefinitionData>(PopulationAgentPath);
-            ProductionRecipeData waterRecipe = LoadRequired<ProductionRecipeData>(WaterRecipePath);
-            ProductionData populationProduction = LoadRequired<ProductionData>(PopulationProductionPath);
-            EconomyWalletData boardWallet = LoadRequired<EconomyWalletData>(BoardWalletPath);
-            TaxonomyTermData boardWalletTag = LoadRequired<TaxonomyTermData>(BoardWalletTagPath);
-            TaxonomyTermData sharedWalletTag = LoadRequired<TaxonomyTermData>(SharedWalletTagPath);
-            CapabilityHostData water = LoadRequired<CapabilityHostData>(WaterPath);
-            TaxonomyFamilyData operatorFamily = LoadRequired<TaxonomyFamilyData>(OperatorFamilyPath);
-            TaxonomyTermData populationAgentOperator =
-                LoadRequired<TaxonomyTermData>(PopulationAgentOperatorPath);
-            AgentDefinitionData selectionAgent =
-                LoadRequired<AgentDefinitionData>(SelectionAgentPath);
-            TaxonomyTermData selectionAgentOperator =
-                LoadRequired<TaxonomyTermData>(SelectionAgentOperatorPath);
-            TaxonomyTermData productionInputOperator =
-                LoadRequired<TaxonomyTermData>(ProductionInputOperatorPath);
-            TaxonomyTermData productionYieldOperator =
-                LoadRequired<TaxonomyTermData>(ProductionYieldOperatorPath);
-            TaxonomyTermData productionAvailableOperator =
-                LoadRequired<TaxonomyTermData>(ProductionAvailableOperatorPath);
-            ProductionStateOrchestrationModuleData productionState =
-                LoadRequired<ProductionStateOrchestrationModuleData>(ProductionStateModulePath);
-            ProjectionStateOrchestrationModuleData projectionState =
-                LoadRequired<ProjectionStateOrchestrationModuleData>(ProjectionStateModulePath);
-            ActivityOrchestrationConfigData orchestration =
-                LoadRequired<ActivityOrchestrationConfigData>(OrchestrationPath);
-            OrchestratorAIBrainData brain = LoadRequired<OrchestratorAIBrainData>(BrainPath);
-
-            EnsureIncompleteVerticalSliceState(
-                turnToken,
-                waterUnit,
-                populationProducer,
-                waterRecipe,
-                operatorFamily,
-                populationAgentOperator,
-                productionYieldOperator,
-                productionAvailableOperator);
-
-            TaxonomyTermData materializedProductionOperator =
-                AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(
-                    MaterializedProductionOperatorPath);
-            if (materializedProductionOperator == null)
-            {
-                if (AssetDatabase.LoadMainAssetAtPath(MaterializedProductionOperatorPath) != null)
-                {
-                    throw new InvalidOperationException(
-                        $"Asset at '{MaterializedProductionOperatorPath}' is not a TaxonomyTermData.");
-                }
-
-                materializedProductionOperator = ScriptableObject.CreateInstance<TaxonomyTermData>();
-                materializedProductionOperator.name = "BoardMaterializedProductionOperator";
-                AssetDatabase.CreateAsset(
-                    materializedProductionOperator,
-                    MaterializedProductionOperatorPath);
-            }
-
-            EconomyStateOrchestrationModuleData economyState =
-                AssetDatabase.LoadAssetAtPath<EconomyStateOrchestrationModuleData>(
-                    EconomyStateModulePath);
-            if (economyState == null)
-            {
-                if (AssetDatabase.LoadMainAssetAtPath(EconomyStateModulePath) != null)
-                {
-                    throw new InvalidOperationException(
-                        $"Asset at '{EconomyStateModulePath}' is not an EconomyStateOrchestrationModuleData.");
-                }
-
-                economyState = ScriptableObject.CreateInstance<EconomyStateOrchestrationModuleData>();
-                economyState.name = "BoardEconomyState";
-                AssetDatabase.CreateAsset(economyState, EconomyStateModulePath);
-            }
-            ConfigureOrchestrationModules(
-                orchestration,
-                economyState,
-                productionState,
-                projectionState);
-
-            ConfigureEconomyAsset(
-                turnToken,
-                "chainrush.resource.board-turn-token",
-                EconomyOperation.Require | EconomyOperation.Issue | EconomyOperation.Consume);
-            ConfigureEconomyAsset(
-                waterUnit,
-                "chainrush.unit.water",
-                EconomyOperation.Require
-                | EconomyOperation.Issue
-                | EconomyOperation.Consume
-                | EconomyOperation.Transfer
-                | EconomyOperation.Destroy);
-            SetField(waterUnit, "capabilities", new List<CapabilityEntry>(0));
-            SetField(waterUnit, "walletEntries", new List<WalletEntry>(0));
-            EditorUtility.SetDirty(waterUnit);
-
-            ConfigureEconomyAsset(
-                populationProducer,
-                "chainrush.board.population-producer",
-                EconomyOperation.Require
-                | EconomyOperation.Issue
-                | EconomyOperation.Consume
-                | EconomyOperation.Transfer
-                | EconomyOperation.Destroy);
-            SetField(
-                populationProducer,
-                "capabilities",
-                new List<CapabilityEntry>
-                {
-                    CreateCapabilityEntry(CapabilityHostType.ProductionOwner),
-                });
-            SetField(
-                populationProducer,
-                "walletEntries",
-                new List<WalletEntry>
-                {
-                    new WalletEntry(
-                        boardWallet,
-                        new List<SeedEntry>
-                        {
-                            new SeedEntry(populationProduction, 1L, EconomyFormType.Stack),
-                        }),
-                });
-            EditorUtility.SetDirty(populationProducer);
-
-            ConfigureEconomyAsset(
-                waterRecipe,
-                "chainrush.production.board.water-base.recipe",
-                EconomyOperation.Require | EconomyOperation.Issue);
-            ConfigureWaterRecipe(waterRecipe, water, boardWalletTag);
-
-            ConfigureTaxonomyFamily(
-                operatorFamily,
-                "chainrush.orchestration.board.operator",
-                "ChainRush Board Operator");
-            ConfigureTaxonomyTerm(
-                populationAgentOperator,
-                "chainrush.orchestration.board.agent.population",
-                "Board Population Agent",
-                operatorFamily,
-                0);
-            ConfigureTaxonomyTerm(
-                productionYieldOperator,
-                "chainrush.orchestration.board.production-yield",
-                "Board Production Yield",
-                operatorFamily,
-                2);
-            ConfigureTaxonomyTerm(
-                productionAvailableOperator,
-                "chainrush.orchestration.board.production-available",
-                "Board Production Available",
-                operatorFamily,
-                3);
-            ConfigureTaxonomyTerm(
-                materializedProductionOperator,
-                "chainrush.orchestration.board.production-materialized",
-                "Board Materialized Production",
-                operatorFamily,
-                4);
-            ConfigurePopulationAgentExecutor(populationAgent, boardHost);
-            ConfigureSelectionBrain(
-                brain,
-                populationAgent,
-                selectionAgent,
-                populationAgentOperator,
-                selectionAgentOperator,
-                productionInputOperator,
-                productionYieldOperator,
-                productionAvailableOperator,
-                materializedProductionOperator);
-
-            TaxonomyRuntimeInstallerData taxonomyInstaller =
-                LoadRequired<TaxonomyRuntimeInstallerData>(TaxonomyInstallerPath);
-            var taxonomyTerms = new List<TaxonomyTermData>(
-                GetField<TaxonomyTermData[]>(taxonomyInstaller, "terms")
-                ?? new TaxonomyTermData[0]);
-            AddUnique(taxonomyTerms, materializedProductionOperator);
-            SetField(taxonomyInstaller, "terms", taxonomyTerms.ToArray());
-            EditorUtility.SetDirty(taxonomyInstaller);
-
-            EnsureCompletedVerticalSliceState(
-                turnToken,
-                waterUnit,
-                populationProducer,
-                waterRecipe,
-                operatorFamily,
-                populationAgentOperator,
-                productionYieldOperator,
-                productionAvailableOperator,
-                materializedProductionOperator);
-            EnsureOrchestrationModules(
-                orchestration,
-                economyState,
-                productionState,
-                projectionState);
-            EnsurePopulationAgentExecutor(populationAgent, boardHost);
-
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-            Selection.activeObject = populationProducer;
-            EditorGUIUtility.PingObject(populationProducer);
-            Debug.Log("[ChainRush] Board vertical slice incomplete assets were completed without changing GUIDs.");
-        }
-
         [MenuItem("ChainRush/Activities/Board/Apply Materialization Endpoint Wiring")]
         public static void ApplyMaterializationEndpointWiring()
         {
@@ -567,123 +341,19 @@ namespace ChainRush.Editor
             EditorUtility.SetDirty(recipe);
         }
 
-        static void ConfigureWaterRecipe(
+        static void ConfigureCellRecipe(
             ProductionRecipeData recipe,
-            CapabilityHostData water,
+            CapabilityHostData cell,
             TaxonomyTermData boardWalletTag)
         {
             recipe.Inputs.Clear();
             recipe.Outputs.Clear();
             recipe.Outputs.Add(new ProductionOutputData(
-                water,
+                cell,
                 EconomyFormType.Token,
                 new List<TaxonomyTermData> { boardWalletTag },
                 new LongFlatProgressionData(1L)));
             EditorUtility.SetDirty(recipe);
-        }
-
-        static ProductionRecipeData CreateMergeRecipe(
-            string path,
-            string name,
-            string id,
-            long selectedAmount,
-            CapabilityHostData water,
-            CapabilityHostData waterUnit,
-            TaxonomyTermData boardWalletTag,
-            TaxonomyTermData sharedWalletTag,
-            TaxonomyTermData selectedTag,
-            List<string> createdPaths)
-        {
-            ProductionRecipeData recipe = CreateEconomyAsset<ProductionRecipeData>(
-                path,
-                name,
-                id,
-                EconomyOperation.Require | EconomyOperation.Issue,
-                createdPaths);
-            recipe.Inputs.Clear();
-            recipe.Inputs.Add(new ProductionInputData(
-                EconomyOperation.Consume,
-                water,
-                EconomyFormType.Token,
-                new List<TaxonomyTermData> { boardWalletTag },
-                new List<TaxonomyTermData> { selectedTag },
-                new LongFlatProgressionData(selectedAmount)));
-            recipe.Outputs.Clear();
-            recipe.Outputs.Add(new ProductionOutputData(
-                waterUnit,
-                EconomyFormType.Stack,
-                new List<TaxonomyTermData> { sharedWalletTag },
-                new LongFlatProgressionData(1L)));
-            EditorUtility.SetDirty(recipe);
-            return recipe;
-        }
-
-        static ObjectiveTemplateData CreateSelectionObjective(
-            TaxonomyTermData requestType,
-            List<string> createdPaths)
-        {
-            var root = new ObjectiveNode(
-                "board-selection",
-                null,
-                new List<ObjectiveCondition>
-                {
-                    new ObjectiveConditionSelectionRequest(
-                        requestType,
-                        1L,
-                        CompareOperation.GreaterOrEqual),
-                },
-                new List<ObjectiveCondition>
-                {
-                    new ObjectiveConditionSelectionRequest(
-                        requestType,
-                        0L,
-                        CompareOperation.Equal),
-                },
-                new List<ObjectiveCondition>(0));
-            ObjectiveTemplateData objective = ScriptableObject.CreateInstance<ObjectiveTemplateData>();
-            objective.name = "BoardSelectionObjective";
-            SetField(objective, "root", root);
-            SetField(objective, "completionPolicyType", ObjectiveCompletionPolicyType.Reset);
-            AssetDatabase.CreateAsset(objective, SelectionObjectivePath);
-            createdPaths.Add(SelectionObjectivePath);
-            return objective;
-        }
-
-        static ObjectiveTemplateData CreateMergeObjective(
-            CapabilityHostData water,
-            TaxonomyTermData boardWalletTag,
-            TaxonomyTermData selectedTag,
-            List<string> createdPaths)
-        {
-            var root = new ObjectiveNode(
-                "board-merge",
-                null,
-                new List<ObjectiveCondition>
-                {
-                    CreateSelectedEconomyCondition(
-                        water,
-                        boardWalletTag,
-                        selectedTag,
-                        1L,
-                        CompareOperation.GreaterOrEqual),
-                },
-                new List<ObjectiveCondition>
-                {
-                    CreateSelectedEconomyCondition(
-                        water,
-                        boardWalletTag,
-                        selectedTag,
-                        0L,
-                        CompareOperation.Equal),
-                },
-                new List<ObjectiveCondition>(0));
-            ObjectiveTemplateData objective = ScriptableObject.CreateInstance<ObjectiveTemplateData>();
-            objective.name = "BoardMergeObjective";
-            SetField(objective, "root", root);
-            SetField(objective, "completionPolicyType", ObjectiveCompletionPolicyType.Reset);
-            AssetDatabase.CreateAsset(objective, MergeObjectivePath);
-            createdPaths.Add(MergeObjectivePath);
-            return objective;
         }
 
         static ObjectiveConditionEconomyMetric CreateSelectedEconomyCondition(
@@ -701,83 +371,6 @@ namespace ChainRush.Editor
                 compareOperation,
                 null,
                 new List<TaxonomyTermData> { selectedTag });
-        }
-
-        static AgentDefinitionData CreateSelectionAgent(
-            CapabilityHostData boardHost,
-            TaxonomyTermData waterTag,
-            TaxonomyTermData requestType,
-            TaxonomyTermData selectedTag,
-            List<string> createdPaths)
-        {
-            var agentData = new SelectionAgentData();
-            SetField(
-                agentData,
-                "resultTags",
-                new List<TaxonomyTermData> { selectedTag });
-
-            AgentDefinitionData definition = CreateAgentDefinition(
-                SelectionAgentPath,
-                "BoardSelectionAgent",
-                "board-selection",
-                110,
-                new List<ObjectiveCondition>
-                {
-                    new ObjectiveConditionSelectionRequest(
-                        requestType,
-                        0L,
-                        CompareOperation.Equal),
-                },
-                new List<EntityCriterionEntryData>
-                {
-                    Required(CreateCapabilityHostCriterion(boardHost, null)),
-                    Required(CreateOwnerCriterion()),
-                },
-                new List<EntityCriterionEntryData>
-                {
-                    Required(CreateCapabilityHostCriterion(
-                        null,
-                        null,
-                        new List<TaxonomyTermData> { waterTag })),
-                    Required(CreateOwnerCriterion()),
-                    Required(CreateAssetCountCriterion()),
-                    Required(CreateSegmentLengthCriterion(1000, 1000)),
-                },
-                agentData,
-                createdPaths);
-            SetField(
-                definition,
-                "stopPolicyType",
-                AgentStopPolicyType.None);
-            return definition;
-        }
-
-        static void ConfigureSelectionBoardHost(
-            CapabilityHostData boardHost,
-            EconomyWalletData boardWallet,
-            ProductionData mergeProduction)
-        {
-            SetField(
-                boardHost,
-                "capabilities",
-                new List<CapabilityEntry>
-                {
-                    CreateCapabilityEntry(CapabilityHostType.SelectionOwner),
-                    CreateCapabilityEntry(CapabilityHostType.ProductionOwner),
-                });
-            SetField(
-                boardHost,
-                "walletEntries",
-                new List<WalletEntry>
-                {
-                    new WalletEntry(
-                        boardWallet,
-                        new List<SeedEntry>
-                        {
-                            new SeedEntry(mergeProduction, 1L, EconomyFormType.Stack),
-                        }),
-                });
-            EditorUtility.SetDirty(boardHost);
         }
 
         static void ConfigureCatalog(
@@ -812,15 +405,6 @@ namespace ChainRush.Editor
             EditorUtility.SetDirty(production);
         }
 
-        static void ConfigureBoardWater(
-            CapabilityHostData water,
-            TaxonomyTermData waterTag)
-        {
-            water.Tags.Clear();
-            water.Tags.Add(waterTag);
-            EditorUtility.SetDirty(water);
-        }
-
         static void ConfigureAddressable(string assetPath, string groupName)
         {
             AddressableAssetSettings settings = AddressableAssetSettingsDefaultObject.Settings;
@@ -851,7 +435,7 @@ namespace ChainRush.Editor
         {
             var turn = LoadRequired<FrameworkResourceData>(TurnTokenPath);
             var wallet = LoadRequired<TaxonomyTermData>(SharedWalletTagPath);
-            var water = LoadRequired<CapabilityHostData>(WaterPath);
+            var itemTag = LoadRequired<TaxonomyTermData>(BoardContentTagPath);
 
             var agent = LoadRequired<AgentDefinitionData>(PopulationAgentPath);
             var population = new PopulationAgentData();
@@ -868,7 +452,7 @@ namespace ChainRush.Editor
             EditorUtility.SetDirty(agent);
 
             var objective = LoadRequired<ObjectiveTemplateData>(PopulationObjectivePath);
-            ConfigurePopulationObjective(objective, turn, wallet, water,
+            ConfigurePopulationObjective(objective, turn, wallet, itemTag,
                 LoadRequired<TaxonomyTermData>(BoardWalletTagPath),
                 LoadRequired<TaxonomyTermData>(MergeSelectedTagPath),
                 LoadRequired<TaxonomyTermData>(BoardCellTagPath));
@@ -904,7 +488,7 @@ namespace ChainRush.Editor
             EditorUtility.SetDirty(agent);
             ConfigurePopulationObjective(LoadRequired<ObjectiveTemplateData>(PopulationObjectivePath),
                 LoadRequired<FrameworkResourceData>(TurnTokenPath), LoadRequired<TaxonomyTermData>(SharedWalletTagPath),
-                LoadRequired<CapabilityHostData>(WaterPath), LoadRequired<TaxonomyTermData>(BoardWalletTagPath),
+                LoadRequired<TaxonomyTermData>(BoardContentTagPath), LoadRequired<TaxonomyTermData>(BoardWalletTagPath),
                 LoadRequired<TaxonomyTermData>(MergeSelectedTagPath), tag);
             ConfigurePopulationDecision();
             AssetDatabase.SaveAssets();
@@ -931,7 +515,7 @@ namespace ChainRush.Editor
             ObjectiveTemplateData objective,
             EconomyAssetData turnToken,
             TaxonomyTermData sharedWalletTag,
-            CapabilityHostData water,
+            TaxonomyTermData itemTag,
             TaxonomyTermData boardWalletTag,
             TaxonomyTermData selectedTag,
             TaxonomyTermData boardCellTag)
@@ -953,17 +537,19 @@ namespace ChainRush.Editor
                 },
                 new List<ObjectiveCondition>
                 {
-                    new ObjectiveConditionMaterializedRegionCoverage(water, EconomyFormType.Token,
-                        null, null, CreateBoardRegionQuery(boardCellTag), 0L, CompareOperation.Equal)
+                    new ObjectiveConditionMaterializedRegionCoverage(null, EconomyFormType.Token,
+                        new List<TaxonomyTermData> { itemTag }, null, CreateBoardRegionQuery(boardCellTag), 0L, CompareOperation.Equal)
                 });
             var root = new ObjectiveNode("chainrush-board-population", null,
                 new List<ObjectiveCondition>
                 {
                     new ObjectiveConditionEconomyMetric(new List<TaxonomyTermData> { sharedWalletTag },
                         EconomyFormType.Stack, turnToken, 1L, CompareOperation.GreaterOrEqual, null, null),
-                    CreateSelectedEconomyCondition(water, boardWalletTag, selectedTag, 0L, CompareOperation.Equal),
-                    new ObjectiveConditionMaterializedRegionCoverage(water, EconomyFormType.Token,
-                        null, null, CreateBoardRegionQuery(boardCellTag), 0L, CompareOperation.Greater)
+                    new ObjectiveConditionEconomyMetric(new List<TaxonomyTermData> { boardWalletTag },
+                        EconomyFormType.Token, null, 0L, CompareOperation.Equal,
+                        new List<TaxonomyTermData> { itemTag }, new List<TaxonomyTermData> { selectedTag }),
+                    new ObjectiveConditionMaterializedRegionCoverage(null, EconomyFormType.Token,
+                        new List<TaxonomyTermData> { itemTag }, null, CreateBoardRegionQuery(boardCellTag), 0L, CompareOperation.Greater)
                 },
                 new List<ObjectiveCondition>
                 {
@@ -973,8 +559,8 @@ namespace ChainRush.Editor
             SetField(objective, "completionPolicyType", ObjectiveCompletionPolicyType.ResetOnConditions);
             SetField(objective, "resetConditions", new List<ObjectiveCondition>
             {
-                new ObjectiveConditionMaterializedRegionCoverage(water, EconomyFormType.Token,
-                    null, null, CreateBoardRegionQuery(boardCellTag), 0L, CompareOperation.Greater)
+                new ObjectiveConditionMaterializedRegionCoverage(null, EconomyFormType.Token,
+                    new List<TaxonomyTermData> { itemTag }, null, CreateBoardRegionQuery(boardCellTag), 0L, CompareOperation.Greater)
             });
             EditorUtility.SetDirty(objective);
         }
@@ -1010,9 +596,10 @@ namespace ChainRush.Editor
             var criteria = agent.TargetSelectionCriteria;
             if (criteria.Count != 2
                 || !(criteria[0].Criterion is CapabilityHostCriterionData producer)
-                || producer.Definition != LoadRequired<CapabilityHostData>(PopulationProducerPath)
+                || producer.Definition != null
+                || !producer.RequiredAssetTags.Contains(LoadRequired<TaxonomyTermData>(BoardProducerTagPath))
                 || !(criteria[1].Criterion is OwnerCriterionData))
-                throw new InvalidOperationException("Board Population must select its participant's BoardPopulationProducer.");
+                throw new InvalidOperationException("Board Population must select its participant's tagged cell producers.");
         }
 
         static void ConfigurePopulationDecision()
@@ -1028,16 +615,16 @@ namespace ChainRush.Editor
             EditorUtility.SetDirty(brain);
         }
 
-
         static ObjectiveConditionMaterializedRegionCoverage CreatePopulationCoverage() =>
-            new ObjectiveConditionMaterializedRegionCoverage(LoadRequired<CapabilityHostData>(WaterPath),
-                EconomyFormType.Token, null, null,
+            new ObjectiveConditionMaterializedRegionCoverage(null,
+                EconomyFormType.Token, new List<TaxonomyTermData> { LoadRequired<TaxonomyTermData>(BoardContentTagPath) }, null,
                 CreateBoardRegionQuery(LoadRequired<TaxonomyTermData>(BoardCellTagPath)), 0L, CompareOperation.Equal);
 
         static List<EntityCriterionEntryData> CreatePopulationProducerCriteria() =>
             new List<EntityCriterionEntryData>
             {
-                Required(CreateCapabilityHostCriterion(LoadRequired<CapabilityHostData>(PopulationProducerPath), null)),
+                Required(CreateCapabilityHostCriterion(null, null,
+                    new List<TaxonomyTermData> { LoadRequired<TaxonomyTermData>(BoardProducerTagPath) })),
                 Required(CreateOwnerCriterion())
             };
 
@@ -1069,22 +656,6 @@ namespace ChainRush.Editor
                 new List<TaxonomyTermData> { tag }, null, null, null);
         }
 
-        static void ConfigurePopulationAgentExecutor(
-            AgentDefinitionData populationAgent,
-            CapabilityHostData executorHost)
-        {
-            SetField(
-                populationAgent,
-                "executorSelectionCriteria",
-                new List<EntityCriterionEntryData>
-                {
-                    Required(CreateCapabilityHostCriterion(executorHost, null)),
-                    Required(CreateOwnerCriterion()),
-                });
-            SetField(populationAgent, "targetSelectionCriteria", CreatePopulationProducerCriteria());
-            EditorUtility.SetDirty(populationAgent);
-        }
-
         static void EnsurePopulationAgentExecutor(
             AgentDefinitionData populationAgent,
             CapabilityHostData executorHost)
@@ -1099,35 +670,6 @@ namespace ChainRush.Editor
                 throw new InvalidOperationException(
                     "Board Population Agent must use the Board host as its executor.");
             }
-        }
-
-        static AgentDefinitionData CreateAgentDefinition(
-            string path,
-            string name,
-            string id,
-            int priority,
-            List<ObjectiveCondition> matchConditions,
-            List<EntityCriterionEntryData> executorCriteria,
-            List<EntityCriterionEntryData> targetCriteria,
-            AgentData agent,
-            List<string> createdPaths)
-        {
-            AgentDefinitionData definition = ScriptableObject.CreateInstance<AgentDefinitionData>();
-            definition.name = name;
-            SetField(definition, "agentId", id);
-            SetField(definition, "basePriority", priority);
-            SetField(definition, "updateInterval", 1);
-            SetField(definition, "matchConditions", matchConditions);
-            SetField(definition, "executorSelectionCriteria", executorCriteria);
-            SetField(definition, "targetSelectionCriteria", targetCriteria);
-            SetField(definition, "controlType", AgentControlType.Endpoint);
-            SetField(definition, "agent", agent);
-            SetField(definition, "stopPolicyType", AgentStopPolicyType.None);
-            SetField(definition, "executorBusyPolicyType", AgentExecutorBusyPolicyType.Wait);
-            SetField(definition, "executorReservationPolicyType", ExecutorReservationPolicyType.PerWork);
-            AssetDatabase.CreateAsset(definition, path);
-            createdPaths.Add(path);
-            return definition;
         }
 
         static CapabilityHostCriterionData CreateCapabilityHostCriterion(
@@ -1178,92 +720,6 @@ namespace ChainRush.Editor
             return new EntityCriterionEntryData(CriterionRequirementType.Required, criterion);
         }
 
-        static void ConfigureSelectionBrain(
-            OrchestratorAIBrainData brain,
-            AgentDefinitionData populationAgent,
-            AgentDefinitionData selectionAgent,
-            TaxonomyTermData populationAgentOperator,
-            TaxonomyTermData selectionAgentOperator,
-            TaxonomyTermData productionInputOperator,
-            TaxonomyTermData productionYieldOperator,
-            TaxonomyTermData productionAvailableOperator,
-            TaxonomyTermData materializedProductionOperator)
-        {
-            var populationOperation = new AgentDecompOpData();
-            SetField(populationOperation, "operatorId", populationAgentOperator);
-            SetField(populationOperation, "agentDefinition", populationAgent);
-            var selectionOperation = new AgentDecompOpData();
-            SetField(selectionOperation, "operatorId", selectionAgentOperator);
-            SetField(selectionOperation, "agentDefinition", selectionAgent);
-            var productionInputOperation = new ProductionInputConsumptionDecompOpData();
-            SetField(productionInputOperation, "operatorId", productionInputOperator);
-            var yieldOperation = new ProductionYieldDecompOpData();
-            SetField(yieldOperation, "operatorId", productionYieldOperator);
-            var availableOperation = new ProductionAvailableDecompOpData();
-            SetField(availableOperation, "operatorId", productionAvailableOperator);
-            var materializedProductionOperation = new MaterializedEntityProductionDecompOpData();
-            SetField(materializedProductionOperation, "operatorId", materializedProductionOperator);
-
-            var graph = new OrchestrationDecisionGraphData();
-            SetField(
-                graph,
-                "nodes",
-                new List<OrchestrationDecisionNodeData>
-                {
-                    CreateDecision(
-                        "board-population-agent",
-                        OrchestrationFactType.MaterializedRegionCoverage,
-                        populationAgentOperator,
-                        true,
-                        OrchestrationDecompositionScopeType.GlobalObjective),
-                    CreateDecision(
-                        "board-selection-agent",
-                        OrchestrationFactType.SelectionRequest,
-                        selectionAgentOperator,
-                        true,
-                        OrchestrationDecompositionScopeType.GlobalObjective),
-                    CreateDecision(
-                        "board-production-input",
-                        OrchestrationFactType.EconomyAmount,
-                        productionInputOperator,
-                        false,
-                        OrchestrationDecompositionScopeType.GlobalObjective),
-                    CreateDecision(
-                        "board-materialized-production",
-                        OrchestrationFactType.MaterializedEntity,
-                        materializedProductionOperator,
-                        false,
-                        OrchestrationDecompositionScopeType.GlobalObjective),
-                    CreateDecision(
-                        "board-production-yield",
-                        OrchestrationFactType.ProductionYield,
-                        productionYieldOperator,
-                        false),
-                    CreateDecision(
-                        "board-production-available",
-                        OrchestrationFactType.ProductionAvailable,
-                        productionAvailableOperator,
-                        false),
-                });
-
-            SetField(
-                brain,
-                "operators",
-                new List<OrchestrationDecompOpData>
-                {
-                    populationOperation,
-                    selectionOperation,
-                    productionInputOperation,
-                    yieldOperation,
-                    availableOperation,
-                    materializedProductionOperation,
-                });
-            SetField(brain, "decisionGraph", graph);
-            ConfigureEconomyOperation(brain, LoadRequired<TaxonomyTermData>(EconomyOperationOperatorPath),
-                LoadRequired<FrameworkResourceData>(TurnTokenPath), LoadRequired<TaxonomyTermData>(SharedWalletTagPath));
-            EditorUtility.SetDirty(brain);
-        }
-
         static OrchestrationDecisionData CreateDecision(
             string id,
             OrchestrationFactType factType,
@@ -1290,140 +746,6 @@ namespace ChainRush.Editor
             return decision;
         }
 
-        static ActivityOrchestrationConfigData CreateOrchestration(
-            OrchestratorAIBrainData brain,
-            EconomyStateOrchestrationModuleData economyState,
-            ProductionStateOrchestrationModuleData productionState,
-            ProjectionStateOrchestrationModuleData projectionState,
-            List<string> createdPaths)
-        {
-            ActivityOrchestrationConfigData orchestration =
-                ScriptableObject.CreateInstance<ActivityOrchestrationConfigData>();
-            orchestration.name = "BoardOrchestration";
-            SetField(orchestration, "orchestratorBrain", brain);
-            ConfigureOrchestrationModules(
-                orchestration,
-                economyState,
-                productionState,
-                projectionState);
-            SetField(orchestration, "debugName", "ChainRush Board");
-            AssetDatabase.CreateAsset(orchestration, OrchestrationPath);
-            createdPaths.Add(OrchestrationPath);
-            return orchestration;
-        }
-
-        static void ConfigureBoardActivity(
-            ActivityData activity,
-            EconomyWalletData sharedWallet,
-            EconomyWalletData boardWallet,
-            EconomyAssetData turnToken,
-            CapabilityHostData boardHost,
-            CapabilityHostData populationProducer,
-            ObjectiveTemplateData objective,
-            ActivityOrchestrationConfigData orchestration,
-            TaxonomyTermData boardCellTag,
-            BoardSpatialShapes shapes)
-        {
-            ActivityTeamWalletData sharedWalletData = default;
-            SetStructField(ref sharedWalletData, "wallet", sharedWallet);
-            SetStructField(
-                ref sharedWalletData,
-                "seed",
-                new List<ActivityWalletSeedEntryData>
-                {
-                    new ActivityWalletSeedEntryData(
-                        new SeedEntry(turnToken, 1L, EconomyFormType.Stack),
-                        ActivitySeedMaterializationType.None,
-                        new List<TaxonomyTermData>(0)),
-                });
-
-            ActivityTeamWalletData boardWalletData = default;
-            SetStructField(ref boardWalletData, "wallet", boardWallet);
-            var boardSeed = new List<ActivityWalletSeedEntryData>
-            {
-                new ActivityWalletSeedEntryData(
-                    new SeedEntry(boardHost, 1L, EconomyFormType.Token),
-                    ActivitySeedMaterializationType.NonSpatial,
-                    new List<TaxonomyTermData>(0)),
-                new ActivityWalletSeedEntryData(
-                    new SeedEntry(populationProducer, 1L, EconomyFormType.Token),
-                    ActivitySeedMaterializationType.NonSpatial,
-                    new List<TaxonomyTermData>(0)),
-            };
-            List<SpatialShapeData> availableShapes = shapes.All;
-            for (int i = 0; i < availableShapes.Count; i++)
-            {
-                boardSeed.Add(new ActivityWalletSeedEntryData(
-                    new SeedEntry(availableShapes[i], 1L, EconomyFormType.Stack),
-                    ActivitySeedMaterializationType.None,
-                    new List<TaxonomyTermData>(0)));
-            }
-            SetStructField(
-                ref boardWalletData,
-                "seed",
-                boardSeed);
-
-            ActivityTeamObjectiveData teamObjective = default;
-            SetStructField(ref teamObjective, "template", objective);
-            SetStructField(ref teamObjective, "successScoreDelta", 0);
-            SetStructField(ref teamObjective, "failScoreDelta", 0);
-
-            ActivityTeamData team = activity.Teams[0];
-            SetStructField(
-                ref team,
-                "objectives",
-                new List<ActivityTeamObjectiveData> { teamObjective });
-            SetStructField(
-                ref team,
-                "wallets",
-                new List<ActivityTeamWalletData> { sharedWalletData, boardWalletData });
-            SetStructField(
-                ref team,
-                "features",
-                new List<ActivityFeatureData> { orchestration });
-            activity.Teams[0] = team;
-
-            if (activity.Space == null)
-                throw new InvalidOperationException("BoardActivity requires an Activity space.");
-            if (!(activity.Space is ActivityUISpaceData uiSpace))
-                throw new InvalidOperationException("BoardActivity requires UI space authoring.");
-            var projectionRegion = new SpaceRegionQueryData();
-            SetField(projectionRegion, "scopeType", SpaceRegionScopeType.ActivityRoot);
-            SetField(projectionRegion, "requiredTags", new List<TaxonomyTermData> { boardCellTag });
-            SetField(uiSpace, "projectionRegion", projectionRegion);
-            SetField(
-                activity.Space,
-                "markerProviders",
-                new List<SpatialMarkerProviderData>
-                {
-                    CreateBoardShapeProvider(shapes.BoardPlane, boardCellTag),
-                });
-            EditorUtility.SetDirty(activity);
-        }
-
-        static void ConfigureBoardObjectives(
-            ActivityData activity,
-            ObjectiveTemplateData populationObjective,
-            ObjectiveTemplateData selectionObjective,
-            ObjectiveTemplateData mergeObjective)
-        {
-            if (activity == null || activity.Teams.Count != 1)
-                throw new InvalidOperationException("Board Activity must contain exactly one team.");
-
-            ActivityTeamData team = activity.Teams[0];
-            SetStructField(
-                ref team,
-                "objectives",
-                new List<ActivityTeamObjectiveData>
-                {
-                    CreateTeamObjective(populationObjective),
-                    CreateTeamObjective(selectionObjective),
-                    CreateTeamObjective(mergeObjective),
-                });
-            activity.Teams[0] = team;
-            EditorUtility.SetDirty(activity);
-        }
-
         static ActivityTeamObjectiveData CreateTeamObjective(ObjectiveTemplateData objective)
         {
             ActivityTeamObjectiveData teamObjective = default;
@@ -1431,70 +753,6 @@ namespace ChainRush.Editor
             SetStructField(ref teamObjective, "successScoreDelta", 0);
             SetStructField(ref teamObjective, "failScoreDelta", 0);
             return teamObjective;
-        }
-
-        static void ConfigureOrchestrationModules(
-            ActivityOrchestrationConfigData orchestration,
-            EconomyStateOrchestrationModuleData economyState,
-            ProductionStateOrchestrationModuleData productionState,
-            ProjectionStateOrchestrationModuleData projectionState)
-        {
-            SetField(
-                orchestration,
-                "modules",
-                new List<OrchestrationDomainModuleData>
-                {
-                    economyState,
-                    productionState,
-                    projectionState,
-                });
-            EditorUtility.SetDirty(orchestration);
-        }
-
-        static void EnsureOrchestrationModules(
-            ActivityOrchestrationConfigData orchestration,
-            EconomyStateOrchestrationModuleData economyState,
-            ProductionStateOrchestrationModuleData productionState,
-            ProjectionStateOrchestrationModuleData projectionState)
-        {
-            List<OrchestrationDomainModuleData> modules = orchestration.Modules;
-            if (modules.Count != 3
-                || modules[0] != economyState
-                || modules[1] != productionState
-                || modules[2] != projectionState)
-            {
-                throw new InvalidOperationException(
-                    "Board orchestration must contain Economy, Production, and Projection state modules in authored order.");
-            }
-        }
-
-        static void ConfigureBoardUIPrefab(
-            CapabilityHostData boardHost,
-            TaxonomyTermData selectionRequestType)
-        {
-            GameObject root = PrefabUtility.LoadPrefabContents(BoardUIPrefabPath);
-            try
-            {
-                BoardUIController controller = root.GetComponent<BoardUIController>();
-                if (controller == null)
-                    throw new InvalidOperationException("BoardUI prefab has no BoardUIController.");
-
-                var serialized = new SerializedObject(controller);
-                serialized.FindProperty("boardHostDefinition").objectReferenceValue = boardHost;
-                SerializedProperty requestType = serialized.FindProperty("selectionRequestType");
-                if (requestType == null)
-                {
-                    throw new InvalidOperationException(
-                        "BoardUIController selectionRequestType field is not imported yet.");
-                }
-                requestType.objectReferenceValue = selectionRequestType;
-                serialized.ApplyModifiedPropertiesWithoutUndo();
-                PrefabUtility.SaveAsPrefabAsset(root, BoardUIPrefabPath);
-            }
-            finally
-            {
-                PrefabUtility.UnloadPrefabContents(root);
-            }
         }
 
         static BoardSpatialShapes CreateBoardSpatialShapes(List<string> createdPaths)
@@ -1649,81 +907,6 @@ namespace ChainRush.Editor
             };
         }
 
-        static SpatialShapeProviderData CreateBoardShapeProvider(
-            SpatialShapeData boardPlane,
-            TaxonomyTermData boardCellTag)
-        {
-            var provider = new SpatialShapeProviderData();
-            SetField(provider, "publishMarkers", true);
-            SetField(provider, "regionTags", new List<TaxonomyTermData> { boardCellTag });
-            SetField(provider, "cellTags", new List<TaxonomyTermData>());
-            SetField(provider, "cellMetadata", new List<SpaceRegionCellMetadataData>());
-            SetField(provider, "providerType", boardCellTag);
-            SetField(
-                provider,
-                "usagePolicy",
-                new SpatialMarkerUsagePolicyData(
-                    SpatialMarkerSelectionType.Next,
-                    SpatialMarkerReusePolicyType.ExhaustBeforeReuse));
-            SetField(provider, "shape", boardPlane);
-            SetField(
-                provider,
-                "usage",
-                new SpatialShapeUsageData(
-                    SpatialShapeFillType.Inside,
-                    Vector3Int.zero,
-                    new Vector3Int(4, 1, 4),
-                    Vector3Int.zero,
-                    new Vector3Int(1000, 1, 1000),
-                    Vector3Int.zero));
-            SetField(provider, "markerTags", new List<TaxonomyTermData> { boardCellTag });
-            return provider;
-        }
-
-        static CapabilityHostData CreateCapabilityHost(
-            string path,
-            string name,
-            string id,
-            List<CapabilityEntry> capabilities,
-            List<WalletEntry> walletEntries,
-            List<string> createdPaths)
-        {
-            CapabilityHostData host = CreateEconomyAsset<CapabilityHostData>(
-                path,
-                name,
-                id,
-                EconomyOperation.Require
-                | EconomyOperation.Issue
-                | EconomyOperation.Consume
-                | EconomyOperation.Transfer
-                | EconomyOperation.Destroy,
-                createdPaths);
-            SetField(host, "capabilities", capabilities ?? new List<CapabilityEntry>(0));
-            SetField(host, "walletEntries", walletEntries ?? new List<WalletEntry>(0));
-            EditorUtility.SetDirty(host);
-            return host;
-        }
-
-        static CapabilityEntry CreateCapabilityEntry(CapabilityHostType capabilityType)
-        {
-            var entry = new CapabilityEntry();
-            SetField(entry, "capabilityType", capabilityType);
-            SetField(entry, "selectorTags", new List<TaxonomyTermData>(0));
-            return entry;
-        }
-
-        static TaxonomyFamilyData CreateTaxonomyFamily(
-            string path,
-            string name,
-            string id,
-            string displayName,
-            List<string> createdPaths)
-        {
-            TaxonomyFamilyData family = CreateAsset<TaxonomyFamilyData>(path, name, createdPaths);
-            ConfigureTaxonomyFamily(family, id, displayName);
-            return family;
-        }
-
         static TaxonomyTermData CreateTaxonomyTerm(
             string path,
             string name,
@@ -1762,17 +945,6 @@ namespace ChainRush.Editor
             EditorUtility.SetDirty(asset);
         }
 
-        static void ConfigureTaxonomyFamily(
-            TaxonomyFamilyData family,
-            string id,
-            string displayName)
-        {
-            SetField(family, "id", id);
-            SetField(family, "displayName", displayName);
-            SetField(family, "cardinality", TaxonomyCardinality.Multiple);
-            EditorUtility.SetDirty(family);
-        }
-
         static void ConfigureTaxonomyTerm(
             TaxonomyTermData term,
             string id,
@@ -1809,184 +981,6 @@ namespace ChainRush.Editor
                 if (value != null && !destination.Contains(value))
                     destination.Add(value);
             }
-        }
-
-        static void EnsureVerticalSliceFolders()
-        {
-            EnsureFolder(AgentsRoot);
-            EnsureFolder(ObjectivesRoot);
-            EnsureFolder(OrchestrationRoot);
-            EnsureFolder(OrchestrationModulesRoot);
-            EnsureFolder(OrchestrationTaxonomyRoot);
-            EnsureFolder(SharedUnitsRoot);
-            EnsureFolder(SharedWaterRoot);
-        }
-
-        static void EnsureIncompleteVerticalSliceState(
-            EconomyAssetData turnToken,
-            CapabilityHostData waterUnit,
-            CapabilityHostData populationProducer,
-            ProductionRecipeData waterRecipe,
-            TaxonomyFamilyData operatorFamily,
-            TaxonomyTermData populationAgentOperator,
-            TaxonomyTermData productionYieldOperator,
-            TaxonomyTermData productionAvailableOperator)
-        {
-            bool incomplete = HasEmptyOrExpectedId(
-                    turnToken,
-                    "chainrush.resource.board-turn-token")
-                && HasEmptyOrExpectedId(waterUnit, "chainrush.unit.water")
-                && waterUnit.Capabilities.Count == 0
-                && waterUnit.WalletEntries.Count == 0
-                && HasEmptyOrExpectedId(
-                    populationProducer,
-                    "chainrush.board.population-producer")
-                && (populationProducer.Capabilities.Count == 0
-                    || (populationProducer.Capabilities.Count == 1
-                        && populationProducer.SupportsCapability(CapabilityHostType.ProductionOwner)))
-                && populationProducer.WalletEntries.Count <= 1
-                && HasEmptyOrExpectedId(
-                    waterRecipe,
-                    "chainrush.production.board.water-base.recipe")
-                && waterRecipe.Inputs.Count == 0
-                && waterRecipe.Outputs.Count <= 1
-                && HasEmptyOrExpectedId(
-                    operatorFamily,
-                    "chainrush.orchestration.board.operator")
-                && IsEmptyOrConfiguredTerm(
-                    populationAgentOperator,
-                    "chainrush.orchestration.board.agent.population",
-                    operatorFamily,
-                    0)
-                && IsEmptyOrConfiguredTerm(
-                    productionYieldOperator,
-                    "chainrush.orchestration.board.production-yield",
-                    operatorFamily,
-                    2)
-                && IsEmptyOrConfiguredTerm(
-                    productionAvailableOperator,
-                    "chainrush.orchestration.board.production-available",
-                    operatorFamily,
-                    3);
-            if (!incomplete)
-            {
-                throw new InvalidOperationException(
-                    "Vertical slice assets are not in the exact incomplete state produced by the failed authoring run. Refusing to overwrite them.");
-            }
-        }
-
-        static void EnsureCompletedVerticalSliceState(
-            EconomyAssetData turnToken,
-            CapabilityHostData waterUnit,
-            CapabilityHostData populationProducer,
-            ProductionRecipeData waterRecipe,
-            TaxonomyFamilyData operatorFamily,
-            TaxonomyTermData populationAgentOperator,
-            TaxonomyTermData productionYieldOperator,
-            TaxonomyTermData productionAvailableOperator,
-            TaxonomyTermData materializedProductionOperator)
-        {
-            bool completed = HasId(turnToken, "chainrush.resource.board-turn-token")
-                && HasId(waterUnit, "chainrush.unit.water")
-                && HasId(populationProducer, "chainrush.board.population-producer")
-                && populationProducer.SupportsCapability(CapabilityHostType.ProductionOwner)
-                && populationProducer.WalletEntries.Count == 1
-                && HasId(waterRecipe, "chainrush.production.board.water-base.recipe")
-                && waterRecipe.Inputs.Count == 0
-                && waterRecipe.Outputs.Count == 1
-                && HasId(operatorFamily, "chainrush.orchestration.board.operator")
-                && HasConfiguredTerm(
-                    populationAgentOperator,
-                    "chainrush.orchestration.board.agent.population",
-                    operatorFamily,
-                    0)
-                && HasConfiguredTerm(
-                    productionYieldOperator,
-                    "chainrush.orchestration.board.production-yield",
-                    operatorFamily,
-                    2)
-                && HasConfiguredTerm(
-                    productionAvailableOperator,
-                    "chainrush.orchestration.board.production-available",
-                    operatorFamily,
-                    3)
-                && HasConfiguredTerm(
-                    materializedProductionOperator,
-                    "chainrush.orchestration.board.production-materialized",
-                    operatorFamily,
-                    4);
-            if (!completed)
-            {
-                throw new InvalidOperationException(
-                    "Vertical slice completion did not produce the required recipes, producer, resources, and operator taxonomy.");
-            }
-        }
-
-        static bool IsEmptyOrConfiguredTerm(
-            TaxonomyTermData term,
-            string id,
-            TaxonomyFamilyData family,
-            int sortOrder)
-        {
-            if (term == null)
-                return false;
-
-            string currentId = term.Id;
-            TaxonomyFamilyData currentFamily = GetField<TaxonomyFamilyData>(term, "family");
-            int currentSortOrder = GetField<int>(term, "sortOrder");
-            bool empty = string.IsNullOrWhiteSpace(currentId)
-                && currentFamily == null
-                && currentSortOrder == 0;
-            bool configured = string.Equals(currentId, id, StringComparison.Ordinal)
-                && currentFamily == family
-                && currentSortOrder == sortOrder;
-            return empty || configured;
-        }
-
-        static bool HasConfiguredTerm(
-            TaxonomyTermData term,
-            string id,
-            TaxonomyFamilyData family,
-            int sortOrder)
-        {
-            return HasId(term, id)
-                && GetField<TaxonomyFamilyData>(term, "family") == family
-                && GetField<int>(term, "sortOrder") == sortOrder;
-        }
-
-        static bool HasId(EconomyAssetData asset, string id)
-        {
-            return asset != null && string.Equals(asset.Id, id, StringComparison.Ordinal);
-        }
-
-        static bool HasEmptyOrExpectedId(EconomyAssetData asset, string id)
-        {
-            return asset != null
-                && (string.IsNullOrWhiteSpace(asset.Id)
-                    || string.Equals(asset.Id, id, StringComparison.Ordinal));
-        }
-
-        static bool HasId(TaxonomyFamilyData family, string id)
-        {
-            return family != null && string.Equals(family.Id, id, StringComparison.Ordinal);
-        }
-
-        static bool HasEmptyOrExpectedId(TaxonomyFamilyData family, string id)
-        {
-            return family != null
-                && (string.IsNullOrWhiteSpace(family.Id)
-                    || string.Equals(family.Id, id, StringComparison.Ordinal));
-        }
-
-        static bool HasId(TaxonomyTermData term, string id)
-        {
-            return term != null && string.Equals(term.Id, id, StringComparison.Ordinal);
-        }
-
-        static void EnsureVerticalSliceTargetsDoNotExist()
-        {
-            for (int i = 0; i < VerticalSliceCreatedPaths.Length; i++)
-                EnsureAssetDoesNotExist(VerticalSliceCreatedPaths[i]);
         }
 
         static void EnsureSpatialShapeTargetsDoNotExist()

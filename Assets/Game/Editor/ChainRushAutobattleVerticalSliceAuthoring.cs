@@ -3996,13 +3996,13 @@ namespace ChainRush.Editor
         {
             CapabilityHostData waterBase = LoadRequired<CapabilityHostData>(BoardWaterBasePath);
             ObjectiveConditionMaterializedRegionCoverage condition =
-                ResolveBoardPopulationMarkerCondition();
+                ResolveBoardPopulationCoverageCondition();
             if (condition.EconomyAsset == waterBase)
                 return;
             if (condition.EconomyAsset != null)
             {
                 throw new InvalidOperationException(
-                    "Board Population marker condition references an unexpected occupancy candidate asset.");
+                    "Board Population coverage condition references an unexpected content asset.");
             }
 
             try
@@ -4026,28 +4026,30 @@ namespace ChainRush.Editor
 
         static void ValidateOccupancyConsumerWiring()
         {
+            ChainRushBoardPlannerAuthoring.ValidatePopulationProducerWiring();
             CapabilityHostData waterBase = LoadRequired<CapabilityHostData>(BoardWaterBasePath);
             ObjectiveConditionMaterializedRegionCoverage condition =
-                ResolveBoardPopulationMarkerCondition();
+                ResolveBoardPopulationCoverageCondition();
             if (condition.EconomyAsset != waterBase)
             {
                 throw new InvalidOperationException(
-                    "Board Population marker condition must use WaterBoardBase as its occupancy candidate.");
+                    "Board Population coverage condition must require WaterBoardBase.");
             }
         }
 
-        static ObjectiveConditionMaterializedRegionCoverage ResolveBoardPopulationMarkerCondition()
+        static ObjectiveConditionMaterializedRegionCoverage ResolveBoardPopulationCoverageCondition()
         {
             ObjectiveTemplateData objective =
                 LoadRequired<ObjectiveTemplateData>(BoardPopulationObjectivePath);
-            if (objective.Root == null || objective.Root.SuccessConditions.Count != 1
-                || !(objective.Root.SuccessConditions[0] is ObjectiveConditionMaterializedRegionCoverage condition))
+            if (objective.Root != null && objective.Root.SuccessConditions.Count == 1
+                && objective.Root.SuccessConditions[0] is ObjectiveConditionTargetNodesState stages)
             {
-                throw new InvalidOperationException(
-                    "Board Population Objective does not contain the expected materialized marker coverage success condition.");
+                foreach (ObjectiveNode stage in stages.TargetNodes)
+                    if (stage.Id == "chainrush-board-fill-markers" && stage.SuccessConditions.Count == 1
+                        && stage.SuccessConditions[0] is ObjectiveConditionMaterializedRegionCoverage coverage)
+                        return coverage;
             }
-
-            return condition;
+            throw new InvalidOperationException("Board Population must have a coverage stage following its payment stage.");
         }
 
         static void RequireSingleReference<T>(T[] references, T expected)

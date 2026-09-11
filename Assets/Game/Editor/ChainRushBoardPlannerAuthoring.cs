@@ -30,8 +30,6 @@ namespace ChainRush.Editor
         const string AutobattleRoot = "Assets/Game/Activities/Autobattle";
         const string BoardRoot = "Assets/Game/Activities/Board";
         const string SharedRoot = "Assets/Game/Activities/Shared";
-        const string PopulationRoot = BoardRoot + "/Population";
-        const string PlannerRoot = PopulationRoot + "/Planner";
         const string SpaceRoot = BoardRoot + "/Space";
         const string ShapesRoot = SpaceRoot + "/Shapes";
         const string ShapeRulesRoot = ShapesRoot + "/Rules";
@@ -42,8 +40,6 @@ namespace ChainRush.Editor
         const string OrchestrationTaxonomyRoot = OrchestrationRoot + "/Taxonomy";
         const string SharedUnitsRoot = SharedRoot + "/Units";
         const string SharedWaterRoot = SharedUnitsRoot + "/Water";
-
-        const string PlannerPath = PlannerRoot + "/BoardPlanner.asset";
         const string BoardActivityPath = BoardRoot + "/Definition/BoardActivity.asset";
         const string BoardHostPath = BoardRoot + "/Economy/BoardHost.asset";
         const string BoardWalletPath = BoardRoot + "/Economy/BoardWallet.asset";
@@ -251,33 +247,6 @@ namespace ChainRush.Editor
             catch
             {
                 DeleteCreatedAssets(createdPaths);
-                throw;
-            }
-        }
-
-        [MenuItem("ChainRush/Activities/Board/Create Population Planner Assets")]
-        public static void CreatePopulationPlannerAssets()
-        {
-            EnsureAssetDoesNotExist(PlannerPath);
-            CapabilityHostData water = LoadRequired<CapabilityHostData>(WaterPath);
-
-            EnsureFolder(PlannerRoot);
-            try
-            {
-                ShapePopulationPlannerData planner = ScriptableObject.CreateInstance<ShapePopulationPlannerData>();
-                planner.name = "BoardPlanner";
-                ConfigurePlanner(planner, water);
-                AssetDatabase.CreateAsset(planner, PlannerPath);
-
-                AssetDatabase.SaveAssets();
-                Selection.activeObject = planner;
-                EditorGUIUtility.PingObject(planner);
-                Debug.Log($"[ChainRush] Created Board population planner assets under '{PopulationRoot}'.");
-            }
-            catch
-            {
-                AssetDatabase.DeleteAsset(PlannerPath);
-                AssetDatabase.SaveAssets();
                 throw;
             }
         }
@@ -573,21 +542,6 @@ namespace ChainRush.Editor
             }
 
             SetField(brain, "operators", operators);
-        }
-
-        static void ConfigurePlanner(
-            ShapePopulationPlannerData planner,
-            CapabilityHostData water)
-        {
-            var serialized = new SerializedObject(planner);
-            SerializedProperty contents = serialized.FindProperty("contentRules");
-            contents.arraySize = 1;
-            SerializedProperty content = contents.GetArrayElementAtIndex(0);
-            content.FindPropertyRelative("asset").objectReferenceValue = water;
-            content.FindPropertyRelative("weight").longValue = 1L;
-            content.FindPropertyRelative("minimumPatternCount").longValue = 0L;
-            content.FindPropertyRelative("guaranteedCellShare").floatValue = 1f;
-            serialized.ApplyModifiedPropertiesWithoutUndo();
         }
 
         static void ConfigureExperienceToTurnTokenRecipe(
@@ -898,19 +852,15 @@ namespace ChainRush.Editor
             var turn = LoadRequired<FrameworkResourceData>(TurnTokenPath);
             var wallet = LoadRequired<TaxonomyTermData>(SharedWalletTagPath);
             var water = LoadRequired<CapabilityHostData>(WaterPath);
-            var planner = LoadRequired<ShapePopulationPlannerData>(PlannerPath);
-            ConfigurePlanner(planner, water);
-            EditorUtility.SetDirty(planner);
 
             var agent = LoadRequired<AgentDefinitionData>(PopulationAgentPath);
             var population = new PopulationAgentData();
-            SetField(population, "planner", planner);
             var regionTag = LoadRequired<TaxonomyTermData>(BoardCellTagPath);
             ConfigurePopulationSettings(population);
             SetField(population, "shapeWalletTags",
                 new List<TaxonomyTermData> { LoadRequired<TaxonomyTermData>(BoardWalletTagPath) });
             SetField(agent, "agent", population);
-            SetField(agent, "targetSelectionCriteria", new List<EntityCriterionEntryData>());
+            SetField(agent, "targetSelectionCriteria", CreatePopulationProducerCriteria());
             SetField(agent, "matchConditions", new List<ObjectiveCondition>
             {
                 CreatePopulationCoverage()
@@ -946,7 +896,7 @@ namespace ChainRush.Editor
             if (!(agent.Agent is PopulationAgentData population))
                 throw new InvalidOperationException("Board requires its Population agent before region authoring.");
             ConfigurePopulationSettings(population);
-            SetField(agent, "targetSelectionCriteria", new List<EntityCriterionEntryData>());
+            SetField(agent, "targetSelectionCriteria", CreatePopulationProducerCriteria());
             SetField(agent, "matchConditions", new List<ObjectiveCondition>
             {
                 CreatePopulationCoverage()
@@ -1029,40 +979,6 @@ namespace ChainRush.Editor
             EditorUtility.SetDirty(objective);
         }
 
-        static AgentDefinitionData CreatePopulationAgent(
-            ShapePopulationPlannerData planner,
-            CapabilityHostData executorHost,
-            TaxonomyTermData boardCellTag,
-            TaxonomyTermData boardWalletTag,
-            List<string> createdPaths)
-        {
-            var agentData = new PopulationAgentData();
-            SetField(agentData, "planner", planner);
-            ConfigurePopulationSettings(agentData);
-            SetField(agentData, "shapeWalletTags", new List<TaxonomyTermData> { boardWalletTag });
-
-            var match = CreatePopulationCoverage();
-            AgentDefinitionData definition = CreateAgentDefinition(
-                PopulationAgentPath,
-                "BoardPopulationAgent",
-                "chainrush-board-population",
-                100,
-                new List<ObjectiveCondition> { match },
-                new List<EntityCriterionEntryData>
-                {
-                    Required(CreateCapabilityHostCriterion(executorHost, null)),
-                    Required(CreateOwnerCriterion()),
-                },
-                new List<EntityCriterionEntryData>(),
-                agentData,
-                createdPaths);
-            SetField(
-                definition,
-                "stopPolicyType",
-                AgentStopPolicyType.None);
-            return definition;
-        }
-
         [MenuItem("ChainRush/Activities/Board/Configure Population Run")]
         public static void ConfigurePopulationRun()
         {
@@ -1070,7 +986,7 @@ namespace ChainRush.Editor
             var population = (PopulationAgentData)agent.Agent;
             ConfigurePopulationSettings(population);
             SetField(agent, "matchConditions", new List<ObjectiveCondition> { CreatePopulationCoverage() });
-            SetField(agent, "targetSelectionCriteria", new List<EntityCriterionEntryData>());
+            SetField(agent, "targetSelectionCriteria", CreatePopulationProducerCriteria());
             EditorUtility.SetDirty(agent);
             ObjectiveTemplateData objective = LoadRequired<ObjectiveTemplateData>(PopulationObjectivePath);
             var children = ((ObjectiveConditionTargetNodesState)objective.Root.SuccessConditions[0]).TargetNodes;
@@ -1083,7 +999,20 @@ namespace ChainRush.Editor
             EditorUtility.SetDirty(objective);
             ConfigurePopulationDecision();
             AssetDatabase.SaveAssets();
-            AssetDatabase.ForceReserializeAssets(new List<string> { PlannerPath });
+            AssetDatabase.ForceReserializeAssets(new List<string> { PopulationAgentPath });
+            ValidatePopulationProducerWiring();
+        }
+
+        internal static void ValidatePopulationProducerWiring()
+        {
+            var agent = LoadRequired<AgentDefinitionData>(PopulationAgentPath);
+            EnsurePopulationAgentExecutor(agent, LoadRequired<CapabilityHostData>(BoardHostPath));
+            var criteria = agent.TargetSelectionCriteria;
+            if (criteria.Count != 2
+                || !(criteria[0].Criterion is CapabilityHostCriterionData producer)
+                || producer.Definition != LoadRequired<CapabilityHostData>(PopulationProducerPath)
+                || !(criteria[1].Criterion is OwnerCriterionData))
+                throw new InvalidOperationException("Board Population must select its participant's BoardPopulationProducer.");
         }
 
         static void ConfigurePopulationDecision()
@@ -1104,6 +1033,13 @@ namespace ChainRush.Editor
             new ObjectiveConditionMaterializedRegionCoverage(LoadRequired<CapabilityHostData>(WaterPath),
                 EconomyFormType.Token, null, null,
                 CreateBoardRegionQuery(LoadRequired<TaxonomyTermData>(BoardCellTagPath)), 0L, CompareOperation.Equal);
+
+        static List<EntityCriterionEntryData> CreatePopulationProducerCriteria() =>
+            new List<EntityCriterionEntryData>
+            {
+                Required(CreateCapabilityHostCriterion(LoadRequired<CapabilityHostData>(PopulationProducerPath), null)),
+                Required(CreateOwnerCriterion())
+            };
 
         static void ConfigurePopulationSettings(PopulationAgentData population)
         {
@@ -1145,6 +1081,7 @@ namespace ChainRush.Editor
                     Required(CreateCapabilityHostCriterion(executorHost, null)),
                     Required(CreateOwnerCriterion()),
                 });
+            SetField(populationAgent, "targetSelectionCriteria", CreatePopulationProducerCriteria());
             EditorUtility.SetDirty(populationAgent);
         }
 

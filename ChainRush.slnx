@@ -17,8 +17,8 @@
   <Project Path="Assembly-CSharp-Editor.csproj" />
   <Project Path="Sirenix.OdinInspector.Modules.UnityMathematics.csproj" />
   <Project Path="Sirenix.OdinInspector.Modules.UnityLocalization.csproj" />
-  <Project Path="ChainRush.ActivityComposition.EditModeTests.csproj" />
   <Project Path="ChainRush.ActivityComposition.PlayModeTests.csproj" />
   <Project Path="Lofelt.NiceVibrations.Editor.csproj" />
+  <Project Path="ChainRush.ActivityComposition.EditModeTests.csproj" />
   <Project Path="MoreMountains.Interface.Editor.csproj" />
 </Solution>

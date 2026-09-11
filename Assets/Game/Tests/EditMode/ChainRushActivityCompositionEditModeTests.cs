@@ -645,8 +645,10 @@ namespace ChainRush.Tests.EditMode
             Assert.AreEqual(1000, distanceCriterion.MinimumDistance);
             Assert.AreEqual(1000, distanceCriterion.MaximumDistance);
             var population = (PopulationAgentData)populationAgent.Agent;
-            Assert.NotNull(population.Planner);
-            Assert.IsEmpty(populationAgent.TargetSelectionCriteria);
+            Assert.AreSame(populationProducer, populationAgent.TargetSelectionCriteria
+                .Select(entry => entry.Criterion).OfType<CapabilityHostCriterionData>().Single().Definition);
+            Assert.AreEqual(AgentOwnerSelectionType.ParticipantOwner, populationAgent.TargetSelectionCriteria
+                .Select(entry => entry.Criterion).OfType<OwnerCriterionData>().Single().OwnerSelectionType);
             Assert.IsInstanceOf<PopulationFillAllData>(population.Fill);
             Assert.IsInstanceOf<GridPopulationDistributionAlgorithmData>(population.Distribution);
             Assert.AreEqual(256, population.WorkBudget);
@@ -683,8 +685,6 @@ namespace ChainRush.Tests.EditMode
                 seed.Seed.FormType == EconomyFormType.Stack
                 && seed.Seed.Amount == 1L
                 && seed.MaterializationType == ActivitySeedMaterializationType.None));
-            var planner = new SerializedObject(population.Planner);
-            Assert.IsNull(planner.FindProperty("patternRules"));
             Assert.AreEqual(2, population.ShapeRules.Count);
             Assert.AreSame(lineShape, population.ShapeRules[0].Shape);
             Assert.AreSame(singleShape, population.ShapeRules[1].Shape);
@@ -702,13 +702,6 @@ namespace ChainRush.Tests.EditMode
                     Assert.AreEqual(Vector3Int.zero, usage.Spacing);
                 }
             }
-            var content = planner.FindProperty("contentRules");
-            Assert.AreEqual(1, content.arraySize);
-            var waterRule = content.GetArrayElementAtIndex(0);
-            Assert.AreSame(waterBase, waterRule.FindPropertyRelative("asset").objectReferenceValue);
-            Assert.AreEqual(1L, waterRule.FindPropertyRelative("weight").longValue);
-            Assert.AreEqual(0L, waterRule.FindPropertyRelative("minimumPatternCount").longValue);
-            Assert.AreEqual(1f, waterRule.FindPropertyRelative("guaranteedCellShare").floatValue);
             var producerCriterion = populationAgent.ExecutorSelectionCriteria
                 .Select(entry => entry.Criterion)
                 .OfType<CapabilityHostCriterionData>()

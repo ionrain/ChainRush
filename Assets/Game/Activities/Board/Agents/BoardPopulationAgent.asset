@@ -16,7 +16,7 @@ MonoBehaviour:
   basePriority: 100
   updateInterval: 1
   matchConditions:
-  - rid: 6092003842666790912
+  - rid: 6092003860859322368
   executorSelectionCriteria:
   - requirementType: 0
     criterion:
@@ -25,7 +25,13 @@ MonoBehaviour:
     criterion:
       rid: 6092003635567525901
   executorTargetRankingType: 0
-  targetSelectionCriteria: []
+  targetSelectionCriteria:
+  - requirementType: 0
+    criterion:
+      rid: 6092003860859322369
+  - requirementType: 0
+    criterion:
+      rid: 6092003860859322370
   targetRankingType: 0
   aiBrainTargetKey: {fileID: 0}
   controlType: 2
@@ -48,7 +54,7 @@ MonoBehaviour:
       data:
         definition: {fileID: 11400000, guid: d998acfcc5fb2426387891c381d11387, type: 2}
         requiredAssetTags: []
-        requiredCapabilityTypes: 
+        requiredCapabilityTypes:
     - rid: 6092003635567525901
       type: {class: OwnerCriterionData, ns: Core.Orchestration, asm: Core}
       data:
@@ -57,9 +63,9 @@ MonoBehaviour:
       type: {class: PopulationAgentData, ns: Core.Orchestration, asm: Core}
       data:
         fill:
-          rid: 6092003842666790913
+          rid: 6092003860859322371
         distribution:
-          rid: 6092003842666790914
+          rid: 6092003860859322372
         workBudget: 256
         shapeRules:
         - shape: {fileID: 11400000, guid: bb87873e608bd483d86718dbdd98536c, type: 2}
@@ -92,10 +98,9 @@ MonoBehaviour:
           desiredCount:
             min: 0
             max: 16
-        planner: {fileID: 11400000, guid: 1029848a6853142608dc780bbbc34c1a, type: 2}
         shapeWalletTags:
         - {fileID: 11400000, guid: 9cbb4f47a974c42cfa008dda55386302, type: 2}
-    - rid: 6092003842666790912
+    - rid: 6092003860859322368
       type: {class: ObjectiveConditionMaterializedRegionCoverage, ns: Core.Objectives,
         asm: Core}
       data:
@@ -103,7 +108,7 @@ MonoBehaviour:
         economyAsset: {fileID: 11400000, guid: 1116b7b9d35a249b18741b1309a53cd1, type: 2}
         economyFormType: 1
         requiredAssetTags: []
-        requiredCapabilityTypes: 
+        requiredCapabilityTypes:
         space:
           scopeType: 1
           requiredTags:
@@ -112,10 +117,20 @@ MonoBehaviour:
           requiredCellTags: []
           excludedCellTags: []
         compareOperation: 0
-    - rid: 6092003842666790913
+    - rid: 6092003860859322369
+      type: {class: CapabilityHostCriterionData, ns: Core.Orchestration, asm: Core}
+      data:
+        definition: {fileID: 11400000, guid: 98384777501f34b01bdb949ca92adda2, type: 2}
+        requiredAssetTags: []
+        requiredCapabilityTypes:
+    - rid: 6092003860859322370
+      type: {class: OwnerCriterionData, ns: Core.Orchestration, asm: Core}
+      data:
+        ownerSelectionType: 0
+    - rid: 6092003860859322371
       type: {class: PopulationFillAllData, ns: Core.Orchestration, asm: Core}
       data: 
-    - rid: 6092003842666790914
+    - rid: 6092003860859322372
       type: {class: GridPopulationDistributionAlgorithmData, ns: Core.Orchestration,
         asm: Core}
       data: 

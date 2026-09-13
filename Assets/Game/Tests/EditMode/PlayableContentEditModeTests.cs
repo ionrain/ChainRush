@@ -142,7 +142,8 @@ namespace ChainRush.Tests.EditMode
             var selected = Load<TaxonomyTermData>("Board/Taxonomy/BoardMergeSelected.asset");
             var boardWallet = Load<TaxonomyTermData>("Board/Economy/BoardWalletTag.asset");
             var operators = brain.Operators.OfType<EconomyOperationDecompOpData>()
-                .Where(operation => Read<EconomyEntrySelectionData>(operation, "selection").FormTypes.Contains(EconomyFormType.Token)).ToList();
+                .Where(operation => Read<EconomyOperation>(operation, "operation") == EconomyOperation.Consume
+                    && Read<EconomyEntrySelectionData>(operation, "selection").FormTypes.Contains(EconomyFormType.Token)).ToList();
             Assert.AreEqual(7, operators.Count);
             foreach (string name in CellNames.Skip(2))
             {
@@ -155,6 +156,41 @@ namespace ChainRush.Tests.EditMode
                 var objective = Load<ObjectiveTemplateData>("Board/Objectives/" + name + "SelectionObjective.asset");
                 Assert.AreEqual(ObjectiveCompletionPolicyType.Reset, objective.CompletionPolicyType);
                 Assert.AreSame(cell, ((ObjectiveConditionEconomyMetric)objective.Root.SuccessConditions.Single()).Asset);
+            }
+        }
+
+        [Test]
+        public void BoardCleanup_RoutesOnlyUnselectedDemands_AndCoversEveryCellAsset()
+        {
+            var brain = Load<OrchestratorAIBrainData>("Board/Orchestration/BoardBrain.asset");
+            var selected = Load<TaxonomyTermData>("Board/Taxonomy/BoardMergeSelected.asset");
+            var wallet = Load<TaxonomyTermData>("Board/Economy/BoardWalletTag.asset");
+            var content = Load<TaxonomyTermData>("Board/Taxonomy/BoardContent.asset");
+            var operation = brain.Operators.OfType<EconomyOperationDecompOpData>()
+                .Single(item => Read<EconomyOperation>(item, "operation") == EconomyOperation.Destroy);
+            var selection = Read<EconomyEntrySelectionData>(operation, "selection");
+            Assert.IsNull(selection.ExactAsset);
+            CollectionAssert.AreEqual(new[] { EconomyFormType.Token }, selection.FormTypes);
+            CollectionAssert.AreEqual(new[] { wallet }, selection.WalletTags);
+            CollectionAssert.AreEqual(new[] { content }, selection.RequiredAssetTags);
+            var root = Load<ObjectiveTemplateData>("Board/Objectives/BoardPopulationObjective.asset").Root;
+            var clear = ((ObjectiveConditionTargetNodesState)root.SuccessConditions.Single()).TargetNodes
+                .Single(node => node.Id == "chainrush-board-clear");
+            CollectionAssert.AreEquivalent(CellNames.Select(name => Load<CapabilityHostData>("Board/Economy/" + name + "BoardBase.asset")),
+                clear.SuccessConditions.Cast<ObjectiveConditionEconomyMetric>().Select(metric => metric.Asset));
+            foreach (string name in CellNames)
+            foreach (bool tagged in new[] { false, true })
+            {
+                var asset = Load<CapabilityHostData>("Board/Economy/" + name + "BoardBase.asset");
+                var fact = new OrchestrationFactQuery<EconomyOrchestrationQueryData>("zero", default,
+                    new EconomyOrchestrationQueryData(asset, EconomyFormType.Token, new[] { wallet }, new[] { content },
+                        tagged ? new[] { selected } : null, CompareOperation.Equal, 0));
+                var result = OrchestrationDecisionGraphEvaluator.Evaluate(brain.DecisionGraph, fact, default, null, null,
+                    default, OrchestrationDecompositionScopeType.GlobalObjective);
+                Assert.AreEqual(!tagged, result.OperatorIds.Contains(operation.OperatorId));
+                Assert.AreEqual(tagged, result.DecisionIds.Contains("board-production-input"));
+                if (!tagged)
+                    CollectionAssert.AreEqual(new[] { "board-clear" }, result.DecisionIds);
             }
         }
 

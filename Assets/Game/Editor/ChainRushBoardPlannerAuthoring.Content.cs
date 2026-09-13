@@ -31,6 +31,8 @@ namespace ChainRush.Editor
         {
             var itemTag = WriteContentTerm(BoardContentTagPath, "chainrush.board.content", 10, terms);
             var producerTag = WriteContentTerm(BoardProducerTagPath, "chainrush.board.content-producer", 11, terms);
+            WriteContentTerm(ClearBoardOperatorPath, "chainrush.orchestration.board.clear", 7, terms,
+                LoadRequired<TaxonomyFamilyData>(OperatorFamilyPath));
             var template = LoadRequired<CapabilityHostData>(WaterPath);
             var producerTemplate = LoadRequired<CapabilityHostData>(PopulationProducerPath);
             var recipeTemplate = LoadRequired<ProductionRecipeData>(WaterRecipePath);

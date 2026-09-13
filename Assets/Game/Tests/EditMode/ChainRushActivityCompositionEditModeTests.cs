@@ -455,7 +455,7 @@ namespace ChainRush.Tests.EditMode
             Assert.AreEqual(
                 AgentStopPolicyType.None,
                 selectionAgent.StopPolicyType);
-            Assert.AreEqual(15, boardBrain.Operators.Count);
+            Assert.AreEqual(16, boardBrain.Operators.Count);
             List<AgentDecompOpData> agentOperators = boardBrain.Operators
                 .OfType<AgentDecompOpData>()
                 .ToList();
@@ -542,8 +542,9 @@ namespace ChainRush.Tests.EditMode
 
             Assert.AreEqual(1, objective.Root.SuccessConditions.Count);
             var children = ((ObjectiveConditionTargetNodesState)objective.Root.SuccessConditions.Single()).TargetNodes;
-            Assert.AreEqual(2, children.Count);
+            Assert.AreEqual(3, children.Count);
             ObjectiveNode payment = children.Single(node => node.Id == "chainrush-board-consume-turn");
+            ObjectiveNode clear = children.Single(node => node.Id == "chainrush-board-clear");
             ObjectiveNode fill = children.Single(node => node.Id == "chainrush-board-fill-markers");
             var confirmation = (ObjectiveConditionEconomyOperation)payment.SuccessConditions.Single();
             EconomyOperationRequest request = confirmation.Operation.CreateRequest(null, EconomyTransactionTraceContext.None);
@@ -552,8 +553,21 @@ namespace ChainRush.Tests.EditMode
             Assert.AreEqual(1L, request.Amount);
             Assert.AreEqual(EconomyFormType.Stack, request.FormType);
             Assert.AreSame(sharedWalletTag, request.WalletTags.Single());
-            Assert.IsTrue(fill.ActivateConditions.OfType<ObjectiveConditionObjectiveState>()
+            Assert.IsTrue(clear.ActivateConditions.OfType<ObjectiveConditionObjectiveState>()
                 .Any(condition => condition.TargetId == payment.Id && condition.TargetValue == ObjectiveState.Completed));
+            Assert.IsTrue(fill.ActivateConditions.OfType<ObjectiveConditionObjectiveState>()
+                .Any(condition => condition.TargetId == clear.Id && condition.TargetValue == ObjectiveState.Completed));
+            Assert.AreEqual(9, clear.SuccessConditions.Count);
+            foreach (var metric in clear.SuccessConditions.Cast<ObjectiveConditionEconomyMetric>())
+            {
+                Assert.NotNull(metric.Asset);
+                Assert.AreEqual(EconomyFormType.Token, metric.FormType);
+                Assert.AreEqual(CompareOperation.Equal, metric.CompareOperation);
+                Assert.AreEqual(0, metric.TargetValue);
+                CollectionAssert.AreEqual(new[] { boardWalletTag }, metric.WalletTags);
+                CollectionAssert.AreEqual(new[] { contentTag }, metric.RequiredAssetTags);
+                Assert.IsEmpty(metric.RequiredRuntimeTags);
+            }
             var reset = (ObjectiveConditionMaterializedRegionCoverage)objective.ResetConditions.Single();
             Assert.AreEqual(CompareOperation.Greater, reset.CompareOperation);
             Assert.AreEqual(0L, reset.TargetValue);
@@ -580,6 +594,11 @@ namespace ChainRush.Tests.EditMode
             Assert.AreSame(mergeSelection, selectionSuccess.RequestType);
             Assert.AreEqual(CompareOperation.Equal, selectionSuccess.CompareOperation);
             Assert.AreEqual(0L, selectionSuccess.TargetValue);
+            var selectionCoverage = selectionObjective.Root.ActivateConditions
+                .OfType<ObjectiveConditionMaterializedRegionCoverage>().Single();
+            Assert.AreEqual(0, selectionCoverage.TargetValue);
+            Assert.AreEqual(CompareOperation.Equal, selectionCoverage.CompareOperation);
+            CollectionAssert.AreEqual(new[] { contentTag }, selectionCoverage.RequiredAssetTags);
 
             var mergeActivation = mergeObjective.Root.ActivateConditions.Single()
                 as ObjectiveConditionEconomyMetric;

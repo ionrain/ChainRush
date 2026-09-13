@@ -82,6 +82,7 @@ namespace ChainRush.Editor
         const string MergeObjectivePath = ObjectivesRoot + "/BoardMergeObjective.asset";
         const string OperatorFamilyPath = OrchestrationTaxonomyRoot + "/BoardOperatorFamily.asset";
         const string EconomyOperationOperatorPath = OrchestrationTaxonomyRoot + "/BoardEconomyOperationOperator.asset";
+        const string ClearBoardOperatorPath = OrchestrationTaxonomyRoot + "/BoardClearOperator.asset";
         const string PopulationAgentOperatorPath = OrchestrationTaxonomyRoot + "/BoardPopulationAgentOperator.asset";
         const string ProductionYieldOperatorPath = OrchestrationTaxonomyRoot + "/BoardProductionYieldOperator.asset";
         const string ProductionAvailableOperatorPath = OrchestrationTaxonomyRoot + "/BoardProductionAvailableOperator.asset";
@@ -433,13 +434,8 @@ namespace ChainRush.Editor
         [MenuItem("ChainRush/Activities/Board/Configure Population Objectives")]
         public static void ConfigurePopulationObjectives()
         {
-            var turn = LoadRequired<FrameworkResourceData>(TurnTokenPath);
-            var wallet = LoadRequired<TaxonomyTermData>(SharedWalletTagPath);
-            var itemTag = LoadRequired<TaxonomyTermData>(BoardContentTagPath);
-
             var agent = LoadRequired<AgentDefinitionData>(PopulationAgentPath);
             var population = new PopulationAgentData();
-            var regionTag = LoadRequired<TaxonomyTermData>(BoardCellTagPath);
             ConfigurePopulationSettings(population);
             SetField(population, "shapeWalletTags",
                 new List<TaxonomyTermData> { LoadRequired<TaxonomyTermData>(BoardWalletTagPath) });
@@ -451,6 +447,19 @@ namespace ChainRush.Editor
             });
             EditorUtility.SetDirty(agent);
 
+            ConfigureBoardRefresh();
+            ConfigurePopulationDecision();
+            AssetDatabase.SaveAssets();
+        }
+
+        [MenuItem("ChainRush/Activities/Board/Configure Clear Before Fill")]
+        public static void ConfigureBoardRefresh()
+        {
+            if (EditorApplication.isPlayingOrWillChangePlaymode)
+                throw new InvalidOperationException("Board refresh authoring requires Edit Mode.");
+            var turn = LoadRequired<FrameworkResourceData>(TurnTokenPath);
+            var wallet = LoadRequired<TaxonomyTermData>(SharedWalletTagPath);
+            var itemTag = LoadRequired<TaxonomyTermData>(BoardContentTagPath);
             var objective = LoadRequired<ObjectiveTemplateData>(PopulationObjectivePath);
             ConfigurePopulationObjective(objective, turn, wallet, itemTag,
                 LoadRequired<TaxonomyTermData>(BoardWalletTagPath),
@@ -465,17 +474,24 @@ namespace ChainRush.Editor
             var terms = new List<TaxonomyTermData>(GetField<TaxonomyTermData[]>(installer, "terms"));
             if (!terms.Contains(term))
                 terms.Add(term);
+            var clearTerm = WriteContentTerm(ClearBoardOperatorPath, "chainrush.orchestration.board.clear", 7, terms,
+                LoadRequired<TaxonomyFamilyData>(OperatorFamilyPath));
             SetField(installer, "terms", terms.ToArray());
             EditorUtility.SetDirty(installer);
-            ConfigureEconomyOperation(LoadRequired<OrchestratorAIBrainData>(BrainPath), term, turn, wallet);
-            ConfigurePopulationDecision();
+            var brain = LoadRequired<OrchestratorAIBrainData>(BrainPath);
+            ConfigureEconomyOperation(brain, term, turn, wallet);
+            ConfigureBoardCleanupOperation(brain, clearTerm, itemTag,
+                LoadRequired<TaxonomyTermData>(BoardWalletTagPath), LoadRequired<TaxonomyTermData>(MergeSelectedTagPath));
+            var selection = LoadRequired<ObjectiveTemplateData>(SelectionObjectivePath);
+            selection.Root.ActivateConditions.RemoveAll(condition => condition is ObjectiveConditionMaterializedRegionCoverage);
+            selection.Root.ActivateConditions.Add(CreatePopulationCoverage());
+            EditorUtility.SetDirty(selection);
             AssetDatabase.SaveAssets();
         }
 
         [MenuItem("ChainRush/Activities/Board/Configure Population Regions")]
         public static void ConfigurePopulationRegions()
         {
-            var tag = LoadRequired<TaxonomyTermData>(BoardCellTagPath);
             var agent = LoadRequired<AgentDefinitionData>(PopulationAgentPath);
             if (!(agent.Agent is PopulationAgentData population))
                 throw new InvalidOperationException("Board requires its Population agent before region authoring.");
@@ -486,10 +502,7 @@ namespace ChainRush.Editor
                 CreatePopulationCoverage()
             });
             EditorUtility.SetDirty(agent);
-            ConfigurePopulationObjective(LoadRequired<ObjectiveTemplateData>(PopulationObjectivePath),
-                LoadRequired<FrameworkResourceData>(TurnTokenPath), LoadRequired<TaxonomyTermData>(SharedWalletTagPath),
-                LoadRequired<TaxonomyTermData>(BoardContentTagPath), LoadRequired<TaxonomyTermData>(BoardWalletTagPath),
-                LoadRequired<TaxonomyTermData>(MergeSelectedTagPath), tag);
+            ConfigureBoardRefresh();
             ConfigurePopulationDecision();
             AssetDatabase.SaveAssets();
         }
@@ -529,11 +542,23 @@ namespace ChainRush.Editor
             var payment = new ObjectiveNode("chainrush-board-consume-turn", null,
                 new List<ObjectiveCondition> { new ObjectiveConditionParentActive() },
                 new List<ObjectiveCondition> { confirmation });
-            var fill = new ObjectiveNode("chainrush-board-fill-markers", null,
+            var emptyConditions = new List<ObjectiveCondition>();
+            foreach (string content in ContentNames)
+                emptyConditions.Add(new ObjectiveConditionEconomyMetric(
+                    new List<TaxonomyTermData> { boardWalletTag }, EconomyFormType.Token,
+                    LoadRequired<CapabilityHostData>(BoardRoot + "/Economy/" + content + "BoardBase.asset"),
+                    0L, CompareOperation.Equal, new List<TaxonomyTermData> { itemTag }, null));
+            var clear = new ObjectiveNode("chainrush-board-clear", null,
                 new List<ObjectiveCondition>
                 {
                     new ObjectiveConditionParentActive(),
                     new ObjectiveConditionObjectiveState(payment.Id, ObjectiveState.Completed)
+                }, emptyConditions);
+            var fill = new ObjectiveNode("chainrush-board-fill-markers", null,
+                new List<ObjectiveCondition>
+                {
+                    new ObjectiveConditionParentActive(),
+                    new ObjectiveConditionObjectiveState(clear.Id, ObjectiveState.Completed)
                 },
                 new List<ObjectiveCondition>
                 {
@@ -553,7 +578,7 @@ namespace ChainRush.Editor
                 },
                 new List<ObjectiveCondition>
                 {
-                    new ObjectiveConditionTargetNodesState(new List<ObjectiveNode> { payment, fill })
+                    new ObjectiveConditionTargetNodesState(new List<ObjectiveNode> { payment, clear, fill })
                 });
             SetField(objective, "root", root);
             SetField(objective, "completionPolicyType", ObjectiveCompletionPolicyType.ResetOnConditions);
@@ -563,6 +588,40 @@ namespace ChainRush.Editor
                     new List<TaxonomyTermData> { itemTag }, null, CreateBoardRegionQuery(boardCellTag), 0L, CompareOperation.Greater)
             });
             EditorUtility.SetDirty(objective);
+        }
+
+        static void ConfigureBoardCleanupOperation(OrchestratorAIBrainData brain, TaxonomyTermData term,
+            TaxonomyTermData content, TaxonomyTermData wallet, TaxonomyTermData selected)
+        {
+            var operation = new EconomyOperationDecompOpData();
+            SetField(operation, "operatorId", term);
+            SetField(operation, "operation", EconomyOperation.Destroy);
+            SetField(operation, "selection", new EconomyEntrySelectionData(null, EconomyFormType.Token,
+                new List<TaxonomyTermData> { wallet }, new List<TaxonomyTermData> { content }, null, null, null));
+            brain.Operators.RemoveAll(item => item.OperatorId == term);
+            brain.Operators.Add(operation);
+            brain.DecisionGraph.Nodes.RemoveAll(item => item.DecisionId == "board-clear");
+            var clear = CreateDecision("board-clear", OrchestrationFactType.EconomyAmount, term, false,
+                OrchestrationDecompositionScopeType.GlobalObjective);
+            var decrease = new CompareOperationDecisionConditionData();
+            SetField(decrease, "compareOperations", new List<CompareOperation> { CompareOperation.Equal });
+            SetField(decrease, "requireZeroTargetForEqual", true);
+            clear.Conditions.Add(decrease);
+            brain.DecisionGraph.Nodes.Insert(0, clear);
+            foreach (var node in brain.DecisionGraph.Nodes)
+            {
+                if (!(node is OrchestrationDecisionData decision)) continue;
+                bool cleanup = decision.DecisionId == "board-clear";
+                bool consumption = decision.DecisionId == "board-production-input"
+                    || decision.DecisionId.StartsWith("board-consume-", StringComparison.Ordinal)
+                        && decision.DecisionId != "board-consume-turn";
+                if (!cleanup && !consumption) continue;
+                decision.Conditions.RemoveAll(condition => condition is EconomyRequiredRuntimeTagsDecisionConditionData);
+                var tags = new EconomyRequiredRuntimeTagsDecisionConditionData();
+                SetField(tags, cleanup ? "excludedTags" : "requiredTags", new List<TaxonomyTermData> { selected });
+                decision.Conditions.Add(tags);
+            }
+            EditorUtility.SetDirty(brain);
         }
 
         [MenuItem("ChainRush/Activities/Board/Configure Population Run")]

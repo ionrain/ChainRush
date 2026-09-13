@@ -530,7 +530,101 @@ namespace ChainRush.Tests.PlayMode
         }
 
         [UnityTest]
-        public IEnumerator BoardStubSelection_ConsumesOnlySelectedCellsAndRefills(
+        public IEnumerator BoardRefresh_LeasedRemainderBlocksFillAndStaleSelectionCannotAffectReplacement()
+        {
+            yield return LaunchPlayableActivities();
+            Assert.IsTrue(TryFindRunningActivities(out var battle, out var board));
+            var owner = battle.Participants.Single(participant => participant.TeamIndex == 0).ParticipantEconomyOwner;
+            var cellTag = AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(BoardCellTagPath);
+            yield return AwaitCompletedPopulation(board, cellTag, null);
+            var content = AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(
+                "Assets/Game/Activities/Board/Taxonomy/BoardContent.asset");
+            var hosts = CapabilityHostService.GetAll().Where(item => item.ActivityId == board.Id).ToList();
+            var cells = hosts.Where(item => item.Definition != null && item.Definition.Tags.Contains(content)).ToList();
+            var previous = cells.Select(item => item.EntityId).ToList();
+            Assert.AreEqual(16, previous.Count);
+            Assert.Greater(cells.Select(item => item.Definition.Id).Distinct().Count(), 1);
+            var retained = hosts.Where(item => !previous.Contains(item.EntityId)).Select(item => item.EntityId).ToList();
+            var gold = AssetDatabase.LoadAssetAtPath<CapabilityHostData>(
+                "Assets/Game/Activities/Board/Economy/GoldBoardBase.asset");
+            var blocked = cells.First(item => !item.Definition.Matches(gold)).EntityId;
+            Assert.IsTrue(ActivityService.TryGetMaterializedEntityTokenHandle(board.Id, blocked, out var token));
+            var acquire = typeof(EconomyService).GetMethod("TryAcquireEntryLease", BindingFlags.Static | BindingFlags.NonPublic);
+            var release = typeof(EconomyService).GetMethod("TryReleaseEntryLease", BindingFlags.Static | BindingFlags.NonPublic);
+            var arguments = new object[] { new List<EconomyEntryHandle> { token }, null, null };
+            Assert.IsTrue((bool)acquire.Invoke(null, arguments), arguments[2]?.ToString());
+            var lease = (EconomyEntryLease)arguments[1];
+            var turn = AssetDatabase.LoadAssetAtPath<EconomyAssetData>(BoardTurnTokenPath);
+            var wallet = AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(SharedWalletTagPath);
+            IssueTestTurns(owner, wallet, turn, 4);
+            Assert.IsTrue(TryFindBoardHost(board.Id, AssetDatabase.LoadAssetAtPath<CapabilityHostData>(BoardHostPath), out var host));
+            var requestType = AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(BoardMergeSelectionPath);
+            var refresh = new BoardRefreshCapture(board.Id, owner, previous);
+            var payments = new BoardPaymentCapture(owner, turn);
+            EventBus.Register<ProjectionLifecycleEvent>(refresh);
+            EventBus.Register<EconomyOperationChangedEvent>(refresh);
+            EventBus.Register<EconomyOperationChangedEvent>(payments);
+            try
+            {
+                yield return AssertBoardMergeSequence(board, cellTag, gold, host, requestType, 1, new List<string>());
+                float deadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
+                while (Time.realtimeSinceStartup < deadline && payments.Handles.Count == 0) yield return null;
+                Assert.AreEqual(1, payments.Handles.Count);
+                int started = DeterminismService.CurrentTick;
+                deadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
+                while (Time.realtimeSinceStartup < deadline && DeterminismService.CurrentTick - started < 5) yield return null;
+                var objective = board.Objectives.Single(item => item.RootNodeId == "chainrush-board-population");
+                var state = ObjectiveService.GetSnapshot(board.DomainId, objective.RuntimeId);
+                Assert.AreEqual(ObjectiveState.Active, state.Nodes.Single(node => node.NodeId == "chainrush-board-clear").State);
+                Assert.AreNotEqual(ObjectiveState.Active, state.Nodes.Single(node => node.NodeId == "chainrush-board-fill-markers").State);
+                Assert.IsTrue(CapabilityHostService.Exists(blocked));
+                Assert.AreEqual(0, refresh.Replacements.Count);
+                Assert.AreEqual(1, payments.Handles.Count, "Waiting for cleanup charged another turn.");
+
+                var stale = SelectionIntentEvent.Begin(board.Id, requestType, Core.Entities.EntityId.Invalid, host);
+                var selection = new SelectionResultCapture(stale.RequestId);
+                EventBus.Register<SelectionResultEvent>(selection);
+                try
+                {
+                    EventBus.Trigger(stale);
+                    EventBus.Trigger(SelectionIntentEvent.Target(stale, blocked));
+                    EventBus.Trigger(SelectionIntentEvent.Complete(stale));
+                    started = DeterminismService.CurrentTick;
+                    deadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
+                    while (Time.realtimeSinceStartup < deadline && DeterminismService.CurrentTick - started < 3) yield return null;
+                    Assert.IsTrue(selection.Count == 0 || selection.Result.Type != SelectionResultType.Committed,
+                        "Selection committed while refresh was waiting for cleanup.");
+                    Assert.IsTrue((bool)release.Invoke(null, new object[] { lease }));
+                    lease = default;
+                    yield return AwaitCompletedPopulation(board, cellTag, null);
+                    deadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
+                    while (Time.realtimeSinceStartup < deadline && selection.Count == 0) yield return null;
+                    Assert.AreEqual(1, selection.Count);
+                    Assert.AreEqual(SelectionResultType.Rejected, selection.Result.Type);
+                }
+                finally { EventBus.Unregister<SelectionResultEvent>(selection); }
+
+                Assert.IsNull(refresh.Failure);
+                Assert.AreEqual(15, refresh.Destroyed);
+                Assert.AreEqual(16, refresh.Replacements.Count);
+                Assert.IsFalse(previous.Any(CapabilityHostService.Exists));
+                Assert.IsTrue(retained.All(CapabilityHostService.Exists), "Cleanup removed Board infrastructure.");
+                Assert.AreEqual(1, payments.Handles.Count);
+                Assert.IsTrue(ActivityService.Close(battle.Id, ActivityCloseCauseType.Manual));
+                Assert.IsFalse(refresh.Replacements.Any(CapabilityHostService.Exists));
+                foreach (var handle in payments.Handles) Assert.IsFalse(EconomyService.TryGetOperation(handle, out _));
+            }
+            finally
+            {
+                if (lease.IsValid) release.Invoke(null, new object[] { lease });
+                EventBus.Unregister<ProjectionLifecycleEvent>(refresh);
+                EventBus.Unregister<EconomyOperationChangedEvent>(refresh);
+                EventBus.Unregister<EconomyOperationChangedEvent>(payments);
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator BoardStubSelection_ConsumesSelectionThenDestroysRemainderAndRefills(
             [Values("LightningBolt", "Power", "Defense", "Health", "Speed", "SkillSpeed", "Gold")] string content)
         {
             SelectOnlyBoardContent(content);
@@ -544,10 +638,24 @@ namespace ChainRush.Tests.PlayMode
             var selection = AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(BoardMergeSelectionPath);
             Assert.IsTrue(TryFindBoardHost(board.Id, AssetDatabase.LoadAssetAtPath<CapabilityHostData>(BoardHostPath), out var host));
             yield return AwaitCompletedPopulation(board, cellTag, cell);
-            var untouched = ResolveConnectedMarkerSelection(board, cellTag, cell, 16).Skip(3).ToList();
-            yield return AssertBoardMergeSequence(board, cellTag, cell, host, selection, 3, new List<string>());
-            Assert.IsTrue(untouched.All(CapabilityHostService.Exists), "Consume removed unselected tokens.");
-            yield return AwaitCompletedPopulation(board, cellTag, cell);
+            var previous = ResolveConnectedMarkerSelection(board, cellTag, cell, 16);
+            var refresh = new BoardRefreshCapture(board.Id, player.ParticipantEconomyOwner, previous);
+            EventBus.Register<ProjectionLifecycleEvent>(refresh);
+            EventBus.Register<EconomyOperationChangedEvent>(refresh);
+            try
+            {
+                yield return AssertBoardMergeSequence(board, cellTag, cell, host, selection, 3, new List<string>());
+                yield return AwaitCompletedPopulation(board, cellTag, cell);
+                Assert.IsNull(refresh.Failure);
+                Assert.AreEqual(3, refresh.Consumed, "Only the selected cells may be consumed.");
+                Assert.AreEqual(13, refresh.Destroyed, "The unselected remainder must be destroyed without effects.");
+                Assert.IsFalse(previous.Any(CapabilityHostService.Exists), "Refresh retained old Board cells.");
+            }
+            finally
+            {
+                EventBus.Unregister<ProjectionLifecycleEvent>(refresh);
+                EventBus.Unregister<EconomyOperationChangedEvent>(refresh);
+            }
             Assert.AreEqual(16, CountMaterializedBoardAssets(board, cellTag, cell));
             Assert.IsTrue(ActivityService.Close(battle.Id, ActivityCloseCauseType.Manual));
         }
@@ -567,6 +675,44 @@ namespace ChainRush.Tests.PlayMode
             field.SetValue(release, new List<PopulationContentRuleData>
             { new PopulationContentRuleData(new PopulationAssetContentSourceData(selected), 1f) });
             _restoreBoardContent = () => field.SetValue(release, original);
+        }
+
+        sealed class BoardRefreshCapture : IEventListener<ProjectionLifecycleEvent>, IEventListener<EconomyOperationChangedEvent>
+        {
+            readonly ActivityId _activity;
+            readonly IEconomyAssetOwner _owner;
+            readonly IReadOnlyList<Core.Entities.EntityId> _previous;
+            readonly TaxonomyTermData _content = AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(
+                "Assets/Game/Activities/Board/Taxonomy/BoardContent.asset");
+            readonly HashSet<EconomyOperationHandle> _operations = new HashSet<EconomyOperationHandle>();
+            public long Consumed;
+            public long Destroyed;
+            public string Failure;
+            public readonly HashSet<Core.Entities.EntityId> Replacements = new HashSet<Core.Entities.EntityId>();
+
+            public BoardRefreshCapture(ActivityId activity, IEconomyAssetOwner owner,
+                IReadOnlyList<Core.Entities.EntityId> previous)
+            { _activity = activity; _owner = owner; _previous = previous; }
+
+            public void OnEvent(ProjectionLifecycleEvent e)
+            {
+                if (e.Handle.ActivityId != _activity || e.EventType != ProjectionLifecycleEventType.BoundReady
+                    || !CapabilityHostService.TryGet(e.Handle.EntityId, out var host)
+                    || host.Definition == null || !host.Definition.Tags.Contains(_content)) return;
+                Replacements.Add(e.Handle.EntityId);
+                if (_previous.Any(CapabilityHostService.Exists))
+                    Failure = "Population materialized a replacement before the old Board was empty.";
+            }
+
+            public void OnEvent(EconomyOperationChangedEvent e)
+            {
+                if (e.Owner != _owner || e.State != EconomyOperationStateType.Committed
+                    || !EconomyService.TryGetOperation(e.Handle, out var operation)
+                    || operation.Request.FormType != EconomyFormType.Token
+                    || !operation.Request.Asset.Tags.Contains(_content) || !_operations.Add(e.Handle)) return;
+                if (operation.Request.Operation == EconomyOperation.Consume) Consumed += operation.Request.Amount;
+                if (operation.Request.Operation == EconomyOperation.Destroy) Destroyed += operation.Request.Amount;
+            }
         }
 
         static void IssueTestTurns(IEconomyAssetOwner owner, TaxonomyTermData wallet, EconomyAssetData turn, int count)

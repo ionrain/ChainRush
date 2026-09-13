@@ -64,6 +64,8 @@ MonoBehaviour:
         baseValue: 6
         firstStep: 2
         stepDelta: 1
+        inputOrigin: 1
+        inputStep: 1
     - rid: 2807516619138138122
       type: {class: LongFlatProgressionData, ns: Core, asm: Core}
       data:

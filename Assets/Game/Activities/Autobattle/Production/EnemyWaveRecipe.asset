@@ -62,3 +62,4 @@ MonoBehaviour:
       data:
         baseValue: 2
         step: 1
+        inputOrigin: 1

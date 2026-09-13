@@ -33,8 +33,6 @@ namespace ChainRush.Editor
             var producerTag = WriteContentTerm(BoardProducerTagPath, "chainrush.board.content-producer", 11, terms);
             var template = LoadRequired<CapabilityHostData>(WaterPath);
             var producerTemplate = LoadRequired<CapabilityHostData>(PopulationProducerPath);
-            var productionTemplate = LoadRequired<ProductionData>(PopulationProductionPath);
-            var catalogTemplate = LoadRequired<ProductionCatalogData>(PopulationCatalogPath);
             var recipeTemplate = LoadRequired<ProductionRecipeData>(WaterRecipePath);
             var boardWallet = LoadRequired<EconomyWalletData>(BoardWalletPath);
             var walletTag = LoadRequired<TaxonomyTermData>(BoardWalletTagPath);
@@ -72,21 +70,6 @@ namespace ChainRush.Editor
                 var recipe = WriteContentAsset(water ? WaterRecipePath : BoardRoot + "/Production/" + content + "BoardBaseRecipe.asset",
                     recipeTemplate, "chainrush.production.board." + id + "-base.recipe", definitions);
                 ConfigureCellRecipe(recipe, cell, walletTag);
-                var catalog = WriteContentAsset(water ? PopulationCatalogPath : BoardRoot + "/Production/" + content + "PopulationCatalog.asset",
-                    catalogTemplate, "chainrush.production.board.population." + id + ".catalog", definitions);
-                ConfigureCatalog(catalog, recipe);
-                var production = WriteContentAsset(water ? PopulationProductionPath : BoardRoot + "/Production/" + content + "PopulationProduction.asset",
-                    productionTemplate, "chainrush.production.board.population." + id, definitions);
-                ConfigureProduction(production, catalog, productionTemplate.MaterializationProviderType);
-                var producer = WriteContentAsset(water ? PopulationProducerPath : BoardRoot + "/Economy/" + content + "PopulationProducer.asset",
-                    producerTemplate, "chainrush.board.population-producer." + id, definitions);
-                AddUnique(producer.Tags, producerTag);
-                SetField(producer, "walletEntries", new List<WalletEntry>
-                {
-                    new WalletEntry(boardWallet, new List<SeedEntry> { new SeedEntry(production, 1, EconomyFormType.Stack) })
-                });
-                seeds.Add(new ActivityWalletSeedEntryData(new SeedEntry(producer, 1, EconomyFormType.Token),
-                    ActivitySeedMaterializationType.NonSpatial, new List<TaxonomyTermData>()));
 
                 string objectivePath = water ? MergeObjectivePath : ObjectivesRoot + "/" + content + "SelectionObjective.asset";
                 var objective = WriteContentAsset(objectivePath, LoadRequired<ObjectiveTemplateData>(MergeObjectivePath));
@@ -131,8 +114,8 @@ namespace ChainRush.Editor
                 }
                 EditorUtility.SetDirty(objective);
                 EditorUtility.SetDirty(cell);
-                EditorUtility.SetDirty(producer);
             }
+            ConfigurePopulationContentGroups(definitions, seeds);
             ConfigureCatalog(LoadRequired<ProductionCatalogData>(MergeCatalogPath), mergeRecipes.ToArray());
             SetStructField(ref boardWalletData, "seed", seeds);
             int walletIndex = boardTeam.Wallets.FindIndex(entry => entry.Wallet == boardWallet);
@@ -158,6 +141,92 @@ namespace ChainRush.Editor
             EditorUtility.SetDirty(selectionObjective);
             ConfigurePopulationObjectives();
             ValidatePopulationProducerWiring();
+        }
+
+        [MenuItem("Tools/ChainRush/Authoring/Apply Population Progression And Content Groups")]
+        public static void ApplyPopulationProgressionAndContentGroups()
+        {
+            if (EditorApplication.isPlayingOrWillChangePlaymode)
+                throw new InvalidOperationException("Population authoring requires Edit Mode.");
+            var installer = LoadRequired<EconomyDefinitionsInstallerData>(EconomyDefinitionsInstallerPath);
+            var definitions = new List<EconomyAssetData>(GetField<List<EconomyAssetData>>(installer, "assets"));
+            var activity = LoadRequired<ActivityData>(BoardActivityPath);
+            var team = activity.Teams[0];
+            var wallet = LoadRequired<EconomyWalletData>(BoardWalletPath);
+            int index = team.Wallets.FindIndex(entry => entry.Wallet == wallet);
+            var binding = team.Wallets[index];
+            var seeds = new List<ActivityWalletSeedEntryData>(binding.Seed);
+            ConfigurePopulationContentGroups(definitions, seeds);
+            SetStructField(ref binding, "seed", seeds);
+            team.Wallets[index] = binding;
+            activity.Teams[0] = team;
+            SetField(installer, "assets", definitions);
+            var definition = LoadRequired<AgentDefinitionData>(PopulationAgentPath);
+            ConfigurePopulationSettings((PopulationAgentData)definition.Agent);
+            EditorUtility.SetDirty(definition);
+            EditorUtility.SetDirty(activity);
+            EditorUtility.SetDirty(installer);
+            AssetDatabase.SaveAssets();
+            DeletePerAssetPopulationProducers();
+            ValidatePopulationProducerWiring();
+        }
+
+        static void ConfigurePopulationContentGroups(List<EconomyAssetData> definitions, List<ActivityWalletSeedEntryData> seeds)
+        {
+            var producerTag = LoadRequired<TaxonomyTermData>(BoardProducerTagPath);
+            var producerTemplate = LoadRequired<CapabilityHostData>(PopulationProducerPath);
+            var productionTemplate = LoadRequired<ProductionData>(PopulationProductionPath);
+            var catalogTemplate = LoadRequired<ProductionCatalogData>(PopulationCatalogPath);
+            var wallet = LoadRequired<EconomyWalletData>(BoardWalletPath);
+            seeds.RemoveAll(entry => entry.Seed.Asset is CapabilityHostBaseData host && host.Tags.Contains(producerTag));
+            foreach (string content in ContentNames)
+            {
+                if (content == "Water" || content == "Gold") continue;
+                definitions.Remove(AssetDatabase.LoadAssetAtPath<CapabilityHostData>(BoardRoot + "/Economy/" + content + "PopulationProducer.asset"));
+                definitions.Remove(AssetDatabase.LoadAssetAtPath<ProductionData>(BoardRoot + "/Production/" + content + "PopulationProduction.asset"));
+                definitions.Remove(AssetDatabase.LoadAssetAtPath<ProductionCatalogData>(BoardRoot + "/Production/" + content + "PopulationCatalog.asset"));
+            }
+            var groups = new List<(string Name, List<string> Content)>
+            {
+                ("Units", new List<string> { "Water", "Cola" }),
+                ("Buffs", new List<string> { "Power", "Defense", "Health", "Speed", "SkillSpeed" }),
+                ("Skills", new List<string> { "LightningBolt" }),
+                ("Gold", new List<string> { "Gold" })
+            };
+            foreach (var group in groups)
+            {
+                bool units = group.Name == "Units";
+                string id = group.Name.ToLowerInvariant();
+                var recipes = new List<ProductionRecipeData>();
+                foreach (string content in group.Content)
+                    recipes.Add(LoadRequired<ProductionRecipeData>(content == "Water" ? WaterRecipePath
+                        : BoardRoot + "/Production/" + content + "BoardBaseRecipe.asset"));
+                var catalog = WriteContentAsset(units ? PopulationCatalogPath : BoardRoot + "/Production/" + group.Name + "PopulationCatalog.asset",
+                    catalogTemplate, "chainrush.production.board.population." + id + ".catalog", definitions);
+                ConfigureCatalog(catalog, recipes.ToArray());
+                var production = WriteContentAsset(units ? PopulationProductionPath : BoardRoot + "/Production/" + group.Name + "PopulationProduction.asset",
+                    productionTemplate, "chainrush.production.board.population." + id, definitions);
+                ConfigureProduction(production, catalog, productionTemplate.MaterializationProviderType);
+                var producer = WriteContentAsset(units ? PopulationProducerPath : BoardRoot + "/Economy/" + group.Name + "PopulationProducer.asset",
+                    producerTemplate, "chainrush.board.population-producer." + id, definitions);
+                AddUnique(producer.Tags, producerTag);
+                SetField(producer, "walletEntries", new List<WalletEntry>
+                { new WalletEntry(wallet, new List<SeedEntry> { new SeedEntry(production, 1, EconomyFormType.Stack) }) });
+                seeds.Add(new ActivityWalletSeedEntryData(new SeedEntry(producer, 1, EconomyFormType.Token),
+                    ActivitySeedMaterializationType.NonSpatial, new List<TaxonomyTermData>()));
+                EditorUtility.SetDirty(producer);
+            }
+        }
+
+        internal static void DeletePerAssetPopulationProducers()
+        {
+            foreach (string content in ContentNames)
+            {
+                if (content == "Water" || content == "Gold") continue;
+                AssetDatabase.DeleteAsset(BoardRoot + "/Economy/" + content + "PopulationProducer.asset");
+                AssetDatabase.DeleteAsset(BoardRoot + "/Production/" + content + "PopulationProduction.asset");
+                AssetDatabase.DeleteAsset(BoardRoot + "/Production/" + content + "PopulationCatalog.asset");
+            }
         }
 
         static Sprite ResolveContentIcon(string content)

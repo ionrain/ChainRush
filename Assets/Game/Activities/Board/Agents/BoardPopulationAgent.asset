@@ -91,48 +91,100 @@ MonoBehaviour:
     - rid: 6092003862744662052
       type: {class: PopulationAgentData, ns: Core.Orchestration, asm: Core}
       data:
-        fill:
-          rid: 6092003862744662053
+        progress:
+          resource: {fileID: 0}
+          owner:
+            bindingType: 0
+            owner:
+              source: {fileID: 0}
+          walletTags: []
+          scaleType: 0
+          relativeBase: 0
+        volume:
+          rid: 6092003894124871680
+        singleAssetPerShape: 1
+        releases:
+        - interval:
+            minimum: 0
+            maximum: 0
+            hasMaximum: 0
+          space:
+            scopeType: 1
+            requiredTags:
+            - {fileID: 11400000, guid: a70bd9d1bf3b1457fbe47de7812a7fed, type: 2}
+            excludedTags: []
+            requiredCellTags: []
+            excludedCellTags: []
+          shapes:
+          - shape: {fileID: 11400000, guid: bb87873e608bd483d86718dbdd98536c, type: 2}
+            usages:
+            - fillType: 0
+              position: {x: 0, y: 0, z: 0}
+              size: {x: 2, y: 1, z: 1}
+              rotation: {x: 0, y: 0, z: 0}
+              cellSize: {x: 1000, y: 1, z: 1000}
+              spacing: {x: 0, y: 0, z: 0}
+            - fillType: 0
+              position: {x: 0, y: 0, z: 0}
+              size: {x: 2, y: 1, z: 1}
+              rotation: {x: 0, y: 90, z: 0}
+              cellSize: {x: 1000, y: 1, z: 1000}
+              spacing: {x: 0, y: 0, z: 0}
+            share: 0.5
+            desiredCount:
+              min: 0
+              max: 8
+          - shape: {fileID: 11400000, guid: 109337a645aed4c8aa505efd3b08e7bb, type: 2}
+            usages:
+            - fillType: 0
+              position: {x: 0, y: 0, z: 0}
+              size: {x: 1, y: 1, z: 1}
+              rotation: {x: 0, y: 0, z: 0}
+              cellSize: {x: 1000, y: 1, z: 1000}
+              spacing: {x: 0, y: 0, z: 0}
+            share: 0.5
+            desiredCount:
+              min: 0
+              max: 16
+          content:
+          - source:
+              rid: 6092003894124871681
+            share: 0.25
+          - source:
+              rid: 6092003894124871682
+            share: 0.25
+          - source:
+              rid: 6092003894124871683
+            share: 0.25
+          - source:
+              rid: 6092003894124871684
+            share: 0.25
         distribution:
-          rid: 6092003862744662054
+          rid: 6092003894124871685
         workBudget: 256
-        shapeRules:
-        - shape: {fileID: 11400000, guid: bb87873e608bd483d86718dbdd98536c, type: 2}
-          usages:
-          - fillType: 0
-            position: {x: 0, y: 0, z: 0}
-            size: {x: 2, y: 1, z: 1}
-            rotation: {x: 0, y: 0, z: 0}
-            cellSize: {x: 1000, y: 1, z: 1000}
-            spacing: {x: 0, y: 0, z: 0}
-          - fillType: 0
-            position: {x: 0, y: 0, z: 0}
-            size: {x: 2, y: 1, z: 1}
-            rotation: {x: 0, y: 90, z: 0}
-            cellSize: {x: 1000, y: 1, z: 1000}
-            spacing: {x: 0, y: 0, z: 0}
-          weight: 1
-          desiredCount:
-            min: 0
-            max: 8
-        - shape: {fileID: 11400000, guid: 109337a645aed4c8aa505efd3b08e7bb, type: 2}
-          usages:
-          - fillType: 0
-            position: {x: 0, y: 0, z: 0}
-            size: {x: 1, y: 1, z: 1}
-            rotation: {x: 0, y: 0, z: 0}
-            cellSize: {x: 1000, y: 1, z: 1000}
-            spacing: {x: 0, y: 0, z: 0}
-          weight: 1
-          desiredCount:
-            min: 0
-            max: 16
         shapeWalletTags:
         - {fileID: 11400000, guid: 9cbb4f47a974c42cfa008dda55386302, type: 2}
-    - rid: 6092003862744662053
-      type: {class: PopulationFillAllData, ns: Core.Orchestration, asm: Core}
-      data: 
-    - rid: 6092003862744662054
+    - rid: 6092003894124871680
+      type: {class: LongFlatProgressionData, ns: Core, asm: Core}
+      data:
+        value: 16
+    - rid: 6092003894124871681
+      type: {class: PopulationCatalogContentSourceData, ns: Core.Orchestration, asm: Core}
+      data:
+        catalog: {fileID: 11400000, guid: 1d5a88be6035845348142a2d07f8fa08, type: 2}
+    - rid: 6092003894124871682
+      type: {class: PopulationCatalogContentSourceData, ns: Core.Orchestration, asm: Core}
+      data:
+        catalog: {fileID: 11400000, guid: 24a7cf5e0b06e4dcd81cff0c3310325c, type: 2}
+    - rid: 6092003894124871683
+      type: {class: PopulationCatalogContentSourceData, ns: Core.Orchestration, asm: Core}
+      data:
+        catalog: {fileID: 11400000, guid: 3881d957fe5994dc58e313f410415ce7, type: 2}
+    - rid: 6092003894124871684
+      type: {class: PopulationCatalogContentSourceData, ns: Core.Orchestration, asm: Core}
+      data:
+        catalog: {fileID: 11400000, guid: 4cc39cf67fbbd415e92305bfc4444b80, type: 2}
+    - rid: 6092003894124871685
       type: {class: GridPopulationDistributionAlgorithmData, ns: Core.Orchestration,
         asm: Core}
       data: 

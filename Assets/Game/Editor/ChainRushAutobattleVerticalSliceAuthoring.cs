@@ -1254,7 +1254,7 @@ namespace ChainRush.Editor
                 content.Enemy,
                 EconomyFormType.Token,
                 new List<TaxonomyTermData> { content.SharedWalletTag },
-                new LongCappedProgressionData(new LongLinearProgressionData(2L, 1L), 20L)));
+                new LongCappedProgressionData(new LongLinearProgressionData(2L, 1L, 1d), 20L)));
 
             content.DropRecipe = CreateEconomyAsset<ProductionRecipeData>(
                 DropRecipePath,

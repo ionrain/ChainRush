@@ -9,11 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 07d96d3a8a82b460f99ce3205f5f6949, type: 3}
-  m_Name: LightningBoltPopulationCatalog
-  m_EditorClassIdentifier: Core::Core.Production.Authoring.ProductionCatalogData
+  m_Script: {fileID: 11500000, guid: 0de7c27447f764d15a95c544378b86c8, type: 3}
+  m_Name: SkillsPopulationProduction
+  m_EditorClassIdentifier: Core::Core.Production.Authoring.ProductionData
   domainTypePreview: 9
-  id: chainrush.production.board.population.lightningbolt.catalog
+  id: chainrush.production.board.population.skills
   title:
     m_TableReference:
       m_TableCollectionName: 
@@ -38,11 +38,14 @@ MonoBehaviour:
   tags: []
   slotFootprint: 1
   stackCapacity: 0
-  entries:
-  - recipe: {fileID: 11400000, guid: fd70c6c1dc444422797e43a48c533c32, type: 2}
-    workDuration: 1
-    recoveryDuration: 0
-    reservationPolicy: 0
+  supportedCatalogs:
+  - {fileID: 11400000, guid: 3881d957fe5994dc58e313f410415ce7, type: 2}
+  maxQueuedOrders: 1
+  maxParallelPipelines: 1
+  limitReachedPolicy: 1
+  startPolicy: 0
+  materializationProviderType: {fileID: 11400000, guid: a70bd9d1bf3b1457fbe47de7812a7fed,
+    type: 2}
   references:
     version: 2
     RefIds: []

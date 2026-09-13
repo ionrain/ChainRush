@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9969bb010093e43c6993c07d9c072f75, type: 3}
-  m_Name: PowerPopulationProducer
+  m_Name: BuffsPopulationProducer
   m_EditorClassIdentifier: Core::Core.CapabilityHosts.CapabilityHostData
   domainTypePreview: 3
-  id: chainrush.board.population-producer.power
+  id: chainrush.board.population-producer.buffs
   title:
     m_TableReference:
       m_TableCollectionName: 
@@ -48,7 +48,7 @@ MonoBehaviour:
   - wallet: {fileID: 11400000, guid: 5e352fdca6ae04c9b931f9fd2bd9519d, type: 2}
     seed:
     - entry:
-        asset: {fileID: 11400000, guid: 68f818708195a430a80fd31f38fc8470, type: 2}
+        asset: {fileID: 11400000, guid: c56e707e5229b4d3f96036fd4e16b756, type: 2}
         formType: 0
         amount: 1
       runtimeTags: []

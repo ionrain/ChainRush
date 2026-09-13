@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 07d96d3a8a82b460f99ce3205f5f6949, type: 3}
-  m_Name: SpeedPopulationCatalog
+  m_Name: BuffsPopulationCatalog
   m_EditorClassIdentifier: Core::Core.Production.Authoring.ProductionCatalogData
   domainTypePreview: 9
-  id: chainrush.production.board.population.speed.catalog
+  id: chainrush.production.board.population.buffs.catalog
   title:
     m_TableReference:
       m_TableCollectionName: 
@@ -39,7 +39,23 @@ MonoBehaviour:
   slotFootprint: 1
   stackCapacity: 0
   entries:
+  - recipe: {fileID: 11400000, guid: 32418607f817846e59d80549d1473410, type: 2}
+    workDuration: 1
+    recoveryDuration: 0
+    reservationPolicy: 0
+  - recipe: {fileID: 11400000, guid: 6403c4d276b0e4a6c9728f1e4889490e, type: 2}
+    workDuration: 1
+    recoveryDuration: 0
+    reservationPolicy: 0
+  - recipe: {fileID: 11400000, guid: 72fe874669ad84cdc8ed6d131067a4e9, type: 2}
+    workDuration: 1
+    recoveryDuration: 0
+    reservationPolicy: 0
   - recipe: {fileID: 11400000, guid: d2ed28b53db5644759c674bd4a0cf128, type: 2}
+    workDuration: 1
+    recoveryDuration: 0
+    reservationPolicy: 0
+  - recipe: {fileID: 11400000, guid: 108d16893c2314214a8c1bf58b8f777c, type: 2}
     workDuration: 1
     recoveryDuration: 0
     reservationPolicy: 0

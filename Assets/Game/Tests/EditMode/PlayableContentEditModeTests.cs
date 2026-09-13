@@ -90,7 +90,7 @@ namespace ChainRush.Tests.EditMode
         }
 
         [TestCaseSource(nameof(CellNames))]
-        public void EveryCell_HasASeparateSeededProducerAndARealTokenOutput(string name)
+        public void EveryCell_HasAGroupProducerAndARealTokenOutput(string name)
         {
             var cell = Load<CapabilityHostData>("Board/Economy/" + name + "BoardBase.asset");
             Assert.Contains(Load<TaxonomyTermData>("Board/Taxonomy/BoardContent.asset"), cell.Tags);
@@ -101,13 +101,15 @@ namespace ChainRush.Tests.EditMode
             Assert.IsNotNull(prefab);
             Assert.AreSame(cell.Icon, prefab.GetComponent<UnityEngine.UI.Image>().sprite);
 
-            string producerName = name == "Water" ? "BoardPopulationProducer" : name + "PopulationProducer";
+            string producerName = name == "Water" || name == "Cola" ? "BoardPopulationProducer"
+                : name == "LightningBolt" ? "SkillsPopulationProducer"
+                : name == "Gold" ? "GoldPopulationProducer" : "BuffsPopulationProducer";
             var producer = Load<CapabilityHostData>("Board/Economy/" + producerName + ".asset");
             Assert.Contains(Load<TaxonomyTermData>("Board/Taxonomy/BoardContentProducer.asset"), producer.Tags);
             var production = producer.WalletEntries.SelectMany(wallet => wallet.Seed)
                 .Select(seed => seed.Asset).OfType<ProductionData>().Single();
             var catalog = production.SupportedCatalogs.Single();
-            var entry = catalog.Entries.Single();
+            var entry = catalog.Entries.Single(item => item.Recipe.Outputs.Single().Asset == cell);
             Assert.AreEqual(1, entry.WorkDuration);
             Assert.AreEqual(0, entry.RecoveryDuration);
             Assert.AreSame(cell, entry.Recipe.Outputs.Single().Asset);
@@ -116,6 +118,21 @@ namespace ChainRush.Tests.EditMode
             var board = Load<ActivityData>("Board/Definition/BoardActivity.asset");
             Assert.AreEqual(1, board.Teams[0].Wallets.SelectMany(wallet => wallet.Seed)
                 .Count(seed => seed.Seed.Asset == producer && seed.Seed.Amount == 1));
+        }
+
+        [Test]
+        public void Board_HasFourSharedProducerCatalogs_WithAuthoredRecipeOrder()
+        {
+            var board = Load<ActivityData>("Board/Definition/BoardActivity.asset");
+            var tag = Load<TaxonomyTermData>("Board/Taxonomy/BoardContentProducer.asset");
+            var producers = board.Teams[0].Wallets.SelectMany(wallet => wallet.Seed)
+                .Select(seed => seed.Seed.Asset).OfType<CapabilityHostData>().Where(host => host.Tags.Contains(tag)).ToList();
+            Assert.AreEqual(4, producers.Count);
+            var catalogs = producers.Select(host => host.WalletEntries.SelectMany(wallet => wallet.Seed)
+                .Select(seed => seed.Asset).OfType<ProductionData>().Single().SupportedCatalogs.Single()).ToList();
+            CollectionAssert.AreEqual(new[] { 2, 5, 1, 1 }, catalogs.Select(catalog => catalog.Entries.Count));
+            CollectionAssert.AreEqual(new[] { "WaterBoardBase", "ColaBoardBase" },
+                catalogs[0].Entries.Select(entry => entry.Recipe.Outputs.Single().Asset.name));
         }
 
         [Test]

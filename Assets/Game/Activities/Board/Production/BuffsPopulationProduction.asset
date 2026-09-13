@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0de7c27447f764d15a95c544378b86c8, type: 3}
-  m_Name: PowerPopulationProduction
+  m_Name: BuffsPopulationProduction
   m_EditorClassIdentifier: Core::Core.Production.Authoring.ProductionData
   domainTypePreview: 9
-  id: chainrush.production.board.population.power
+  id: chainrush.production.board.population.buffs
   title:
     m_TableReference:
       m_TableCollectionName: 
@@ -39,7 +39,7 @@ MonoBehaviour:
   slotFootprint: 1
   stackCapacity: 0
   supportedCatalogs:
-  - {fileID: 11400000, guid: 1271e7c6a20a143dc8c8dfaea90c69f0, type: 2}
+  - {fileID: 11400000, guid: 24a7cf5e0b06e4dcd81cff0c3310325c, type: 2}
   maxQueuedOrders: 1
   maxParallelPipelines: 1
   limitReachedPolicy: 1

@@ -88,6 +88,7 @@ namespace ChainRush.Editor
             EditorUtility.SetDirty(runtime);
             EditorUtility.SetDirty(adapters);
             AssetDatabase.SaveAssets();
+            ChainRushBoardPlannerAuthoring.DeletePerAssetPopulationProducers();
             Debug.Log("Playable content authored: nine Board cells, eight deployable forms and stationary Perfume. Runtime code unchanged.");
         }
 

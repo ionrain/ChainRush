@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: BoardPopulationProduction
   m_EditorClassIdentifier: Core::Core.Production.Authoring.ProductionData
   domainTypePreview: 9
-  id: chainrush.production.board.population.water
+  id: chainrush.production.board.population.units
   title:
     m_TableReference:
       m_TableCollectionName: 

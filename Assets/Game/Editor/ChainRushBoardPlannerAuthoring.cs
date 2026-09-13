@@ -331,7 +331,7 @@ namespace ChainRush.Editor
                 EconomyFormType.Stack,
                 new List<TaxonomyTermData> { sharedWalletTag },
                 null,
-                new LongStepProgressionData(6L, 2L, 1L)));
+                new LongStepProgressionData(6L, 2L, 1L, 1d, 1d)));
             recipe.Outputs.Clear();
             recipe.Outputs.Add(new ProductionOutputData(
                 turnToken,
@@ -633,20 +633,34 @@ namespace ChainRush.Editor
             var shapes = LoadBoardSpatialShapes();
             var size = new Vector3Int(1000, 1, 1000);
             var lineSize = new Vector3Int(2, 1, 1);
-            SetField(population, "fill", new PopulationFillAllData());
+            SetField(population, "progress", new PopulationProgressData());
+            SetField(population, "volume", new LongFlatProgressionData(16));
+            SetField(population, "singleAssetPerShape", true);
             SetField(population, "distribution", new GridPopulationDistributionAlgorithmData());
             SetField(population, "workBudget", 256);
-            SetField(population, "shapeRules", new List<PopulationShapeRuleData>
+            var shapeRules = new List<PopulationShapeRuleData>
             {
                 new PopulationShapeRuleData(shapes.Line, new List<SpatialShapeUsageData>
                 {
                     new SpatialShapeUsageData(SpatialShapeFillType.Inside, Vector3Int.zero, lineSize, Vector3Int.zero, size, Vector3Int.zero),
                     new SpatialShapeUsageData(SpatialShapeFillType.Inside, Vector3Int.zero, lineSize, new Vector3Int(0, 90, 0), size, Vector3Int.zero)
-                }, 1, new IntRange(0, 8)),
+                }, 0.5f, new IntRange(0, 8)),
                 new PopulationShapeRuleData(shapes.Single, new List<SpatialShapeUsageData>
                 {
                     new SpatialShapeUsageData(SpatialShapeFillType.Inside, Vector3Int.zero, Vector3Int.one, Vector3Int.zero, size, Vector3Int.zero)
-                }, 1, new IntRange(0, 16))
+                }, 0.5f, new IntRange(0, 16))
+            };
+            SetField(population, "releases", new List<PopulationReleaseData>
+            {
+                new PopulationReleaseData(new ProgressInterval(0, 0, false),
+                    CreateBoardRegionQuery(LoadRequired<TaxonomyTermData>(BoardCellTagPath)), shapeRules,
+                    new List<PopulationContentRuleData>
+                    {
+                        new PopulationContentRuleData(new PopulationCatalogContentSourceData(LoadRequired<ProductionCatalogData>(PopulationCatalogPath)), 0.25f),
+                        new PopulationContentRuleData(new PopulationCatalogContentSourceData(LoadRequired<ProductionCatalogData>(BoardRoot + "/Production/BuffsPopulationCatalog.asset")), 0.25f),
+                        new PopulationContentRuleData(new PopulationCatalogContentSourceData(LoadRequired<ProductionCatalogData>(BoardRoot + "/Production/SkillsPopulationCatalog.asset")), 0.25f),
+                        new PopulationContentRuleData(new PopulationCatalogContentSourceData(LoadRequired<ProductionCatalogData>(BoardRoot + "/Production/GoldPopulationCatalog.asset")), 0.25f)
+                    })
             });
         }
 

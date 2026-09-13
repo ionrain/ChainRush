@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: BoardPopulationCatalog
   m_EditorClassIdentifier: Core::Core.Production.Authoring.ProductionCatalogData
   domainTypePreview: 9
-  id: chainrush.production.board.population.water.catalog
+  id: chainrush.production.board.population.units.catalog
   title:
     m_TableReference:
       m_TableCollectionName: 
@@ -40,6 +40,10 @@ MonoBehaviour:
   stackCapacity: 0
   entries:
   - recipe: {fileID: 11400000, guid: e30a05f8fdca94b2ab5d68d244faaa83, type: 2}
+    workDuration: 1
+    recoveryDuration: 0
+    reservationPolicy: 0
+  - recipe: {fileID: 11400000, guid: 8586d285e92494c7fb465f16132e61ec, type: 2}
     workDuration: 1
     recoveryDuration: 0
     reservationPolicy: 0

@@ -106,8 +106,8 @@ namespace ChainRush.Tests.PlayMode
             ActivityLauncher.ResetRuntime();
             ActivityService.ResetRuntime();
             ProjectionService.ResetRuntime();
-            _restoreBoardSeeds?.Invoke();
-            _restoreBoardSeeds = null;
+            _restoreBoardContent?.Invoke();
+            _restoreBoardContent = null;
             _restoreBattleSeeds?.Invoke();
             _restoreBattleSeeds = null;
 
@@ -171,7 +171,7 @@ namespace ChainRush.Tests.PlayMode
         }
 
         const string PerfumePath = "Assets/Game/Activities/Shared/Units/Perfume/Perfume.asset";
-        System.Action _restoreBoardSeeds;
+        System.Action _restoreBoardContent;
 
         [UnityTest]
         public IEnumerator RuntimeComposition_LaunchesBoardOnceAndParentCloseClosesIt()
@@ -393,7 +393,7 @@ namespace ChainRush.Tests.PlayMode
             [Values("Water", "Cola")] string content,
             [ValueSource(nameof(BoardSelectionStarts))] int firstSelection)
         {
-            SelectOnlyBoardProducer(content);
+            SelectOnlyBoardContent(content);
             var capture = new PlayableRuntimeCapture();
             capture.Register();
             try
@@ -472,7 +472,7 @@ namespace ChainRush.Tests.PlayMode
         [UnityTest]
         public IEnumerator SelectedUnit_ApproachesAndDamagesEnemy([Values("Water", "Cola")] string content)
         {
-            SelectOnlyBoardProducer(content);
+            SelectOnlyBoardContent(content);
             var activity = AssetDatabase.LoadAssetAtPath<ActivityData>("Assets/Game/Activities/Autobattle/Definition/AutobattleActivity.asset");
             var hero = AssetDatabase.LoadAssetAtPath<CapabilityHostData>(PerfumePath);
             var seeds = activity.Teams[0].Wallets.Single(wallet => wallet.Seed.Any(entry => entry.Seed.Asset == hero)).Seed;
@@ -533,7 +533,7 @@ namespace ChainRush.Tests.PlayMode
         public IEnumerator BoardStubSelection_ConsumesOnlySelectedCellsAndRefills(
             [Values("LightningBolt", "Power", "Defense", "Health", "Speed", "SkillSpeed", "Gold")] string content)
         {
-            SelectOnlyBoardProducer(content);
+            SelectOnlyBoardContent(content);
             yield return LaunchPlayableActivities();
             Assert.IsTrue(TryFindRunningActivities(out var battle, out var board));
             var player = battle.Participants.Single(participant => participant.TeamIndex == 0);
@@ -552,18 +552,21 @@ namespace ChainRush.Tests.PlayMode
             Assert.IsTrue(ActivityService.Close(battle.Id, ActivityCloseCauseType.Manual));
         }
 
-        void SelectOnlyBoardProducer(string content)
+        void SelectOnlyBoardContent(string content)
         {
-            var board = AssetDatabase.LoadAssetAtPath<ActivityData>(BoardActivityPath);
-            var tag = AssetDatabase.LoadAssetAtPath<TaxonomyTermData>("Assets/Game/Activities/Board/Taxonomy/BoardContentProducer.asset");
-            string name = content == "Water" ? "BoardPopulationProducer" : content + "PopulationProducer";
-            var selected = AssetDatabase.LoadAssetAtPath<CapabilityHostData>("Assets/Game/Activities/Board/Economy/" + name + ".asset");
+            var definition = AssetDatabase.LoadAssetAtPath<AgentDefinitionData>(
+                "Assets/Game/Activities/Board/Agents/BoardPopulationAgent.asset");
+            var population = (PopulationAgentData)definition.Agent;
+            var selected = AssetDatabase.LoadAssetAtPath<CapabilityHostData>(
+                "Assets/Game/Activities/Board/Economy/" + content + "BoardBase.asset");
             Assert.NotNull(selected);
-            var seed = board.Teams[0].Wallets.Single(wallet => wallet.Seed.Any(entry => entry.Seed.Asset == selected)).Seed;
-            var original = new List<ActivityWalletSeedEntryData>(seed);
-            // This fixture limits available producers, not the production or materialization path.
-            seed.RemoveAll(entry => entry.Seed.Asset.Tags.Contains(tag) && entry.Seed.Asset != selected);
-            _restoreBoardSeeds = () => { seed.Clear(); seed.AddRange(original); };
+            var release = population.Releases.Single();
+            var field = typeof(PopulationReleaseData).GetField("content", BindingFlags.Instance | BindingFlags.NonPublic);
+            var original = field.GetValue(release);
+            // The fixture selects content; grouped producers and actual orders remain unchanged.
+            field.SetValue(release, new List<PopulationContentRuleData>
+            { new PopulationContentRuleData(new PopulationAssetContentSourceData(selected), 1f) });
+            _restoreBoardContent = () => field.SetValue(release, original);
         }
 
         static void IssueTestTurns(IEconomyAssetOwner owner, TaxonomyTermData wallet, EconomyAssetData turn, int count)

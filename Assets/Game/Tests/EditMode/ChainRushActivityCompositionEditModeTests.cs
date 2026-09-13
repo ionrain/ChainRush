@@ -652,15 +652,20 @@ namespace ChainRush.Tests.EditMode
                 populationTargets.RequiredAssetTags);
             Assert.AreEqual(AgentOwnerSelectionType.ParticipantOwner, populationAgent.TargetSelectionCriteria
                 .Select(entry => entry.Criterion).OfType<OwnerCriterionData>().Single().OwnerSelectionType);
-            Assert.IsInstanceOf<PopulationFillAllData>(population.Fill);
+            Assert.AreEqual(16, ((LongFlatProgressionData)population.Volume).Value);
+            Assert.IsTrue(population.SingleAssetPerShape);
             Assert.IsInstanceOf<GridPopulationDistributionAlgorithmData>(population.Distribution);
             Assert.AreEqual(256, population.WorkBudget);
-            Assert.AreEqual(8, population.ShapeRules[0].DesiredCount.Max);
-            Assert.AreEqual(16, population.ShapeRules[1].DesiredCount.Max);
-            Assert.AreEqual(0, population.ShapeRules[0].DesiredCount.Min);
-            Assert.AreEqual(0, population.ShapeRules[1].DesiredCount.Min);
-            Assert.AreEqual(2, population.ShapeRules[0].Usages.Count);
-            Assert.AreEqual(1, population.ShapeRules[1].Usages.Count);
+            var release = population.Releases.Single();
+            Assert.AreEqual(8, release.Shapes[0].DesiredCount.Max);
+            Assert.AreEqual(16, release.Shapes[1].DesiredCount.Max);
+            Assert.AreEqual(0, release.Shapes[0].DesiredCount.Min);
+            Assert.AreEqual(0, release.Shapes[1].DesiredCount.Min);
+            Assert.AreEqual(2, release.Shapes[0].Usages.Count);
+            Assert.AreEqual(1, release.Shapes[1].Usages.Count);
+            Assert.IsTrue(release.Shapes.All(shape => shape.Share == 0.5f));
+            Assert.AreEqual(4, release.Content.Count);
+            Assert.IsTrue(release.Content.All(content => content.Source is PopulationCatalogContentSourceData && content.Share == 0.25f));
             var match = populationAgent.MatchConditions.OfType<ObjectiveConditionMaterializedRegionCoverage>().Single();
             Assert.IsTrue(match.Space.Matches(success.Space));
             Assert.AreSame(match.EconomyAsset, success.EconomyAsset);
@@ -688,17 +693,17 @@ namespace ChainRush.Tests.EditMode
                 seed.Seed.FormType == EconomyFormType.Stack
                 && seed.Seed.Amount == 1L
                 && seed.MaterializationType == ActivitySeedMaterializationType.None));
-            Assert.AreEqual(2, population.ShapeRules.Count);
-            Assert.AreSame(lineShape, population.ShapeRules[0].Shape);
-            Assert.AreSame(singleShape, population.ShapeRules[1].Shape);
-            Assert.AreEqual(new Vector3Int(2, 1, 1), population.ShapeRules[0].Usages[0].Size);
-            Assert.AreEqual(new Vector3Int(2, 1, 1), population.ShapeRules[0].Usages[1].Size);
-            Assert.AreEqual(Vector3Int.zero, population.ShapeRules[0].Usages[0].Rotation);
-            Assert.AreEqual(new Vector3Int(0, 90, 0), population.ShapeRules[0].Usages[1].Rotation);
-            Assert.AreEqual(Vector3Int.one, population.ShapeRules[1].Usages[0].Size);
-            foreach (var rule in population.ShapeRules)
+            Assert.AreEqual(2, release.Shapes.Count);
+            Assert.AreSame(lineShape, release.Shapes[0].Shape);
+            Assert.AreSame(singleShape, release.Shapes[1].Shape);
+            Assert.AreEqual(new Vector3Int(2, 1, 1), release.Shapes[0].Usages[0].Size);
+            Assert.AreEqual(new Vector3Int(2, 1, 1), release.Shapes[0].Usages[1].Size);
+            Assert.AreEqual(Vector3Int.zero, release.Shapes[0].Usages[0].Rotation);
+            Assert.AreEqual(new Vector3Int(0, 90, 0), release.Shapes[0].Usages[1].Rotation);
+            Assert.AreEqual(Vector3Int.one, release.Shapes[1].Usages[0].Size);
+            foreach (var rule in release.Shapes)
             {
-                Assert.AreEqual(1, rule.Weight);
+                Assert.AreEqual(0.5f, rule.Share);
                 foreach (var usage in rule.Usages)
                 {
                     Assert.AreEqual(new Vector3Int(1000, 1, 1000), usage.CellSize);

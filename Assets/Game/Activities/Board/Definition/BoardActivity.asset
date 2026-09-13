@@ -170,7 +170,7 @@ MonoBehaviour:
         projectionTargetTags: []
       - seed:
           entry:
-            asset: {fileID: 11400000, guid: 82e3aeb7b70aa4169a53b9b8b2340672, type: 2}
+            asset: {fileID: 11400000, guid: ad3b2db3ed48f4344a61f82c0f6a2047, type: 2}
             formType: 1
             amount: 1
           runtimeTags: []
@@ -179,52 +179,7 @@ MonoBehaviour:
         projectionTargetTags: []
       - seed:
           entry:
-            asset: {fileID: 11400000, guid: e2a15902bc7fb4f379c57b1bcc2999ac, type: 2}
-            formType: 1
-            amount: 1
-          runtimeTags: []
-        materializationType: 2
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: 1bd7059d78ba241108b53f44898f44c8, type: 2}
-            formType: 1
-            amount: 1
-          runtimeTags: []
-        materializationType: 2
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: ed9aae8be00664ef49582f14e2f6e34b, type: 2}
-            formType: 1
-            amount: 1
-          runtimeTags: []
-        materializationType: 2
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: c1c6d2d09bf8e4b88ae4d0261321145f, type: 2}
-            formType: 1
-            amount: 1
-          runtimeTags: []
-        materializationType: 2
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: 9a2d72689719a4b6f827a61c8012fd3f, type: 2}
-            formType: 1
-            amount: 1
-          runtimeTags: []
-        materializationType: 2
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: 5e813ffd2ecb74eccbc42a4b7a46eddf, type: 2}
+            asset: {fileID: 11400000, guid: 796ec506a236747de816de4bf1c92bd8, type: 2}
             formType: 1
             amount: 1
           runtimeTags: []

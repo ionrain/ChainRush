@@ -45,6 +45,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d9800f17d63584f93bdbe3e13e886312
+    m_Address: Assets/Game/Activities/Board/Projection/HealBoardBase.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: dcbfdd2064f0f4a89995bb3bb273242d
     m_Address: Assets/Game/Activities/Board/Projection/HealthBoardBase.prefab
     m_ReadOnly: 0

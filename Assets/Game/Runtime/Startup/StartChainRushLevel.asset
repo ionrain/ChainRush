@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 733ef95f775844d0da31601db1a74ca5, type: 3}
+  m_Name: StartChainRushLevel
+  m_EditorClassIdentifier: Assembly-CSharp::ChainRush.Gameplay.StartChainRushLevelActionData
+  levels:
+  - levelId: Level01
+    heroId: PerfumeData
+    flow: {fileID: 11400000, guid: d0b90f1e486f44ebe8777488d6aa161e, type: 2}
+  - levelId: Level01
+    heroId: TabascoData
+    flow: {fileID: 11400000, guid: 3c0a9fbbe90ac4674b233c5151a83069, type: 2}
+  - levelId: Level02
+    heroId: PerfumeData
+    flow: {fileID: 11400000, guid: 6ec1cc2b192d748b8b3058c34929db0f, type: 2}
+  - levelId: Level02
+    heroId: TabascoData
+    flow: {fileID: 11400000, guid: 4257cfe74b20547288248e20d09c1369, type: 2}
+  externalKey: chainrush.flow-runtime.autobattle

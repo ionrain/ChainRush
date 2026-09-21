@@ -26,7 +26,7 @@ namespace ChainRush.Tests.EditMode
         const string Root = "Assets/Game/Activities/";
         static readonly List<string> CellNames = new List<string>
         {
-            "Water", "Cola", "LightningBolt", "Power", "Defense", "Health", "Speed", "SkillSpeed", "Gold"
+            "Water", "Cola", "LightningBolt", "Power", "Defense", "Health", "Speed", "SkillSpeed", "Gold", "Heal"
         };
 
         [TestCase("Water")]
@@ -103,7 +103,7 @@ namespace ChainRush.Tests.EditMode
 
             string producerName = name == "Water" || name == "Cola" ? "BoardPopulationProducer"
                 : name == "LightningBolt" ? "SkillsPopulationProducer"
-                : name == "Gold" ? "GoldPopulationProducer" : "BuffsPopulationProducer";
+                : name == "Gold" ? "GoldPopulationProducer" : name == "Heal" ? "BoostersPopulationProducer" : "BuffsPopulationProducer";
             var producer = Load<CapabilityHostData>("Board/Economy/" + producerName + ".asset");
             Assert.Contains(Load<TaxonomyTermData>("Board/Taxonomy/BoardContentProducer.asset"), producer.Tags);
             var production = producer.WalletEntries.SelectMany(wallet => wallet.Seed)
@@ -121,22 +121,22 @@ namespace ChainRush.Tests.EditMode
         }
 
         [Test]
-        public void Board_HasFourSharedProducerCatalogs_WithAuthoredRecipeOrder()
+        public void Board_HasFiveSharedProducerCatalogs_WithAuthoredRecipeOrder()
         {
             var board = Load<ActivityData>("Board/Definition/BoardActivity.asset");
             var tag = Load<TaxonomyTermData>("Board/Taxonomy/BoardContentProducer.asset");
             var producers = board.Teams[0].Wallets.SelectMany(wallet => wallet.Seed)
                 .Select(seed => seed.Seed.Asset).OfType<CapabilityHostData>().Where(host => host.Tags.Contains(tag)).ToList();
-            Assert.AreEqual(4, producers.Count);
+            Assert.AreEqual(5, producers.Count);
             var catalogs = producers.Select(host => host.WalletEntries.SelectMany(wallet => wallet.Seed)
                 .Select(seed => seed.Asset).OfType<ProductionData>().Single().SupportedCatalogs.Single()).ToList();
-            CollectionAssert.AreEqual(new[] { 2, 5, 1, 1 }, catalogs.Select(catalog => catalog.Entries.Count));
+            CollectionAssert.AreEqual(new[] { 2, 5, 1, 1, 1 }, catalogs.Select(catalog => catalog.Entries.Count));
             CollectionAssert.AreEqual(new[] { "WaterBoardBase", "ColaBoardBase" },
                 catalogs[0].Entries.Select(entry => entry.Recipe.Outputs.Single().Asset.name));
         }
 
         [Test]
-        public void StubConsumeOperators_AreExactSelectedTokensAndCannotConsumeUnitCells()
+        public void EffectCellConsumeOperators_AreExactSelectedTokensAndCannotConsumeUnitCells()
         {
             var brain = Load<OrchestratorAIBrainData>("Board/Orchestration/BoardBrain.asset");
             var selected = Load<TaxonomyTermData>("Board/Taxonomy/BoardMergeSelected.asset");
@@ -145,7 +145,7 @@ namespace ChainRush.Tests.EditMode
                 .Where(operation => Read<EconomyOperation>(operation, "operation") == EconomyOperation.Consume
                     && Read<EconomyEntrySelectionData>(operation, "selection").FormTypes.Contains(EconomyFormType.Token)).ToList();
             Assert.AreEqual(7, operators.Count);
-            foreach (string name in CellNames.Skip(2))
+            foreach (string name in CellNames.Skip(2).Where(value => value != "Gold"))
             {
                 var cell = Load<CapabilityHostData>("Board/Economy/" + name + "BoardBase.asset");
                 var operation = operators.Single(item => Read<EconomyEntrySelectionData>(item, "selection").ExactAsset == cell);
@@ -208,9 +208,9 @@ namespace ChainRush.Tests.EditMode
             Assert.AreEqual(EconomyFormType.Token, combatSeeds[0].Seed.FormType);
             Assert.AreEqual(ActivitySeedMaterializationType.Spatial, combatSeeds[0].MaterializationType);
             CollectionAssert.AreEqual(new[] { Load<TaxonomyTermData>("Autobattle/Taxonomy/HeroSpawn.asset") }, combatSeeds[0].MaterializationMarkerTags);
-            Assert.IsFalse(hero.SupportsCapability(CapabilityHostType.MovementOwner));
+            Assert.IsTrue(hero.SupportsCapability(CapabilityHostType.MovementOwner));
             var seedAssets = hero.WalletEntries.SelectMany(wallet => wallet.Seed).Select(seed => seed.Asset).ToList();
-            Assert.IsFalse(seedAssets.OfType<MovementData>().Any());
+            Assert.AreEqual(1, seedAssets.OfType<MovementData>().Count());
             var brain = seedAssets.OfType<AIBrainData>().Single();
             var actions = brain.Nodes.SelectMany(node => node.States).SelectMany(state => state.OnTickActions).ToList();
             Assert.AreEqual(2, actions.OfType<SelectEntityTargetByQueryAIBrainActionData>().Count());

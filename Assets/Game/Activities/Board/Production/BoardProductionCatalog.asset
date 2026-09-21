@@ -71,6 +71,10 @@ MonoBehaviour:
     workDuration: 1
     recoveryDuration: 0
     reservationPolicy: 0
+  - recipe: {fileID: 11400000, guid: 36b32c14865b64232883d4f6566c434f, type: 2}
+    workDuration: 1
+    recoveryDuration: 0
+    reservationPolicy: 0
   references:
     version: 2
     RefIds: []

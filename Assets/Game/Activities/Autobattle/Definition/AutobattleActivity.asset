@@ -118,12 +118,37 @@ MonoBehaviour:
         materializationMarkerTags:
         - {fileID: 11400000, guid: dff54a12e3d9149bbb614308f1b2d9c9, type: 2}
         projectionTargetTags: []
+      - seed:
+          entry:
+            asset: {fileID: 11400000, guid: 259d489182ff948c89087a556c82369d, type: 2}
+            formType: 1
+            amount: 1
+          runtimeTags: []
+        materializationType: 1
+        materializationMarkerTags:
+        - {fileID: 11400000, guid: ebef92a3088334b35ac1c85712d9b9e5, type: 2}
+        projectionTargetTags: []
+      - seed:
+          entry:
+            asset: {fileID: 11400000, guid: 325726bf70ad4447db401a76da614e20, type: 2}
+            formType: 1
+            amount: 1
+          runtimeTags: []
+        materializationType: 1
+        materializationMarkerTags:
+        - {fileID: 11400000, guid: c6d545551ee8d4241a747e0d76963f98, type: 2}
+        projectionTargetTags: []
     features:
     - {fileID: 11400000, guid: 847659956c5e7433da259fcf9cb220da, type: 2}
+    - {fileID: 11400000, guid: 819ec13f3c9884c889185ff91cceaf36, type: 2}
+    - {fileID: 11400000, guid: a7767c6e29be94717b1bb2251cab72b6, type: 2}
+    - {fileID: 11400000, guid: b21b010eabeab4d49ac7a4c7b1824086, type: 2}
+    - {fileID: 11400000, guid: 1be19a74227c54c1488d51b8ffef11f4, type: 2}
+    - {fileID: 11400000, guid: 97f7eef02a55f4e738ca32ae5d7da3e7, type: 2}
   - slotCount: 1
     entryRules: []
     objectives:
-    - template: {fileID: 11400000, guid: 7d1c0730e3fb540cdb47545073e0dee1, type: 2}
+    - template: {fileID: 11400000, guid: 922fec8d849ac4d9b8fb9a4d9c308120, type: 2}
       successScoreDelta: 0
       failScoreDelta: 0
     wallets:
@@ -139,8 +164,21 @@ MonoBehaviour:
         materializationMarkerTags:
         - {fileID: 11400000, guid: ffd72531a038d4e2b9d368cb5752f29a, type: 2}
         projectionTargetTags: []
+      - seed:
+          entry:
+            asset: {fileID: 11400000, guid: 1ffd8c4e50eea4ebd84c03248bcbb087, type: 2}
+            formType: 0
+            amount: 1
+          runtimeTags: []
+        materializationType: 0
+        materializationMarkerTags: []
+        projectionTargetTags: []
     features:
-    - {fileID: 11400000, guid: 7f4894a7a989944bda6a9b6400c4355f, type: 2}
+    - {fileID: 11400000, guid: 56591a29192bc45a68b0cf6e8fc89441, type: 2}
+    - {fileID: 11400000, guid: e04a335a514c4473a9bf4beafd04fe00, type: 2}
+    - {fileID: 11400000, guid: 834fc1519321946c2ae39ae19248ef11, type: 2}
+    - {fileID: 11400000, guid: 474d8d07040e84046a77913d414d01cd, type: 2}
+    - {fileID: 11400000, guid: 87ab480234374411ea97761c12821b4a, type: 2}
   activityContextTag: {fileID: 11400000, guid: 1d56d6d471e9643298aa95ba74ca0c9a, type: 2}
   worldWallets:
   - wallet: {fileID: 11400000, guid: 35daba52fc3bc4c4eb8531b17e4565bc, type: 2}

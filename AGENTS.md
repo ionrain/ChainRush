@@ -114,9 +114,8 @@ These rules are strict for project-owned code and naming.
    If the migration reveals a missing component, operator, adapter, or ownership decision required to preserve current behavior, stop and present a concrete migration plan that names the missing piece, its inputs/outputs, affected files, and behavior impact before changing more code.
    Never claim an approved architecture has been implemented when only a partial wrapper, bridge, or coarse compatibility layer has been created.
 
-22. Never use Unity MCP for this project in any task.
-   Do not call Unity MCP tools, Unity MCP skills, or `unity-mcp-cli` for inspection, asset editing, logs, tests, play mode, scene work, or any other project operation.
-   Use repository files, standard command-line tools, Unity batchmode commands when explicitly appropriate, and direct code/build/test inspection instead.
+22. Unity CLI, Unity MCP tools, and Unity plugin skills may be used for project operations.
+   Repository files, standard command-line tools, Unity batchmode commands, and direct code/build/test inspection remain available as appropriate for the task.
 
 23. When asking the user a question, stop and wait for their explicit answer for as long as necessary.
    Never silently choose a recommended option, infer an answer from missing input, continue after a timeout, or apply any default on the user's behalf.
@@ -126,3 +125,10 @@ These rules are strict for project-owned code and naming.
 24. Do not prefix files under `Assets/Game/Activities` with the project name `ChainRush`.
    Activity folders already provide the project and domain context, so use names such as `BoardActivity.asset`, `BoardUI.prefab`, and `BoardUIController.cs`.
    This rule applies to activity assets, prefabs, and scripts; globally scoped runtime identifiers and C# namespaces remain project-qualified where needed to prevent collisions.
+
+25. Tests may be run ONLY AFTER the ENTIRE approved implementation plan is complete, and ONLY AFTER the user explicitly approves running tests.
+   Both conditions are mandatory. Completing one stage, a subset of changes, or a supposedly independent block is not completion of the plan.
+   Approval of the plan, an instruction to implement or continue, and silence are not permission to run tests.
+   This restriction covers every test run, including focused diagnostic/reproducing tests, smoke tests, package suites, integration tests, FullUnitChain, and tests launched indirectly through scripts, agents, tools, or automation.
+   Do not request test approval before completing the implementation. Once implementation is complete, report that fact and wait for explicit approval before any test execution.
+   This rule takes precedence over per-stage validation and diagnostic instructions that would otherwise require an earlier test run. Use existing evidence in the meantime, and do not claim unperformed validation has passed.

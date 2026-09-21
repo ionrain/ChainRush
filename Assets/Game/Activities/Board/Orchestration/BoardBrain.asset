@@ -20,26 +20,26 @@ MonoBehaviour:
   - rid: 2807516699219197956
   - rid: 2807516701411770468
   - rid: 9301
-  - rid: 6092003862744662104
-  - rid: 6092003862744662105
-  - rid: 6092003862744662106
-  - rid: 6092003862744662107
-  - rid: 6092003862744662108
-  - rid: 6092003862744662109
-  - rid: 6092003862744662110
-  - rid: 6092003907508109312
-  - rid: 6092003907508109313
+  - rid: 6092004074608394271
+  - rid: 6092004074608394272
+  - rid: 6092004074608394273
+  - rid: 6092004074608394274
+  - rid: 6092004074608394275
+  - rid: 6092004074608394276
+  - rid: 6092004074608394277
+  - rid: 6092004074608394278
+  - rid: 6092004074608394279
   decisionGraph:
     nodes:
-    - rid: 6092003907508109314
-    - rid: 6092003907508109315
-    - rid: 6092003862744662113
-    - rid: 6092003862744662114
-    - rid: 6092003862744662115
-    - rid: 6092003862744662116
-    - rid: 6092003862744662117
-    - rid: 6092003862744662118
-    - rid: 6092003862744662119
+    - rid: 6092004074608394280
+    - rid: 6092004074608394281
+    - rid: 6092004074608394282
+    - rid: 6092004074608394283
+    - rid: 6092004074608394284
+    - rid: 6092004074608394285
+    - rid: 6092004074608394286
+    - rid: 6092004074608394287
+    - rid: 6092004074608394288
     - rid: 2807516699219197958
     - rid: 2807516699219197959
     - rid: 2807516699219197960
@@ -124,7 +124,7 @@ MonoBehaviour:
         conditions:
         - rid: 2807516699219197970
         - rid: 2807516699219197971
-        - rid: 6092003907508109329
+        - rid: 6092004074608394316
         operatorId: {fileID: 11400000, guid: 6fcb96da5485a4d958e12a44e8eee6b1, type: 2}
     - rid: 2807516699219197961
       type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
@@ -199,7 +199,7 @@ MonoBehaviour:
         asm: Core}
       data:
         operatorId: {fileID: 11400000, guid: 95c746c927eed41b2bb874e248c67257, type: 2}
-    - rid: 6092003862744662104
+    - rid: 6092004074608394271
       type: {class: EconomyOperationDecompOpData, ns: Core.Orchestration, asm: Core}
       data:
         operatorId: {fileID: 11400000, guid: 16fc5bb1128d74dc8a8c31a47b3221eb, type: 2}
@@ -215,7 +215,7 @@ MonoBehaviour:
           - {fileID: 11400000, guid: a18044d5476ae485296043e6e5ba431f, type: 2}
           excludedRuntimeTags: []
         allowCrossOwnerTransfer: 0
-    - rid: 6092003862744662105
+    - rid: 6092004074608394272
       type: {class: EconomyOperationDecompOpData, ns: Core.Orchestration, asm: Core}
       data:
         operatorId: {fileID: 11400000, guid: 7addec06817f6454eb012c0f2ad21223, type: 2}
@@ -231,7 +231,7 @@ MonoBehaviour:
           - {fileID: 11400000, guid: a18044d5476ae485296043e6e5ba431f, type: 2}
           excludedRuntimeTags: []
         allowCrossOwnerTransfer: 0
-    - rid: 6092003862744662106
+    - rid: 6092004074608394273
       type: {class: EconomyOperationDecompOpData, ns: Core.Orchestration, asm: Core}
       data:
         operatorId: {fileID: 11400000, guid: fb7a30e79d9d54a669b874eef5e2b440, type: 2}
@@ -247,7 +247,7 @@ MonoBehaviour:
           - {fileID: 11400000, guid: a18044d5476ae485296043e6e5ba431f, type: 2}
           excludedRuntimeTags: []
         allowCrossOwnerTransfer: 0
-    - rid: 6092003862744662107
+    - rid: 6092004074608394274
       type: {class: EconomyOperationDecompOpData, ns: Core.Orchestration, asm: Core}
       data:
         operatorId: {fileID: 11400000, guid: 11f30df25e1214612adf21001890dc79, type: 2}
@@ -263,7 +263,7 @@ MonoBehaviour:
           - {fileID: 11400000, guid: a18044d5476ae485296043e6e5ba431f, type: 2}
           excludedRuntimeTags: []
         allowCrossOwnerTransfer: 0
-    - rid: 6092003862744662108
+    - rid: 6092004074608394275
       type: {class: EconomyOperationDecompOpData, ns: Core.Orchestration, asm: Core}
       data:
         operatorId: {fileID: 11400000, guid: 7c940663470f742f397dcdf26dd96cb3, type: 2}
@@ -279,7 +279,7 @@ MonoBehaviour:
           - {fileID: 11400000, guid: a18044d5476ae485296043e6e5ba431f, type: 2}
           excludedRuntimeTags: []
         allowCrossOwnerTransfer: 0
-    - rid: 6092003862744662109
+    - rid: 6092004074608394276
       type: {class: EconomyOperationDecompOpData, ns: Core.Orchestration, asm: Core}
       data:
         operatorId: {fileID: 11400000, guid: a3e3967f488c14d67ac98a223f2ae422, type: 2}
@@ -295,142 +295,23 @@ MonoBehaviour:
           - {fileID: 11400000, guid: a18044d5476ae485296043e6e5ba431f, type: 2}
           excludedRuntimeTags: []
         allowCrossOwnerTransfer: 0
-    - rid: 6092003862744662110
+    - rid: 6092004074608394277
       type: {class: EconomyOperationDecompOpData, ns: Core.Orchestration, asm: Core}
       data:
-        operatorId: {fileID: 11400000, guid: 5c453db4dc773455c978c930e9cf49f6, type: 2}
+        operatorId: {fileID: 11400000, guid: 1afc441d0bae8417ea58a154d35f3eff, type: 2}
         operation: 4
         selection:
           walletTags:
           - {fileID: 11400000, guid: 9cbb4f47a974c42cfa008dda55386302, type: 2}
           formTypes: 01000000
-          exactAsset: {fileID: 11400000, guid: d887047fb335c425bb32708798a8d772, type: 2}
+          exactAsset: {fileID: 11400000, guid: 0cc2d8e21ee2a49a2b7f05976a530617, type: 2}
           requiredAssetTags: []
           excludedAssetTags: []
           requiredRuntimeTags:
           - {fileID: 11400000, guid: a18044d5476ae485296043e6e5ba431f, type: 2}
           excludedRuntimeTags: []
         allowCrossOwnerTransfer: 0
-    - rid: 6092003862744662113
-      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
-      data:
-        decisionId: board-consume-gold
-        conditions:
-        - rid: 6092003862744662122
-        - rid: 6092003862744662123
-        - rid: 6092003907508109322
-        operatorId: {fileID: 11400000, guid: 5c453db4dc773455c978c930e9cf49f6, type: 2}
-    - rid: 6092003862744662114
-      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
-      data:
-        decisionId: board-consume-skillspeed
-        conditions:
-        - rid: 6092003862744662124
-        - rid: 6092003862744662125
-        - rid: 6092003907508109323
-        operatorId: {fileID: 11400000, guid: a3e3967f488c14d67ac98a223f2ae422, type: 2}
-    - rid: 6092003862744662115
-      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
-      data:
-        decisionId: board-consume-speed
-        conditions:
-        - rid: 6092003862744662126
-        - rid: 6092003862744662127
-        - rid: 6092003907508109324
-        operatorId: {fileID: 11400000, guid: 7c940663470f742f397dcdf26dd96cb3, type: 2}
-    - rid: 6092003862744662116
-      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
-      data:
-        decisionId: board-consume-health
-        conditions:
-        - rid: 6092003862744662128
-        - rid: 6092003862744662129
-        - rid: 6092003907508109325
-        operatorId: {fileID: 11400000, guid: 11f30df25e1214612adf21001890dc79, type: 2}
-    - rid: 6092003862744662117
-      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
-      data:
-        decisionId: board-consume-defense
-        conditions:
-        - rid: 6092003862744662130
-        - rid: 6092003862744662131
-        - rid: 6092003907508109326
-        operatorId: {fileID: 11400000, guid: fb7a30e79d9d54a669b874eef5e2b440, type: 2}
-    - rid: 6092003862744662118
-      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
-      data:
-        decisionId: board-consume-power
-        conditions:
-        - rid: 6092003862744662132
-        - rid: 6092003862744662133
-        - rid: 6092003907508109327
-        operatorId: {fileID: 11400000, guid: 7addec06817f6454eb012c0f2ad21223, type: 2}
-    - rid: 6092003862744662119
-      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
-      data:
-        decisionId: board-consume-lightningbolt
-        conditions:
-        - rid: 6092003862744662134
-        - rid: 6092003862744662135
-        - rid: 6092003907508109328
-        operatorId: {fileID: 11400000, guid: 16fc5bb1128d74dc8a8c31a47b3221eb, type: 2}
-    - rid: 6092003862744662122
-      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
-      data:
-        factType: 1
-    - rid: 6092003862744662123
-      type: {class: ScopeDecisionConditionData, ns: Core.Orchestration, asm: Core}
-      data:
-        scopeType: 0
-    - rid: 6092003862744662124
-      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
-      data:
-        factType: 1
-    - rid: 6092003862744662125
-      type: {class: ScopeDecisionConditionData, ns: Core.Orchestration, asm: Core}
-      data:
-        scopeType: 0
-    - rid: 6092003862744662126
-      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
-      data:
-        factType: 1
-    - rid: 6092003862744662127
-      type: {class: ScopeDecisionConditionData, ns: Core.Orchestration, asm: Core}
-      data:
-        scopeType: 0
-    - rid: 6092003862744662128
-      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
-      data:
-        factType: 1
-    - rid: 6092003862744662129
-      type: {class: ScopeDecisionConditionData, ns: Core.Orchestration, asm: Core}
-      data:
-        scopeType: 0
-    - rid: 6092003862744662130
-      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
-      data:
-        factType: 1
-    - rid: 6092003862744662131
-      type: {class: ScopeDecisionConditionData, ns: Core.Orchestration, asm: Core}
-      data:
-        scopeType: 0
-    - rid: 6092003862744662132
-      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
-      data:
-        factType: 1
-    - rid: 6092003862744662133
-      type: {class: ScopeDecisionConditionData, ns: Core.Orchestration, asm: Core}
-      data:
-        scopeType: 0
-    - rid: 6092003862744662134
-      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
-      data:
-        factType: 1
-    - rid: 6092003862744662135
-      type: {class: ScopeDecisionConditionData, ns: Core.Orchestration, asm: Core}
-      data:
-        scopeType: 0
-    - rid: 6092003907508109312
+    - rid: 6092004074608394278
       type: {class: EconomyOperationDecompOpData, ns: Core.Orchestration, asm: Core}
       data:
         operatorId: {fileID: 11400000, guid: 26585210313be4e038d6dce16df3f6d8, type: 2}
@@ -445,7 +326,7 @@ MonoBehaviour:
           requiredRuntimeTags: []
           excludedRuntimeTags: []
         allowCrossOwnerTransfer: 0
-    - rid: 6092003907508109313
+    - rid: 6092004074608394279
       type: {class: EconomyOperationDecompOpData, ns: Core.Orchestration, asm: Core}
       data:
         operatorId: {fileID: 11400000, guid: 94825f20029094463ad79264f7f8ea1c, type: 2}
@@ -461,103 +342,222 @@ MonoBehaviour:
           requiredRuntimeTags: []
           excludedRuntimeTags: []
         allowCrossOwnerTransfer: 0
-    - rid: 6092003907508109314
+    - rid: 6092004074608394280
       type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
       data:
         decisionId: board-clear
         conditions:
-        - rid: 6092003907508109316
-        - rid: 6092003907508109317
-        - rid: 6092003907508109318
-        - rid: 6092003907508109319
+        - rid: 6092004074608394289
+        - rid: 6092004074608394290
+        - rid: 6092004074608394291
+        - rid: 6092004074608394292
         operatorId: {fileID: 11400000, guid: 94825f20029094463ad79264f7f8ea1c, type: 2}
-    - rid: 6092003907508109315
+    - rid: 6092004074608394281
       type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
       data:
         decisionId: board-consume-turn
         conditions:
-        - rid: 6092003907508109320
-        - rid: 6092003907508109321
+        - rid: 6092004074608394293
+        - rid: 6092004074608394294
         operatorId: {fileID: 11400000, guid: 26585210313be4e038d6dce16df3f6d8, type: 2}
-    - rid: 6092003907508109316
+    - rid: 6092004074608394282
+      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
+      data:
+        decisionId: board-consume-heal
+        conditions:
+        - rid: 6092004074608394295
+        - rid: 6092004074608394296
+        - rid: 6092004074608394297
+        operatorId: {fileID: 11400000, guid: 1afc441d0bae8417ea58a154d35f3eff, type: 2}
+    - rid: 6092004074608394283
+      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
+      data:
+        decisionId: board-consume-skillspeed
+        conditions:
+        - rid: 6092004074608394298
+        - rid: 6092004074608394299
+        - rid: 6092004074608394300
+        operatorId: {fileID: 11400000, guid: a3e3967f488c14d67ac98a223f2ae422, type: 2}
+    - rid: 6092004074608394284
+      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
+      data:
+        decisionId: board-consume-speed
+        conditions:
+        - rid: 6092004074608394301
+        - rid: 6092004074608394302
+        - rid: 6092004074608394303
+        operatorId: {fileID: 11400000, guid: 7c940663470f742f397dcdf26dd96cb3, type: 2}
+    - rid: 6092004074608394285
+      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
+      data:
+        decisionId: board-consume-health
+        conditions:
+        - rid: 6092004074608394304
+        - rid: 6092004074608394305
+        - rid: 6092004074608394306
+        operatorId: {fileID: 11400000, guid: 11f30df25e1214612adf21001890dc79, type: 2}
+    - rid: 6092004074608394286
+      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
+      data:
+        decisionId: board-consume-defense
+        conditions:
+        - rid: 6092004074608394307
+        - rid: 6092004074608394308
+        - rid: 6092004074608394309
+        operatorId: {fileID: 11400000, guid: fb7a30e79d9d54a669b874eef5e2b440, type: 2}
+    - rid: 6092004074608394287
+      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
+      data:
+        decisionId: board-consume-power
+        conditions:
+        - rid: 6092004074608394310
+        - rid: 6092004074608394311
+        - rid: 6092004074608394312
+        operatorId: {fileID: 11400000, guid: 7addec06817f6454eb012c0f2ad21223, type: 2}
+    - rid: 6092004074608394288
+      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
+      data:
+        decisionId: board-consume-lightningbolt
+        conditions:
+        - rid: 6092004074608394313
+        - rid: 6092004074608394314
+        - rid: 6092004074608394315
+        operatorId: {fileID: 11400000, guid: 16fc5bb1128d74dc8a8c31a47b3221eb, type: 2}
+    - rid: 6092004074608394289
       type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
       data:
         factType: 1
-    - rid: 6092003907508109317
+    - rid: 6092004074608394290
       type: {class: ScopeDecisionConditionData, ns: Core.Orchestration, asm: Core}
       data:
         scopeType: 0
-    - rid: 6092003907508109318
+    - rid: 6092004074608394291
       type: {class: CompareOperationDecisionConditionData, ns: Core.Orchestration,
         asm: Core}
       data:
         compareOperations: 00000000
         requireZeroTargetForEqual: 1
-    - rid: 6092003907508109319
+    - rid: 6092004074608394292
       type: {class: EconomyRequiredRuntimeTagsDecisionConditionData, ns: Core.Orchestration,
         asm: Core}
       data:
         requiredTags: []
         excludedTags:
         - {fileID: 11400000, guid: a18044d5476ae485296043e6e5ba431f, type: 2}
-    - rid: 6092003907508109320
+    - rid: 6092004074608394293
       type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
       data:
         factType: 20
-    - rid: 6092003907508109321
+    - rid: 6092004074608394294
       type: {class: ScopeDecisionConditionData, ns: Core.Orchestration, asm: Core}
       data:
         scopeType: 0
-    - rid: 6092003907508109322
+    - rid: 6092004074608394295
+      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        factType: 1
+    - rid: 6092004074608394296
+      type: {class: ScopeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        scopeType: 0
+    - rid: 6092004074608394297
       type: {class: EconomyRequiredRuntimeTagsDecisionConditionData, ns: Core.Orchestration,
         asm: Core}
       data:
         requiredTags:
         - {fileID: 11400000, guid: a18044d5476ae485296043e6e5ba431f, type: 2}
         excludedTags: []
-    - rid: 6092003907508109323
+    - rid: 6092004074608394298
+      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        factType: 1
+    - rid: 6092004074608394299
+      type: {class: ScopeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        scopeType: 0
+    - rid: 6092004074608394300
       type: {class: EconomyRequiredRuntimeTagsDecisionConditionData, ns: Core.Orchestration,
         asm: Core}
       data:
         requiredTags:
         - {fileID: 11400000, guid: a18044d5476ae485296043e6e5ba431f, type: 2}
         excludedTags: []
-    - rid: 6092003907508109324
+    - rid: 6092004074608394301
+      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        factType: 1
+    - rid: 6092004074608394302
+      type: {class: ScopeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        scopeType: 0
+    - rid: 6092004074608394303
       type: {class: EconomyRequiredRuntimeTagsDecisionConditionData, ns: Core.Orchestration,
         asm: Core}
       data:
         requiredTags:
         - {fileID: 11400000, guid: a18044d5476ae485296043e6e5ba431f, type: 2}
         excludedTags: []
-    - rid: 6092003907508109325
+    - rid: 6092004074608394304
+      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        factType: 1
+    - rid: 6092004074608394305
+      type: {class: ScopeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        scopeType: 0
+    - rid: 6092004074608394306
       type: {class: EconomyRequiredRuntimeTagsDecisionConditionData, ns: Core.Orchestration,
         asm: Core}
       data:
         requiredTags:
         - {fileID: 11400000, guid: a18044d5476ae485296043e6e5ba431f, type: 2}
         excludedTags: []
-    - rid: 6092003907508109326
+    - rid: 6092004074608394307
+      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        factType: 1
+    - rid: 6092004074608394308
+      type: {class: ScopeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        scopeType: 0
+    - rid: 6092004074608394309
       type: {class: EconomyRequiredRuntimeTagsDecisionConditionData, ns: Core.Orchestration,
         asm: Core}
       data:
         requiredTags:
         - {fileID: 11400000, guid: a18044d5476ae485296043e6e5ba431f, type: 2}
         excludedTags: []
-    - rid: 6092003907508109327
+    - rid: 6092004074608394310
+      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        factType: 1
+    - rid: 6092004074608394311
+      type: {class: ScopeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        scopeType: 0
+    - rid: 6092004074608394312
       type: {class: EconomyRequiredRuntimeTagsDecisionConditionData, ns: Core.Orchestration,
         asm: Core}
       data:
         requiredTags:
         - {fileID: 11400000, guid: a18044d5476ae485296043e6e5ba431f, type: 2}
         excludedTags: []
-    - rid: 6092003907508109328
+    - rid: 6092004074608394313
+      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        factType: 1
+    - rid: 6092004074608394314
+      type: {class: ScopeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        scopeType: 0
+    - rid: 6092004074608394315
       type: {class: EconomyRequiredRuntimeTagsDecisionConditionData, ns: Core.Orchestration,
         asm: Core}
       data:
         requiredTags:
         - {fileID: 11400000, guid: a18044d5476ae485296043e6e5ba431f, type: 2}
         excludedTags: []
-    - rid: 6092003907508109329
+    - rid: 6092004074608394316
       type: {class: EconomyRequiredRuntimeTagsDecisionConditionData, ns: Core.Orchestration,
         asm: Core}
       data:

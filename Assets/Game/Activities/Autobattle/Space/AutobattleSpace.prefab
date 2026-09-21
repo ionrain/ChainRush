@@ -48,6 +48,102 @@ MonoBehaviour:
   - {fileID: 11400000, guid: dff54a12e3d9149bbb614308f1b2d9c9, type: 2}
   topologyCoordinates: {x: -10000, y: 0, z: 0}
   cellSize: {x: 0, y: 0, z: 0}
+--- !u!1 &2541451066291696274
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6326346832838115041}
+  - component: {fileID: 1916193362069180503}
+  m_Layer: 0
+  m_Name: ColaDeploymentAnchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6326346832838115041
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2541451066291696274}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4305023672100259356}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1916193362069180503
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2541451066291696274}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1dd798c8b96144f1b993c75220d2780c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Core::Core.World.SpatialMarkerSocket
+  tags:
+  - {fileID: 11400000, guid: c6d545551ee8d4241a747e0d76963f98, type: 2}
+  topologyCoordinates: {x: -17000, y: 0, z: 0}
+  cellSize: {x: 0, y: 0, z: 0}
+--- !u!1 &3716300510385947185
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7066280327919532607}
+  - component: {fileID: 6400565272992843989}
+  m_Layer: 0
+  m_Name: WaterDeploymentAnchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7066280327919532607
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3716300510385947185}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4305023672100259356}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6400565272992843989
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3716300510385947185}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1dd798c8b96144f1b993c75220d2780c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Core::Core.World.SpatialMarkerSocket
+  tags:
+  - {fileID: 11400000, guid: ebef92a3088334b35ac1c85712d9b9e5, type: 2}
+  topologyCoordinates: {x: -16000, y: 0, z: 0}
+  cellSize: {x: 0, y: 0, z: 0}
 --- !u!1 &3901288278772878558
 GameObject:
   m_ObjectHideFlags: 0
@@ -130,6 +226,8 @@ Transform:
   - {fileID: 7484653824833480847}
   - {fileID: 7812453148825675789}
   - {fileID: 6627756266092799010}
+  - {fileID: 7066280327919532607}
+  - {fileID: 6326346832838115041}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &529461393093868893
@@ -227,8 +325,8 @@ Transform:
   m_GameObject: {fileID: 6766125950364642319}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.1, z: 0}
-  m_LocalScale: {x: 30, y: 0.1, z: 30}
+  m_LocalPosition: {x: 80, y: -0.1, z: 5}
+  m_LocalScale: {x: 200, y: 0.1, z: 40}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4305023672100259356}

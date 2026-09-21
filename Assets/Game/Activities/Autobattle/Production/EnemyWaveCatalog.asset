@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07d96d3a8a82b460f99ce3205f5f6949, type: 3}
   m_Name: EnemyWaveCatalog
   m_EditorClassIdentifier: Core::Core.Production.Authoring.ProductionCatalogData
-  domainTypePreview: 0
+  domainTypePreview: 9
   id: chainrush.production.autobattle.enemy-wave.catalog
   title:
     m_TableReference:
@@ -39,7 +39,27 @@ MonoBehaviour:
   slotFootprint: 1
   stackCapacity: 0
   entries:
+  - recipe: {fileID: 11400000, guid: 5ad3b9aafaddf45cc9174f6a11314c9c, type: 2}
+    workDuration: 1
+    recoveryDuration: 0
+    reservationPolicy: 0
   - recipe: {fileID: 11400000, guid: c7398ee9b25c54e7b98f0fc7485e6260, type: 2}
+    workDuration: 1
+    recoveryDuration: 0
+    reservationPolicy: 0
+  - recipe: {fileID: 11400000, guid: 00c19719cb8724de79e744ef3d33f3e0, type: 2}
+    workDuration: 1
+    recoveryDuration: 0
+    reservationPolicy: 0
+  - recipe: {fileID: 11400000, guid: 1bcf5d533ead242cbb513793c94e1535, type: 2}
+    workDuration: 1
+    recoveryDuration: 0
+    reservationPolicy: 0
+  - recipe: {fileID: 11400000, guid: 20cba8af621434e9380ccda05dbabed3, type: 2}
+    workDuration: 1
+    recoveryDuration: 0
+    reservationPolicy: 0
+  - recipe: {fileID: 11400000, guid: 83193b83ce4db4b308a58d6b349c1828, type: 2}
     workDuration: 1
     recoveryDuration: 0
     reservationPolicy: 0

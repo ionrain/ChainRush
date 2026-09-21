@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: EnemyWaveRecipe
   m_EditorClassIdentifier: Core::Core.Production.Authoring.ProductionRecipeData
   domainTypePreview: 9
-  id: chainrush.production.autobattle.enemy-wave.recipe
+  id: chainrush.production.autobattle.bugbrownsmall
   title:
     m_TableReference:
       m_TableCollectionName: 
@@ -45,21 +45,13 @@ MonoBehaviour:
     walletTags:
     - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
     amountProgression:
-      rid: 2807516619138138114
+      rid: 6092004074608394351
   limitMode: 0
   capValue: 0
   references:
     version: 2
     RefIds:
-    - rid: 2807516619138138114
-      type: {class: LongCappedProgressionData, ns: Core, asm: Core}
+    - rid: 6092004074608394351
+      type: {class: LongFlatProgressionData, ns: Core, asm: Core}
       data:
-        source:
-          rid: 2807516619138138115
-        maximum: 20
-    - rid: 2807516619138138115
-      type: {class: LongLinearProgressionData, ns: Core, asm: Core}
-      data:
-        baseValue: 2
-        step: 1
-        inputOrigin: 1
+        value: 1

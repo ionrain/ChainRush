@@ -23,8 +23,28 @@ namespace ChainRush.Editor
         internal const string BoardProducerTagPath = BoardRoot + "/Taxonomy/BoardContentProducer.asset";
         static readonly List<string> ContentNames = new List<string>
         {
-            "Water", "Cola", "LightningBolt", "Power", "Defense", "Health", "Speed", "SkillSpeed", "Gold"
+            "Water", "Cola", "LightningBolt", "Power", "Defense", "Health", "Speed", "SkillSpeed", "Gold", "Heal"
         };
+
+        internal static void ApplyRunBoardContent()
+        {
+            var economy = LoadRequired<EconomyDefinitionsInstallerData>("Assets/Game/Runtime/Installers/ChainRushEconomyDefinitionsInstaller.asset");
+            var taxonomy = LoadRequired<TaxonomyRuntimeInstallerData>("Assets/Game/Runtime/Installers/ChainRushTaxonomyRuntimeInstaller.asset");
+            var definitions = GetField<List<EconomyAssetData>>(economy, "assets");
+            var terms = new List<TaxonomyTermData>(GetField<TaxonomyTermData[]>(taxonomy, "terms"));
+            var water = new List<CapabilityHostData>();
+            var cola = new List<CapabilityHostData>();
+            for (int form = 1; form <= 4; form++)
+            {
+                string suffix = form == 1 ? "" : form.ToString();
+                water.Add(LoadRequired<CapabilityHostData>("Assets/Game/Activities/Shared/Units/Water/WaterUnit" + suffix + ".asset"));
+                cola.Add(LoadRequired<CapabilityHostData>("Assets/Game/Activities/Shared/Units/Cola/ColaUnit" + suffix + ".asset"));
+            }
+            ApplyPlayableBoardContent(water, cola, definitions, terms);
+            SetField(taxonomy, "terms", terms.ToArray());
+            EditorUtility.SetDirty(economy);
+            EditorUtility.SetDirty(taxonomy);
+        }
 
         internal static void ApplyPlayableBoardContent(List<CapabilityHostData> waterForms,
             List<CapabilityHostData> colaForms, List<EconomyAssetData> definitions, List<TaxonomyTermData> terms)
@@ -96,6 +116,11 @@ namespace ChainRush.Editor
                             new List<TaxonomyTermData> { sharedWalletTag }, new LongFlatProgressionData(1)));
                         mergeRecipes.Add(merge);
                     }
+                }
+                else if (content == "Gold")
+                {
+                    mergeRecipes.Add(WriteGoldRecipe(definitions));
+                    RemoveGoldConsumeOperator(brain, terms);
                 }
                 else
                 {
@@ -193,6 +218,7 @@ namespace ChainRush.Editor
                 ("Units", new List<string> { "Water", "Cola" }),
                 ("Buffs", new List<string> { "Power", "Defense", "Health", "Speed", "SkillSpeed" }),
                 ("Skills", new List<string> { "LightningBolt" }),
+                ("Boosters", new List<string> { "Heal" }),
                 ("Gold", new List<string> { "Gold" })
             };
             foreach (var group in groups)
@@ -239,6 +265,8 @@ namespace ChainRush.Editor
                 return LoadRequired<global::SkillData>("Assets/Game/Resources/Skills/SkillLightningBolt.asset").icon;
             if (content == "Gold")
                 return LoadRequired<ResourcesData>("Assets/Game/Resources/GameResourcesData.asset").Get(ResourceType.SoftCurrency).icon;
+            if (content == "Heal")
+                return LoadRequired<BoostersData>("Assets/Game/Resources/BoostersData.asset").Get(BoosterType.Heal).Icon;
             return LoadRequired<AttributesData>("Assets/Game/Resources/AttributesData.asset")
                 .GetData((global::Attribute)Enum.Parse(typeof(global::Attribute), content)).icon;
         }

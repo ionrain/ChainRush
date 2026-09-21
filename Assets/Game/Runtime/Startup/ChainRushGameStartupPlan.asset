@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: ChainRushGameStartupPlan
   m_EditorClassIdentifier: Core::Core.GameRuntime.GameStartupPlanData
   actions:
+  - {fileID: 11400000, guid: 7fe94b3414c974f2c9c0a2493a6b6ce8, type: 2}
   - {fileID: 11400000, guid: 4e03845d16cb14a62929e0fde141bf8b, type: 2}
-  - {fileID: 11400000, guid: 3c22ac9bf03ae46aead632744d2b2a83, type: 2}
+  - {fileID: 11400000, guid: d8d7c2537a35345f687a18bfb02d6301, type: 2}

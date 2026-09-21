@@ -14,11 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Core::Core.World.SpatialShapeRuleData
   requiredCells:
   - {x: 0, y: 0, z: 0}
-  continuationPaths:
-  - startCell: {x: 0, y: 0, z: 0}
-    steps:
-    - {x: 1, y: 0, z: 0}
-    - {x: 0, y: 0, z: 1}
-    - {x: 1, y: 0, z: 0}
-    - {x: 0, y: 0, z: -1}
+  - {x: 1, y: 0, z: 0}
+  - {x: 1, y: 0, z: 1}
+  - {x: 2, y: 0, z: 1}
+  - {x: 2, y: 0, z: 2}
+  continuationPaths: []
   forbiddenRelations: []

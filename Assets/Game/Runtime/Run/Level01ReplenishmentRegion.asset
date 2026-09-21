@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1f2eb791d681472abbe1b328dbbf1de, type: 3}
+  m_Name: Level01ReplenishmentRegion
+  m_EditorClassIdentifier: Assembly-CSharp::ChainRush.Gameplay.ChainRushReplenishmentRegionFeatureData
+  regionId: chainrush.autobattle.replenishment
+  center: {x: 22.4, y: 0, z: 6.2}
+  size: {x: 10, y: 0, z: 20}
+  tags:
+  - {fileID: 11400000, guid: aa92cc0714f724a0491b75e03d6282a9, type: 2}
+  distance: 0
+  progress: {fileID: 11400000, guid: ef0765d17832a45dea743411aa4d6a9c, type: 2}
+  progressOwner:
+    bindingType: 1
+    owner:
+      source: {fileID: 11400000, guid: 97e9ee6284cd14460961d53ac3b9c613, type: 2}
+  walletTags:
+  - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
+  progressResolution: 1000000

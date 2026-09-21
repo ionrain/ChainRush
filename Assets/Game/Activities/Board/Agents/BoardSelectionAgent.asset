@@ -15,6 +15,7 @@ MonoBehaviour:
   agentId: board-selection
   basePriority: 110
   updateInterval: 1
+  applicabilityConditions: []
   matchConditions:
   - rid: 2807516677360582758
   executorSelectionCriteria:
@@ -28,16 +29,16 @@ MonoBehaviour:
   targetSelectionCriteria:
   - requirementType: 0
     criterion:
-      rid: 6092003862744662178
+      rid: 6092004074608394344
   - requirementType: 0
     criterion:
-      rid: 6092003862744662179
+      rid: 6092004074608394345
   - requirementType: 0
     criterion:
-      rid: 6092003862744662180
+      rid: 6092004074608394346
   - requirementType: 0
     criterion:
-      rid: 6092003862744662181
+      rid: 6092004074608394347
   targetRankingType: 0
   aiBrainTargetKey: {fileID: 0}
   controlType: 2
@@ -79,24 +80,24 @@ MonoBehaviour:
       type: {class: OwnerCriterionData, ns: Core.Orchestration, asm: Core}
       data:
         ownerSelectionType: 0
-    - rid: 6092003862744662178
+    - rid: 6092004074608394344
       type: {class: CapabilityHostCriterionData, ns: Core.Orchestration, asm: Core}
       data:
         definition: {fileID: 0}
         requiredAssetTags:
         - {fileID: 11400000, guid: 6f53cac79ea6a43cdb056ccd6396f4fe, type: 2}
         requiredCapabilityTypes: 
-    - rid: 6092003862744662179
+    - rid: 6092004074608394345
       type: {class: OwnerCriterionData, ns: Core.Orchestration, asm: Core}
       data:
         ownerSelectionType: 0
-    - rid: 6092003862744662180
+    - rid: 6092004074608394346
       type: {class: AssetCountCriterionData, ns: Core.Orchestration, asm: Core}
       data:
         compareOperation: 0
         targetValue: 1
-    - rid: 6092003862744662181
+    - rid: 6092004074608394347
       type: {class: SegmentLengthCriterionData, ns: Core.Orchestration, asm: Core}
       data:
         minimumDistance: 1000
-        maximumDistance: 1000
+        maximumDistance: 1414

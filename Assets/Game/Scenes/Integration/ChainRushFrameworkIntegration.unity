@@ -131,6 +131,7 @@ GameObject:
   - component: {fileID: 45768142}
   - component: {fileID: 45768144}
   - component: {fileID: 45768145}
+  - component: {fileID: 45768146}
   m_Layer: 0
   m_Name: AutobattleCamera
   m_TagString: MainCamera
@@ -265,6 +266,19 @@ MonoBehaviour:
     requiredRuntimeTags:
     - {fileID: 11400000, guid: a09d83a16ee224bc4981ca811308d0fd, type: 2}
   viewport: {fileID: 45768142}
+--- !u!114 &45768146
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 45768141}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 109caf085582842298e834da0eafbf20, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChainRush.Gameplay.ChainRushCombatViewAdapter
+  combatCamera: {fileID: 45768142}
 --- !u!1001 &384846279
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -47,24 +47,24 @@ MonoBehaviour:
     requiredRuntimeTags:
     - {fileID: 11400000, guid: a18044d5476ae485296043e6e5ba431f, type: 2}
     amountProgression:
-      rid: 6092003862744662019
+      rid: 6092004074608394241
   outputs:
   - asset: {fileID: 11400000, guid: ba6dc7b2969654c0c96dd451c9a18987, type: 2}
     formType: 0
     walletTags:
     - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
     amountProgression:
-      rid: 6092003862744662020
+      rid: 6092004074608394242
   limitMode: 0
   capValue: 0
   references:
     version: 2
     RefIds:
-    - rid: 6092003862744662019
+    - rid: 6092004074608394241
       type: {class: LongFlatProgressionData, ns: Core, asm: Core}
       data:
         value: 1
-    - rid: 6092003862744662020
+    - rid: 6092004074608394242
       type: {class: LongFlatProgressionData, ns: Core, asm: Core}
       data:
         value: 1

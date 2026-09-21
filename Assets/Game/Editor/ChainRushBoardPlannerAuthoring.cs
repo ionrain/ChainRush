@@ -715,10 +715,10 @@ namespace ChainRush.Editor
                     CreateBoardRegionQuery(LoadRequired<TaxonomyTermData>(BoardCellTagPath)), shapeRules,
                     new List<PopulationContentRuleData>
                     {
-                        new PopulationContentRuleData(new PopulationCatalogContentSourceData(LoadRequired<ProductionCatalogData>(PopulationCatalogPath)), 0.25f),
-                        new PopulationContentRuleData(new PopulationCatalogContentSourceData(LoadRequired<ProductionCatalogData>(BoardRoot + "/Production/BuffsPopulationCatalog.asset")), 0.25f),
-                        new PopulationContentRuleData(new PopulationCatalogContentSourceData(LoadRequired<ProductionCatalogData>(BoardRoot + "/Production/SkillsPopulationCatalog.asset")), 0.25f),
-                        new PopulationContentRuleData(new PopulationCatalogContentSourceData(LoadRequired<ProductionCatalogData>(BoardRoot + "/Production/GoldPopulationCatalog.asset")), 0.25f)
+                        new PopulationContentRuleData(new PopulationCatalogContentSourceData(LoadRequired<ProductionCatalogData>(PopulationCatalogPath), PopulationCatalogSelectionType.DeterministicRandom), 0.2334f),
+                        new PopulationContentRuleData(new PopulationCatalogContentSourceData(LoadRequired<ProductionCatalogData>(BoardRoot + "/Production/BuffsPopulationCatalog.asset"), PopulationCatalogSelectionType.DeterministicRandom), 0.2333f),
+                        new PopulationContentRuleData(new PopulationCatalogContentSourceData(LoadRequired<ProductionCatalogData>(BoardRoot + "/Production/SkillsPopulationCatalog.asset"), PopulationCatalogSelectionType.DeterministicRandom), 0.2333f),
+                        new PopulationContentRuleData(new PopulationCatalogContentSourceData(LoadRequired<ProductionCatalogData>(BoardRoot + "/Production/GoldPopulationCatalog.asset"), PopulationCatalogSelectionType.DeterministicRandom), 0.3f)
                     })
             });
         }

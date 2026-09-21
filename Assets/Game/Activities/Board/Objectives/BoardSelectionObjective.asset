@@ -69,6 +69,9 @@ MonoBehaviour:
     - Name: _targetValue
       Entry: 3
       Data: 0
+    - Name: targetProgression
+      Entry: 6
+      Data: 
     - Name: _walletTags
       Entry: 7
       Data: 4|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,

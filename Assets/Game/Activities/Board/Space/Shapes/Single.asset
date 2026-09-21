@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b243c385c9e2455a83f2ddf884777fe, type: 3}
   m_Name: Single
   m_EditorClassIdentifier: Core::Core.World.SpatialShapeData
-  domainTypePreview: 0
+  domainTypePreview: 17
   id: chainrush.spatial.shape.single
   title:
     m_TableReference:

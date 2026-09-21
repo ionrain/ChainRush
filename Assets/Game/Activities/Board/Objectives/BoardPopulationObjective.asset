@@ -31,6 +31,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 4e46be1342ff24ecc9fe012bc3506c1f, type: 2}
     - {fileID: 11400000, guid: 8ead9d1d4d59d4048b3e7c869a0acda5, type: 2}
     - {fileID: 11400000, guid: d887047fb335c425bb32708798a8d772, type: 2}
+    - {fileID: 11400000, guid: 0cc2d8e21ee2a49a2b7f05976a530617, type: 2}
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
@@ -64,6 +65,9 @@ MonoBehaviour:
     - Name: _targetValue
       Entry: 3
       Data: 1
+    - Name: targetProgression
+      Entry: 6
+      Data: 
     - Name: _walletTags
       Entry: 7
       Data: 3|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
@@ -124,6 +128,9 @@ MonoBehaviour:
     - Name: _targetValue
       Entry: 3
       Data: 0
+    - Name: targetProgression
+      Entry: 6
+      Data: 
     - Name: _walletTags
       Entry: 7
       Data: 7|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
@@ -538,13 +545,16 @@ MonoBehaviour:
         Core]], mscorlib
     - Name: 
       Entry: 12
-      Data: 9
+      Data: 10
     - Name: 
       Entry: 7
       Data: 37|Core.Objectives.ObjectiveConditionEconomyMetric, Core
     - Name: _targetValue
       Entry: 3
       Data: 0
+    - Name: targetProgression
+      Entry: 6
+      Data: 
     - Name: _walletTags
       Entry: 7
       Data: 38|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
@@ -608,6 +618,9 @@ MonoBehaviour:
     - Name: _targetValue
       Entry: 3
       Data: 0
+    - Name: targetProgression
+      Entry: 6
+      Data: 
     - Name: _walletTags
       Entry: 7
       Data: 42|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
@@ -671,6 +684,9 @@ MonoBehaviour:
     - Name: _targetValue
       Entry: 3
       Data: 0
+    - Name: targetProgression
+      Entry: 6
+      Data: 
     - Name: _walletTags
       Entry: 7
       Data: 46|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
@@ -734,6 +750,9 @@ MonoBehaviour:
     - Name: _targetValue
       Entry: 3
       Data: 0
+    - Name: targetProgression
+      Entry: 6
+      Data: 
     - Name: _walletTags
       Entry: 7
       Data: 50|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
@@ -797,6 +816,9 @@ MonoBehaviour:
     - Name: _targetValue
       Entry: 3
       Data: 0
+    - Name: targetProgression
+      Entry: 6
+      Data: 
     - Name: _walletTags
       Entry: 7
       Data: 54|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
@@ -860,6 +882,9 @@ MonoBehaviour:
     - Name: _targetValue
       Entry: 3
       Data: 0
+    - Name: targetProgression
+      Entry: 6
+      Data: 
     - Name: _walletTags
       Entry: 7
       Data: 58|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
@@ -923,6 +948,9 @@ MonoBehaviour:
     - Name: _targetValue
       Entry: 3
       Data: 0
+    - Name: targetProgression
+      Entry: 6
+      Data: 
     - Name: _walletTags
       Entry: 7
       Data: 62|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
@@ -986,6 +1014,9 @@ MonoBehaviour:
     - Name: _targetValue
       Entry: 3
       Data: 0
+    - Name: targetProgression
+      Entry: 6
+      Data: 
     - Name: _walletTags
       Entry: 7
       Data: 66|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
@@ -1049,6 +1080,9 @@ MonoBehaviour:
     - Name: _targetValue
       Entry: 3
       Data: 0
+    - Name: targetProgression
+      Entry: 6
+      Data: 
     - Name: _walletTags
       Entry: 7
       Data: 70|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
@@ -1107,6 +1141,72 @@ MonoBehaviour:
       Entry: 8
       Data: 
     - Name: 
+      Entry: 7
+      Data: 73|Core.Objectives.ObjectiveConditionEconomyMetric, Core
+    - Name: _targetValue
+      Entry: 3
+      Data: 0
+    - Name: targetProgression
+      Entry: 6
+      Data: 
+    - Name: _walletTags
+      Entry: 7
+      Data: 74|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 10
+      Data: 2
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: _asset
+      Entry: 10
+      Data: 15
+    - Name: _requiredAssetTags
+      Entry: 7
+      Data: 75|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 10
+      Data: 3
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: _requiredRuntimeTags
+      Entry: 7
+      Data: 76|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: _formType
+      Entry: 3
+      Data: 1
+    - Name: _compareOperation
+      Entry: 3
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
       Entry: 13
       Data: 
     - Name: 
@@ -1114,7 +1214,7 @@ MonoBehaviour:
       Data: 
     - Name: _failConditions
       Entry: 7
-      Data: 73|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition,
+      Data: 77|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition,
         Core]], mscorlib
     - Name: 
       Entry: 12
@@ -1130,7 +1230,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 74|Core.Objectives.ObjectiveNode, Core
+      Data: 78|Core.Objectives.ObjectiveNode, Core
     - Name: _id
       Entry: 1
       Data: chainrush-board-fill-markers
@@ -1145,14 +1245,14 @@ MonoBehaviour:
       Data: 0
     - Name: _activateConditions
       Entry: 7
-      Data: 75|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition,
+      Data: 79|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition,
         Core]], mscorlib
     - Name: 
       Entry: 12
       Data: 2
     - Name: 
       Entry: 7
-      Data: 76|Core.Objectives.ObjectiveConditionParentActive, Core
+      Data: 80|Core.Objectives.ObjectiveConditionParentActive, Core
     - Name: _targetValue
       Entry: 5
       Data: false
@@ -1161,7 +1261,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 77|Core.Objectives.ObjectiveConditionObjectiveState, Core
+      Data: 81|Core.Objectives.ObjectiveConditionObjectiveState, Core
     - Name: _targetValue
       Entry: 3
       Data: 3
@@ -1182,14 +1282,14 @@ MonoBehaviour:
       Data: 
     - Name: _successConditions
       Entry: 7
-      Data: 78|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition,
+      Data: 82|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition,
         Core]], mscorlib
     - Name: 
       Entry: 12
       Data: 1
     - Name: 
       Entry: 7
-      Data: 79|Core.Objectives.ObjectiveConditionMaterializedRegionCoverage, Core
+      Data: 83|Core.Objectives.ObjectiveConditionMaterializedRegionCoverage, Core
     - Name: _targetValue
       Entry: 3
       Data: 0
@@ -1201,7 +1301,7 @@ MonoBehaviour:
       Data: 1
     - Name: requiredAssetTags
       Entry: 7
-      Data: 80|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+      Data: 84|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
         Core]], mscorlib
     - Name: 
       Entry: 12
@@ -1217,7 +1317,7 @@ MonoBehaviour:
       Data: 
     - Name: requiredCapabilityTypes
       Entry: 7
-      Data: 81|System.Collections.Generic.List`1[[Core.CapabilityHosts.CapabilityHostType,
+      Data: 85|System.Collections.Generic.List`1[[Core.CapabilityHosts.CapabilityHostType,
         Core]], mscorlib
     - Name: 
       Entry: 12
@@ -1230,13 +1330,13 @@ MonoBehaviour:
       Data: 
     - Name: space
       Entry: 7
-      Data: 82|Core.World.SpaceRegionQueryData, Core
+      Data: 86|Core.World.SpaceRegionQueryData, Core
     - Name: scopeType
       Entry: 3
       Data: 1
     - Name: requiredTags
       Entry: 7
-      Data: 83|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+      Data: 87|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
         Core]], mscorlib
     - Name: 
       Entry: 12
@@ -1252,7 +1352,7 @@ MonoBehaviour:
       Data: 
     - Name: excludedTags
       Entry: 7
-      Data: 84|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+      Data: 88|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
         Core]], mscorlib
     - Name: 
       Entry: 12
@@ -1265,7 +1365,7 @@ MonoBehaviour:
       Data: 
     - Name: requiredCellTags
       Entry: 7
-      Data: 85|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+      Data: 89|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
         Core]], mscorlib
     - Name: 
       Entry: 12
@@ -1278,7 +1378,7 @@ MonoBehaviour:
       Data: 
     - Name: excludedCellTags
       Entry: 7
-      Data: 86|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+      Data: 90|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
         Core]], mscorlib
     - Name: 
       Entry: 12
@@ -1306,7 +1406,7 @@ MonoBehaviour:
       Data: 
     - Name: _failConditions
       Entry: 7
-      Data: 87|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition,
+      Data: 91|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition,
         Core]], mscorlib
     - Name: 
       Entry: 12
@@ -1340,7 +1440,7 @@ MonoBehaviour:
       Data: 
     - Name: _failConditions
       Entry: 7
-      Data: 88|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition,
+      Data: 92|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition,
         Core]], mscorlib
     - Name: 
       Entry: 12
@@ -1356,14 +1456,14 @@ MonoBehaviour:
       Data: 
     - Name: resetConditions
       Entry: 7
-      Data: 89|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition,
+      Data: 93|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition,
         Core]], mscorlib
     - Name: 
       Entry: 12
       Data: 1
     - Name: 
       Entry: 7
-      Data: 90|Core.Objectives.ObjectiveConditionMaterializedRegionCoverage, Core
+      Data: 94|Core.Objectives.ObjectiveConditionMaterializedRegionCoverage, Core
     - Name: _targetValue
       Entry: 3
       Data: 0
@@ -1375,7 +1475,7 @@ MonoBehaviour:
       Data: 1
     - Name: requiredAssetTags
       Entry: 7
-      Data: 91|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+      Data: 95|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
         Core]], mscorlib
     - Name: 
       Entry: 12
@@ -1391,7 +1491,7 @@ MonoBehaviour:
       Data: 
     - Name: requiredCapabilityTypes
       Entry: 7
-      Data: 92|System.Collections.Generic.List`1[[Core.CapabilityHosts.CapabilityHostType,
+      Data: 96|System.Collections.Generic.List`1[[Core.CapabilityHosts.CapabilityHostType,
         Core]], mscorlib
     - Name: 
       Entry: 12
@@ -1404,13 +1504,13 @@ MonoBehaviour:
       Data: 
     - Name: space
       Entry: 7
-      Data: 93|Core.World.SpaceRegionQueryData, Core
+      Data: 97|Core.World.SpaceRegionQueryData, Core
     - Name: scopeType
       Entry: 3
       Data: 1
     - Name: requiredTags
       Entry: 7
-      Data: 94|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+      Data: 98|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
         Core]], mscorlib
     - Name: 
       Entry: 12
@@ -1426,7 +1526,7 @@ MonoBehaviour:
       Data: 
     - Name: excludedTags
       Entry: 7
-      Data: 95|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+      Data: 99|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
         Core]], mscorlib
     - Name: 
       Entry: 12
@@ -1439,7 +1539,7 @@ MonoBehaviour:
       Data: 
     - Name: requiredCellTags
       Entry: 7
-      Data: 96|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+      Data: 100|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
         Core]], mscorlib
     - Name: 
       Entry: 12
@@ -1452,7 +1552,7 @@ MonoBehaviour:
       Data: 
     - Name: excludedCellTags
       Entry: 7
-      Data: 97|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+      Data: 101|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
         Core]], mscorlib
     - Name: 
       Entry: 12

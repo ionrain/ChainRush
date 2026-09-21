@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f244dec0d5f94593aa619e5a700ed5f, type: 3}
+  m_Name: UnitContentAvailability
+  m_EditorClassIdentifier: Core::Core.Orchestration.PopulationContentAvailabilityData
+  progress:
+    resource: {fileID: 11400000, guid: ef0765d17832a45dea743411aa4d6a9c, type: 2}
+    owner:
+      bindingType: 0
+      owner:
+        source: {fileID: 0}
+    walletTags:
+    - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
+    scaleType: 1
+    relativeBase: 1000000
+  cooldown:
+    rid: 6092004074608394334
+  initialElapsed: 240
+  references:
+    version: 2
+    RefIds:
+    - rid: 6092004074608394334
+      type: {class: LongFlatProgressionData, ns: Core, asm: Core}
+      data:
+        value: 240

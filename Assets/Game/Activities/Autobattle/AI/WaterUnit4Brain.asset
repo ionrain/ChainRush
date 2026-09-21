@@ -43,86 +43,895 @@ MonoBehaviour:
     type: 2}
   nodes:
   - nodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
-    entryState: {fileID: 11400000, guid: e357fa830bfc04273bb8b6d3739c4e0b, type: 2}
+    entryState: {fileID: 11400000, guid: 80c8e4f0bac2442eeb8098a30da4917e, type: 2}
     states:
-    - tag: {fileID: 11400000, guid: e357fa830bfc04273bb8b6d3739c4e0b, type: 2}
-      onEnterActions: []
-      onTickActions:
-      - rid: 6092003862744662042
-      - rid: 6092003862744662043
-      onExitActions:
-      - rid: 6092003862744662044
-    - tag: {fileID: 11400000, guid: f986f505ab4034b37b67555b69e138ee, type: 2}
-      onEnterActions: []
-      onTickActions:
-      - rid: 6092003862744662045
-      onExitActions: []
     - tag: {fileID: 11400000, guid: e88efc3432a274ac4be8b016fc3ab8fa, type: 2}
       onEnterActions:
       - rid: 2807516363299750081
       onTickActions: []
       onExitActions: []
+    - tag: {fileID: 11400000, guid: 80c8e4f0bac2442eeb8098a30da4917e, type: 2}
+      onEnterActions:
+      - rid: 6092004074608395121
+      onTickActions:
+      - rid: 6092004074608395122
+      - rid: 6092004074608395123
+      onExitActions: []
+    - tag: {fileID: 11400000, guid: 7202e6432655744fa9d7e0857a4aa279, type: 2}
+      onEnterActions:
+      - rid: 6092004074608395124
+      onTickActions:
+      - rid: 6092004074608395125
+      onExitActions: []
+    - tag: {fileID: 11400000, guid: b167cfbcf974f4e62a8315365308e3c5, type: 2}
+      onEnterActions:
+      - rid: 6092004074608395126
+      onTickActions:
+      - rid: 6092004074608395127
+      onExitActions:
+      - rid: 6092004074608395128
+    - tag: {fileID: 11400000, guid: bcb6da61a27f44b82850a593eb8ced3d, type: 2}
+      onEnterActions:
+      - rid: 6092004074608395129
+      onTickActions: []
+      onExitActions: []
+    - tag: {fileID: 11400000, guid: 4a58a5c76c37e4aa4946ece68420bffb, type: 2}
+      onEnterActions: []
+      onTickActions:
+      - rid: 6092004074608395130
+      onExitActions:
+      - rid: 6092004074608395131
+    - tag: {fileID: 11400000, guid: f2e83c21c2f1a464084fb92f3752b9c5, type: 2}
+      onEnterActions: []
+      onTickActions:
+      - rid: 6092004074608395132
+      onExitActions:
+      - rid: 6092004074608395133
+    - tag: {fileID: 11400000, guid: 71257f66c74b34e368aa2dce279a0b6b, type: 2}
+      onEnterActions: []
+      onTickActions:
+      - rid: 6092004074608395134
+      onExitActions:
+      - rid: 6092004074608395135
+    - tag: {fileID: 11400000, guid: 293941e6024ac44fcb4f031093eca92c, type: 2}
+      onEnterActions: []
+      onTickActions:
+      - rid: 6092004074608395136
+      onExitActions:
+      - rid: 6092004074608395137
+    - tag: {fileID: 11400000, guid: 37385e1b4311d46b195e40275285059e, type: 2}
+      onEnterActions:
+      - rid: 6092004074608395138
+      onTickActions: []
+      onExitActions: []
+    - tag: {fileID: 11400000, guid: c41db7e993c53482ba02e3ac54ad637d, type: 2}
+      onEnterActions: []
+      onTickActions: []
+      onExitActions: []
+    - tag: {fileID: 11400000, guid: ffea6d19700fc4c208c06f2c5af75d15, type: 2}
+      onEnterActions:
+      - rid: 6092004074608395139
+      onTickActions:
+      - rid: 6092004074608395140
+      onExitActions: []
+    - tag: {fileID: 11400000, guid: 998e568ec88984b4ab7c9f78bfa206e5, type: 2}
+      onEnterActions:
+      - rid: 6092004074608395141
+      onTickActions:
+      - rid: 6092004074608395142
+      onExitActions: []
+    - tag: {fileID: 11400000, guid: 3dffc9c15dea542e0b25d52797ece2fb, type: 2}
+      onEnterActions:
+      - rid: 6092004074608395143
+      onTickActions:
+      - rid: 6092004074608395144
+      onExitActions: []
+    - tag: {fileID: 11400000, guid: 7cb01ce6e95b5449babcc2dae65a189a, type: 2}
+      onEnterActions:
+      - rid: 6092004074608395145
+      onTickActions:
+      - rid: 6092004074608395146
+      onExitActions:
+      - rid: 6092004074608395147
+    - tag: {fileID: 11400000, guid: eeba9a36142144a0ebabc17c41abfbab, type: 2}
+      onEnterActions:
+      - rid: 6092004074608395148
+      onTickActions:
+      - rid: 6092004074608395149
+      onExitActions:
+      - rid: 6092004074608395150
+    - tag: {fileID: 11400000, guid: 342008b73bf8b472390df8c5f4d113a6, type: 2}
+      onEnterActions:
+      - rid: 6092004074608395151
+      onTickActions:
+      - rid: 6092004074608395152
+      onExitActions:
+      - rid: 6092004074608395153
+  - nodeId: {fileID: 11400000, guid: a49f2de6fdfb243bf912d2b315880f0f, type: 2}
+    entryState: {fileID: 11400000, guid: be5035e810d794cd893b66ca5fbb85a7, type: 2}
+    states:
+    - tag: {fileID: 11400000, guid: be5035e810d794cd893b66ca5fbb85a7, type: 2}
+      onEnterActions: []
+      onTickActions:
+      - rid: 6092004074608395154
+      - rid: 6092004074608395155
+      onExitActions:
+      - rid: 6092004074608395156
+    - tag: {fileID: 11400000, guid: 31c90009ceebc4ce798eed4428315721, type: 2}
+      onEnterActions: []
+      onTickActions:
+      - rid: 6092004074608395157
+      - rid: 6092004074608395158
+      onExitActions:
+      - rid: 6092004074608395159
+    - tag: {fileID: 11400000, guid: 19c37d581f2a64dc9ad979802490b0ef, type: 2}
+      onEnterActions: []
+      onTickActions: []
+      onExitActions: []
   transitions:
   - fromStates:
-    - {fileID: 11400000, guid: e357fa830bfc04273bb8b6d3739c4e0b, type: 2}
-    - {fileID: 11400000, guid: f986f505ab4034b37b67555b69e138ee, type: 2}
-    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
-    toState: {fileID: 11400000, guid: e88efc3432a274ac4be8b016fc3ab8fa, type: 2}
-    exitResult: 2
-    conditions:
-    - rid: 2807516363299750082
-  - fromStates:
-    - {fileID: 11400000, guid: e357fa830bfc04273bb8b6d3739c4e0b, type: 2}
-    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
-    toState: {fileID: 11400000, guid: f986f505ab4034b37b67555b69e138ee, type: 2}
+    - {fileID: 11400000, guid: 31c90009ceebc4ce798eed4428315721, type: 2}
+    toNodeId: {fileID: 11400000, guid: a49f2de6fdfb243bf912d2b315880f0f, type: 2}
+    toState: {fileID: 11400000, guid: 19c37d581f2a64dc9ad979802490b0ef, type: 2}
     exitResult: 0
     conditions:
-    - rid: 6092003862744662046
+    - rid: 6092004074608395160
   - fromStates:
-    - {fileID: 11400000, guid: e357fa830bfc04273bb8b6d3739c4e0b, type: 2}
-    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
-    toState: {fileID: 11400000, guid: f986f505ab4034b37b67555b69e138ee, type: 2}
-    exitResult: 1
+    - {fileID: 11400000, guid: be5035e810d794cd893b66ca5fbb85a7, type: 2}
+    toNodeId: {fileID: 11400000, guid: a49f2de6fdfb243bf912d2b315880f0f, type: 2}
+    toState: {fileID: 11400000, guid: 19c37d581f2a64dc9ad979802490b0ef, type: 2}
+    exitResult: 0
     conditions:
-    - rid: 2807516363299750083
+    - rid: 6092004074608395161
   - fromStates:
-    - {fileID: 11400000, guid: f986f505ab4034b37b67555b69e138ee, type: 2}
+    - {fileID: 11400000, guid: 80c8e4f0bac2442eeb8098a30da4917e, type: 2}
     toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
-    toState: {fileID: 11400000, guid: e357fa830bfc04273bb8b6d3739c4e0b, type: 2}
-    exitResult: 1
+    toState: {fileID: 11400000, guid: e88efc3432a274ac4be8b016fc3ab8fa, type: 2}
+    exitResult: 0
     conditions:
-    - rid: 2807516363299750084
+    - rid: 6092004074608395162
+  - fromStates:
+    - {fileID: 11400000, guid: 7202e6432655744fa9d7e0857a4aa279, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: e88efc3432a274ac4be8b016fc3ab8fa, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395163
+  - fromStates:
+    - {fileID: 11400000, guid: b167cfbcf974f4e62a8315365308e3c5, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: e88efc3432a274ac4be8b016fc3ab8fa, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395164
+  - fromStates:
+    - {fileID: 11400000, guid: bcb6da61a27f44b82850a593eb8ced3d, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: e88efc3432a274ac4be8b016fc3ab8fa, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395165
+  - fromStates:
+    - {fileID: 11400000, guid: 4a58a5c76c37e4aa4946ece68420bffb, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: e88efc3432a274ac4be8b016fc3ab8fa, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395166
+  - fromStates:
+    - {fileID: 11400000, guid: f2e83c21c2f1a464084fb92f3752b9c5, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: e88efc3432a274ac4be8b016fc3ab8fa, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395167
+  - fromStates:
+    - {fileID: 11400000, guid: 71257f66c74b34e368aa2dce279a0b6b, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: e88efc3432a274ac4be8b016fc3ab8fa, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395168
+  - fromStates:
+    - {fileID: 11400000, guid: 293941e6024ac44fcb4f031093eca92c, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: e88efc3432a274ac4be8b016fc3ab8fa, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395169
+  - fromStates:
+    - {fileID: 11400000, guid: 37385e1b4311d46b195e40275285059e, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: e88efc3432a274ac4be8b016fc3ab8fa, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395170
+  - fromStates:
+    - {fileID: 11400000, guid: c41db7e993c53482ba02e3ac54ad637d, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: e88efc3432a274ac4be8b016fc3ab8fa, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395171
+  - fromStates:
+    - {fileID: 11400000, guid: ffea6d19700fc4c208c06f2c5af75d15, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: e88efc3432a274ac4be8b016fc3ab8fa, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395172
+  - fromStates:
+    - {fileID: 11400000, guid: 998e568ec88984b4ab7c9f78bfa206e5, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: e88efc3432a274ac4be8b016fc3ab8fa, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395173
+  - fromStates:
+    - {fileID: 11400000, guid: 3dffc9c15dea542e0b25d52797ece2fb, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: e88efc3432a274ac4be8b016fc3ab8fa, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395174
+  - fromStates:
+    - {fileID: 11400000, guid: 7cb01ce6e95b5449babcc2dae65a189a, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: e88efc3432a274ac4be8b016fc3ab8fa, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395175
+  - fromStates:
+    - {fileID: 11400000, guid: eeba9a36142144a0ebabc17c41abfbab, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: e88efc3432a274ac4be8b016fc3ab8fa, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395176
+  - fromStates:
+    - {fileID: 11400000, guid: 342008b73bf8b472390df8c5f4d113a6, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: e88efc3432a274ac4be8b016fc3ab8fa, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395177
+  - fromStates:
+    - {fileID: 11400000, guid: 80c8e4f0bac2442eeb8098a30da4917e, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: ffea6d19700fc4c208c06f2c5af75d15, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395178
+    - rid: 6092004074608395179
+  - fromStates:
+    - {fileID: 11400000, guid: 80c8e4f0bac2442eeb8098a30da4917e, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: 7202e6432655744fa9d7e0857a4aa279, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395180
+    - rid: 6092004074608395181
+    - rid: 6092004074608395182
+  - fromStates:
+    - {fileID: 11400000, guid: ffea6d19700fc4c208c06f2c5af75d15, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: 7cb01ce6e95b5449babcc2dae65a189a, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395183
+  - fromStates:
+    - {fileID: 11400000, guid: ffea6d19700fc4c208c06f2c5af75d15, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: 998e568ec88984b4ab7c9f78bfa206e5, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395184
+    - rid: 6092004074608395185
+  - fromStates:
+    - {fileID: 11400000, guid: 998e568ec88984b4ab7c9f78bfa206e5, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: eeba9a36142144a0ebabc17c41abfbab, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395186
+  - fromStates:
+    - {fileID: 11400000, guid: 998e568ec88984b4ab7c9f78bfa206e5, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: 7202e6432655744fa9d7e0857a4aa279, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395187
+    - rid: 6092004074608395188
+  - fromStates:
+    - {fileID: 11400000, guid: 3dffc9c15dea542e0b25d52797ece2fb, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: 342008b73bf8b472390df8c5f4d113a6, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395189
+  - fromStates:
+    - {fileID: 11400000, guid: 3dffc9c15dea542e0b25d52797ece2fb, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: 4a58a5c76c37e4aa4946ece68420bffb, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395190
+    - rid: 6092004074608395191
+  - fromStates:
+    - {fileID: 11400000, guid: 7cb01ce6e95b5449babcc2dae65a189a, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: 71257f66c74b34e368aa2dce279a0b6b, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395192
+  - fromStates:
+    - {fileID: 11400000, guid: 7cb01ce6e95b5449babcc2dae65a189a, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: 80c8e4f0bac2442eeb8098a30da4917e, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395193
+  - fromStates:
+    - {fileID: 11400000, guid: 7cb01ce6e95b5449babcc2dae65a189a, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: 80c8e4f0bac2442eeb8098a30da4917e, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395194
+  - fromStates:
+    - {fileID: 11400000, guid: 7cb01ce6e95b5449babcc2dae65a189a, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: 80c8e4f0bac2442eeb8098a30da4917e, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395195
+  - fromStates:
+    - {fileID: 11400000, guid: eeba9a36142144a0ebabc17c41abfbab, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: 71257f66c74b34e368aa2dce279a0b6b, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395196
+  - fromStates:
+    - {fileID: 11400000, guid: eeba9a36142144a0ebabc17c41abfbab, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: 80c8e4f0bac2442eeb8098a30da4917e, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395197
+  - fromStates:
+    - {fileID: 11400000, guid: eeba9a36142144a0ebabc17c41abfbab, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: 80c8e4f0bac2442eeb8098a30da4917e, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395198
+  - fromStates:
+    - {fileID: 11400000, guid: eeba9a36142144a0ebabc17c41abfbab, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: 80c8e4f0bac2442eeb8098a30da4917e, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395199
+  - fromStates:
+    - {fileID: 11400000, guid: 342008b73bf8b472390df8c5f4d113a6, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: 71257f66c74b34e368aa2dce279a0b6b, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395200
+  - fromStates:
+    - {fileID: 11400000, guid: 342008b73bf8b472390df8c5f4d113a6, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: 80c8e4f0bac2442eeb8098a30da4917e, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395201
+  - fromStates:
+    - {fileID: 11400000, guid: 342008b73bf8b472390df8c5f4d113a6, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: 80c8e4f0bac2442eeb8098a30da4917e, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395202
+  - fromStates:
+    - {fileID: 11400000, guid: 342008b73bf8b472390df8c5f4d113a6, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: 80c8e4f0bac2442eeb8098a30da4917e, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395203
+  - fromStates:
+    - {fileID: 11400000, guid: 7202e6432655744fa9d7e0857a4aa279, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: b167cfbcf974f4e62a8315365308e3c5, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395204
+  - fromStates:
+    - {fileID: 11400000, guid: 7202e6432655744fa9d7e0857a4aa279, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: 3dffc9c15dea542e0b25d52797ece2fb, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395205
+    - rid: 6092004074608395206
+  - fromStates:
+    - {fileID: 11400000, guid: 7202e6432655744fa9d7e0857a4aa279, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: c41db7e993c53482ba02e3ac54ad637d, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395207
+    - rid: 6092004074608395208
+  - fromStates:
+    - {fileID: 11400000, guid: 4a58a5c76c37e4aa4946ece68420bffb, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: f2e83c21c2f1a464084fb92f3752b9c5, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395209
+  - fromStates:
+    - {fileID: 11400000, guid: f2e83c21c2f1a464084fb92f3752b9c5, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: 4a58a5c76c37e4aa4946ece68420bffb, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395210
+  - fromStates:
+    - {fileID: 11400000, guid: b167cfbcf974f4e62a8315365308e3c5, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: 71257f66c74b34e368aa2dce279a0b6b, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395211
+  - fromStates:
+    - {fileID: 11400000, guid: bcb6da61a27f44b82850a593eb8ced3d, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: 71257f66c74b34e368aa2dce279a0b6b, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395212
+  - fromStates:
+    - {fileID: 11400000, guid: 4a58a5c76c37e4aa4946ece68420bffb, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: 71257f66c74b34e368aa2dce279a0b6b, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395213
+  - fromStates:
+    - {fileID: 11400000, guid: f2e83c21c2f1a464084fb92f3752b9c5, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: 71257f66c74b34e368aa2dce279a0b6b, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395214
+  - fromStates:
+    - {fileID: 11400000, guid: b167cfbcf974f4e62a8315365308e3c5, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: 293941e6024ac44fcb4f031093eca92c, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395215
+    - rid: 6092004074608395216
+  - fromStates:
+    - {fileID: 11400000, guid: b167cfbcf974f4e62a8315365308e3c5, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: 37385e1b4311d46b195e40275285059e, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395217
+  - fromStates:
+    - {fileID: 11400000, guid: bcb6da61a27f44b82850a593eb8ced3d, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: 293941e6024ac44fcb4f031093eca92c, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395218
+    - rid: 6092004074608395219
+  - fromStates:
+    - {fileID: 11400000, guid: bcb6da61a27f44b82850a593eb8ced3d, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: 37385e1b4311d46b195e40275285059e, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395220
+  - fromStates:
+    - {fileID: 11400000, guid: b167cfbcf974f4e62a8315365308e3c5, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: bcb6da61a27f44b82850a593eb8ced3d, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395221
+  - fromStates:
+    - {fileID: 11400000, guid: b167cfbcf974f4e62a8315365308e3c5, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: 37385e1b4311d46b195e40275285059e, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395222
+    - rid: 6092004074608395223
+  - fromStates:
+    - {fileID: 11400000, guid: bcb6da61a27f44b82850a593eb8ced3d, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: b167cfbcf974f4e62a8315365308e3c5, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395224
+  - fromStates:
+    - {fileID: 11400000, guid: be5035e810d794cd893b66ca5fbb85a7, type: 2}
+    toNodeId: {fileID: 11400000, guid: a49f2de6fdfb243bf912d2b315880f0f, type: 2}
+    toState: {fileID: 11400000, guid: 31c90009ceebc4ce798eed4428315721, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395225
+    - rid: 6092004074608395226
+  - fromStates:
+    - {fileID: 11400000, guid: 31c90009ceebc4ce798eed4428315721, type: 2}
+    toNodeId: {fileID: 11400000, guid: a49f2de6fdfb243bf912d2b315880f0f, type: 2}
+    toState: {fileID: 11400000, guid: be5035e810d794cd893b66ca5fbb85a7, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395227
+    - rid: 6092004074608395228
+  - fromStates:
+    - {fileID: 11400000, guid: 4a58a5c76c37e4aa4946ece68420bffb, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: 80c8e4f0bac2442eeb8098a30da4917e, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395229
+  - fromStates:
+    - {fileID: 11400000, guid: f2e83c21c2f1a464084fb92f3752b9c5, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: 80c8e4f0bac2442eeb8098a30da4917e, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395230
+  - fromStates:
+    - {fileID: 11400000, guid: 37385e1b4311d46b195e40275285059e, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: 80c8e4f0bac2442eeb8098a30da4917e, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395231
+  - fromStates:
+    - {fileID: 11400000, guid: c41db7e993c53482ba02e3ac54ad637d, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: 80c8e4f0bac2442eeb8098a30da4917e, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395232
+  - fromStates:
+    - {fileID: 11400000, guid: 71257f66c74b34e368aa2dce279a0b6b, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: 80c8e4f0bac2442eeb8098a30da4917e, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395233
+  - fromStates:
+    - {fileID: 11400000, guid: 293941e6024ac44fcb4f031093eca92c, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: 80c8e4f0bac2442eeb8098a30da4917e, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395234
+    - rid: 6092004074608395235
+  - fromStates:
+    - {fileID: 11400000, guid: 71257f66c74b34e368aa2dce279a0b6b, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: 80c8e4f0bac2442eeb8098a30da4917e, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395236
+  - fromStates:
+    - {fileID: 11400000, guid: 293941e6024ac44fcb4f031093eca92c, type: 2}
+    toNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    toState: {fileID: 11400000, guid: 80c8e4f0bac2442eeb8098a30da4917e, type: 2}
+    exitResult: 0
+    conditions:
+    - rid: 6092004074608395237
   references:
     version: 2
     RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
     - rid: 2807516363299750081
       type: {class: RemoveEntityAIBrainActionData, ns: Core.AI.Actions, asm: Core}
       data: 
-    - rid: 2807516363299750082
-      type: {class: HostValueConditionAIBrainConditionData, ns: Core.AI.Conditions,
+    - rid: 6092004074608395121
+      type: {class: ClearAIBrainTargetActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        targetKey: {fileID: 11400000, guid: dbdf9302a39294c8baed403be2acf9ff, type: 2}
+        additionalTargetKeys: []
+    - rid: 6092004074608395122
+      type: {class: SelectActivityTargetAIBrainActionData, ns: Core.CapabilityHosts,
         asm: Core}
       data:
-        hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
-        compareOperation: 5
-        targetValue: 0
-    - rid: 2807516363299750083
-      type: {class: CurrentStateResultMatchesAIBrainConditionData, ns: Core.AI.Conditions,
-        asm: Core}
+        targetKey: {fileID: 11400000, guid: dbdf9302a39294c8baed403be2acf9ff, type: 2}
+        additionalTargetKeys: []
+        diplomacyChannel: 0
+        requiredDisposition: 1
+        requiredTargetTags:
+        - {fileID: 11400000, guid: c03c233cfc9f64712bf39c5d6311aee8, type: 2}
+        blockedTargetTags: []
+        requiredTargetStates: []
+        blockedTargetStates:
+        - {fileID: 11400000, guid: e88efc3432a274ac4be8b016fc3ab8fa, type: 2}
+        compatibleSkill: {fileID: 0}
+    - rid: 6092004074608395123
+      type: {class: ObserveAnchorPatternAIBrainActionData, ns: Core.AI.Actions, asm: Core}
       data:
-        requiredResults: 6
-    - rid: 2807516363299750084
-      type: {class: CurrentStateResultMatchesAIBrainConditionData, ns: Core.AI.Conditions,
-        asm: Core}
+        pattern: {fileID: 11400000, guid: f1bf9c7ce605a4aa28695f7352889dca, type: 2}
+        markThreat: 0
+    - rid: 6092004074608395124
+      type: {class: ClearAIBrainTargetActionData, ns: Core.AI.Actions, asm: Core}
       data:
-        requiredResults: 6
-    - rid: 6092003862744662042
+        targetKey: {fileID: 11400000, guid: 41b5c641941e34ce99d3a4aea74acd72, type: 2}
+        additionalTargetKeys: []
+    - rid: 6092004074608395125
       type: {class: SelectEntityTargetByQueryAIBrainActionData, ns: Core.AI.Actions,
         asm: Core}
       data:
         targetKey: {fileID: 11400000, guid: 41b5c641941e34ce99d3a4aea74acd72, type: 2}
         additionalTargetKeys: []
+        searchOriginType: 2
+        searchOriginKey: {fileID: 11400000, guid: dbdf9302a39294c8baed403be2acf9ff,
+          type: 2}
+        captureSearchOrigin: 1
+        distanceScore:
+          rid: 6092004074608395238
+        recentValueDecrease:
+          rid: -2
+        searchRadius: 7000
+        maxCandidates: 10
+        diplomacyChannel: 0
+        requiredDisposition: -1
+        requiredTargetTags:
+        - {fileID: 11400000, guid: 2231ac3b695cc4d49895685ed991ab34, type: 2}
+        blockedTargetTags: []
+        requiredTargetStates: []
+        blockedTargetStates:
+        - {fileID: 11400000, guid: e88efc3432a274ac4be8b016fc3ab8fa, type: 2}
+        compatibleSkill: {fileID: 11400000, guid: 342c4660d68a44ee8b9bb8ede48b92ba,
+          type: 2}
+        targetGeometryType: 1
+    - rid: 6092004074608395126
+      type: {class: ObserveAnchorPatternAIBrainActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        pattern: {fileID: 11400000, guid: f1bf9c7ce605a4aa28695f7352889dca, type: 2}
+        markThreat: 1
+    - rid: 6092004074608395127
+      type: {class: UseSkillAIBrainActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        skill: {fileID: 11400000, guid: 6b62459fa2d6c4521bd917e18a6ffa20, type: 2}
+        targetKey: {fileID: 11400000, guid: 41b5c641941e34ce99d3a4aea74acd72, type: 2}
+        targetResolver: {fileID: 0}
+        completionPolicy: 1
+    - rid: 6092004074608395128
+      type: {class: InterruptSkillAIBrainExitActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        triggerResults: 7
+        skill: {fileID: 11400000, guid: 6b62459fa2d6c4521bd917e18a6ffa20, type: 2}
+    - rid: 6092004074608395129
+      type: {class: ObserveAnchorPatternAIBrainActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        pattern: {fileID: 11400000, guid: f1bf9c7ce605a4aa28695f7352889dca, type: 2}
+        markThreat: 1
+    - rid: 6092004074608395130
+      type: {class: UseSkillAIBrainActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        skill: {fileID: 11400000, guid: 5209057b22cbf43b8993234f152fe4e4, type: 2}
+        targetKey: {fileID: 11400000, guid: dbdf9302a39294c8baed403be2acf9ff, type: 2}
+        targetResolver: {fileID: 11400000, guid: efaad8d671a6940ebb05a7a2e4a2cbc2,
+          type: 2}
+        completionPolicy: 1
+    - rid: 6092004074608395131
+      type: {class: InterruptSkillAIBrainExitActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        triggerResults: 7
+        skill: {fileID: 11400000, guid: 5209057b22cbf43b8993234f152fe4e4, type: 2}
+    - rid: 6092004074608395132
+      type: {class: UseSkillAIBrainActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        skill: {fileID: 11400000, guid: f30b97f70526a444084ba58f62ed0133, type: 2}
+        targetKey: {fileID: 11400000, guid: dbdf9302a39294c8baed403be2acf9ff, type: 2}
+        targetResolver: {fileID: 11400000, guid: e80b899507da846b9b9091848a8e51b7,
+          type: 2}
+        completionPolicy: 1
+    - rid: 6092004074608395133
+      type: {class: InterruptSkillAIBrainExitActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        triggerResults: 7
+        skill: {fileID: 11400000, guid: f30b97f70526a444084ba58f62ed0133, type: 2}
+    - rid: 6092004074608395134
+      type: {class: UseSkillAIBrainActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        skill: {fileID: 11400000, guid: e2a882b86c4a34c4d9ba1a775631ea48, type: 2}
+        targetKey: {fileID: 11400000, guid: dbdf9302a39294c8baed403be2acf9ff, type: 2}
+        targetResolver: {fileID: 11400000, guid: e80b899507da846b9b9091848a8e51b7,
+          type: 2}
+        completionPolicy: 1
+    - rid: 6092004074608395135
+      type: {class: InterruptSkillAIBrainExitActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        triggerResults: 7
+        skill: {fileID: 11400000, guid: e2a882b86c4a34c4d9ba1a775631ea48, type: 2}
+    - rid: 6092004074608395136
+      type: {class: UseSkillAIBrainActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        skill: {fileID: 11400000, guid: 5209057b22cbf43b8993234f152fe4e4, type: 2}
+        targetKey: {fileID: 11400000, guid: dbdf9302a39294c8baed403be2acf9ff, type: 2}
+        targetResolver: {fileID: 11400000, guid: e80b899507da846b9b9091848a8e51b7,
+          type: 2}
+        completionPolicy: 1
+    - rid: 6092004074608395137
+      type: {class: InterruptSkillAIBrainExitActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        triggerResults: 7
+        skill: {fileID: 11400000, guid: 5209057b22cbf43b8993234f152fe4e4, type: 2}
+    - rid: 6092004074608395138
+      type: {class: ObserveAnchorPatternAIBrainActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        pattern: {fileID: 11400000, guid: f1bf9c7ce605a4aa28695f7352889dca, type: 2}
+        markThreat: 1
+    - rid: 6092004074608395139
+      type: {class: ClearAIBrainTargetActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        targetKey: {fileID: 11400000, guid: f58706c60335d4a329e9a4925dffe5a8, type: 2}
+        additionalTargetKeys: []
+    - rid: 6092004074608395140
+      type: {class: SelectEntityTargetByQueryAIBrainActionData, ns: Core.AI.Actions,
+        asm: Core}
+      data:
+        targetKey: {fileID: 11400000, guid: f58706c60335d4a329e9a4925dffe5a8, type: 2}
+        additionalTargetKeys: []
         searchOriginType: 0
-        searchRadius: 50000
+        searchOriginKey: {fileID: 0}
+        captureSearchOrigin: 0
+        distanceScore:
+          rid: -2
+        recentValueDecrease:
+          rid: 6092004074608395239
+        searchRadius: 7000
+        maxCandidates: 256
+        diplomacyChannel: 0
+        requiredDisposition: 1
+        requiredTargetTags:
+        - {fileID: 11400000, guid: c03c233cfc9f64712bf39c5d6311aee8, type: 2}
+        blockedTargetTags: []
+        requiredTargetStates: []
+        blockedTargetStates:
+        - {fileID: 11400000, guid: e88efc3432a274ac4be8b016fc3ab8fa, type: 2}
+        compatibleSkill: {fileID: 0}
+        targetGeometryType: 1
+    - rid: 6092004074608395141
+      type: {class: ClearAIBrainTargetActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        targetKey: {fileID: 11400000, guid: f58706c60335d4a329e9a4925dffe5a8, type: 2}
+        additionalTargetKeys: []
+    - rid: 6092004074608395142
+      type: {class: SelectEntityTargetByQueryAIBrainActionData, ns: Core.AI.Actions,
+        asm: Core}
+      data:
+        targetKey: {fileID: 11400000, guid: f58706c60335d4a329e9a4925dffe5a8, type: 2}
+        additionalTargetKeys: []
+        searchOriginType: 0
+        searchOriginKey: {fileID: 0}
+        captureSearchOrigin: 0
+        distanceScore:
+          rid: -2
+        recentValueDecrease:
+          rid: 6092004074608395240
+        searchRadius: 8000
+        maxCandidates: 256
+        diplomacyChannel: 0
+        requiredDisposition: 1
+        requiredTargetTags:
+        - {fileID: 11400000, guid: 2231ac3b695cc4d49895685ed991ab34, type: 2}
+        blockedTargetTags: []
+        requiredTargetStates: []
+        blockedTargetStates:
+        - {fileID: 11400000, guid: e88efc3432a274ac4be8b016fc3ab8fa, type: 2}
+        compatibleSkill: {fileID: 0}
+        targetGeometryType: 1
+    - rid: 6092004074608395143
+      type: {class: ClearAIBrainTargetActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        targetKey: {fileID: 11400000, guid: f58706c60335d4a329e9a4925dffe5a8, type: 2}
+        additionalTargetKeys: []
+    - rid: 6092004074608395144
+      type: {class: SelectEntityTargetByQueryAIBrainActionData, ns: Core.AI.Actions,
+        asm: Core}
+      data:
+        targetKey: {fileID: 11400000, guid: f58706c60335d4a329e9a4925dffe5a8, type: 2}
+        additionalTargetKeys: []
+        searchOriginType: 0
+        searchOriginKey: {fileID: 0}
+        captureSearchOrigin: 0
+        distanceScore:
+          rid: -2
+        recentValueDecrease:
+          rid: -2
+        searchRadius: 8000
+        maxCandidates: 256
+        diplomacyChannel: 0
+        requiredDisposition: 1
+        requiredTargetTags:
+        - {fileID: 11400000, guid: 2231ac3b695cc4d49895685ed991ab34, type: 2}
+        blockedTargetTags: []
+        requiredTargetStates:
+        - {fileID: 11400000, guid: b167cfbcf974f4e62a8315365308e3c5, type: 2}
+        - {fileID: 11400000, guid: bcb6da61a27f44b82850a593eb8ced3d, type: 2}
+        blockedTargetStates:
+        - {fileID: 11400000, guid: e88efc3432a274ac4be8b016fc3ab8fa, type: 2}
+        compatibleSkill: {fileID: 0}
+        targetGeometryType: 1
+    - rid: 6092004074608395145
+      type: {class: ObserveAnchorPatternAIBrainActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        pattern: {fileID: 11400000, guid: f1bf9c7ce605a4aa28695f7352889dca, type: 2}
+        markThreat: 1
+    - rid: 6092004074608395146
+      type: {class: UseSkillAIBrainActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        skill: {fileID: 11400000, guid: 1c32817581a314b259d1063a5333280e, type: 2}
+        targetKey: {fileID: 11400000, guid: f58706c60335d4a329e9a4925dffe5a8, type: 2}
+        targetResolver: {fileID: 0}
+        completionPolicy: 1
+    - rid: 6092004074608395147
+      type: {class: InterruptSkillAIBrainExitActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        triggerResults: 7
+        skill: {fileID: 11400000, guid: 1c32817581a314b259d1063a5333280e, type: 2}
+    - rid: 6092004074608395148
+      type: {class: ObserveAnchorPatternAIBrainActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        pattern: {fileID: 11400000, guid: f1bf9c7ce605a4aa28695f7352889dca, type: 2}
+        markThreat: 1
+    - rid: 6092004074608395149
+      type: {class: UseSkillAIBrainActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        skill: {fileID: 11400000, guid: 1c32817581a314b259d1063a5333280e, type: 2}
+        targetKey: {fileID: 11400000, guid: f58706c60335d4a329e9a4925dffe5a8, type: 2}
+        targetResolver: {fileID: 0}
+        completionPolicy: 1
+    - rid: 6092004074608395150
+      type: {class: InterruptSkillAIBrainExitActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        triggerResults: 7
+        skill: {fileID: 11400000, guid: 1c32817581a314b259d1063a5333280e, type: 2}
+    - rid: 6092004074608395151
+      type: {class: ObserveAnchorPatternAIBrainActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        pattern: {fileID: 11400000, guid: f1bf9c7ce605a4aa28695f7352889dca, type: 2}
+        markThreat: 1
+    - rid: 6092004074608395152
+      type: {class: UseSkillAIBrainActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        skill: {fileID: 11400000, guid: 1c32817581a314b259d1063a5333280e, type: 2}
+        targetKey: {fileID: 11400000, guid: f58706c60335d4a329e9a4925dffe5a8, type: 2}
+        targetResolver: {fileID: 0}
+        completionPolicy: 1
+    - rid: 6092004074608395153
+      type: {class: InterruptSkillAIBrainExitActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        triggerResults: 7
+        skill: {fileID: 11400000, guid: 1c32817581a314b259d1063a5333280e, type: 2}
+    - rid: 6092004074608395154
+      type: {class: SelectEntityTargetByQueryAIBrainActionData, ns: Core.AI.Actions,
+        asm: Core}
+      data:
+        targetKey: {fileID: 11400000, guid: 769aebe22b9f6494abbec52fe0ffdc71, type: 2}
+        additionalTargetKeys: []
+        searchOriginType: 0
+        searchOriginKey: {fileID: 0}
+        captureSearchOrigin: 0
+        distanceScore:
+          rid: -2
+        recentValueDecrease:
+          rid: -2
+        searchRadius: 4000
         maxCandidates: 256
         diplomacyChannel: 0
         requiredDisposition: -1
@@ -135,24 +944,466 @@ MonoBehaviour:
         compatibleSkill: {fileID: 11400000, guid: 342c4660d68a44ee8b9bb8ede48b92ba,
           type: 2}
         targetGeometryType: 1
-    - rid: 6092003862744662043
-      type: {class: UseSkillAIBrainActionData, ns: Core.AI.Actions, asm: Core}
-      data:
-        skill: {fileID: 11400000, guid: 6b62459fa2d6c4521bd917e18a6ffa20, type: 2}
-        targetKey: {fileID: 11400000, guid: 41b5c641941e34ce99d3a4aea74acd72, type: 2}
-        completionPolicy: 1
-    - rid: 6092003862744662044
-      type: {class: InterruptSkillAIBrainExitActionData, ns: Core.AI.Actions, asm: Core}
-      data:
-        triggerResults: 7
-        skill: {fileID: 11400000, guid: 6b62459fa2d6c4521bd917e18a6ffa20, type: 2}
-    - rid: 6092003862744662045
+    - rid: 6092004074608395155
       type: {class: UseSkillAIBrainActionData, ns: Core.AI.Actions, asm: Core}
       data:
         skill: {fileID: 11400000, guid: 342c4660d68a44ee8b9bb8ede48b92ba, type: 2}
+        targetKey: {fileID: 11400000, guid: 769aebe22b9f6494abbec52fe0ffdc71, type: 2}
+        targetResolver: {fileID: 0}
+        completionPolicy: 1
+    - rid: 6092004074608395156
+      type: {class: InterruptSkillAIBrainExitActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        triggerResults: 7
+        skill: {fileID: 11400000, guid: 342c4660d68a44ee8b9bb8ede48b92ba, type: 2}
+    - rid: 6092004074608395157
+      type: {class: SelectEntityTargetByQueryAIBrainActionData, ns: Core.AI.Actions,
+        asm: Core}
+      data:
+        targetKey: {fileID: 11400000, guid: 769aebe22b9f6494abbec52fe0ffdc71, type: 2}
+        additionalTargetKeys: []
+        searchOriginType: 0
+        searchOriginKey: {fileID: 0}
+        captureSearchOrigin: 0
+        distanceScore:
+          rid: -2
+        recentValueDecrease:
+          rid: -2
+        searchRadius: 4000
+        maxCandidates: 256
+        diplomacyChannel: 0
+        requiredDisposition: -1
+        requiredTargetTags:
+        - {fileID: 11400000, guid: 2231ac3b695cc4d49895685ed991ab34, type: 2}
+        blockedTargetTags: []
+        requiredTargetStates: []
+        blockedTargetStates:
+        - {fileID: 11400000, guid: e88efc3432a274ac4be8b016fc3ab8fa, type: 2}
+        compatibleSkill: {fileID: 11400000, guid: 342c4660d68a44ee8b9bb8ede48b92ba,
+          type: 2}
+        targetGeometryType: 1
+    - rid: 6092004074608395158
+      type: {class: UseSkillAIBrainActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        skill: {fileID: 11400000, guid: 342c4660d68a44ee8b9bb8ede48b92ba, type: 2}
+        targetKey: {fileID: 11400000, guid: 769aebe22b9f6494abbec52fe0ffdc71, type: 2}
+        targetResolver: {fileID: 0}
+        completionPolicy: 1
+    - rid: 6092004074608395159
+      type: {class: InterruptSkillAIBrainExitActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        triggerResults: 7
+        skill: {fileID: 11400000, guid: 342c4660d68a44ee8b9bb8ede48b92ba, type: 2}
+    - rid: 6092004074608395160
+      type: {class: HostValueConditionAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
+        compareOperation: 5
+        targetValue: 0
+    - rid: 6092004074608395161
+      type: {class: HostValueConditionAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
+        compareOperation: 5
+        targetValue: 0
+    - rid: 6092004074608395162
+      type: {class: HostValueConditionAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
+        compareOperation: 5
+        targetValue: 0
+    - rid: 6092004074608395163
+      type: {class: HostValueConditionAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
+        compareOperation: 5
+        targetValue: 0
+    - rid: 6092004074608395164
+      type: {class: HostValueConditionAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
+        compareOperation: 5
+        targetValue: 0
+    - rid: 6092004074608395165
+      type: {class: HostValueConditionAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
+        compareOperation: 5
+        targetValue: 0
+    - rid: 6092004074608395166
+      type: {class: HostValueConditionAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
+        compareOperation: 5
+        targetValue: 0
+    - rid: 6092004074608395167
+      type: {class: HostValueConditionAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
+        compareOperation: 5
+        targetValue: 0
+    - rid: 6092004074608395168
+      type: {class: HostValueConditionAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
+        compareOperation: 5
+        targetValue: 0
+    - rid: 6092004074608395169
+      type: {class: HostValueConditionAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
+        compareOperation: 5
+        targetValue: 0
+    - rid: 6092004074608395170
+      type: {class: HostValueConditionAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
+        compareOperation: 5
+        targetValue: 0
+    - rid: 6092004074608395171
+      type: {class: HostValueConditionAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
+        compareOperation: 5
+        targetValue: 0
+    - rid: 6092004074608395172
+      type: {class: HostValueConditionAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
+        compareOperation: 5
+        targetValue: 0
+    - rid: 6092004074608395173
+      type: {class: HostValueConditionAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
+        compareOperation: 5
+        targetValue: 0
+    - rid: 6092004074608395174
+      type: {class: HostValueConditionAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
+        compareOperation: 5
+        targetValue: 0
+    - rid: 6092004074608395175
+      type: {class: HostValueConditionAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
+        compareOperation: 5
+        targetValue: 0
+    - rid: 6092004074608395176
+      type: {class: HostValueConditionAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
+        compareOperation: 5
+        targetValue: 0
+    - rid: 6092004074608395177
+      type: {class: HostValueConditionAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
+        compareOperation: 5
+        targetValue: 0
+    - rid: 6092004074608395178
+      type: {class: TimeInStateAIBrainConditionData, ns: Core.AI.Conditions, asm: Core}
+      data:
+        minimumStateDuration: 1
+    - rid: 6092004074608395179
+      type: {class: TargetEntityExistsAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        targetShouldExist: 1
+        targetKey: {fileID: 11400000, guid: dbdf9302a39294c8baed403be2acf9ff, type: 2}
+    - rid: 6092004074608395180
+      type: {class: CurrentStateResultMatchesAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        requiredResults: 7
+    - rid: 6092004074608395181
+      type: {class: TimeInStateAIBrainConditionData, ns: Core.AI.Conditions, asm: Core}
+      data:
+        minimumStateDuration: 1
+    - rid: 6092004074608395182
+      type: {class: TargetEntityExistsAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        targetShouldExist: 0
+        targetKey: {fileID: 11400000, guid: dbdf9302a39294c8baed403be2acf9ff, type: 2}
+    - rid: 6092004074608395183
+      type: {class: TargetEntityExistsAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        targetShouldExist: 1
+        targetKey: {fileID: 11400000, guid: f58706c60335d4a329e9a4925dffe5a8, type: 2}
+    - rid: 6092004074608395184
+      type: {class: CurrentStateResultMatchesAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        requiredResults: 7
+    - rid: 6092004074608395185
+      type: {class: TargetEntityExistsAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        targetShouldExist: 0
+        targetKey: {fileID: 11400000, guid: f58706c60335d4a329e9a4925dffe5a8, type: 2}
+    - rid: 6092004074608395186
+      type: {class: TargetEntityExistsAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        targetShouldExist: 1
+        targetKey: {fileID: 11400000, guid: f58706c60335d4a329e9a4925dffe5a8, type: 2}
+    - rid: 6092004074608395187
+      type: {class: CurrentStateResultMatchesAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        requiredResults: 7
+    - rid: 6092004074608395188
+      type: {class: TargetEntityExistsAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        targetShouldExist: 0
+        targetKey: {fileID: 11400000, guid: f58706c60335d4a329e9a4925dffe5a8, type: 2}
+    - rid: 6092004074608395189
+      type: {class: TargetEntityExistsAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        targetShouldExist: 1
+        targetKey: {fileID: 11400000, guid: f58706c60335d4a329e9a4925dffe5a8, type: 2}
+    - rid: 6092004074608395190
+      type: {class: CurrentStateResultMatchesAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        requiredResults: 7
+    - rid: 6092004074608395191
+      type: {class: TargetEntityExistsAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        targetShouldExist: 0
+        targetKey: {fileID: 11400000, guid: f58706c60335d4a329e9a4925dffe5a8, type: 2}
+    - rid: 6092004074608395192
+      type: {class: TargetDistanceAIBrainConditionData, ns: Core.AI.Conditions, asm: Core}
+      data:
+        distance: 7000
+        compareOperation: 2
+        targetKey: {fileID: 11400000, guid: dbdf9302a39294c8baed403be2acf9ff, type: 2}
+        targetGeometryType: 1
+        interactionTags: []
+    - rid: 6092004074608395193
+      type: {class: TargetBrainStateAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        targetKey: {fileID: 11400000, guid: f58706c60335d4a329e9a4925dffe5a8, type: 2}
+        requiredStates: []
+        blockedStates:
+        - {fileID: 11400000, guid: e88efc3432a274ac4be8b016fc3ab8fa, type: 2}
+        shouldMatch: 0
+    - rid: 6092004074608395194
+      type: {class: TargetEntityExistsAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        targetShouldExist: 0
+        targetKey: {fileID: 11400000, guid: f58706c60335d4a329e9a4925dffe5a8, type: 2}
+    - rid: 6092004074608395195
+      type: {class: RecentTargetValueDecreaseAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        targetKey: {fileID: 11400000, guid: f58706c60335d4a329e9a4925dffe5a8, type: 2}
+        observation:
+          value: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
+          duration: 60
+        expected: 0
+    - rid: 6092004074608395196
+      type: {class: TargetDistanceAIBrainConditionData, ns: Core.AI.Conditions, asm: Core}
+      data:
+        distance: 7000
+        compareOperation: 2
+        targetKey: {fileID: 11400000, guid: dbdf9302a39294c8baed403be2acf9ff, type: 2}
+        targetGeometryType: 1
+        interactionTags: []
+    - rid: 6092004074608395197
+      type: {class: TargetBrainStateAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        targetKey: {fileID: 11400000, guid: f58706c60335d4a329e9a4925dffe5a8, type: 2}
+        requiredStates: []
+        blockedStates:
+        - {fileID: 11400000, guid: e88efc3432a274ac4be8b016fc3ab8fa, type: 2}
+        shouldMatch: 0
+    - rid: 6092004074608395198
+      type: {class: TargetEntityExistsAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        targetShouldExist: 0
+        targetKey: {fileID: 11400000, guid: f58706c60335d4a329e9a4925dffe5a8, type: 2}
+    - rid: 6092004074608395199
+      type: {class: RecentTargetValueDecreaseAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        targetKey: {fileID: 11400000, guid: f58706c60335d4a329e9a4925dffe5a8, type: 2}
+        observation:
+          value: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
+          duration: 45
+        expected: 0
+    - rid: 6092004074608395200
+      type: {class: TargetDistanceAIBrainConditionData, ns: Core.AI.Conditions, asm: Core}
+      data:
+        distance: 7000
+        compareOperation: 2
+        targetKey: {fileID: 11400000, guid: dbdf9302a39294c8baed403be2acf9ff, type: 2}
+        targetGeometryType: 1
+        interactionTags: []
+    - rid: 6092004074608395201
+      type: {class: TargetBrainStateAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        targetKey: {fileID: 11400000, guid: f58706c60335d4a329e9a4925dffe5a8, type: 2}
+        requiredStates: []
+        blockedStates:
+        - {fileID: 11400000, guid: e88efc3432a274ac4be8b016fc3ab8fa, type: 2}
+        shouldMatch: 0
+    - rid: 6092004074608395202
+      type: {class: TargetEntityExistsAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        targetShouldExist: 0
+        targetKey: {fileID: 11400000, guid: f58706c60335d4a329e9a4925dffe5a8, type: 2}
+    - rid: 6092004074608395203
+      type: {class: TargetBrainStateAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        targetKey: {fileID: 11400000, guid: f58706c60335d4a329e9a4925dffe5a8, type: 2}
+        requiredStates:
+        - {fileID: 11400000, guid: b167cfbcf974f4e62a8315365308e3c5, type: 2}
+        - {fileID: 11400000, guid: bcb6da61a27f44b82850a593eb8ced3d, type: 2}
+        blockedStates: []
+        shouldMatch: 0
+    - rid: 6092004074608395204
+      type: {class: TargetEntityExistsAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        targetShouldExist: 1
         targetKey: {fileID: 11400000, guid: 41b5c641941e34ce99d3a4aea74acd72, type: 2}
-        completionPolicy: 0
-    - rid: 6092003862744662046
+    - rid: 6092004074608395205
+      type: {class: CurrentStateResultMatchesAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        requiredResults: 7
+    - rid: 6092004074608395206
+      type: {class: TargetEntityExistsAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        targetShouldExist: 1
+        targetKey: {fileID: 11400000, guid: dbdf9302a39294c8baed403be2acf9ff, type: 2}
+    - rid: 6092004074608395207
+      type: {class: CurrentStateResultMatchesAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        requiredResults: 7
+    - rid: 6092004074608395208
+      type: {class: TargetEntityExistsAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        targetShouldExist: 0
+        targetKey: {fileID: 11400000, guid: dbdf9302a39294c8baed403be2acf9ff, type: 2}
+    - rid: 6092004074608395209
+      type: {class: AnchorPatternCatchupAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        pattern: {fileID: 11400000, guid: f1bf9c7ce605a4aa28695f7352889dca, type: 2}
+        expected: 1
+    - rid: 6092004074608395210
+      type: {class: AnchorPatternCatchupAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        pattern: {fileID: 11400000, guid: f1bf9c7ce605a4aa28695f7352889dca, type: 2}
+        expected: 0
+    - rid: 6092004074608395211
+      type: {class: TargetDistanceAIBrainConditionData, ns: Core.AI.Conditions, asm: Core}
+      data:
+        distance: 7000
+        compareOperation: 2
+        targetKey: {fileID: 11400000, guid: dbdf9302a39294c8baed403be2acf9ff, type: 2}
+        targetGeometryType: 1
+        interactionTags: []
+    - rid: 6092004074608395212
+      type: {class: TargetDistanceAIBrainConditionData, ns: Core.AI.Conditions, asm: Core}
+      data:
+        distance: 7000
+        compareOperation: 2
+        targetKey: {fileID: 11400000, guid: dbdf9302a39294c8baed403be2acf9ff, type: 2}
+        targetGeometryType: 1
+        interactionTags: []
+    - rid: 6092004074608395213
+      type: {class: TargetDistanceAIBrainConditionData, ns: Core.AI.Conditions, asm: Core}
+      data:
+        distance: 7000
+        compareOperation: 2
+        targetKey: {fileID: 11400000, guid: dbdf9302a39294c8baed403be2acf9ff, type: 2}
+        targetGeometryType: 1
+        interactionTags: []
+    - rid: 6092004074608395214
+      type: {class: TargetDistanceAIBrainConditionData, ns: Core.AI.Conditions, asm: Core}
+      data:
+        distance: 7000
+        compareOperation: 2
+        targetKey: {fileID: 11400000, guid: dbdf9302a39294c8baed403be2acf9ff, type: 2}
+        targetGeometryType: 1
+        interactionTags: []
+    - rid: 6092004074608395215
+      type: {class: TargetEntityExistsAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        targetShouldExist: 1
+        targetKey: {fileID: 11400000, guid: dbdf9302a39294c8baed403be2acf9ff, type: 2}
+    - rid: 6092004074608395216
+      type: {class: TargetAcquisitionLeashAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        targetKey: {fileID: 11400000, guid: 41b5c641941e34ce99d3a4aea74acd72, type: 2}
+        radius: 3500
+        commitmentDuration: 18
+    - rid: 6092004074608395217
+      type: {class: AnyAIBrainConditionData, ns: Core.AI.Conditions, asm: Core}
+      data:
+        conditions:
+        - rid: 6092004074608395241
+        - rid: 6092004074608395242
+    - rid: 6092004074608395218
+      type: {class: TargetEntityExistsAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        targetShouldExist: 1
+        targetKey: {fileID: 11400000, guid: dbdf9302a39294c8baed403be2acf9ff, type: 2}
+    - rid: 6092004074608395219
+      type: {class: TargetAcquisitionLeashAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        targetKey: {fileID: 11400000, guid: 41b5c641941e34ce99d3a4aea74acd72, type: 2}
+        radius: 3500
+        commitmentDuration: 18
+    - rid: 6092004074608395220
+      type: {class: AnyAIBrainConditionData, ns: Core.AI.Conditions, asm: Core}
+      data:
+        conditions:
+        - rid: 6092004074608395243
+        - rid: 6092004074608395244
+    - rid: 6092004074608395221
       type: {class: TargetDistanceAIBrainConditionData, ns: Core.AI.Conditions, asm: Core}
       data:
         distance: 4000
@@ -160,3 +1411,136 @@ MonoBehaviour:
         targetKey: {fileID: 11400000, guid: 41b5c641941e34ce99d3a4aea74acd72, type: 2}
         targetGeometryType: 1
         interactionTags: []
+    - rid: 6092004074608395222
+      type: {class: CurrentStateResultMatchesAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        requiredResults: 6
+    - rid: 6092004074608395223
+      type: {class: TimeInStateAIBrainConditionData, ns: Core.AI.Conditions, asm: Core}
+      data:
+        minimumStateDuration: 1
+    - rid: 6092004074608395224
+      type: {class: TargetDistanceAIBrainConditionData, ns: Core.AI.Conditions, asm: Core}
+      data:
+        distance: 4000
+        compareOperation: 2
+        targetKey: {fileID: 11400000, guid: 41b5c641941e34ce99d3a4aea74acd72, type: 2}
+        targetGeometryType: 1
+        interactionTags: []
+    - rid: 6092004074608395225
+      type: {class: CurrentStateResultMatchesAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        requiredResults: 7
+    - rid: 6092004074608395226
+      type: {class: TimeInStateAIBrainConditionData, ns: Core.AI.Conditions, asm: Core}
+      data:
+        minimumStateDuration: 1
+    - rid: 6092004074608395227
+      type: {class: CurrentStateResultMatchesAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        requiredResults: 7
+    - rid: 6092004074608395228
+      type: {class: TimeInStateAIBrainConditionData, ns: Core.AI.Conditions, asm: Core}
+      data:
+        minimumStateDuration: 1
+    - rid: 6092004074608395229
+      type: {class: TimeInStateAIBrainConditionData, ns: Core.AI.Conditions, asm: Core}
+      data:
+        minimumStateDuration: 9
+    - rid: 6092004074608395230
+      type: {class: TimeInStateAIBrainConditionData, ns: Core.AI.Conditions, asm: Core}
+      data:
+        minimumStateDuration: 9
+    - rid: 6092004074608395231
+      type: {class: TimeInStateAIBrainConditionData, ns: Core.AI.Conditions, asm: Core}
+      data:
+        minimumStateDuration: 21
+    - rid: 6092004074608395232
+      type: {class: TimeInStateAIBrainConditionData, ns: Core.AI.Conditions, asm: Core}
+      data:
+        minimumStateDuration: 9
+    - rid: 6092004074608395233
+      type: {class: TargetDistanceAIBrainConditionData, ns: Core.AI.Conditions, asm: Core}
+      data:
+        distance: 5000
+        compareOperation: 4
+        targetKey: {fileID: 11400000, guid: dbdf9302a39294c8baed403be2acf9ff, type: 2}
+        targetGeometryType: 1
+        interactionTags: []
+    - rid: 6092004074608395234
+      type: {class: TimeInStateAIBrainConditionData, ns: Core.AI.Conditions, asm: Core}
+      data:
+        minimumStateDuration: 39
+    - rid: 6092004074608395235
+      type: {class: TargetDistanceAIBrainConditionData, ns: Core.AI.Conditions, asm: Core}
+      data:
+        distance: 5000
+        compareOperation: 4
+        targetKey: {fileID: 11400000, guid: dbdf9302a39294c8baed403be2acf9ff, type: 2}
+        targetGeometryType: 1
+        interactionTags: []
+    - rid: 6092004074608395236
+      type: {class: TargetEntityExistsAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        targetShouldExist: 0
+        targetKey: {fileID: 11400000, guid: dbdf9302a39294c8baed403be2acf9ff, type: 2}
+    - rid: 6092004074608395237
+      type: {class: TargetEntityExistsAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        targetShouldExist: 0
+        targetKey: {fileID: 11400000, guid: dbdf9302a39294c8baed403be2acf9ff, type: 2}
+    - rid: 6092004074608395238
+      type: {class: AIBrainTargetDistanceScoreData, ns: Core.AI.Actions, asm: Core}
+      data:
+        distanceOffset: 500
+        maximumOwnerDistance: 6000
+        preferredOriginRadius: 5000
+        originWeight: 3000
+        ownerWeight: 1200
+        crowdWeight: 2
+        leashWeight: 0.0016000001
+    - rid: 6092004074608395239
+      type: {class: AIBrainRecentValueDecreaseData, ns: Core.AI, asm: Core}
+      data:
+        value: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
+        duration: 60
+    - rid: 6092004074608395240
+      type: {class: AIBrainRecentValueDecreaseData, ns: Core.AI, asm: Core}
+      data:
+        value: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
+        duration: 45
+    - rid: 6092004074608395241
+      type: {class: TargetEntityExistsAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        targetShouldExist: 0
+        targetKey: {fileID: 11400000, guid: 41b5c641941e34ce99d3a4aea74acd72, type: 2}
+    - rid: 6092004074608395242
+      type: {class: TargetBrainStateAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        targetKey: {fileID: 11400000, guid: 41b5c641941e34ce99d3a4aea74acd72, type: 2}
+        requiredStates:
+        - {fileID: 11400000, guid: e88efc3432a274ac4be8b016fc3ab8fa, type: 2}
+        blockedStates: []
+        shouldMatch: 1
+    - rid: 6092004074608395243
+      type: {class: TargetEntityExistsAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        targetShouldExist: 0
+        targetKey: {fileID: 11400000, guid: 41b5c641941e34ce99d3a4aea74acd72, type: 2}
+    - rid: 6092004074608395244
+      type: {class: TargetBrainStateAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        targetKey: {fileID: 11400000, guid: 41b5c641941e34ce99d3a4aea74acd72, type: 2}
+        requiredStates:
+        - {fileID: 11400000, guid: e88efc3432a274ac4be8b016fc3ab8fa, type: 2}
+        blockedStates: []
+        shouldMatch: 1

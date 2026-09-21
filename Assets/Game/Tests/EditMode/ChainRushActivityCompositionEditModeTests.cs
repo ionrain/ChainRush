@@ -174,7 +174,7 @@ namespace ChainRush.Tests.EditMode
             AutobattleRoot + "/Orchestration/Taxonomy/AwaitFactOperator.asset";
         const string DropProfilePath =
             AutobattleRoot + "/Drops/ExperienceDropProfile.asset";
-        const string EnemyCombatBrainPath = AutobattleRoot + "/AI/EnemyCombatBrain.asset";
+        const string EnemyCombatBrainPath = AutobattleRoot + "/AI/BugBrownSmallBrain.asset";
         const string CollectionBrainPath =
             AutobattleRoot + "/AI/ExperienceCollectorBrain.asset";
         const string SearchStatePath =
@@ -236,8 +236,8 @@ namespace ChainRush.Tests.EditMode
             Assert.AreEqual(ActivityEndMode.Manual, autobattle.Result.EndMode);
             Assert.AreEqual(9, autobattle.Teams[0].Objectives.Count);
             Assert.AreEqual(1, autobattle.Teams[1].Objectives.Count);
-            Assert.AreEqual(1, autobattle.Teams[0].Features.Count);
-            Assert.AreEqual(1, autobattle.Teams[1].Features.Count);
+            Assert.AreEqual(6, autobattle.Teams[0].Features.Count);
+            Assert.AreEqual(5, autobattle.Teams[1].Features.Count);
             Assert.AreEqual(1, autobattle.WorldWallets.Count);
             AssertTopology(
                 autobattle.Topology,
@@ -250,7 +250,7 @@ namespace ChainRush.Tests.EditMode
             Assert.AreEqual(1, board.Teams[0].SlotCount);
             Assert.IsFalse(board.AllowBots);
             Assert.AreEqual(ActivityEndMode.Manual, board.Result.EndMode);
-            Assert.AreEqual(11, board.Teams[0].Objectives.Count);
+            Assert.AreEqual(12, board.Teams[0].Objectives.Count);
             Assert.AreEqual(1, board.Teams[0].Features.Count);
             AssertTopology(
                 board.Topology,
@@ -557,7 +557,7 @@ namespace ChainRush.Tests.EditMode
                 .Any(condition => condition.TargetId == payment.Id && condition.TargetValue == ObjectiveState.Completed));
             Assert.IsTrue(fill.ActivateConditions.OfType<ObjectiveConditionObjectiveState>()
                 .Any(condition => condition.TargetId == clear.Id && condition.TargetValue == ObjectiveState.Completed));
-            Assert.AreEqual(9, clear.SuccessConditions.Count);
+            Assert.AreEqual(10, clear.SuccessConditions.Count);
             foreach (var metric in clear.SuccessConditions.Cast<ObjectiveConditionEconomyMetric>())
             {
                 Assert.NotNull(metric.Asset);
@@ -662,7 +662,7 @@ namespace ChainRush.Tests.EditMode
                 .OfType<SegmentLengthCriterionData>()
                 .Single();
             Assert.AreEqual(1000, distanceCriterion.MinimumDistance);
-            Assert.AreEqual(1000, distanceCriterion.MaximumDistance);
+            Assert.AreEqual(1414, distanceCriterion.MaximumDistance);
             var population = (PopulationAgentData)populationAgent.Agent;
             var populationTargets = populationAgent.TargetSelectionCriteria
                 .Select(entry => entry.Criterion).OfType<CapabilityHostCriterionData>().Single();
@@ -676,15 +676,14 @@ namespace ChainRush.Tests.EditMode
             Assert.IsInstanceOf<GridPopulationDistributionAlgorithmData>(population.Distribution);
             Assert.AreEqual(256, population.WorkBudget);
             var release = population.Releases.Single();
-            Assert.AreEqual(8, release.Shapes[0].DesiredCount.Max);
-            Assert.AreEqual(16, release.Shapes[1].DesiredCount.Max);
-            Assert.AreEqual(0, release.Shapes[0].DesiredCount.Min);
-            Assert.AreEqual(0, release.Shapes[1].DesiredCount.Min);
-            Assert.AreEqual(2, release.Shapes[0].Usages.Count);
-            Assert.AreEqual(1, release.Shapes[1].Usages.Count);
-            Assert.IsTrue(release.Shapes.All(shape => shape.Share == 0.5f));
-            Assert.AreEqual(4, release.Content.Count);
-            Assert.IsTrue(release.Content.All(content => content.Source is PopulationCatalogContentSourceData && content.Share == 0.25f));
+            Assert.AreEqual(GridPopulationShapeAllocationType.PatternWeights,
+                ((GridPopulationDistributionAlgorithmData)population.Distribution).ShapeAllocationType);
+            Assert.IsTrue(release.Shapes.All(shape => shape.DesiredCount.Min == 0 && shape.DesiredCount.Max == 16));
+            Assert.AreEqual(5, release.Content.Count);
+            CollectionAssert.AreEqual(new[] { 0.175f, 0.175f, 0.175f, 0.175f, 0.3f }, release.Content.Select(content => content.Share));
+            Assert.AreEqual(450, ((LongFlatProgressionData)release.Content[3].Availability.Cooldown).Value);
+            Assert.IsTrue(release.Content.All(content => content.Source is PopulationCatalogContentSourceData catalog
+                && catalog.SelectionType == PopulationCatalogSelectionType.DeterministicRandom));
             var match = populationAgent.MatchConditions.OfType<ObjectiveConditionMaterializedRegionCoverage>().Single();
             Assert.IsTrue(match.Space.Matches(success.Space));
             Assert.AreSame(match.EconomyAsset, success.EconomyAsset);
@@ -696,7 +695,7 @@ namespace ChainRush.Tests.EditMode
                 .SelectMany(wallet => wallet.Seed)
                 .Where(seed => seed.Seed.Asset is SpatialShapeData)
                 .ToList();
-            Assert.AreEqual(6, shapeSeeds.Count);
+            Assert.AreEqual(8, shapeSeeds.Count);
             CollectionAssert.AreEquivalent(
                 new SpatialShapeData[]
                 {
@@ -706,23 +705,23 @@ namespace ChainRush.Tests.EditMode
                     cornerShape,
                     boxShape,
                     zigzagShape,
+                    LoadRequiredAsset<SpatialShapeData>(BoardRoot + "/Space/Shapes/DiagonalLine.asset"),
+                    LoadRequiredAsset<SpatialShapeData>(BoardRoot + "/Space/Shapes/MirroredZigzag.asset"),
                 },
                 shapeSeeds.Select(seed => seed.Seed.Asset).ToList());
             Assert.IsTrue(shapeSeeds.All(seed =>
                 seed.Seed.FormType == EconomyFormType.Stack
                 && seed.Seed.Amount == 1L
                 && seed.MaterializationType == ActivitySeedMaterializationType.None));
-            Assert.AreEqual(2, release.Shapes.Count);
-            Assert.AreSame(lineShape, release.Shapes[0].Shape);
-            Assert.AreSame(singleShape, release.Shapes[1].Shape);
-            Assert.AreEqual(new Vector3Int(2, 1, 1), release.Shapes[0].Usages[0].Size);
-            Assert.AreEqual(new Vector3Int(2, 1, 1), release.Shapes[0].Usages[1].Size);
-            Assert.AreEqual(Vector3Int.zero, release.Shapes[0].Usages[0].Rotation);
-            Assert.AreEqual(new Vector3Int(0, 90, 0), release.Shapes[0].Usages[1].Rotation);
-            Assert.AreEqual(Vector3Int.one, release.Shapes[1].Usages[0].Size);
+            Assert.AreEqual(7, release.Shapes.Count);
+            Assert.AreSame(singleShape, release.Shapes[0].Shape);
+            Assert.AreSame(lineShape, release.Shapes[1].Shape);
+            CollectionAssert.AreEqual(new[] { .2f, .1f, .1f, .2f, .2f, .1f, .1f }, release.Shapes.Select(rule => rule.Share));
+            Assert.AreEqual(new Vector3Int(2, 1, 1), release.Shapes[1].Usages[0].Size);
+            Assert.AreEqual(new Vector3Int(0, 90, 0), release.Shapes[1].Usages[1].Rotation);
+            Assert.AreEqual(Vector3Int.one, release.Shapes[0].Usages[0].Size);
             foreach (var rule in release.Shapes)
             {
-                Assert.AreEqual(0.5f, rule.Share);
                 foreach (var usage in rule.Usages)
                 {
                     Assert.AreEqual(new Vector3Int(1000, 1, 1000), usage.CellSize);
@@ -781,7 +780,10 @@ namespace ChainRush.Tests.EditMode
             CollectionAssert.AreEqual(
                 mergeRecipes,
                 mergeCatalog.Entries.Take(4).Select(entry => entry.Recipe).ToList());
-            Assert.AreEqual(8, mergeCatalog.Entries.Count);
+            Assert.AreEqual(9, mergeCatalog.Entries.Count);
+            var goldRecipe = mergeCatalog.Entries.Last().Recipe;
+            Assert.AreEqual("chainrush.production.board.gold-selection.recipe", goldRecipe.Id);
+            Assert.AreEqual("chainrush.resource.run-gold", goldRecipe.Outputs.Single().Asset.Id);
             CollectionAssert.AreEqual(
                 new[] { mergeCatalog },
                 mergeProduction.SupportedCatalogs);
@@ -917,9 +919,10 @@ namespace ChainRush.Tests.EditMode
 
             Assert.AreEqual(9, activity.Teams[0].Objectives.Count);
             Assert.AreEqual(1, activity.Teams[1].Objectives.Count);
-            Assert.IsTrue(activity.Teams
-                .SelectMany(team => team.Objectives)
+            Assert.IsTrue(activity.Teams[0].Objectives
                 .All(entry => entry.Template.CompletionPolicyType == ObjectiveCompletionPolicyType.Reset));
+            Assert.AreEqual(ObjectiveCompletionPolicyType.ResetOnConditions,
+                activity.Teams[1].Objectives.Single().Template.CompletionPolicyType);
             ObjectiveTemplateData playerDeploymentObjective = activity.Teams[0].Objectives
                 .Select(entry => entry.Template)
                 .Single(template => template == LoadRequiredAsset<ObjectiveTemplateData>(AutobattleRoot + "/Objectives/PlayerDeploymentObjective.asset"));
@@ -934,8 +937,8 @@ namespace ChainRush.Tests.EditMode
             Assert.AreEqual(CompareOperation.Equal, playerDeploymentSuccess.CompareOperation);
             Assert.IsNull(AssetDatabase.LoadAssetAtPath<AgentDefinitionData>(
                 AutobattleRoot + "/Agents/PlayerDeploymentAgent.asset"));
-            Assert.AreEqual(1, activity.Teams[0].Features.Count);
-            Assert.AreEqual(1, activity.Teams[1].Features.Count);
+            Assert.AreEqual(6, activity.Teams[0].Features.Count);
+            Assert.AreEqual(5, activity.Teams[1].Features.Count);
             Assert.AreEqual(1, activity.WorldWallets.Count);
 
             ActivityTeamWalletData playerWallet = activity.Teams[0].Wallets.Single();
@@ -979,12 +982,9 @@ namespace ChainRush.Tests.EditMode
             Assert.AreEqual(1, wave.Outputs.Count);
             Assert.AreSame(enemy, wave.Outputs[0].Asset);
             Assert.AreEqual(EconomyFormType.Token, wave.Outputs[0].FormType);
-            Assert.IsInstanceOf<LongCappedProgressionData>(wave.Outputs[0].AmountProgression);
-            var capped = (LongCappedProgressionData)wave.Outputs[0].AmountProgression;
-            Assert.AreEqual(20L, capped.Maximum);
-            Assert.IsInstanceOf<LongLinearProgressionData>(capped.Source);
+            Assert.IsInstanceOf<LongFlatProgressionData>(wave.Outputs[0].AmountProgression);
             long[] ordinals = { 1L, 2L, 19L, 20L };
-            long[] amounts = { 2L, 3L, 20L, 20L };
+            long[] amounts = { 1L, 1L, 1L, 1L };
             for (int i = 0; i < ordinals.Length; i++)
             {
                 Assert.IsTrue(wave.Outputs[0].TryResolveAmount(
@@ -1361,6 +1361,7 @@ namespace ChainRush.Tests.EditMode
                 typeof(GameplayHostValuesInstallerData),
                 typeof(DropRuntimeInstallerData),
                 typeof(DiplomacyRuntimeInstallerData),
+                typeof(GameplaySkillPropertyMappingsInstallerData),
             };
 
             CollectionAssert.AreEqual(
@@ -1388,16 +1389,24 @@ namespace ChainRush.Tests.EditMode
                 LoadRequiredAsset<UnityEngine.Object>(CapabilityHostDiplomacyModulePath),
                 diplomacyModules.GetArrayElementAtIndex(1).objectReferenceValue);
 
-            Assert.AreEqual(2, startup.Actions.Length);
-            Assert.IsInstanceOf<AddGameFlowRuntimeActionData>(startup.Actions[0]);
+            Assert.AreEqual(3, startup.Actions.Length);
+            Assert.AreEqual("CaptureChainRushRunActionData", startup.Actions[0].GetType().Name);
             Assert.IsInstanceOf<AddGameFlowRuntimeActionData>(startup.Actions[1]);
+            Assert.AreEqual("StartChainRushLevelActionData", startup.Actions[2].GetType().Name);
 
             GameFlowTemplateData boardFlow =
                 LoadRequiredAsset<GameFlowTemplateData>(BoardFlowPath);
             GameFlowTemplateData autobattleFlow =
                 LoadRequiredAsset<GameFlowTemplateData>(AutobattleFlowPath);
-            Assert.AreSame(boardFlow, ReadTemplate(startup.Actions[0]));
-            Assert.AreSame(autobattleFlow, ReadTemplate(startup.Actions[1]));
+            Assert.AreSame(boardFlow, ReadTemplate(startup.Actions[1]));
+            var levelStartup = new SerializedObject(startup.Actions[2]);
+            var levelFlows = levelStartup.FindProperty("levels");
+            Assert.AreEqual(4, levelFlows.arraySize);
+            Assert.AreEqual("Level01", levelFlows.GetArrayElementAtIndex(0).FindPropertyRelative("levelId").stringValue);
+            Assert.AreSame(autobattleFlow, levelFlows.GetArrayElementAtIndex(0).FindPropertyRelative("flow").objectReferenceValue);
+            Assert.AreEqual("Level02", levelFlows.GetArrayElementAtIndex(2).FindPropertyRelative("levelId").stringValue);
+            Assert.AreEqual("chainrush.flow.autobattle.level02",
+                ((GameFlowTemplateData)levelFlows.GetArrayElementAtIndex(2).FindPropertyRelative("flow").objectReferenceValue).Id);
         }
 
         [Test]

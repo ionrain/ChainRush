@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc1672c5b1e26429db1494ddb3b780ed, type: 3}
+  m_Name: NormalHeroBody
+  m_EditorClassIdentifier: Core::Core.World.InteractionGeometryData
+  domainTypePreview: 16
+  id: chainrush.interaction.normalhero
+  title:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  description:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  icon: {fileID: 0}
+  precision: 0
+  allowedOperations: 31
+  tags: []
+  slotFootprint: 1
+  stackCapacity: 0
+  bindings:
+  - shape: {fileID: 11400000, guid: 1ffd8c4e50eea4ebd84c03248bcbb087, type: 2}
+    primitiveType: 0
+    usage:
+      fillType: 0
+      position: {x: 0, y: 0, z: 250}
+      size: {x: 1, y: 1, z: 1}
+      rotation: {x: 0, y: 0, z: 0}
+      cellSize: {x: 1400, y: 0, z: 1500}
+      spacing: {x: 0, y: 0, z: 0}
+    interactionTags:
+    - {fileID: 11400000, guid: 2231ac3b695cc4d49895685ed991ab34, type: 2}
+  references:
+    version: 2
+    RefIds: []

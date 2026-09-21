@@ -45,13 +45,13 @@ MonoBehaviour:
     walletTags:
     - {fileID: 11400000, guid: 9cbb4f47a974c42cfa008dda55386302, type: 2}
     amountProgression:
-      rid: 6092003862744662048
+      rid: 6092004074608394251
   limitMode: 0
   capValue: 0
   references:
     version: 2
     RefIds:
-    - rid: 6092003862744662048
+    - rid: 6092004074608394251
       type: {class: LongFlatProgressionData, ns: Core, asm: Core}
       data:
         value: 1

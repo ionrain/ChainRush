@@ -1,0 +1,2009 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da96b7a2c335d49a5875e768ce52b227, type: 3}
+  m_Name: Level02ReplenishmentObjective
+  m_EditorClassIdentifier: Core::Core.Objectives.ObjectiveTemplateData
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects:
+    - {fileID: 11400000, guid: ef0765d17832a45dea743411aa4d6a9c, type: 2}
+    - {fileID: 11400000, guid: 97e9ee6284cd14460961d53ac3b9c613, type: 2}
+    - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
+    - {fileID: 11400000, guid: 6fb733e20a01b4d3c8a49458cc9e8447, type: 2}
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: root
+      Entry: 7
+      Data: 0|Core.Objectives.ObjectiveNode, Core
+    - Name: _id
+      Entry: 1
+      Data: replenish-Level02
+    - Name: _data
+      Entry: 6
+      Data: 
+    - Name: _state
+      Entry: 3
+      Data: 1
+    - Name: _completionPolicyType
+      Entry: 3
+      Data: 0
+    - Name: _activateConditions
+      Entry: 7
+      Data: 1|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: 2|Core.Objectives.ObjectiveConditionMaterializedEntity, Core
+    - Name: _targetValue
+      Entry: 3
+      Data: 0
+    - Name: targetProgression
+      Entry: 7
+      Data: 3|Core.Objectives.ObjectiveLongTargetProgressionData, Core
+    - Name: resource
+      Entry: 10
+      Data: 0
+    - Name: owner
+      Entry: 7
+      Data: 4|Core.Economy.Authoring.EconomyOperationOwnerBindingData, Core
+    - Name: bindingType
+      Entry: 3
+      Data: 1
+    - Name: owner
+      Entry: 7
+      Data: Core.Economy.Authoring.EconomyOwnerRef, Core
+    - Name: source
+      Entry: 10
+      Data: 1
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: walletTags
+      Entry: 7
+      Data: 5|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 10
+      Data: 2
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: scaleType
+      Entry: 3
+      Data: 0
+    - Name: relativeBase
+      Entry: 3
+      Data: 0
+    - Name: progression
+      Entry: 7
+      Data: 6|Core.LongDependentProgressionData, Core
+    - Name: entries
+      Entry: 7
+      Data: 7|System.Collections.Generic.List`1[[Core.LongProgressionIntervalData,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 17
+    - Name: 
+      Entry: 7
+      Data: 8|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 0
+    - Name: maximum
+      Entry: 4
+      Data: 62500
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 9|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 4
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 10|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 62500
+    - Name: maximum
+      Entry: 4
+      Data: 125000
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 11|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 5
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 12|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 125000
+    - Name: maximum
+      Entry: 4
+      Data: 187500
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 13|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 6
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 14|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 187500
+    - Name: maximum
+      Entry: 4
+      Data: 250000
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 15|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 7
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 16|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 250000
+    - Name: maximum
+      Entry: 4
+      Data: 312500
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 17|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 8
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 18|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 312500
+    - Name: maximum
+      Entry: 4
+      Data: 375000
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 19|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 9
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 20|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 375000
+    - Name: maximum
+      Entry: 4
+      Data: 437500
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 21|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 10
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 22|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 437500
+    - Name: maximum
+      Entry: 4
+      Data: 500000
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 23|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 11
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 24|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 500000
+    - Name: maximum
+      Entry: 4
+      Data: 562500
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 25|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 12
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 26|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 562500
+    - Name: maximum
+      Entry: 4
+      Data: 625000
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 27|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 13
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 28|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 625000
+    - Name: maximum
+      Entry: 4
+      Data: 687500
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 29|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 14
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 30|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 687500
+    - Name: maximum
+      Entry: 4
+      Data: 750000
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 31|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 15
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 32|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 750000
+    - Name: maximum
+      Entry: 4
+      Data: 812500
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 33|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 16
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 34|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 812500
+    - Name: maximum
+      Entry: 4
+      Data: 875000
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 35|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 17
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 36|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 875000
+    - Name: maximum
+      Entry: 4
+      Data: 937500
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 37|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 18
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 38|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 937500
+    - Name: maximum
+      Entry: 4
+      Data: 1000000
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 39|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 19
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 40|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 1000000
+    - Name: maximum
+      Entry: 4
+      Data: 0
+    - Name: hasMaximum
+      Entry: 5
+      Data: false
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 41|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 20
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: entityId
+      Entry: 7
+      Data: Core.Entities.EntityId, Core
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: economyAsset
+      Entry: 6
+      Data: 
+    - Name: economyFormType
+      Entry: 3
+      Data: 1
+    - Name: requiredAssetTags
+      Entry: 7
+      Data: 42|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 10
+      Data: 3
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: requiredCapabilityTypes
+      Entry: 7
+      Data: 43|System.Collections.Generic.List`1[[Core.CapabilityHosts.CapabilityHostType,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: compareOperation
+      Entry: 3
+      Data: 4
+    - Name: marker
+      Entry: 7
+      Data: Core.World.SpatialMarkerRef, Core
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: _successConditions
+      Entry: 7
+      Data: 44|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: 45|Core.Objectives.ObjectiveConditionMaterializedEntity, Core
+    - Name: _targetValue
+      Entry: 3
+      Data: 0
+    - Name: targetProgression
+      Entry: 7
+      Data: 46|Core.Objectives.ObjectiveLongTargetProgressionData, Core
+    - Name: resource
+      Entry: 10
+      Data: 0
+    - Name: owner
+      Entry: 7
+      Data: 47|Core.Economy.Authoring.EconomyOperationOwnerBindingData, Core
+    - Name: bindingType
+      Entry: 3
+      Data: 1
+    - Name: owner
+      Entry: 7
+      Data: Core.Economy.Authoring.EconomyOwnerRef, Core
+    - Name: source
+      Entry: 10
+      Data: 1
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: walletTags
+      Entry: 7
+      Data: 48|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 10
+      Data: 2
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: scaleType
+      Entry: 3
+      Data: 0
+    - Name: relativeBase
+      Entry: 3
+      Data: 0
+    - Name: progression
+      Entry: 7
+      Data: 49|Core.LongDependentProgressionData, Core
+    - Name: entries
+      Entry: 7
+      Data: 50|System.Collections.Generic.List`1[[Core.LongProgressionIntervalData,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 17
+    - Name: 
+      Entry: 7
+      Data: 51|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 0
+    - Name: maximum
+      Entry: 4
+      Data: 62500
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 52|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 4
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 53|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 62500
+    - Name: maximum
+      Entry: 4
+      Data: 125000
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 54|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 5
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 55|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 125000
+    - Name: maximum
+      Entry: 4
+      Data: 187500
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 56|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 6
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 57|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 187500
+    - Name: maximum
+      Entry: 4
+      Data: 250000
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 58|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 7
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 59|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 250000
+    - Name: maximum
+      Entry: 4
+      Data: 312500
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 60|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 8
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 61|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 312500
+    - Name: maximum
+      Entry: 4
+      Data: 375000
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 62|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 9
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 63|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 375000
+    - Name: maximum
+      Entry: 4
+      Data: 437500
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 64|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 10
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 65|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 437500
+    - Name: maximum
+      Entry: 4
+      Data: 500000
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 66|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 11
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 67|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 500000
+    - Name: maximum
+      Entry: 4
+      Data: 562500
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 68|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 12
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 69|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 562500
+    - Name: maximum
+      Entry: 4
+      Data: 625000
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 70|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 13
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 71|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 625000
+    - Name: maximum
+      Entry: 4
+      Data: 687500
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 72|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 14
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 73|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 687500
+    - Name: maximum
+      Entry: 4
+      Data: 750000
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 74|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 15
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 75|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 750000
+    - Name: maximum
+      Entry: 4
+      Data: 812500
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 76|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 16
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 77|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 812500
+    - Name: maximum
+      Entry: 4
+      Data: 875000
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 78|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 17
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 79|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 875000
+    - Name: maximum
+      Entry: 4
+      Data: 937500
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 80|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 18
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 81|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 937500
+    - Name: maximum
+      Entry: 4
+      Data: 1000000
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 82|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 19
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 83|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 1000000
+    - Name: maximum
+      Entry: 4
+      Data: 0
+    - Name: hasMaximum
+      Entry: 5
+      Data: false
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 84|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 20
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: entityId
+      Entry: 7
+      Data: Core.Entities.EntityId, Core
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: economyAsset
+      Entry: 6
+      Data: 
+    - Name: economyFormType
+      Entry: 3
+      Data: 1
+    - Name: requiredAssetTags
+      Entry: 7
+      Data: 85|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 10
+      Data: 3
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: requiredCapabilityTypes
+      Entry: 7
+      Data: 86|System.Collections.Generic.List`1[[Core.CapabilityHosts.CapabilityHostType,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: compareOperation
+      Entry: 3
+      Data: 3
+    - Name: marker
+      Entry: 7
+      Data: Core.World.SpatialMarkerRef, Core
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: _failConditions
+      Entry: 7
+      Data: 87|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: resetConditions
+      Entry: 7
+      Data: 88|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: 89|Core.Objectives.ObjectiveConditionMaterializedEntity, Core
+    - Name: _targetValue
+      Entry: 3
+      Data: 0
+    - Name: targetProgression
+      Entry: 7
+      Data: 90|Core.Objectives.ObjectiveLongTargetProgressionData, Core
+    - Name: resource
+      Entry: 10
+      Data: 0
+    - Name: owner
+      Entry: 7
+      Data: 91|Core.Economy.Authoring.EconomyOperationOwnerBindingData, Core
+    - Name: bindingType
+      Entry: 3
+      Data: 1
+    - Name: owner
+      Entry: 7
+      Data: Core.Economy.Authoring.EconomyOwnerRef, Core
+    - Name: source
+      Entry: 10
+      Data: 1
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: walletTags
+      Entry: 7
+      Data: 92|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 10
+      Data: 2
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: scaleType
+      Entry: 3
+      Data: 0
+    - Name: relativeBase
+      Entry: 3
+      Data: 0
+    - Name: progression
+      Entry: 7
+      Data: 93|Core.LongDependentProgressionData, Core
+    - Name: entries
+      Entry: 7
+      Data: 94|System.Collections.Generic.List`1[[Core.LongProgressionIntervalData,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 17
+    - Name: 
+      Entry: 7
+      Data: 95|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 0
+    - Name: maximum
+      Entry: 4
+      Data: 62500
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 96|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 4
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 97|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 62500
+    - Name: maximum
+      Entry: 4
+      Data: 125000
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 98|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 5
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 99|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 125000
+    - Name: maximum
+      Entry: 4
+      Data: 187500
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 100|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 6
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 101|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 187500
+    - Name: maximum
+      Entry: 4
+      Data: 250000
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 102|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 7
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 103|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 250000
+    - Name: maximum
+      Entry: 4
+      Data: 312500
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 104|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 8
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 105|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 312500
+    - Name: maximum
+      Entry: 4
+      Data: 375000
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 106|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 9
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 107|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 375000
+    - Name: maximum
+      Entry: 4
+      Data: 437500
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 108|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 10
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 109|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 437500
+    - Name: maximum
+      Entry: 4
+      Data: 500000
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 110|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 11
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 111|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 500000
+    - Name: maximum
+      Entry: 4
+      Data: 562500
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 112|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 12
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 113|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 562500
+    - Name: maximum
+      Entry: 4
+      Data: 625000
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 114|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 13
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 115|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 625000
+    - Name: maximum
+      Entry: 4
+      Data: 687500
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 116|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 14
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 117|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 687500
+    - Name: maximum
+      Entry: 4
+      Data: 750000
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 118|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 15
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 119|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 750000
+    - Name: maximum
+      Entry: 4
+      Data: 812500
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 120|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 16
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 121|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 812500
+    - Name: maximum
+      Entry: 4
+      Data: 875000
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 122|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 17
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 123|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 875000
+    - Name: maximum
+      Entry: 4
+      Data: 937500
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 124|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 18
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 125|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 937500
+    - Name: maximum
+      Entry: 4
+      Data: 1000000
+    - Name: hasMaximum
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 126|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 19
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 127|Core.LongProgressionIntervalData, Core
+    - Name: interval
+      Entry: 7
+      Data: Core.ProgressInterval, Core
+    - Name: minimum
+      Entry: 4
+      Data: 1000000
+    - Name: maximum
+      Entry: 4
+      Data: 0
+    - Name: hasMaximum
+      Entry: 5
+      Data: false
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 7
+      Data: 128|Core.LongFlatProgressionData, Core
+    - Name: value
+      Entry: 3
+      Data: 20
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: entityId
+      Entry: 7
+      Data: Core.Entities.EntityId, Core
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: economyAsset
+      Entry: 6
+      Data: 
+    - Name: economyFormType
+      Entry: 3
+      Data: 1
+    - Name: requiredAssetTags
+      Entry: 7
+      Data: 129|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 10
+      Data: 3
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: requiredCapabilityTypes
+      Entry: 7
+      Data: 130|System.Collections.Generic.List`1[[Core.CapabilityHosts.CapabilityHostType,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: compareOperation
+      Entry: 3
+      Data: 4
+    - Name: marker
+      Entry: 7
+      Data: Core.World.SpatialMarkerRef, Core
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+  completionPolicyType: 2

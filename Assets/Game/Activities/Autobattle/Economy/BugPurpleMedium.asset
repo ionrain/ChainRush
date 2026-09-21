@@ -1,0 +1,181 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9969bb010093e43c6993c07d9c072f75, type: 3}
+  m_Name: BugPurpleMedium
+  m_EditorClassIdentifier: Core::Core.CapabilityHosts.CapabilityHostData
+  domainTypePreview: 3
+  id: chainrush.autobattle.enemy.bugpurplemedium
+  title:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  description:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  icon: {fileID: 0}
+  precision: 0
+  allowedOperations: 31
+  tags:
+  - {fileID: 11400000, guid: 2231ac3b695cc4d49895685ed991ab34, type: 2}
+  - {fileID: 11400000, guid: 6fb733e20a01b4d3c8a49458cc9e8447, type: 2}
+  - {fileID: 11400000, guid: 35dd5fcbdbbc2499991c0dfcbff2a397, type: 2}
+  slotFootprint: 1
+  stackCapacity: 0
+  footprintSize: {x: 1000, y: 0, z: 1000}
+  capabilities:
+  - capabilityType: 0
+    selectorTags: []
+  - capabilityType: 3
+    selectorTags: []
+  - capabilityType: 1
+    selectorTags:
+    - {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+  - capabilityType: 2
+    selectorTags: []
+  walletEntries:
+  - wallet: {fileID: 11400000, guid: b85977be3024f49c889d7fd3baa24634, type: 2}
+    seed:
+    - entry:
+        asset: {fileID: 11400000, guid: bedc4c57926e341a48e21cb5399f9b34, type: 2}
+        formType: 0
+        amount: 1
+      runtimeTags: []
+    - entry:
+        asset: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
+        formType: 0
+        amount: 60000
+      runtimeTags: []
+    - entry:
+        asset: {fileID: 11400000, guid: 8c0f2453a88154d458b494f57e5b4722, type: 2}
+        formType: 0
+        amount: 60000
+      runtimeTags: []
+    - entry:
+        asset: {fileID: 11400000, guid: 2d9f6059fa0ff4f01af05e6d0a60008f, type: 2}
+        formType: 0
+        amount: 2000
+      runtimeTags: []
+    - entry:
+        asset: {fileID: 11400000, guid: b42c9f1f607844b55a9f9e9df0020f73, type: 2}
+        formType: 0
+        amount: 1000
+      runtimeTags: []
+    - entry:
+        asset: {fileID: 11400000, guid: 416c9668718b04d8b86345380084fa9f, type: 2}
+        formType: 0
+        amount: 1000
+      runtimeTags: []
+    - entry:
+        asset: {fileID: 11400000, guid: 3bdadc8cc7c6448bc9acfe8dcf416e3e, type: 2}
+        formType: 0
+        amount: 1000
+      runtimeTags: []
+    - entry:
+        asset: {fileID: 11400000, guid: e72e9063b128a4876b59ad2d3acad474, type: 2}
+        formType: 0
+        amount: 1000
+      runtimeTags: []
+    - entry:
+        asset: {fileID: 11400000, guid: 641036bf98c2d41e1ad600881e97aefa, type: 2}
+        formType: 0
+        amount: 1000
+      runtimeTags: []
+    - entry:
+        asset: {fileID: 11400000, guid: 474ead2b8b706411495cbf7eb6f290e2, type: 2}
+        formType: 0
+        amount: 1000
+      runtimeTags: []
+    - entry:
+        asset: {fileID: 11400000, guid: 9d19c420f27d1432fb03d109c50650d6, type: 2}
+        formType: 0
+        amount: 1000
+      runtimeTags: []
+    - entry:
+        asset: {fileID: 11400000, guid: 38f00695b16f54e949e3d55505ff48e3, type: 2}
+        formType: 0
+        amount: 1000
+      runtimeTags: []
+    - entry:
+        asset: {fileID: 11400000, guid: 730cab08548e5488b917a65bd4f1784e, type: 2}
+        formType: 0
+        amount: 1000
+      runtimeTags: []
+    - entry:
+        asset: {fileID: 11400000, guid: 4d370ff22b24a4bba8fc7190e96613ce, type: 2}
+        formType: 0
+        amount: 1000
+      runtimeTags: []
+    - entry:
+        asset: {fileID: 11400000, guid: b1f75aa206e4f481e8a59e2845516fa8, type: 2}
+        formType: 0
+        amount: 1
+      runtimeTags:
+      - {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    - entry:
+        asset: {fileID: 11400000, guid: 319a4d4b4fb7040ffb6fb3fc34df14af, type: 2}
+        formType: 0
+        amount: 1
+      runtimeTags: []
+    - entry:
+        asset: {fileID: 11400000, guid: d7d60ad4e3cb14d1990c62b91eaab790, type: 2}
+        formType: 0
+        amount: 1
+      runtimeTags: []
+    - entry:
+        asset: {fileID: 11400000, guid: 299c3a99cfebc4f69b92d177ccbb8cef, type: 2}
+        formType: 0
+        amount: 6
+      runtimeTags: []
+    - entry:
+        asset: {fileID: 11400000, guid: 1b5cf8dda8d33447ba8a37670294e7af, type: 2}
+        formType: 0
+        amount: 1
+      runtimeTags: []
+    - entry:
+        asset: {fileID: 11400000, guid: 1b4857fd483ae4f999ba8f82d1bbb065, type: 2}
+        formType: 0
+        amount: 1
+      runtimeTags: []
+    - entry:
+        asset: {fileID: 11400000, guid: 8cfa9772bf7114b588990aa12473677c, type: 2}
+        formType: 0
+        amount: 1
+      runtimeTags: []
+  usagePolicy:
+    accessType: 0
+    diplomacyCompareOperation: 3
+    diplomacyScoreThreshold: -100
+  projectionPrefabReference:
+    m_AssetGUID: aab7bd1955e0440aa97f09a4b3439005
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  projectionPool:
+    demandModeType: 0
+    demandValue: 0
+    expandable: 1
+    maxCapacity: 32
+  references:
+    version: 2
+    RefIds: []

@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a42ffffb1f39b407a8cf4366861bfefe, type: 3}
+  m_Name: BoardRosterEligibility
+  m_EditorClassIdentifier: Assembly-CSharp::ChainRush.Gameplay.ChainRushBoardRosterEligibilityData
+  bindings:
+  - Output: {fileID: 11400000, guid: 1116b7b9d35a249b18741b1309a53cd1, type: 2}
+    ContentId: WaterData
+    Type: 0
+  - Output: {fileID: 11400000, guid: 3c69c74b28eea44aa87c88015c1871a3, type: 2}
+    ContentId: ColaData
+    Type: 0
+  - Output: {fileID: 11400000, guid: 7b42e70678d034765b77ab039ebb6f4f, type: 2}
+    ContentId: SkillLightningBolt
+    Type: 1

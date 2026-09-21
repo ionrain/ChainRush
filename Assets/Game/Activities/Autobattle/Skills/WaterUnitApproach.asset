@@ -63,8 +63,8 @@ MonoBehaviour:
       data:
         recipient: 0
         requiredTags: []
-        value: 100
-        multiplier: {fileID: 0}
+        value: 33
+        multiplier: {fileID: 11400000, guid: 2d9f6059fa0ff4f01af05e6d0a60008f, type: 2}
         targetTrackingMode: 1
         repathDistanceThreshold: 250
         accelerationDuration: 2

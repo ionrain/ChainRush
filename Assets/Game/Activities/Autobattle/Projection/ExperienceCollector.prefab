@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5025098855151371949}
   - component: {fileID: 8433390416652839131}
   - component: {fileID: 4916825198486537267}
+  - component: {fileID: 3600163952672721429}
   m_Layer: 0
   m_Name: ExperienceCollector
   m_TagString: Untagged
@@ -90,3 +91,15 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &3600163952672721429
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5164926502592248735}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 049dfa8f758d24f52b0adc276ff556ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChainRush.Gameplay.ChainRushRunProjectionFollowController

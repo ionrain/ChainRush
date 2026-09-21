@@ -15,6 +15,11 @@ MonoBehaviour:
   m_GroupName: ChainRush-Activity-Autobattle
   m_GUID: 27b10a11b30194cb2a038cd23d02bd61
   m_SerializeEntries:
+  - m_GUID: 0eb2838cdc1704034a13a23a1b4ee19f
+    m_Address: Assets/Game/Activities/Autobattle/Projection/BugGreenSmall.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1246a332c1edc44babbff71e260bb654
     m_Address: Assets/Game/Activities/Autobattle/Projection/WaterUnit4.prefab
     m_ReadOnly: 0
@@ -30,8 +35,28 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 247864fa9fcb84e15bb6b1fd3c0333dd
+    m_Address: Assets/Game/Activities/Autobattle/Projection/BugPurpleSmallWeaponProjectile.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2b751e0f4cc08482fbde02181eee8129
+    m_Address: Assets/Game/Activities/Autobattle/Projection/BugGreenMedium.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2d0d78d427cc34a85bbf5fa076cf92cb
     m_Address: Assets/Game/Activities/Autobattle/Projection/ColaUnit3.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4625415fc9ada4fa3999680cc8bf2bba
+    m_Address: Assets/Game/Activities/Autobattle/Projection/BugGreenSmallWeaponArea.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 502ad4b0926a54932b2560b7b429be27
+    m_Address: Assets/Game/Activities/Autobattle/Projection/Tabasco.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -46,8 +71,18 @@ MonoBehaviour:
     m_SerializedLabels:
     - activity-space
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 687d03b32aab345b991159448054e6ea
+    m_Address: Assets/Game/Activities/Autobattle/Projection/BugPurpleMediumWeaponProjectile.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6d0188c94855a4c6c9a87c4c1eeb0246
     m_Address: Assets/Game/Activities/Autobattle/Projection/ColaUnit.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 833fe77fcef9b4b17a89c4a90dda01c7
+    m_Address: Assets/Game/Activities/Autobattle/Projection/WaterDeploymentHost.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -66,13 +101,38 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: aab7bd1955e0440aa97f09a4b3439005
+    m_Address: Assets/Game/Activities/Autobattle/Projection/BugPurpleMedium.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: adf3ef7e614c540ef9556e46110df7b9
+    m_Address: Assets/Game/Activities/Autobattle/Projection/ContactArea.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b35c324e789914b05bd57c20e70dbc73
     m_Address: Assets/Game/Activities/Autobattle/Projection/PlayerSpawner.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b54498f86397040cfa7dd1589b867f36
+    m_Address: Assets/Game/Activities/Autobattle/Projection/BugGreenMediumWeaponArea.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b5ebce06dc7dd41aeb88660468760482
+    m_Address: Assets/Game/Activities/Autobattle/Projection/ColaDeploymentHost.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c01a0213fd27b4d00a0f90ca1202580f
     m_Address: Assets/Game/Activities/Autobattle/Projection/BugBrownSmall.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c5b3f0d7ca5d04c27877273630b60b99
+    m_Address: Assets/Game/Activities/Autobattle/Projection/LightningBoltProjectile.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -83,6 +143,16 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c8fe04a68b0ff47fe93dcc9e3fa09366
     m_Address: Assets/Game/Activities/Autobattle/Projection/WaterUnit3.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d234749aa5f4f41e2881add4cb600448
+    m_Address: Assets/Game/Activities/Autobattle/Projection/BugPurpleSmall.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d48c7bd3f510c49c2a99a886667ae6eb
+    m_Address: Assets/Game/Activities/Autobattle/Projection/BugBrownMedium.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

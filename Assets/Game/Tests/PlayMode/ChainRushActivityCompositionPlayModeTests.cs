@@ -42,7 +42,7 @@ using UnityEngine.TestTools;
 
 namespace ChainRush.Tests.PlayMode
 {
-    public sealed class ChainRushActivityCompositionPlayModeTests : IPrebuildSetup, IPostBuildCleanup
+    public sealed partial class ChainRushActivityCompositionPlayModeTests : IPrebuildSetup, IPostBuildCleanup
     {
         const string PlayMainEditorPrefKey = "Game/Play Game";
         const string HadPlayMainEditorPrefSessionKey =
@@ -108,8 +108,8 @@ namespace ChainRush.Tests.PlayMode
             ProjectionService.ResetRuntime();
             _restoreBoardContent?.Invoke();
             _restoreBoardContent = null;
-            _restoreBattleSeeds?.Invoke();
-            _restoreBattleSeeds = null;
+            _restoreActivityFeatures?.Invoke();
+            _restoreActivityFeatures = null;
 
             foreach (GameRuntimeHost host in Object.FindObjectsByType<GameRuntimeHost>(
                 FindObjectsInactive.Include, FindObjectsSortMode.None))
@@ -171,7 +171,160 @@ namespace ChainRush.Tests.PlayMode
         }
 
         const string PerfumePath = "Assets/Game/Activities/Shared/Units/Perfume/Perfume.asset";
+        const string PerfumeDistancePath = "Assets/Game/Activities/Shared/Units/Perfume/PerfumeDistance.asset";
         System.Action _restoreBoardContent;
+
+        [UnityTest]
+        public IEnumerator LevelPopulation_ProducesTheSourceInitialCount([Values("Survive", "Distance")] string level)
+        {
+            var action = AssetDatabase.LoadAssetAtPath<ScriptableObject>("Assets/Game/Runtime/Startup/CaptureChainRushRun.asset");
+            var field = action.GetType().GetField("selection", BindingFlags.Instance | BindingFlags.NonPublic);
+            object original = field.GetValue(action);
+            var materializationWarnings = new List<string>();
+            void CaptureWarning(string message, string stack, LogType type)
+            {
+                if (message.Contains("Materialized marker lease could not be committed")) materializationWarnings.Add(message);
+            }
+            Application.logMessageReceived += CaptureWarning;
+            try
+            {
+                field.SetValue(action, AssetDatabase.LoadAssetAtPath<ScriptableObject>(
+                    "Assets/Game/Runtime/Run/" + level + "RunSelection.asset"));
+                yield return LaunchPlayableActivities();
+                field.SetValue(action, original);
+                Assert.IsTrue(TryFindRunningActivities(out var battle, out _));
+                Assert.IsTrue(TryFindActivityHost(battle.Id, AssetDatabase.LoadAssetAtPath<CapabilityHostData>(
+                    level == "Distance" ? PerfumeDistancePath : PerfumePath), out var hero));
+                foreach (var skill in CapabilityHostService.GetSkillSnapshots(hero))
+                    Assert.IsTrue(CapabilityHostService.TrySetSkillEnabled(hero, skill.Id, false));
+                var owner = battle.Participants.Single(participant => participant.TeamIndex == 1).ParticipantEconomyOwner;
+                var enemy = AssetDatabase.LoadAssetAtPath<CapabilityHostData>(
+                    "Assets/Game/Activities/Autobattle/Economy/BugBrownSmall.asset");
+                int expected = level == "Survive" ? 2 : 4;
+                int Count() => CapabilityHostService.GetAll().Count(host => host.ActivityId == battle.Id
+                    && host.Owner.StableSimulationKey == owner.StableSimulationKey
+                    && host.Definition.Tags.Any(tag => tag.Id == "chainrush.autobattle.role.enemy-unit"));
+                float deadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
+                while (Count() < expected && Time.realtimeSinceStartup < deadline) yield return null;
+                var diagnostic = new StringBuilder();
+                AppendProcessDiagnostic(diagnostic, battle.DomainId);
+                Assert.AreEqual(expected, Count(), diagnostic.ToString());
+                Assert.AreEqual(expected, CapabilityHostService.GetAll().Count(host => host.ActivityId == battle.Id
+                    && host.Definition.Matches(enemy)), "The initial source composition is BrownSmall only.");
+                AssertMaterializedHostsHaveBackingTokens(battle.Id, enemy, owner,
+                    AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(SharedWalletTagPath));
+                Assert.IsEmpty(materializationWarnings, "A confirmed output must settle its placement lease successfully.");
+            }
+            finally
+            {
+                Application.logMessageReceived -= CaptureWarning;
+                field.SetValue(action, original);
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator RunProgress_DistanceUsesAuthoritativePoseRelativeToStart()
+        {
+            SuppressAutomaticHeroRoute();
+            SpaceRegionReadHandle frozenRegion = default;
+            var action = AssetDatabase.LoadAssetAtPath<ScriptableObject>(
+                "Assets/Game/Runtime/Startup/CaptureChainRushRun.asset");
+            var selectionField = action.GetType().GetField("selection", BindingFlags.Instance | BindingFlags.NonPublic);
+            object original = selectionField.GetValue(action);
+            try
+            {
+                selectionField.SetValue(action, AssetDatabase.LoadAssetAtPath<ScriptableObject>(
+                    "Assets/Game/Runtime/Run/DistanceRunSelection.asset"));
+                yield return LaunchPlayableActivities();
+                selectionField.SetValue(action, original);
+                Assert.IsTrue(TryFindRunningActivities(out var battle, out _));
+                var owner = battle.Participants.Single(participant => participant.TeamIndex == 0).ParticipantEconomyOwner;
+                var progress = AssetDatabase.LoadAssetAtPath<EconomyAssetData>(
+                    "Assets/Game/Activities/Shared/Economy/LevelProgress.asset");
+                var wallet = AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(SharedWalletTagPath);
+                var hero = AssetDatabase.LoadAssetAtPath<CapabilityHostData>(PerfumeDistancePath);
+                float deadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
+                while (!TryFindActivityHost(battle.Id, hero, out _) && Time.realtimeSinceStartup < deadline) yield return null;
+                Assert.IsTrue(TryFindActivityHost(battle.Id, hero, out var entity));
+                Assert.IsTrue(SpatialService.TryGetPose(entity, out var start));
+                var initialRegion = ReadReplenishmentRegion(battle);
+                Assert.AreEqual(SpaceRegionQueryResultType.Ready, SpaceRegionService.AcquireRead(
+                    initialRegion.Handle, initialRegion.Revision, out frozenRegion, out _));
+                Assert.AreEqual(0, QueryAmount(owner, wallet, EconomyFormType.Stack, progress));
+                Assert.IsTrue(TopologyService.TryResolvePosition(battle.Id,
+                    start.Coordinates + new Vector3(75, 0, 0), out var halfway, out _));
+                Assert.IsTrue(SpatialService.TrySetPose(entity, halfway, start.Rotation, out _));
+                deadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
+                while (QueryAmount(owner, wallet, EconomyFormType.Stack, progress) == 0
+                    && Time.realtimeSinceStartup < deadline) yield return null;
+                Assert.AreEqual(500000, QueryAmount(owner, wallet, EconomyFormType.Stack, progress),
+                    "75 authored distance units must be half of Distance 150.");
+                deadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
+                while (ReadReplenishmentRegion(battle).Bounds.Center.x == initialRegion.Bounds.Center.x
+                    && Time.realtimeSinceStartup < deadline) yield return null;
+                var movedRegion = ReadReplenishmentRegion(battle);
+                Assert.AreEqual(initialRegion.Bounds.Center.x + 75, movedRegion.Bounds.Center.x, .001f,
+                    "Distance replenishment must move its area along the run route.");
+                Assert.AreEqual(initialRegion.Bounds.Center.z, movedRegion.Bounds.Center.z);
+                Assert.AreEqual(initialRegion.GeometryRevision, movedRegion.GeometryRevision);
+                Assert.AreEqual(SpaceRegionQueryResultType.Ready, SpaceRegionService.Read(frozenRegion, out var frozen));
+                Assert.AreEqual(initialRegion.Bounds.Center, frozen.Bounds.Center,
+                    "An accepted assignment must retain its frozen region pose.");
+                Assert.IsTrue(SpaceRegionService.IsCurrentForAdmission(frozenRegion));
+                Assert.IsTrue(TopologyService.TryResolvePosition(battle.Id,
+                    start.Coordinates + new Vector3(150, 0, 0), out var finish, out _));
+                Assert.IsTrue(SpatialService.TrySetPose(entity, finish, start.Rotation, out _));
+                deadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
+                while (QueryAmount(owner, wallet, EconomyFormType.Stack, progress) != 1000000
+                    && Time.realtimeSinceStartup < deadline) yield return null;
+                Assert.AreEqual(1000000, QueryAmount(owner, wallet, EconomyFormType.Stack, progress));
+                Assert.IsTrue(SpatialService.TrySetPose(entity, halfway, start.Rotation, out _));
+                yield return new WaitForSeconds(.2f);
+                Assert.AreEqual(1000000, QueryAmount(owner, wallet, EconomyFormType.Stack, progress),
+                    "Completed Distance progress must stay complete when the hero moves back.");
+                Assert.IsTrue(ActivityService.Close(battle.Id, ActivityCloseCauseType.Manual));
+                Assert.AreEqual(SpaceRegionQueryResultType.Invalid, SpaceRegionService.Read(movedRegion.Handle, out _));
+                Assert.AreEqual(SpaceRegionQueryResultType.Invalid, SpaceRegionService.Read(frozenRegion, out _));
+            }
+            finally
+            {
+                SpaceRegionService.ReleaseRead(frozenRegion);
+                selectionField.SetValue(action, original);
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator RunProgress_UsesSimulationTime_PausesAndClosesWithActivity()
+        {
+            float originalScale = Time.timeScale;
+            try
+            {
+                yield return LaunchPlayableActivities();
+                Assert.IsTrue(TryFindRunningActivities(out var battle, out _));
+                var owner = battle.Participants.Single(participant => participant.TeamIndex == 0).ParticipantEconomyOwner;
+                var progress = AssetDatabase.LoadAssetAtPath<EconomyAssetData>(
+                    "Assets/Game/Activities/Shared/Economy/LevelProgress.asset");
+                var wallet = AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(SharedWalletTagPath);
+                float deadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
+                while (QueryAmount(owner, wallet, EconomyFormType.Stack, progress) == 0
+                    && Time.realtimeSinceStartup < deadline) yield return null;
+                long beforePause = QueryAmount(owner, wallet, EconomyFormType.Stack, progress);
+                Assert.Greater(beforePause, 0, "Simulation did not publish Survive progress.");
+                Time.timeScale = 0;
+                yield return null;
+                beforePause = QueryAmount(owner, wallet, EconomyFormType.Stack, progress);
+                yield return new WaitForSecondsRealtime(0.3f);
+                Assert.AreEqual(beforePause, QueryAmount(owner, wallet, EconomyFormType.Stack, progress));
+                Time.timeScale = originalScale;
+                deadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
+                while (QueryAmount(owner, wallet, EconomyFormType.Stack, progress) == beforePause
+                    && Time.realtimeSinceStartup < deadline) yield return null;
+                Assert.Greater(QueryAmount(owner, wallet, EconomyFormType.Stack, progress), beforePause);
+                Assert.IsTrue(ActivityService.Close(battle.Id, ActivityCloseCauseType.Manual));
+                Assert.AreEqual(0, QueryAmount(owner, wallet, EconomyFormType.Stack, progress));
+            }
+            finally { Time.timeScale = originalScale; }
+        }
 
         [UnityTest]
         public IEnumerator RuntimeComposition_LaunchesBoardOnceAndParentCloseClosesIt()
@@ -196,7 +349,7 @@ namespace ChainRush.Tests.PlayMode
                 while (Time.realtimeSinceStartup < deadline && !TryFindProjectionBinding(battle.Id, heroEntity, out _))
                     yield return null;
                 Assert.IsTrue(TryFindProjectionBinding(battle.Id, heroEntity, out _), "Perfume has no projected view.");
-                Assert.IsFalse(hero.SupportsCapability(CapabilityHostType.MovementOwner));
+                Assert.IsTrue(hero.SupportsCapability(CapabilityHostType.MovementOwner));
                 Assert.IsFalse(CapabilityHostService.GetAll().Any(host => host.ActivityId == battle.Id
                     && host.Definition != null && (host.Definition.Id.StartsWith("chainrush.unit.water")
                         || host.Definition.Id.StartsWith("chainrush.unit.cola"))),
@@ -252,7 +405,10 @@ namespace ChainRush.Tests.PlayMode
                 float deadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
                 while (Time.realtimeSinceStartup < deadline && !pool.TryGetSnapshot(key, out _)) yield return null;
                 Assert.IsTrue(pool.TryGetSnapshot(key, out var initial), "Experience projection pool was not prepared.");
-                Assert.AreEqual(32, initial.MaxCapacity, "This reproduction uses the unchanged authored limit.");
+                var dropDefinition = AssetDatabase.LoadAssetAtPath<CapabilityHostData>(
+                    "Assets/Game/Activities/Autobattle/Economy/ExperienceDrop.asset");
+                Assert.AreEqual(dropDefinition.ProjectionPool.MaxCapacity, initial.MaxCapacity,
+                    "The capacity failure scenario must exhaust the actual authored pool.");
                 if (occupyPool)
                 {
                     // Hold views only: no Entity, occupancy, token or enemy health is changed.
@@ -467,24 +623,21 @@ namespace ChainRush.Tests.PlayMode
             finally { capture.Unregister(); }
         }
 
-        System.Action _restoreBattleSeeds;
-
         [UnityTest]
         public IEnumerator SelectedUnit_ApproachesAndDamagesEnemy([Values("Water", "Cola")] string content)
         {
             SelectOnlyBoardContent(content);
-            var activity = AssetDatabase.LoadAssetAtPath<ActivityData>("Assets/Game/Activities/Autobattle/Definition/AutobattleActivity.asset");
             var hero = AssetDatabase.LoadAssetAtPath<CapabilityHostData>(PerfumePath);
-            var seeds = activity.Teams[0].Wallets.Single(wallet => wallet.Seed.Any(entry => entry.Seed.Asset == hero)).Seed;
-            var original = new List<ActivityWalletSeedEntryData>(seeds);
-            seeds.RemoveAll(entry => entry.Seed.Asset == hero);
-            _restoreBattleSeeds = () => { seeds.Clear(); seeds.AddRange(original); };
             var capture = new PlayableRuntimeCapture();
             capture.Register();
             try
             {
                 yield return LaunchPlayableActivities();
                 Assert.IsTrue(TryFindRunningActivities(out var battle, out var board));
+                Assert.IsTrue(TryFindActivityHost(battle.Id, hero, out var heroEntity));
+                var heroAttack = AssetDatabase.LoadAssetAtPath<Core.Skills.SkillData>("Assets/Game/Activities/Autobattle/Skills/PerfumeAttack.asset");
+                Assert.IsTrue(SkillService.TryResolveId(heroAttack, out var heroAttackId));
+                Assert.IsTrue(CapabilityHostService.TrySetSkillEnabled(heroEntity, heroAttackId, false));
                 var player = battle.Participants.Single(participant => participant.TeamIndex == 0);
                 IssueTestTurns(player.ParticipantEconomyOwner,
                     AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(SharedWalletTagPath),
@@ -502,22 +655,33 @@ namespace ChainRush.Tests.PlayMode
                 while (Time.realtimeSinceStartup < deadline && !TryFindActivityHost(battle.Id, unit, out _)) yield return null;
                 Assert.IsTrue(TryFindActivityHost(battle.Id, unit, out var entity), "Selected unit was not materialized.");
                 Assert.IsTrue(SpatialService.TryGetPose(entity, out var initialPose));
+                Assert.IsTrue(SpatialService.TryGetPose(heroEntity, out var heroPose));
+                var pattern = AssetDatabase.LoadAssetAtPath<AIBrainAnchorPatternData>(
+                    "Assets/Game/Activities/Autobattle/AI/" + content + "AnchorPattern.asset");
+                var patternData = new SerializedObject(pattern);
+                Vector3 sourceCenter = heroPose.Coordinates + (Vector3)patternData.FindProperty("anchorOffset").vector3IntValue / 1000;
+                Vector3Int sourceSize = patternData.FindProperty("roamSize").vector3IntValue;
+                Vector3 delta = initialPose.Coordinates - sourceCenter;
+                Assert.LessOrEqual(Mathf.Abs(delta.x), sourceSize.x / 2000f + .15f,
+                    "Deployment must use the source speciality area, not the integration fixture area.");
+                Assert.LessOrEqual(Mathf.Abs(delta.z), sourceSize.z / 2000f + .15f);
                 deadline = Time.realtimeSinceStartup + CollectorCycleTimeoutSeconds;
                 bool moved = false;
                 while (Time.realtimeSinceStartup < deadline)
                 {
                     yield return null;
                     if (SpatialService.TryGetPose(entity, out var pose)) moved |= pose.Coordinates != initialPose.Coordinates;
-                    bool hit = content == "Water"
-                        ? capture.Damage.Any(change => change.MutationContext.SourceEntityId == entity)
-                        : capture.Hits.Any(value => value.OwnerEntityId == entity
-                            && capture.Damage.Any(change => change.EntityId == value.TargetEntityId));
+                    bool hit = capture.Hits.Any(value => value.OwnerEntityId == entity
+                        && capture.Damage.Any(change => change.EntityId == value.TargetEntityId
+                            && change.MutationContext.SourceEntityId == value.CarrierEntityId));
                     if (hit) break;
                 }
                 if (content == "Water")
                 {
                     Assert.IsTrue(moved, "Water never approached its enemy.");
-                    Assert.IsTrue(capture.Damage.Any(change => change.MutationContext.SourceEntityId == entity),
+                    Assert.IsTrue(capture.Hits.Any(hit => hit.OwnerEntityId == entity
+                        && capture.Damage.Any(change => change.EntityId == hit.TargetEntityId
+                            && change.MutationContext.SourceEntityId == hit.CarrierEntityId)),
                         "Water did not apply attack damage.\n" + BuildExecutorDiagnostic(entity));
                 }
                 else
@@ -535,6 +699,8 @@ namespace ChainRush.Tests.PlayMode
             yield return LaunchPlayableActivities();
             Assert.IsTrue(TryFindRunningActivities(out var battle, out var board));
             var owner = battle.Participants.Single(participant => participant.TeamIndex == 0).ParticipantEconomyOwner;
+            IssueTestTurns(owner, AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(SharedWalletTagPath),
+                AssetDatabase.LoadAssetAtPath<EconomyAssetData>(BoardTurnTokenPath), 1);
             var cellTag = AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(BoardCellTagPath);
             yield return AwaitCompletedPopulation(board, cellTag, null);
             var content = AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(
@@ -566,7 +732,8 @@ namespace ChainRush.Tests.PlayMode
             EventBus.Register<EconomyOperationChangedEvent>(payments);
             try
             {
-                yield return AssertBoardMergeSequence(board, cellTag, gold, host, requestType, 1, new List<string>());
+                yield return AssertBoardMergeSequence(board, cellTag, gold, host, requestType, 1,
+                    new List<string> { "chainrush.production.board.gold-selection.recipe" });
                 float deadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
                 while (Time.realtimeSinceStartup < deadline && payments.Handles.Count == 0) yield return null;
                 Assert.AreEqual(1, payments.Handles.Count);
@@ -624,8 +791,8 @@ namespace ChainRush.Tests.PlayMode
         }
 
         [UnityTest]
-        public IEnumerator BoardStubSelection_ConsumesSelectionThenDestroysRemainderAndRefills(
-            [Values("LightningBolt", "Power", "Defense", "Health", "Speed", "SkillSpeed", "Gold")] string content)
+        public IEnumerator BoardCellSelection_ConsumesSelectionThenDestroysRemainderAndRefills(
+            [Values("LightningBolt", "Power", "Defense", "Health", "Speed", "SkillSpeed", "Gold", "Heal")] string content)
         {
             SelectOnlyBoardContent(content);
             yield return LaunchPlayableActivities();
@@ -640,16 +807,32 @@ namespace ChainRush.Tests.PlayMode
             yield return AwaitCompletedPopulation(board, cellTag, cell);
             var previous = ResolveConnectedMarkerSelection(board, cellTag, cell, 16);
             var refresh = new BoardRefreshCapture(board.Id, player.ParticipantEconomyOwner, previous);
+            var gold = AssetDatabase.LoadAssetAtPath<EconomyAssetData>("Assets/Game/Activities/Shared/Economy/RunGold.asset");
+            long goldBefore = QueryAmount(player.ParticipantEconomyOwner, wallet, EconomyFormType.Stack, gold);
+            if (content == "Gold") refresh.RequiredGoldBeforePayment = goldBefore + 30;
+            SelectionIntentEvent completed = default;
             EventBus.Register<ProjectionLifecycleEvent>(refresh);
             EventBus.Register<EconomyOperationChangedEvent>(refresh);
             try
             {
-                yield return AssertBoardMergeSequence(board, cellTag, cell, host, selection, 3, new List<string>());
+                var expected = content == "Gold"
+                    ? Enumerable.Repeat("chainrush.production.board.gold-selection.recipe", 3).ToList() : new List<string>();
+                yield return AssertBoardMergeSequence(board, cellTag, cell, host, selection, 3, expected,
+                    request => completed = request);
                 yield return AwaitCompletedPopulation(board, cellTag, cell);
                 Assert.IsNull(refresh.Failure);
-                Assert.AreEqual(3, refresh.Consumed, "Only the selected cells may be consumed.");
+                if (content != "Gold")
+                    Assert.AreEqual(3, refresh.Consumed, "Only the selected cells may be consumed.");
                 Assert.AreEqual(13, refresh.Destroyed, "The unselected remainder must be destroyed without effects.");
                 Assert.IsFalse(previous.Any(CapabilityHostService.Exists), "Refresh retained old Board cells.");
+                if (content == "Gold")
+                {
+                    Assert.AreEqual(goldBefore + 30, QueryAmount(player.ParticipantEconomyOwner, wallet, EconomyFormType.Stack, gold));
+                    EventBus.Trigger(SelectionIntentEvent.Complete(completed));
+                    for (int frame = 0; frame < 10; frame++) yield return null;
+                    Assert.AreEqual(goldBefore + 30, QueryAmount(player.ParticipantEconomyOwner, wallet, EconomyFormType.Stack, gold),
+                        "A repeated selection completion cannot issue Gold again.");
+                }
             }
             finally
             {
@@ -677,6 +860,37 @@ namespace ChainRush.Tests.PlayMode
             _restoreBoardContent = () => field.SetValue(release, original);
         }
 
+        [UnityTest]
+        public IEnumerator GoldSelection_SixteenCellsIssue160BeforeTurnPayment()
+        {
+            SelectOnlyBoardContent("Gold");
+            yield return LaunchPlayableActivities();
+            Assert.IsTrue(TryFindRunningActivities(out var battle, out var board));
+            var owner = battle.Participants.Single(participant => participant.TeamIndex == 0).ParticipantEconomyOwner;
+            var wallet = AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(SharedWalletTagPath);
+            IssueTestTurns(owner, wallet, AssetDatabase.LoadAssetAtPath<EconomyAssetData>(BoardTurnTokenPath), 1);
+            var gold = AssetDatabase.LoadAssetAtPath<EconomyAssetData>("Assets/Game/Activities/Shared/Economy/RunGold.asset");
+            var cell = AssetDatabase.LoadAssetAtPath<CapabilityHostData>("Assets/Game/Activities/Board/Economy/GoldBoardBase.asset");
+            var cellTag = AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(BoardCellTagPath);
+            yield return AwaitCompletedPopulation(board, cellTag, cell);
+            var previous = ResolveConnectedMarkerSelection(board, cellTag, cell, 16);
+            long before = QueryAmount(owner, wallet, EconomyFormType.Stack, gold);
+            var capture = new BoardRefreshCapture(board.Id, owner, previous) { RequiredGoldBeforePayment = before + 160 };
+            IssueTestTurns(owner, wallet, AssetDatabase.LoadAssetAtPath<EconomyAssetData>(BoardTurnTokenPath), 2);
+            Assert.IsTrue(TryFindBoardHost(board.Id, AssetDatabase.LoadAssetAtPath<CapabilityHostData>(BoardHostPath), out var host));
+            EventBus.Register<EconomyOperationChangedEvent>(capture);
+            try
+            {
+                yield return AssertBoardMergeSequence(board, cellTag, cell, host,
+                    AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(BoardMergeSelectionPath), 16,
+                    Enumerable.Repeat("chainrush.production.board.gold-selection.recipe", 16).ToList());
+                yield return AwaitCompletedPopulation(board, cellTag, cell);
+                Assert.AreEqual(before + 160, QueryAmount(owner, wallet, EconomyFormType.Stack, gold));
+                Assert.IsNull(capture.Failure);
+            }
+            finally { EventBus.Unregister<EconomyOperationChangedEvent>(capture); }
+        }
+
         sealed class BoardRefreshCapture : IEventListener<ProjectionLifecycleEvent>, IEventListener<EconomyOperationChangedEvent>
         {
             readonly ActivityId _activity;
@@ -688,6 +902,7 @@ namespace ChainRush.Tests.PlayMode
             public long Consumed;
             public long Destroyed;
             public string Failure;
+            public long? RequiredGoldBeforePayment;
             public readonly HashSet<Core.Entities.EntityId> Replacements = new HashSet<Core.Entities.EntityId>();
 
             public BoardRefreshCapture(ActivityId activity, IEconomyAssetOwner owner,
@@ -707,9 +922,14 @@ namespace ChainRush.Tests.PlayMode
             public void OnEvent(EconomyOperationChangedEvent e)
             {
                 if (e.Owner != _owner || e.State != EconomyOperationStateType.Committed
-                    || !EconomyService.TryGetOperation(e.Handle, out var operation)
-                    || operation.Request.FormType != EconomyFormType.Token
-                    || !operation.Request.Asset.Tags.Contains(_content) || !_operations.Add(e.Handle)) return;
+                    || !EconomyService.TryGetOperation(e.Handle, out var operation) || !_operations.Add(e.Handle)) return;
+                if (RequiredGoldBeforePayment.HasValue && operation.Request.Operation == EconomyOperation.Consume
+                    && operation.Request.Asset == AssetDatabase.LoadAssetAtPath<EconomyAssetData>(BoardTurnTokenPath)
+                    && QueryAmount(_owner, AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(SharedWalletTagPath),
+                        EconomyFormType.Stack, AssetDatabase.LoadAssetAtPath<EconomyAssetData>(
+                            "Assets/Game/Activities/Shared/Economy/RunGold.asset")) < RequiredGoldBeforePayment.Value)
+                    Failure = "Board turn was charged before the selected Gold was credited.";
+                if (operation.Request.FormType != EconomyFormType.Token || !operation.Request.Asset.Tags.Contains(_content)) return;
                 if (operation.Request.Operation == EconomyOperation.Consume) Consumed += operation.Request.Amount;
                 if (operation.Request.Operation == EconomyOperation.Destroy) Destroyed += operation.Request.Amount;
             }
@@ -739,7 +959,7 @@ namespace ChainRush.Tests.PlayMode
                 yield return null;
             Assert.IsTrue(TryFindRunningActivities(out var battle, out var board), "Activities did not start.");
             Assert.AreEqual(battle.Id, board.ParentActivityId);
-            Assert.AreEqual(11, board.ObjectiveRuntimeIds.Count);
+            Assert.AreEqual(12, board.ObjectiveRuntimeIds.Count);
             Assert.AreEqual(16, CountBoardUICells());
             AssertBoardUIVisible(host);
             Assert.AreEqual(2, battle.Participants.Count);
@@ -808,6 +1028,15 @@ namespace ChainRush.Tests.PlayMode
             public void OnEvent(DropResultEvent e)
             {
                 if (e.ResultType == DropResultType.Completed) CompletedDrops++;
+                else
+                {
+                    const string key = "chainrush.autobattle.experience-drop";
+                    var pool = PoolService.Current.OpenContext("projection:activity:" + e.ActivityId.Value);
+                    int live = CapabilityHostService.GetAll().Count(host => host.ActivityId == e.ActivityId
+                        && host.Definition?.Id == key);
+                    if (pool.TryGetSnapshot(new PoolKey(key), out var snapshot))
+                        TestContext.WriteLine($"Drop failure evidence: live={live}, active={snapshot.ActiveCount}, free={snapshot.FreeCount}, total={snapshot.TotalCount}, max={snapshot.MaxCapacity}, reason={e.Failure}");
+                }
             }
             public void OnEvent(HostValueChangedEvent e)
             {
@@ -860,7 +1089,9 @@ namespace ChainRush.Tests.PlayMode
             Core.Entities.EntityId boardHostEntityId,
             TaxonomyTermData mergeSelection,
             int selectionCount,
-            IReadOnlyList<string> expectedRecipeIds)
+            IReadOnlyList<string> expectedRecipeIds,
+            System.Action<SelectionIntentEvent> completed = null,
+            int expectedResultNotifications = 1)
         {
             List<Core.Entities.EntityId> selectedEntities = ResolveConnectedMarkerSelection(
                 board,
@@ -910,7 +1141,7 @@ namespace ChainRush.Tests.PlayMode
                 EventBus.Unregister<ObjectiveRuntimeResetEvent>(productionCapture);
             }
 
-            Assert.AreEqual(1, selectionCapture.Count, productionCapture.BuildDiagnostic());
+            Assert.AreEqual(expectedResultNotifications, selectionCapture.Count, productionCapture.BuildDiagnostic());
             Assert.AreEqual(
                 SelectionResultType.Committed,
                 selectionCapture.Result.Type,
@@ -935,6 +1166,7 @@ namespace ChainRush.Tests.PlayMode
                     productionCapture.CountRecipe(expected.Key),
                     productionCapture.BuildDiagnostic());
             }
+            completed?.Invoke(request);
         }
 
         static IEnumerator SubmitSelectionTargetsAcrossSteps(
@@ -1480,6 +1712,24 @@ namespace ChainRush.Tests.PlayMode
                                 .Append(" reason=")
                                 .Append(reservation.GetType().GetProperty("ReasonKey")?.GetValue(reservation) ?? "<null>");
                         }
+                    }
+                }
+            }
+
+            if (CapabilityHostService.TryGet(entityId, out var host))
+            {
+                var health = AssetDatabase.LoadAssetAtPath<HostValueData>("Assets/Game/Activities/Autobattle/HostValues/Health.asset");
+                foreach (var actor in CapabilityHostService.GetAll().Where(value => value.ActivityId == host.ActivityId))
+                {
+                    if (!CapabilityHostService.TryGetHostValue(actor.EntityId, health, out var value)) continue;
+                    SpatialService.TryGetPose(actor.EntityId, out var pose);
+                    reservationOwners.AppendLine($" actor={actor.EntityId} {actor.Definition.Id} health={value.CurrentValue} pose={pose.Coordinates}");
+                    if (AIBrainService.TryGetState(actor.EntityId, out var brain))
+                    {
+                        foreach (var node in brain.Nodes)
+                            reservationOwners.AppendLine($" node={node.NodeId.name} state={node.CurrentState.name} completed={node.CurrentStateIsCompleted} result={node.CurrentStateResultType} message={node.CurrentStateResultMessage}");
+                        foreach (var target in brain.TargetControls)
+                            reservationOwners.AppendLine($" target={target.Key.name}:{target.Value.SelectedTargetEntityId}");
                     }
                 }
             }

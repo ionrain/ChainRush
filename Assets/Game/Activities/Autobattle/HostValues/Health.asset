@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e1d959f06d48466283569b0ae2d57b4, type: 3}
   m_Name: Health
   m_EditorClassIdentifier: Core::Core.HostValues.HostValueData
-  domainTypePreview: 0
+  domainTypePreview: 13
   id: chainrush.host-value.health
   title:
     m_TableReference:
@@ -33,7 +33,7 @@ MonoBehaviour:
     m_WaitForCompletion: 0
     m_LocalVariables: []
   icon: {fileID: 0}
-  precision: 0
+  precision: 3
   allowedOperations: 31
   tags: []
   slotFootprint: 1

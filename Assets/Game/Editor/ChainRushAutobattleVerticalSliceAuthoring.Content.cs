@@ -89,7 +89,7 @@ namespace ChainRush.Editor
             EditorUtility.SetDirty(adapters);
             AssetDatabase.SaveAssets();
             ChainRushBoardPlannerAuthoring.DeletePerAssetPopulationProducers();
-            Debug.Log("Playable content authored: nine Board cells, eight deployable forms and stationary Perfume. Runtime code unchanged.");
+            Debug.Log("Playable content authored: ten Board cells, eight deployable forms and Perfume combat definitions.");
         }
 
         static InteractionGeometryData WriteCombatGeometry(List<EconomyAssetData> definitions)
@@ -128,7 +128,7 @@ namespace ChainRush.Editor
             UnitSkill main = source.skills.Find(skill => skill.main && skill.defaultSkill);
             if (main?.data == null || source.mergeStates.Count < count || !(main.data.prefab is AttackSkill attackSource))
                 throw new InvalidOperationException(unitName + " requires merge forms and an authored main attack.");
-            bool hero = unitName == "Perfume";
+            bool hero = source.type == UnitType.Hero;
             bool ranged = attackSource is DistantAttackSkill;
             var result = new List<CapabilityHostData>();
             var template = LoadRequired<CapabilityHostData>(WaterUnitPath);
@@ -274,12 +274,13 @@ namespace ChainRush.Editor
             double lifetime = source.GetParameterValue(SkillParameterType.Lifetime, level, projectile.LifeTime);
             var carrier = WriteCarrierVisual(original, projectileName);
             var velocity = new SkillCarrierTargetLinearVelocityParameterValueData();
-            long speedValue = RoundContent(speed * 1000 * step);
+            long speedValue = RoundContent(speed / 10 * 1000 * step);
             SetField(velocity, "minSpeed", speedValue);
             SetField(velocity, "maxSpeed", speedValue);
             var spawn = new SkillSpawnCarrierEffectData();
             SetField(spawn, "carrier", carrier);
             SetField(spawn, "carriedSkill", hit);
+            ConfigureProjectileContact(spawn, original, step);
             SetField(spawn, "parameters", new List<SkillCarrierParameterValueData>
             {
                 CarrierScalar(SkillCarrierScalarParameterType.Lives, 1, lives),

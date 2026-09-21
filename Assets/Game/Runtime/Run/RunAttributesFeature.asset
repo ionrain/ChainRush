@@ -1,0 +1,1174 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bff93c0ff83634c74895af3b2956f5c1, type: 3}
+  m_Name: RunAttributesFeature
+  m_EditorClassIdentifier: Assembly-CSharp::ChainRush.Gameplay.ChainRushRunAttributesFeatureData
+  board: {fileID: 11400000, guid: 52202b07403a0478c9c2d7bd5648035b, type: 2}
+  health: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
+  unitWalletTags:
+  - {fileID: 11400000, guid: 16f36e1393e474476a6758136c43b6c2, type: 2}
+  characters:
+  - ContentId: WaterData
+    Definition: {fileID: 11400000, guid: ba6dc7b2969654c0c96dd451c9a18987, type: 2}
+    Attributes:
+    - Attribute: 0
+      Element: 1
+      Definition: {fileID: 11400000, guid: 416c9668718b04d8b86345380084fa9f, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 2
+      Definition: {fileID: 11400000, guid: 3bdadc8cc7c6448bc9acfe8dcf416e3e, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 3
+      Definition: {fileID: 11400000, guid: e72e9063b128a4876b59ad2d3acad474, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 4
+      Definition: {fileID: 11400000, guid: 641036bf98c2d41e1ad600881e97aefa, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 5
+      Definition: {fileID: 11400000, guid: 474ead2b8b706411495cbf7eb6f290e2, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 6
+      Definition: {fileID: 11400000, guid: 9d19c420f27d1432fb03d109c50650d6, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 7
+      Definition: {fileID: 11400000, guid: 38f00695b16f54e949e3d55505ff48e3, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 8
+      Definition: {fileID: 11400000, guid: 730cab08548e5488b917a65bd4f1784e, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 9
+      Definition: {fileID: 11400000, guid: 4d370ff22b24a4bba8fc7190e96613ce, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 1
+      Definition: {fileID: 11400000, guid: a1bc193123f8b411e81864b0f3a83fb4, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 2
+      Definition: {fileID: 11400000, guid: 141ce3e84a25948f68e24ce949729feb, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 3
+      Definition: {fileID: 11400000, guid: 105a2872729b147f58e292890866f850, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 4
+      Definition: {fileID: 11400000, guid: f151869719a324912b1004dd9741d07c, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 5
+      Definition: {fileID: 11400000, guid: 2b4f31fa4c7cd44d9a4a4e5fc422683e, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 6
+      Definition: {fileID: 11400000, guid: 5f38e77339e504e3d899e35c6808ebd1, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 7
+      Definition: {fileID: 11400000, guid: 388b64df6b4c244ff861adbaa74759bf, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 8
+      Definition: {fileID: 11400000, guid: 4bd7da3825b29470ebe2acd7a870dcb4, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 9
+      Definition: {fileID: 11400000, guid: 6caa73a2b97a94e419afb668ab0cd6a7, type: 2}
+      FormMultiplier: 1
+    - Attribute: 2
+      Element: 0
+      Definition: {fileID: 11400000, guid: 8c0f2453a88154d458b494f57e5b4722, type: 2}
+      FormMultiplier: 1
+    - Attribute: 3
+      Element: 0
+      Definition: {fileID: 11400000, guid: 2d9f6059fa0ff4f01af05e6d0a60008f, type: 2}
+      FormMultiplier: 1
+    - Attribute: 4
+      Element: 0
+      Definition: {fileID: 11400000, guid: b42c9f1f607844b55a9f9e9df0020f73, type: 2}
+      FormMultiplier: 1
+    Skills:
+    - ContentId: SkillMightyBlow
+      Definition: {fileID: 11400000, guid: 87bdf94eb3e1240738acd3681015b3c7, type: 2}
+  - ContentId: WaterData
+    Definition: {fileID: 11400000, guid: 5b99ada8e235d4203914240e2710c0df, type: 2}
+    Attributes:
+    - Attribute: 0
+      Element: 1
+      Definition: {fileID: 11400000, guid: 416c9668718b04d8b86345380084fa9f, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 2
+      Definition: {fileID: 11400000, guid: 3bdadc8cc7c6448bc9acfe8dcf416e3e, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 3
+      Definition: {fileID: 11400000, guid: e72e9063b128a4876b59ad2d3acad474, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 4
+      Definition: {fileID: 11400000, guid: 641036bf98c2d41e1ad600881e97aefa, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 5
+      Definition: {fileID: 11400000, guid: 474ead2b8b706411495cbf7eb6f290e2, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 6
+      Definition: {fileID: 11400000, guid: 9d19c420f27d1432fb03d109c50650d6, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 7
+      Definition: {fileID: 11400000, guid: 38f00695b16f54e949e3d55505ff48e3, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 8
+      Definition: {fileID: 11400000, guid: 730cab08548e5488b917a65bd4f1784e, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 9
+      Definition: {fileID: 11400000, guid: 4d370ff22b24a4bba8fc7190e96613ce, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 1
+      Definition: {fileID: 11400000, guid: a1bc193123f8b411e81864b0f3a83fb4, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 2
+      Definition: {fileID: 11400000, guid: 141ce3e84a25948f68e24ce949729feb, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 3
+      Definition: {fileID: 11400000, guid: 105a2872729b147f58e292890866f850, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 4
+      Definition: {fileID: 11400000, guid: f151869719a324912b1004dd9741d07c, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 5
+      Definition: {fileID: 11400000, guid: 2b4f31fa4c7cd44d9a4a4e5fc422683e, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 6
+      Definition: {fileID: 11400000, guid: 5f38e77339e504e3d899e35c6808ebd1, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 7
+      Definition: {fileID: 11400000, guid: 388b64df6b4c244ff861adbaa74759bf, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 8
+      Definition: {fileID: 11400000, guid: 4bd7da3825b29470ebe2acd7a870dcb4, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 9
+      Definition: {fileID: 11400000, guid: 6caa73a2b97a94e419afb668ab0cd6a7, type: 2}
+      FormMultiplier: 1
+    - Attribute: 2
+      Element: 0
+      Definition: {fileID: 11400000, guid: 8c0f2453a88154d458b494f57e5b4722, type: 2}
+      FormMultiplier: 2
+    - Attribute: 3
+      Element: 0
+      Definition: {fileID: 11400000, guid: 2d9f6059fa0ff4f01af05e6d0a60008f, type: 2}
+      FormMultiplier: 1
+    - Attribute: 4
+      Element: 0
+      Definition: {fileID: 11400000, guid: b42c9f1f607844b55a9f9e9df0020f73, type: 2}
+      FormMultiplier: 1
+    Skills:
+    - ContentId: SkillMightyBlow
+      Definition: {fileID: 11400000, guid: 8eff98e31c6154cfd88c09e83cb5c6dc, type: 2}
+  - ContentId: WaterData
+    Definition: {fileID: 11400000, guid: 5e9ad888b0168403caa874ab14f1c41b, type: 2}
+    Attributes:
+    - Attribute: 0
+      Element: 1
+      Definition: {fileID: 11400000, guid: 416c9668718b04d8b86345380084fa9f, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 2
+      Definition: {fileID: 11400000, guid: 3bdadc8cc7c6448bc9acfe8dcf416e3e, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 3
+      Definition: {fileID: 11400000, guid: e72e9063b128a4876b59ad2d3acad474, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 4
+      Definition: {fileID: 11400000, guid: 641036bf98c2d41e1ad600881e97aefa, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 5
+      Definition: {fileID: 11400000, guid: 474ead2b8b706411495cbf7eb6f290e2, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 6
+      Definition: {fileID: 11400000, guid: 9d19c420f27d1432fb03d109c50650d6, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 7
+      Definition: {fileID: 11400000, guid: 38f00695b16f54e949e3d55505ff48e3, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 8
+      Definition: {fileID: 11400000, guid: 730cab08548e5488b917a65bd4f1784e, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 9
+      Definition: {fileID: 11400000, guid: 4d370ff22b24a4bba8fc7190e96613ce, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 1
+      Definition: {fileID: 11400000, guid: a1bc193123f8b411e81864b0f3a83fb4, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 2
+      Definition: {fileID: 11400000, guid: 141ce3e84a25948f68e24ce949729feb, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 3
+      Definition: {fileID: 11400000, guid: 105a2872729b147f58e292890866f850, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 4
+      Definition: {fileID: 11400000, guid: f151869719a324912b1004dd9741d07c, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 5
+      Definition: {fileID: 11400000, guid: 2b4f31fa4c7cd44d9a4a4e5fc422683e, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 6
+      Definition: {fileID: 11400000, guid: 5f38e77339e504e3d899e35c6808ebd1, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 7
+      Definition: {fileID: 11400000, guid: 388b64df6b4c244ff861adbaa74759bf, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 8
+      Definition: {fileID: 11400000, guid: 4bd7da3825b29470ebe2acd7a870dcb4, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 9
+      Definition: {fileID: 11400000, guid: 6caa73a2b97a94e419afb668ab0cd6a7, type: 2}
+      FormMultiplier: 1
+    - Attribute: 2
+      Element: 0
+      Definition: {fileID: 11400000, guid: 8c0f2453a88154d458b494f57e5b4722, type: 2}
+      FormMultiplier: 3
+    - Attribute: 3
+      Element: 0
+      Definition: {fileID: 11400000, guid: 2d9f6059fa0ff4f01af05e6d0a60008f, type: 2}
+      FormMultiplier: 1
+    - Attribute: 4
+      Element: 0
+      Definition: {fileID: 11400000, guid: b42c9f1f607844b55a9f9e9df0020f73, type: 2}
+      FormMultiplier: 1
+    Skills:
+    - ContentId: SkillMightyBlow
+      Definition: {fileID: 11400000, guid: 268795a2d92cf445e837842ea5e70da2, type: 2}
+  - ContentId: WaterData
+    Definition: {fileID: 11400000, guid: 33467b3f237134d939d494c8d3c0a5c3, type: 2}
+    Attributes:
+    - Attribute: 0
+      Element: 1
+      Definition: {fileID: 11400000, guid: 416c9668718b04d8b86345380084fa9f, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 2
+      Definition: {fileID: 11400000, guid: 3bdadc8cc7c6448bc9acfe8dcf416e3e, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 3
+      Definition: {fileID: 11400000, guid: e72e9063b128a4876b59ad2d3acad474, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 4
+      Definition: {fileID: 11400000, guid: 641036bf98c2d41e1ad600881e97aefa, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 5
+      Definition: {fileID: 11400000, guid: 474ead2b8b706411495cbf7eb6f290e2, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 6
+      Definition: {fileID: 11400000, guid: 9d19c420f27d1432fb03d109c50650d6, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 7
+      Definition: {fileID: 11400000, guid: 38f00695b16f54e949e3d55505ff48e3, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 8
+      Definition: {fileID: 11400000, guid: 730cab08548e5488b917a65bd4f1784e, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 9
+      Definition: {fileID: 11400000, guid: 4d370ff22b24a4bba8fc7190e96613ce, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 1
+      Definition: {fileID: 11400000, guid: a1bc193123f8b411e81864b0f3a83fb4, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 2
+      Definition: {fileID: 11400000, guid: 141ce3e84a25948f68e24ce949729feb, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 3
+      Definition: {fileID: 11400000, guid: 105a2872729b147f58e292890866f850, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 4
+      Definition: {fileID: 11400000, guid: f151869719a324912b1004dd9741d07c, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 5
+      Definition: {fileID: 11400000, guid: 2b4f31fa4c7cd44d9a4a4e5fc422683e, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 6
+      Definition: {fileID: 11400000, guid: 5f38e77339e504e3d899e35c6808ebd1, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 7
+      Definition: {fileID: 11400000, guid: 388b64df6b4c244ff861adbaa74759bf, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 8
+      Definition: {fileID: 11400000, guid: 4bd7da3825b29470ebe2acd7a870dcb4, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 9
+      Definition: {fileID: 11400000, guid: 6caa73a2b97a94e419afb668ab0cd6a7, type: 2}
+      FormMultiplier: 1
+    - Attribute: 2
+      Element: 0
+      Definition: {fileID: 11400000, guid: 8c0f2453a88154d458b494f57e5b4722, type: 2}
+      FormMultiplier: 4
+    - Attribute: 3
+      Element: 0
+      Definition: {fileID: 11400000, guid: 2d9f6059fa0ff4f01af05e6d0a60008f, type: 2}
+      FormMultiplier: 1
+    - Attribute: 4
+      Element: 0
+      Definition: {fileID: 11400000, guid: b42c9f1f607844b55a9f9e9df0020f73, type: 2}
+      FormMultiplier: 1
+    Skills:
+    - ContentId: SkillMightyBlow
+      Definition: {fileID: 11400000, guid: 342c4660d68a44ee8b9bb8ede48b92ba, type: 2}
+  - ContentId: ColaData
+    Definition: {fileID: 11400000, guid: 46569493007b140dcacc76e0f0aabc0d, type: 2}
+    Attributes:
+    - Attribute: 0
+      Element: 1
+      Definition: {fileID: 11400000, guid: 416c9668718b04d8b86345380084fa9f, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 2
+      Definition: {fileID: 11400000, guid: 3bdadc8cc7c6448bc9acfe8dcf416e3e, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 3
+      Definition: {fileID: 11400000, guid: e72e9063b128a4876b59ad2d3acad474, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 4
+      Definition: {fileID: 11400000, guid: 641036bf98c2d41e1ad600881e97aefa, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 5
+      Definition: {fileID: 11400000, guid: 474ead2b8b706411495cbf7eb6f290e2, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 6
+      Definition: {fileID: 11400000, guid: 9d19c420f27d1432fb03d109c50650d6, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 7
+      Definition: {fileID: 11400000, guid: 38f00695b16f54e949e3d55505ff48e3, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 8
+      Definition: {fileID: 11400000, guid: 730cab08548e5488b917a65bd4f1784e, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 9
+      Definition: {fileID: 11400000, guid: 4d370ff22b24a4bba8fc7190e96613ce, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 1
+      Definition: {fileID: 11400000, guid: a1bc193123f8b411e81864b0f3a83fb4, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 2
+      Definition: {fileID: 11400000, guid: 141ce3e84a25948f68e24ce949729feb, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 3
+      Definition: {fileID: 11400000, guid: 105a2872729b147f58e292890866f850, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 4
+      Definition: {fileID: 11400000, guid: f151869719a324912b1004dd9741d07c, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 5
+      Definition: {fileID: 11400000, guid: 2b4f31fa4c7cd44d9a4a4e5fc422683e, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 6
+      Definition: {fileID: 11400000, guid: 5f38e77339e504e3d899e35c6808ebd1, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 7
+      Definition: {fileID: 11400000, guid: 388b64df6b4c244ff861adbaa74759bf, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 8
+      Definition: {fileID: 11400000, guid: 4bd7da3825b29470ebe2acd7a870dcb4, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 9
+      Definition: {fileID: 11400000, guid: 6caa73a2b97a94e419afb668ab0cd6a7, type: 2}
+      FormMultiplier: 1
+    - Attribute: 2
+      Element: 0
+      Definition: {fileID: 11400000, guid: 8c0f2453a88154d458b494f57e5b4722, type: 2}
+      FormMultiplier: 1
+    - Attribute: 3
+      Element: 0
+      Definition: {fileID: 11400000, guid: 2d9f6059fa0ff4f01af05e6d0a60008f, type: 2}
+      FormMultiplier: 1
+    - Attribute: 4
+      Element: 0
+      Definition: {fileID: 11400000, guid: b42c9f1f607844b55a9f9e9df0020f73, type: 2}
+      FormMultiplier: 1
+    Skills:
+    - ContentId: SkillDagger
+      Definition: {fileID: 11400000, guid: 2cd6bf23078024c55958a6033ffc96bc, type: 2}
+  - ContentId: ColaData
+    Definition: {fileID: 11400000, guid: c1b070eedc5a04316adf85731312b16f, type: 2}
+    Attributes:
+    - Attribute: 0
+      Element: 1
+      Definition: {fileID: 11400000, guid: 416c9668718b04d8b86345380084fa9f, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 2
+      Definition: {fileID: 11400000, guid: 3bdadc8cc7c6448bc9acfe8dcf416e3e, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 3
+      Definition: {fileID: 11400000, guid: e72e9063b128a4876b59ad2d3acad474, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 4
+      Definition: {fileID: 11400000, guid: 641036bf98c2d41e1ad600881e97aefa, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 5
+      Definition: {fileID: 11400000, guid: 474ead2b8b706411495cbf7eb6f290e2, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 6
+      Definition: {fileID: 11400000, guid: 9d19c420f27d1432fb03d109c50650d6, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 7
+      Definition: {fileID: 11400000, guid: 38f00695b16f54e949e3d55505ff48e3, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 8
+      Definition: {fileID: 11400000, guid: 730cab08548e5488b917a65bd4f1784e, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 9
+      Definition: {fileID: 11400000, guid: 4d370ff22b24a4bba8fc7190e96613ce, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 1
+      Definition: {fileID: 11400000, guid: a1bc193123f8b411e81864b0f3a83fb4, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 2
+      Definition: {fileID: 11400000, guid: 141ce3e84a25948f68e24ce949729feb, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 3
+      Definition: {fileID: 11400000, guid: 105a2872729b147f58e292890866f850, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 4
+      Definition: {fileID: 11400000, guid: f151869719a324912b1004dd9741d07c, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 5
+      Definition: {fileID: 11400000, guid: 2b4f31fa4c7cd44d9a4a4e5fc422683e, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 6
+      Definition: {fileID: 11400000, guid: 5f38e77339e504e3d899e35c6808ebd1, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 7
+      Definition: {fileID: 11400000, guid: 388b64df6b4c244ff861adbaa74759bf, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 8
+      Definition: {fileID: 11400000, guid: 4bd7da3825b29470ebe2acd7a870dcb4, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 9
+      Definition: {fileID: 11400000, guid: 6caa73a2b97a94e419afb668ab0cd6a7, type: 2}
+      FormMultiplier: 1
+    - Attribute: 2
+      Element: 0
+      Definition: {fileID: 11400000, guid: 8c0f2453a88154d458b494f57e5b4722, type: 2}
+      FormMultiplier: 1.5
+    - Attribute: 3
+      Element: 0
+      Definition: {fileID: 11400000, guid: 2d9f6059fa0ff4f01af05e6d0a60008f, type: 2}
+      FormMultiplier: 1
+    - Attribute: 4
+      Element: 0
+      Definition: {fileID: 11400000, guid: b42c9f1f607844b55a9f9e9df0020f73, type: 2}
+      FormMultiplier: 1
+    Skills:
+    - ContentId: SkillDagger
+      Definition: {fileID: 11400000, guid: b72f1b7c63bee41a89ab9befbc78d7c8, type: 2}
+  - ContentId: ColaData
+    Definition: {fileID: 11400000, guid: b4a4c433485254435b271353bd9448f0, type: 2}
+    Attributes:
+    - Attribute: 0
+      Element: 1
+      Definition: {fileID: 11400000, guid: 416c9668718b04d8b86345380084fa9f, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 2
+      Definition: {fileID: 11400000, guid: 3bdadc8cc7c6448bc9acfe8dcf416e3e, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 3
+      Definition: {fileID: 11400000, guid: e72e9063b128a4876b59ad2d3acad474, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 4
+      Definition: {fileID: 11400000, guid: 641036bf98c2d41e1ad600881e97aefa, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 5
+      Definition: {fileID: 11400000, guid: 474ead2b8b706411495cbf7eb6f290e2, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 6
+      Definition: {fileID: 11400000, guid: 9d19c420f27d1432fb03d109c50650d6, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 7
+      Definition: {fileID: 11400000, guid: 38f00695b16f54e949e3d55505ff48e3, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 8
+      Definition: {fileID: 11400000, guid: 730cab08548e5488b917a65bd4f1784e, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 9
+      Definition: {fileID: 11400000, guid: 4d370ff22b24a4bba8fc7190e96613ce, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 1
+      Definition: {fileID: 11400000, guid: a1bc193123f8b411e81864b0f3a83fb4, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 2
+      Definition: {fileID: 11400000, guid: 141ce3e84a25948f68e24ce949729feb, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 3
+      Definition: {fileID: 11400000, guid: 105a2872729b147f58e292890866f850, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 4
+      Definition: {fileID: 11400000, guid: f151869719a324912b1004dd9741d07c, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 5
+      Definition: {fileID: 11400000, guid: 2b4f31fa4c7cd44d9a4a4e5fc422683e, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 6
+      Definition: {fileID: 11400000, guid: 5f38e77339e504e3d899e35c6808ebd1, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 7
+      Definition: {fileID: 11400000, guid: 388b64df6b4c244ff861adbaa74759bf, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 8
+      Definition: {fileID: 11400000, guid: 4bd7da3825b29470ebe2acd7a870dcb4, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 9
+      Definition: {fileID: 11400000, guid: 6caa73a2b97a94e419afb668ab0cd6a7, type: 2}
+      FormMultiplier: 1
+    - Attribute: 2
+      Element: 0
+      Definition: {fileID: 11400000, guid: 8c0f2453a88154d458b494f57e5b4722, type: 2}
+      FormMultiplier: 2
+    - Attribute: 3
+      Element: 0
+      Definition: {fileID: 11400000, guid: 2d9f6059fa0ff4f01af05e6d0a60008f, type: 2}
+      FormMultiplier: 1
+    - Attribute: 4
+      Element: 0
+      Definition: {fileID: 11400000, guid: b42c9f1f607844b55a9f9e9df0020f73, type: 2}
+      FormMultiplier: 1
+    Skills:
+    - ContentId: SkillDagger
+      Definition: {fileID: 11400000, guid: 43f8d3ecce9d94f45861aa61eb220caa, type: 2}
+  - ContentId: ColaData
+    Definition: {fileID: 11400000, guid: c170500c5353043018be187ea572769f, type: 2}
+    Attributes:
+    - Attribute: 0
+      Element: 1
+      Definition: {fileID: 11400000, guid: 416c9668718b04d8b86345380084fa9f, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 2
+      Definition: {fileID: 11400000, guid: 3bdadc8cc7c6448bc9acfe8dcf416e3e, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 3
+      Definition: {fileID: 11400000, guid: e72e9063b128a4876b59ad2d3acad474, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 4
+      Definition: {fileID: 11400000, guid: 641036bf98c2d41e1ad600881e97aefa, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 5
+      Definition: {fileID: 11400000, guid: 474ead2b8b706411495cbf7eb6f290e2, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 6
+      Definition: {fileID: 11400000, guid: 9d19c420f27d1432fb03d109c50650d6, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 7
+      Definition: {fileID: 11400000, guid: 38f00695b16f54e949e3d55505ff48e3, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 8
+      Definition: {fileID: 11400000, guid: 730cab08548e5488b917a65bd4f1784e, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 9
+      Definition: {fileID: 11400000, guid: 4d370ff22b24a4bba8fc7190e96613ce, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 1
+      Definition: {fileID: 11400000, guid: a1bc193123f8b411e81864b0f3a83fb4, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 2
+      Definition: {fileID: 11400000, guid: 141ce3e84a25948f68e24ce949729feb, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 3
+      Definition: {fileID: 11400000, guid: 105a2872729b147f58e292890866f850, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 4
+      Definition: {fileID: 11400000, guid: f151869719a324912b1004dd9741d07c, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 5
+      Definition: {fileID: 11400000, guid: 2b4f31fa4c7cd44d9a4a4e5fc422683e, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 6
+      Definition: {fileID: 11400000, guid: 5f38e77339e504e3d899e35c6808ebd1, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 7
+      Definition: {fileID: 11400000, guid: 388b64df6b4c244ff861adbaa74759bf, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 8
+      Definition: {fileID: 11400000, guid: 4bd7da3825b29470ebe2acd7a870dcb4, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 9
+      Definition: {fileID: 11400000, guid: 6caa73a2b97a94e419afb668ab0cd6a7, type: 2}
+      FormMultiplier: 1
+    - Attribute: 2
+      Element: 0
+      Definition: {fileID: 11400000, guid: 8c0f2453a88154d458b494f57e5b4722, type: 2}
+      FormMultiplier: 2.5
+    - Attribute: 3
+      Element: 0
+      Definition: {fileID: 11400000, guid: 2d9f6059fa0ff4f01af05e6d0a60008f, type: 2}
+      FormMultiplier: 1
+    - Attribute: 4
+      Element: 0
+      Definition: {fileID: 11400000, guid: b42c9f1f607844b55a9f9e9df0020f73, type: 2}
+      FormMultiplier: 1
+    Skills:
+    - ContentId: SkillDagger
+      Definition: {fileID: 11400000, guid: c589ebe10ccbf45ebac59df4ac5d436f, type: 2}
+  - ContentId: PerfumeData
+    Definition: {fileID: 11400000, guid: 7070d9e2c0c244d008f0b10c7c645d5f, type: 2}
+    Attributes:
+    - Attribute: 0
+      Element: 1
+      Definition: {fileID: 11400000, guid: 416c9668718b04d8b86345380084fa9f, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 2
+      Definition: {fileID: 11400000, guid: 3bdadc8cc7c6448bc9acfe8dcf416e3e, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 3
+      Definition: {fileID: 11400000, guid: e72e9063b128a4876b59ad2d3acad474, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 4
+      Definition: {fileID: 11400000, guid: 641036bf98c2d41e1ad600881e97aefa, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 5
+      Definition: {fileID: 11400000, guid: 474ead2b8b706411495cbf7eb6f290e2, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 6
+      Definition: {fileID: 11400000, guid: 9d19c420f27d1432fb03d109c50650d6, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 7
+      Definition: {fileID: 11400000, guid: 38f00695b16f54e949e3d55505ff48e3, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 8
+      Definition: {fileID: 11400000, guid: 730cab08548e5488b917a65bd4f1784e, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 9
+      Definition: {fileID: 11400000, guid: 4d370ff22b24a4bba8fc7190e96613ce, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 1
+      Definition: {fileID: 11400000, guid: a1bc193123f8b411e81864b0f3a83fb4, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 2
+      Definition: {fileID: 11400000, guid: 141ce3e84a25948f68e24ce949729feb, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 3
+      Definition: {fileID: 11400000, guid: 105a2872729b147f58e292890866f850, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 4
+      Definition: {fileID: 11400000, guid: f151869719a324912b1004dd9741d07c, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 5
+      Definition: {fileID: 11400000, guid: 2b4f31fa4c7cd44d9a4a4e5fc422683e, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 6
+      Definition: {fileID: 11400000, guid: 5f38e77339e504e3d899e35c6808ebd1, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 7
+      Definition: {fileID: 11400000, guid: 388b64df6b4c244ff861adbaa74759bf, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 8
+      Definition: {fileID: 11400000, guid: 4bd7da3825b29470ebe2acd7a870dcb4, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 9
+      Definition: {fileID: 11400000, guid: 6caa73a2b97a94e419afb668ab0cd6a7, type: 2}
+      FormMultiplier: 1
+    - Attribute: 2
+      Element: 0
+      Definition: {fileID: 11400000, guid: 8c0f2453a88154d458b494f57e5b4722, type: 2}
+      FormMultiplier: 1
+    - Attribute: 3
+      Element: 0
+      Definition: {fileID: 11400000, guid: 2d9f6059fa0ff4f01af05e6d0a60008f, type: 2}
+      FormMultiplier: 1
+    - Attribute: 4
+      Element: 0
+      Definition: {fileID: 11400000, guid: b42c9f1f607844b55a9f9e9df0020f73, type: 2}
+      FormMultiplier: 1
+    Skills:
+    - ContentId: TurretKettleSkill
+      Definition: {fileID: 11400000, guid: b8c3652fdb3d6443992a29537299a5f9, type: 2}
+    - ContentId: SkillLightningBolt
+      Definition: {fileID: 11400000, guid: 1bae959fc321a4b81b9a347d28e2ab4d, type: 2}
+    - ContentId: SkillLightningBolt
+      Definition: {fileID: 11400000, guid: cdd9192b1766a4e0d8517d87d486eeee, type: 2}
+    - ContentId: SkillLightningBolt
+      Definition: {fileID: 11400000, guid: f927cf8418f604038917fba9fee41d05, type: 2}
+    - ContentId: SkillLightningBolt
+      Definition: {fileID: 11400000, guid: d3202e2acebaf4e0ca3be0e1c4b5c865, type: 2}
+    - ContentId: SkillLightningBolt
+      Definition: {fileID: 11400000, guid: 2cbf36acf2a164d3e8cb433bf7b16771, type: 2}
+    - ContentId: SkillLightningBolt
+      Definition: {fileID: 11400000, guid: 7cccf2933a9744aff98a49bd2d5a1d94, type: 2}
+  - ContentId: TabascoData
+    Definition: {fileID: 11400000, guid: 8db50e93758004f94a56175bec699dbe, type: 2}
+    Attributes:
+    - Attribute: 0
+      Element: 1
+      Definition: {fileID: 11400000, guid: 416c9668718b04d8b86345380084fa9f, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 2
+      Definition: {fileID: 11400000, guid: 3bdadc8cc7c6448bc9acfe8dcf416e3e, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 3
+      Definition: {fileID: 11400000, guid: e72e9063b128a4876b59ad2d3acad474, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 4
+      Definition: {fileID: 11400000, guid: 641036bf98c2d41e1ad600881e97aefa, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 5
+      Definition: {fileID: 11400000, guid: 474ead2b8b706411495cbf7eb6f290e2, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 6
+      Definition: {fileID: 11400000, guid: 9d19c420f27d1432fb03d109c50650d6, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 7
+      Definition: {fileID: 11400000, guid: 38f00695b16f54e949e3d55505ff48e3, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 8
+      Definition: {fileID: 11400000, guid: 730cab08548e5488b917a65bd4f1784e, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 9
+      Definition: {fileID: 11400000, guid: 4d370ff22b24a4bba8fc7190e96613ce, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 1
+      Definition: {fileID: 11400000, guid: a1bc193123f8b411e81864b0f3a83fb4, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 2
+      Definition: {fileID: 11400000, guid: 141ce3e84a25948f68e24ce949729feb, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 3
+      Definition: {fileID: 11400000, guid: 105a2872729b147f58e292890866f850, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 4
+      Definition: {fileID: 11400000, guid: f151869719a324912b1004dd9741d07c, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 5
+      Definition: {fileID: 11400000, guid: 2b4f31fa4c7cd44d9a4a4e5fc422683e, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 6
+      Definition: {fileID: 11400000, guid: 5f38e77339e504e3d899e35c6808ebd1, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 7
+      Definition: {fileID: 11400000, guid: 388b64df6b4c244ff861adbaa74759bf, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 8
+      Definition: {fileID: 11400000, guid: 4bd7da3825b29470ebe2acd7a870dcb4, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 9
+      Definition: {fileID: 11400000, guid: 6caa73a2b97a94e419afb668ab0cd6a7, type: 2}
+      FormMultiplier: 1
+    - Attribute: 2
+      Element: 0
+      Definition: {fileID: 11400000, guid: 8c0f2453a88154d458b494f57e5b4722, type: 2}
+      FormMultiplier: 1
+    - Attribute: 3
+      Element: 0
+      Definition: {fileID: 11400000, guid: 2d9f6059fa0ff4f01af05e6d0a60008f, type: 2}
+      FormMultiplier: 1
+    - Attribute: 4
+      Element: 0
+      Definition: {fileID: 11400000, guid: b42c9f1f607844b55a9f9e9df0020f73, type: 2}
+      FormMultiplier: 1
+    Skills:
+    - ContentId: SkillMightyBlow
+      Definition: {fileID: 11400000, guid: 79f6e38cceff940698a3cf9afba68830, type: 2}
+  - ContentId: PerfumeData
+    Definition: {fileID: 11400000, guid: 5d4cfc254bca54e43bd4c5ae97001aa8, type: 2}
+    Attributes:
+    - Attribute: 0
+      Element: 1
+      Definition: {fileID: 11400000, guid: 416c9668718b04d8b86345380084fa9f, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 2
+      Definition: {fileID: 11400000, guid: 3bdadc8cc7c6448bc9acfe8dcf416e3e, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 3
+      Definition: {fileID: 11400000, guid: e72e9063b128a4876b59ad2d3acad474, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 4
+      Definition: {fileID: 11400000, guid: 641036bf98c2d41e1ad600881e97aefa, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 5
+      Definition: {fileID: 11400000, guid: 474ead2b8b706411495cbf7eb6f290e2, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 6
+      Definition: {fileID: 11400000, guid: 9d19c420f27d1432fb03d109c50650d6, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 7
+      Definition: {fileID: 11400000, guid: 38f00695b16f54e949e3d55505ff48e3, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 8
+      Definition: {fileID: 11400000, guid: 730cab08548e5488b917a65bd4f1784e, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 9
+      Definition: {fileID: 11400000, guid: 4d370ff22b24a4bba8fc7190e96613ce, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 1
+      Definition: {fileID: 11400000, guid: a1bc193123f8b411e81864b0f3a83fb4, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 2
+      Definition: {fileID: 11400000, guid: 141ce3e84a25948f68e24ce949729feb, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 3
+      Definition: {fileID: 11400000, guid: 105a2872729b147f58e292890866f850, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 4
+      Definition: {fileID: 11400000, guid: f151869719a324912b1004dd9741d07c, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 5
+      Definition: {fileID: 11400000, guid: 2b4f31fa4c7cd44d9a4a4e5fc422683e, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 6
+      Definition: {fileID: 11400000, guid: 5f38e77339e504e3d899e35c6808ebd1, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 7
+      Definition: {fileID: 11400000, guid: 388b64df6b4c244ff861adbaa74759bf, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 8
+      Definition: {fileID: 11400000, guid: 4bd7da3825b29470ebe2acd7a870dcb4, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 9
+      Definition: {fileID: 11400000, guid: 6caa73a2b97a94e419afb668ab0cd6a7, type: 2}
+      FormMultiplier: 1
+    - Attribute: 2
+      Element: 0
+      Definition: {fileID: 11400000, guid: 8c0f2453a88154d458b494f57e5b4722, type: 2}
+      FormMultiplier: 1
+    - Attribute: 3
+      Element: 0
+      Definition: {fileID: 11400000, guid: 2d9f6059fa0ff4f01af05e6d0a60008f, type: 2}
+      FormMultiplier: 1
+    - Attribute: 4
+      Element: 0
+      Definition: {fileID: 11400000, guid: b42c9f1f607844b55a9f9e9df0020f73, type: 2}
+      FormMultiplier: 1
+    Skills:
+    - ContentId: TurretKettleSkill
+      Definition: {fileID: 11400000, guid: b8c3652fdb3d6443992a29537299a5f9, type: 2}
+    - ContentId: SkillLightningBolt
+      Definition: {fileID: 11400000, guid: 1bae959fc321a4b81b9a347d28e2ab4d, type: 2}
+    - ContentId: SkillLightningBolt
+      Definition: {fileID: 11400000, guid: cdd9192b1766a4e0d8517d87d486eeee, type: 2}
+    - ContentId: SkillLightningBolt
+      Definition: {fileID: 11400000, guid: f927cf8418f604038917fba9fee41d05, type: 2}
+    - ContentId: SkillLightningBolt
+      Definition: {fileID: 11400000, guid: d3202e2acebaf4e0ca3be0e1c4b5c865, type: 2}
+    - ContentId: SkillLightningBolt
+      Definition: {fileID: 11400000, guid: 2cbf36acf2a164d3e8cb433bf7b16771, type: 2}
+    - ContentId: SkillLightningBolt
+      Definition: {fileID: 11400000, guid: 7cccf2933a9744aff98a49bd2d5a1d94, type: 2}
+  - ContentId: TabascoData
+    Definition: {fileID: 11400000, guid: 171f08f033bf94d689eaf4c25c83a640, type: 2}
+    Attributes:
+    - Attribute: 0
+      Element: 1
+      Definition: {fileID: 11400000, guid: 416c9668718b04d8b86345380084fa9f, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 2
+      Definition: {fileID: 11400000, guid: 3bdadc8cc7c6448bc9acfe8dcf416e3e, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 3
+      Definition: {fileID: 11400000, guid: e72e9063b128a4876b59ad2d3acad474, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 4
+      Definition: {fileID: 11400000, guid: 641036bf98c2d41e1ad600881e97aefa, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 5
+      Definition: {fileID: 11400000, guid: 474ead2b8b706411495cbf7eb6f290e2, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 6
+      Definition: {fileID: 11400000, guid: 9d19c420f27d1432fb03d109c50650d6, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 7
+      Definition: {fileID: 11400000, guid: 38f00695b16f54e949e3d55505ff48e3, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 8
+      Definition: {fileID: 11400000, guid: 730cab08548e5488b917a65bd4f1784e, type: 2}
+      FormMultiplier: 1
+    - Attribute: 0
+      Element: 9
+      Definition: {fileID: 11400000, guid: 4d370ff22b24a4bba8fc7190e96613ce, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 1
+      Definition: {fileID: 11400000, guid: a1bc193123f8b411e81864b0f3a83fb4, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 2
+      Definition: {fileID: 11400000, guid: 141ce3e84a25948f68e24ce949729feb, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 3
+      Definition: {fileID: 11400000, guid: 105a2872729b147f58e292890866f850, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 4
+      Definition: {fileID: 11400000, guid: f151869719a324912b1004dd9741d07c, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 5
+      Definition: {fileID: 11400000, guid: 2b4f31fa4c7cd44d9a4a4e5fc422683e, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 6
+      Definition: {fileID: 11400000, guid: 5f38e77339e504e3d899e35c6808ebd1, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 7
+      Definition: {fileID: 11400000, guid: 388b64df6b4c244ff861adbaa74759bf, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 8
+      Definition: {fileID: 11400000, guid: 4bd7da3825b29470ebe2acd7a870dcb4, type: 2}
+      FormMultiplier: 1
+    - Attribute: 1
+      Element: 9
+      Definition: {fileID: 11400000, guid: 6caa73a2b97a94e419afb668ab0cd6a7, type: 2}
+      FormMultiplier: 1
+    - Attribute: 2
+      Element: 0
+      Definition: {fileID: 11400000, guid: 8c0f2453a88154d458b494f57e5b4722, type: 2}
+      FormMultiplier: 1
+    - Attribute: 3
+      Element: 0
+      Definition: {fileID: 11400000, guid: 2d9f6059fa0ff4f01af05e6d0a60008f, type: 2}
+      FormMultiplier: 1
+    - Attribute: 4
+      Element: 0
+      Definition: {fileID: 11400000, guid: b42c9f1f607844b55a9f9e9df0020f73, type: 2}
+      FormMultiplier: 1
+    Skills:
+    - ContentId: SkillMightyBlow
+      Definition: {fileID: 11400000, guid: 79f6e38cceff940698a3cf9afba68830, type: 2}
+  buffs:
+  - Cell: {fileID: 11400000, guid: cced08679ec404428989e44de6409afa, type: 2}
+    Attribute: 0
+    Grades:
+    - 0.02
+    - 0.05
+    - 0.1
+    - 0.15
+    - 0.2
+    - 0.25
+    - 0.3
+  - Cell: {fileID: 11400000, guid: caaa4c89409854fb4add5101720d6531, type: 2}
+    Attribute: 1
+    Grades:
+    - 0.02
+    - 0.05
+    - 0.1
+    - 0.15
+    - 0.2
+    - 0.25
+    - 0.3
+  - Cell: {fileID: 11400000, guid: 5061dc99bddaa458f881fe8c04adb548, type: 2}
+    Attribute: 2
+    Grades:
+    - 0.02
+    - 0.05
+    - 0.1
+    - 0.15
+    - 0.2
+    - 0.25
+    - 0.3
+  - Cell: {fileID: 11400000, guid: 4e46be1342ff24ecc9fe012bc3506c1f, type: 2}
+    Attribute: 3
+    Grades:
+    - 0.02
+    - 0.05
+    - 0.1
+    - 0.15
+    - 0.2
+    - 0.25
+    - 0.3
+  - Cell: {fileID: 11400000, guid: 8ead9d1d4d59d4048b3e7c869a0acda5, type: 2}
+    Attribute: 4
+    Grades:
+    - -0.02
+    - -0.05
+    - -0.1
+    - -0.15
+    - -0.2
+    - -0.25
+    - -0.3

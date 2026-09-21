@@ -29,6 +29,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 75f4326375a7440999b4e33bb567b61a, type: 2}
   - {fileID: 11400000, guid: dd644376b506c4f828822d4f75290c57, type: 2}
   - {fileID: 11400000, guid: 29e7260b10fe64f24a0c760ac0537596, type: 2}
+  - {fileID: 11400000, guid: 4c623f9a10e1647a381ab080a9508919, type: 2}
   diagnostics:
     determinismStart: 0
     aiBrain: 0

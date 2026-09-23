@@ -95,6 +95,8 @@ Status: authored connections, awaiting runtime validation. The JSON keeps the or
 
 Power and Defense use one definition each with an element qualifier. ProductionCatalog owns cooldown for each producer/catalog pair. Existing Activity wallet seeds own initial participant data; startup assets select the GameFlow template. Wall/hero prefabs own placement sources; SpaceRegion owns their geometry and Entity anchors. Analytics measures time/displacement, and Orchestration writes the required progress balance through Economy. The player-owned executor applies Heal/Buff; the hero brain applies its authored skill states after Board issues Stack through the participant wallet.
 
+Pool policy: 38 prefab-backed definitions use `maxCapacity = 0` (no maximum), with their initial demand and expansion settings preserved. The separate capacity decision is implemented; memory/performance validation has not run. See [ContentCapacity.md](ContentCapacity.md).
+
 ## Mapping and verification
 
 Expected results below are acceptance criteria, not passed checks. Some source prefabs are inherited dependencies; their target list includes the supported derived content and does not add another enemy or skill to the level.

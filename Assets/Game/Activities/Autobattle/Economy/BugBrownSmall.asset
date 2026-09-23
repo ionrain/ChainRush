@@ -179,7 +179,7 @@ MonoBehaviour:
     demandModeType: 0
     demandValue: 0
     expandable: 1
-    maxCapacity: 32
+    maxCapacity: 0
   references:
     version: 2
     RefIds: []

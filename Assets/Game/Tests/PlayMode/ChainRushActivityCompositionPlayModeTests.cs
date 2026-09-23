@@ -388,89 +388,50 @@ namespace ChainRush.Tests.PlayMode
         }
 
         [UnityTest]
-        public IEnumerator EnemyDefeat_ProjectionCapacityFailure_LogsReasonRemovesEnemyAndStartsNextWave(
-            [Values(false, true)] bool occupyPool)
+        public IEnumerator EnemyDefeat_CompletesDropRemovesEnemyAndProducesReplacement()
         {
-            var capture = new DefeatPoolCapture { ExpectFailedDrops = occupyPool };
-            var held = new List<IPoolObject>();
-            IPoolContext pool = null;
+            var capture = new EnemyDefeatCapture();
             capture.Register();
             try
             {
                 yield return LaunchPlayableActivities();
                 Assert.IsTrue(TryFindRunningActivities(out var battle, out _));
-                pool = PoolService.Current.OpenContext("projection:activity:" + battle.Id.Value);
+                var pool = PoolService.Current.OpenContext("projection:activity:" + battle.Id.Value);
                 var key = new PoolKey("chainrush.autobattle.experience-drop");
                 float deadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
                 while (Time.realtimeSinceStartup < deadline && !pool.TryGetSnapshot(key, out _)) yield return null;
                 Assert.IsTrue(pool.TryGetSnapshot(key, out var initial), "Experience projection pool was not prepared.");
-                var dropDefinition = AssetDatabase.LoadAssetAtPath<CapabilityHostData>(
-                    "Assets/Game/Activities/Autobattle/Economy/ExperienceDrop.asset");
-                Assert.AreEqual(dropDefinition.ProjectionPool.MaxCapacity, initial.MaxCapacity,
-                    "The capacity failure scenario must exhaust the actual authored pool.");
-                if (occupyPool)
-                {
-                    // Hold views only: no Entity, occupancy, token or enemy health is changed.
-                    while (pool.TryRent(key, out var instance)) held.Add(instance);
-                    Assert.IsTrue(pool.TryGetSnapshot(key, out var full));
-                    Assert.AreEqual(full.MaxCapacity, full.ActiveCount);
-                    Assert.AreEqual(0, full.FreeCount);
-                    TestContext.WriteLine($"Pool occupied: total={full.TotalCount}, active={full.ActiveCount}, free={full.FreeCount}.");
-                }
+                Assert.AreEqual(0, initial.MaxCapacity, "The authored experience pool must have no capacity limit.");
+                Assert.IsTrue(initial.Expandable);
 
                 deadline = Time.realtimeSinceStartup + CollectorCycleTimeoutSeconds;
                 while (Time.realtimeSinceStartup < deadline
                     && (capture.Defeated.Count < 2 || capture.PreparedDrops < 2
                         || capture.Defeated.Take(2).Any(Core.Entities.EntityService.Exists)
                         || capture.WaveOrders < 2))
-                {
-                    if (occupyPool)
-                        while (pool.TryRent(key, out var returned)) held.Add(returned);
                     yield return null;
-                }
                 Assert.GreaterOrEqual(capture.Defeated.Count, 2, "Natural combat did not defeat the initial enemies.");
                 Assert.GreaterOrEqual(capture.PreparedDrops, 2, "Drop preparation did not finish.");
                 var defeated = capture.Defeated.Take(2).ToList();
-                if (occupyPool)
-                {
-                    while (pool.TryRent(key, out var returned)) held.Add(returned);
-                    Assert.IsTrue(pool.TryGetSnapshot(key, out var occupied));
-                    Assert.AreEqual(0, occupied.FreeCount, "Removal must not require projection capacity to return.");
-                }
-
-                string diagnostic = $"HeldPool={occupyPool}; WaveOrders={capture.WaveOrders}; "
+                string diagnostic = $"WaveOrders={capture.WaveOrders}; "
                     + "Remaining=" + string.Join(",", defeated.Where(Core.Entities.EntityService.Exists).Select(entity => entity.Value))
                     + "; DropResults=" + string.Join(" | ", capture.Results.Select(result =>
                         result.SourceEntityId.Value + ":" + result.ResultType + ":" + result.Failure))
                     + "; BrainFailures=" + string.Join(" | ", capture.Failures.Select(failure =>
                         failure.OwnerEntityId.Value + ":" + failure.Message));
-                TestContext.WriteLine(diagnostic);
                 foreach (var entity in defeated)
                 {
                     Assert.IsFalse(Core.Entities.EntityService.Exists(entity), diagnostic);
                     var result = capture.Results.Single(item => item.SourceEntityId == entity);
-                    if (!occupyPool) Assert.AreEqual(DropResultType.Completed, result.ResultType, diagnostic);
-                    if (result.ResultType != DropResultType.Completed)
-                    {
-                        Assert.IsNotEmpty(result.Failure, diagnostic);
-                        Assert.IsTrue(capture.DropErrors.Any(error => error.Contains("Entity='" + entity.Value + "'")
-                            && error.Contains(result.Failure)), diagnostic);
-                    }
+                    Assert.AreEqual(DropResultType.Completed, result.ResultType, diagnostic);
                     Assert.IsFalse(TryFindProjectionBinding(battle.Id, entity, out _), diagnostic);
                 }
-                if (occupyPool)
-                    Assert.IsTrue(capture.Results.Any(result => defeated.Contains(result.SourceEntityId)
-                        && result.ResultType != DropResultType.Completed), "The pool failure branch was not reached.");
                 Assert.GreaterOrEqual(capture.WaveOrders, 2, diagnostic);
             }
-            finally
-            {
-                foreach (var instance in held) pool.Return(instance);
-                capture.Unregister();
-            }
+            finally { capture.Unregister(); }
         }
 
-        sealed class DefeatPoolCapture :
+        sealed class EnemyDefeatCapture :
             IEventListener<HostValueChangedEvent>, IEventListener<DropResultEvent>,
             IEventListener<AIBrainDebugEvent>, IEventListener<ProductionOrderStartedEvent>,
             IEventListener<ProductionOrderFinishedEvent>
@@ -486,8 +447,6 @@ namespace ChainRush.Tests.PlayMode
             public readonly List<Core.Entities.EntityId> Defeated = new List<Core.Entities.EntityId>();
             public readonly List<DropResultEvent> Results = new List<DropResultEvent>();
             public readonly List<AIBrainDebugEvent> Failures = new List<AIBrainDebugEvent>();
-            public readonly List<string> DropErrors = new List<string>();
-            public bool ExpectFailedDrops;
             public int WaveOrders;
             public int PreparedDrops;
 
@@ -498,7 +457,6 @@ namespace ChainRush.Tests.PlayMode
                 EventBus.Register<AIBrainDebugEvent>(this);
                 EventBus.Register<ProductionOrderStartedEvent>(this);
                 EventBus.Register<ProductionOrderFinishedEvent>(this);
-                Application.logMessageReceived += OnLog;
             }
 
             public void Unregister()
@@ -508,7 +466,6 @@ namespace ChainRush.Tests.PlayMode
                 EventBus.Unregister<AIBrainDebugEvent>(this);
                 EventBus.Unregister<ProductionOrderStartedEvent>(this);
                 EventBus.Unregister<ProductionOrderFinishedEvent>(this);
-                Application.logMessageReceived -= OnLog;
             }
 
             public void OnEvent(HostValueChangedEvent e)
@@ -520,15 +477,8 @@ namespace ChainRush.Tests.PlayMode
             public void OnEvent(DropResultEvent e)
             {
                 Results.Add(e);
-                if (ExpectFailedDrops && e.ResultType != DropResultType.Completed)
-                    LogAssert.Expect(LogType.Error, new Regex(@"\[DropAIBrainAction\] Drop failed\..*Entity='"
-                        + e.SourceEntityId.Value + @"'.*Reason='" + Regex.Escape(e.Failure) + @"'"));
             }
 
-            void OnLog(string message, string stackTrace, LogType type)
-            {
-                if (type == LogType.Error && message.StartsWith("[DropAIBrainAction]")) DropErrors.Add(message);
-            }
             public void OnEvent(AIBrainDebugEvent e)
             {
                 if (e.Type == AIBrainDebugEventType.ActionFailed && Defeated.Contains(e.OwnerEntityId)) Failures.Add(e);

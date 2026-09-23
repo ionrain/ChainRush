@@ -4327,8 +4327,8 @@
       "Automatic hero route",
       "Full run end, rewards, HUD and main-launch switch"
     ],
-    "capacity": "User decision 2026-09-23: gameplay limits and guaranteed pool capacity are a separate step after mechanics implementation, before tests. Preserve current capacities/rules; capacity guarantee remains open. See ContentCapacity.md.",
-    "mechanicsImplementation": "Intermediate correction plan steps 1–5 implemented with approved deferrals. Capacity decision and gameplay acceptance remain open; test execution requires separate explicit approval.",
+    "capacity": "User approved and implemented: maxCapacity=0 disables the shared pool limit; 38 prefab-backed game definitions use zero with unchanged initial demand and expandable=true. Capacity policy is resolved; memory/performance and cleanup await separately approved validation. See ContentCapacity.md.",
+    "mechanicsImplementation": "Intermediate correction plan steps 1–5 and the separately approved unlimited-pool step implemented with approved deferrals. Gameplay acceptance remains open; test execution requires separate explicit approval.",
     "fieldClearedDecision": "User approved on 2026-09-23: part 1 observes the current empty field; final confirmation after emission admission closure belongs to part 2 run completion.",
     "intermediatePlan": "PrePhase2Corrections.md: existing seed; Host/External marker lookup; prefab Cells/Volume; Analytics → Objective → Orchestration → Economy."
   }

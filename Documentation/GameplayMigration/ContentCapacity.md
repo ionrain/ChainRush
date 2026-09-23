@@ -1,6 +1,23 @@
 # Вместимость контента части 1
 
-Implementation decision: **working model**. Снимок authored-настроек от 2026-09-23. Это чтение данных и расчёт ограничений, без исполнения игрового сценария. Размеры пулов и правила игры не изменены.
+Implementation decision: **working model**. Снимок authored-настроек от 2026-09-23. Максимумы 38 используемых projection-пулов переведены в 0 по явному решению пользователя. Начальное заполнение, expandable и игровые правила сохранены; игровые сценарии не выполнялись.
+
+## Согласованный отдельный шаг: 0 отключает лимит
+
+**Implementation decision: working model. Решение пользователя от 2026-09-23; реализация завершена; оба проекта успешно скомпилированы. Тесты не запускались.** Добавить общий контракт `maxCapacity = 0` и явно выбрать его у используемых projection-пулов части 1. Это заменяет прежнее решение сохранять конечные максимумы до отдельного обсуждения. Игровые лимиты и начальное заполнение не менять.
+
+- В `DefaultPoolService.ContextState.ClaimPool` разрешить 0, отклонять отрицательное значение. Проверку уменьшения максимума ниже уже созданного количества выполнять только для положительного лимита.
+- В ClaimPool, TryRent и EnsureCapacity ограничивать размер только при `MaxCapacity > 0`. Начальная потребность TargetDemand и расширение при аренде сохраняются. `expandable = false` по-прежнему запрещает автоматический рост при аренде, даже если максимум равен 0.
+- В `PoolSnapshot` возвращать выбранный 0, без подмены другим числом. Описать семантику в существующих IPoolService/IPoolContext и ProjectionPoolData. Положительные значения, включая прежний API default int.MaxValue, сохраняют прежнее значение; defaults существующих данных не менять.
+- В ProjectionPoolData разрешить 0 в authoring и добавить пояснение поля. ProjectionServiceCore продолжает передавать настройки общему пулу напрямую; отдельного преобразования/пула нет.
+- У assets таблицы ниже с настоящим projection prefab выставить `maxCapacity = 0`, сохранить demand и `expandable = true`. Пустые настройки NonSpatial hosts не создают пул и не требуют правки. Старый игровой запуск и sandbox assets MorbooFramework не менять.
+- Дополнить исходники существующих CorePoolingEditModeTests: рост из нулевой потребности, повторные claims, снятие/возврат конечного лимита, отрицательное значение, запрет расширения, reuse и cleanup. Не выполнять тесты до отдельного разрешения. После всей правки выполнить обычную компиляцию двух проектов.
+
+**Existing System Fit:** IPoolService/IPoolContext и DefaultPoolService — публичный контракт и единственный runtime-владелец создания, аренды, возврата и закрытия. PoolContextHandle и extensions передают вызовы этому владельцу. ProjectionPoolData хранит настройки; ProjectionServiceCore передаёт их при preload/materialization. FloatingValueWorldPoolController имеет собственный maxActiveCount и передаёт положительную границу: его отдельную политику активных надписей не менять. Production, Population, Skills и Economy не получают новых ограничений или новых зависимостей.
+
+**Best Practices:** отключение настройки ограничения отделяется от demand/prewarm и политики расширения. Это соответствует уже существующему разделению `TargetDemand`, `Expandable` и `MaxCapacity` в [PoolState](/Users/ionrain/MorbooFrameworkPackage/Scripts/Core/Pooling/PoolState.cs) и [ClaimPool/TryRent](/Users/ionrain/MorbooFrameworkPackage/Scripts/Core/Pooling/DefaultPoolService.cs). Один владелец применяет эту семантику и для глобального, и для Activity-контекста; Projection не дублирует расчёт. Ноль — явное authored-значение, автоматической миграции старых положительных лимитов нет.
+
+Этот выбор закрывает решение о максимуме пула. Он не подтверждает производительность или достаточность памяти; это остаётся предметом разрешённой приёмки.
 
 ## Existing System Fit
 
@@ -42,58 +59,58 @@ Implementation decision: **working model**. Снимок authored-настрое
 
 | Asset | maxCapacity | expandable | Предел Entity / необходимый вход для оценки |
 |---|---:|---:|---|
-| Autobattle/Economy/BugBrownMedium.asset | 32 | 1 | ≤20 врагов всех видов вместе, плюс удерживаемые views умерших |
-| Autobattle/Economy/BugBrownSmall.asset | 32 | 1 | ≤20 врагов всех видов вместе, плюс удерживаемые views умерших |
-| Autobattle/Economy/BugGreenMedium.asset | 32 | 1 | ≤20 врагов всех видов вместе, плюс удерживаемые views умерших |
-| Autobattle/Economy/BugGreenSmall.asset | 32 | 1 | ≤20 врагов всех видов вместе, плюс удерживаемые views умерших |
-| Autobattle/Economy/BugPurpleMedium.asset | 32 | 1 | ≤20 врагов всех видов вместе, плюс удерживаемые views умерших |
-| Autobattle/Economy/BugPurpleSmall.asset | 32 | 1 | ≤20 врагов всех видов вместе, плюс удерживаемые views умерших |
+| Autobattle/Economy/BugBrownMedium.asset | 0 | 1 | ≤20 врагов всех видов вместе, плюс удерживаемые views умерших |
+| Autobattle/Economy/BugBrownSmall.asset | 0 | 1 | ≤20 врагов всех видов вместе, плюс удерживаемые views умерших |
+| Autobattle/Economy/BugGreenMedium.asset | 0 | 1 | ≤20 врагов всех видов вместе, плюс удерживаемые views умерших |
+| Autobattle/Economy/BugGreenSmall.asset | 0 | 1 | ≤20 врагов всех видов вместе, плюс удерживаемые views умерших |
+| Autobattle/Economy/BugPurpleMedium.asset | 0 | 1 | ≤20 врагов всех видов вместе, плюс удерживаемые views умерших |
+| Autobattle/Economy/BugPurpleSmall.asset | 0 | 1 | ≤20 врагов всех видов вместе, плюс удерживаемые views умерших |
 | Autobattle/Economy/ColaDeploymentHost.asset | 32 | 1 | После промежуточной переделки prefab reference удалён; NonSpatial seed host не создаёт представление |
 | Autobattle/Economy/EnemySpawner.asset | 32 | 1 | После промежуточной переделки prefab reference удалён; NonSpatial seed host не создаёт представление |
 | Autobattle/Economy/ColaDeploymentHostDistance.asset | 32 | 1 | Вариант NonSpatial seed host без prefab reference; пул представления не создаётся |
 | Autobattle/Economy/EnemySpawnerDistance.asset | 32 | 1 | Вариант NonSpatial seed host без prefab reference; пул представления не создаётся |
 | Autobattle/Economy/WaterDeploymentHostDistance.asset | 32 | 1 | Вариант NonSpatial seed host без prefab reference; пул представления не создаётся |
-| Autobattle/Economy/ExperienceCollector.asset | 32 | 1 | Стартовый host/герой выбранного Activity seed; не повторяющийся выпуск |
-| Autobattle/Economy/ExperienceDrop.asset | 64 | 1 | Дроп минус подтверждённый сбор; постоянный предел и срок жизни не заданы |
+| Autobattle/Economy/ExperienceCollector.asset | 0 | 1 | Стартовый host/герой выбранного Activity seed; не повторяющийся выпуск |
+| Autobattle/Economy/ExperienceDrop.asset | 0 | 1 | Дроп минус подтверждённый сбор; постоянный предел и срок жизни не заданы |
 | Autobattle/Economy/PlayerSpawner.asset | 32 | 1 | После промежуточной переделки prefab reference удалён; NonSpatial seed host не создаёт представление |
 | Autobattle/Economy/SkillExecutor.asset | 32 | 1 | Нет prefab reference: настройка пула сама по себе не создаёт представление |
 | Autobattle/Economy/WaterDeploymentHost.asset | 32 | 1 | После промежуточной переделки prefab reference удалён; NonSpatial seed host не создаёт представление |
-| Autobattle/Projection/BugGreenMediumWeaponArea.asset | 128 | 1 | Сумма выпусков за окно lifetime; см. таблицу carrier. Учитывать общих владельцев и погибших владельцев |
-| Autobattle/Projection/BugGreenSmallWeaponArea.asset | 128 | 1 | Сумма выпусков за окно lifetime; см. таблицу carrier. Учитывать общих владельцев и погибших владельцев |
-| Autobattle/Projection/BugPurpleMediumWeaponProjectile.asset | 128 | 1 | Сумма выпусков за окно lifetime; см. таблицу carrier. Учитывать общих владельцев и погибших владельцев |
-| Autobattle/Projection/BugPurpleSmallWeaponProjectile.asset | 128 | 1 | Сумма выпусков за окно lifetime; см. таблицу carrier. Учитывать общих владельцев и погибших владельцев |
-| Autobattle/Projection/ContactArea.asset | 64 | 1 | Сумма выпусков за окно lifetime; см. таблицу carrier. Учитывать общих владельцев и погибших владельцев |
-| Autobattle/Projection/DaggerProjectile.asset | 128 | 1 | Сумма выпусков за окно lifetime; см. таблицу carrier. Учитывать общих владельцев и погибших владельцев |
-| Autobattle/Projection/LightningBoltProjectile.asset | 128 | 1 | Сумма выпусков за окно lifetime; см. таблицу carrier. Учитывать общих владельцев и погибших владельцев |
-| Autobattle/Projection/TurretKettleProjectile.asset | 128 | 1 | Сумма выпусков за окно lifetime; см. таблицу carrier. Учитывать общих владельцев и погибших владельцев |
+| Autobattle/Projection/BugGreenMediumWeaponArea.asset | 0 | 1 | Сумма выпусков за окно lifetime; см. таблицу carrier. Учитывать общих владельцев и погибших владельцев |
+| Autobattle/Projection/BugGreenSmallWeaponArea.asset | 0 | 1 | Сумма выпусков за окно lifetime; см. таблицу carrier. Учитывать общих владельцев и погибших владельцев |
+| Autobattle/Projection/BugPurpleMediumWeaponProjectile.asset | 0 | 1 | Сумма выпусков за окно lifetime; см. таблицу carrier. Учитывать общих владельцев и погибших владельцев |
+| Autobattle/Projection/BugPurpleSmallWeaponProjectile.asset | 0 | 1 | Сумма выпусков за окно lifetime; см. таблицу carrier. Учитывать общих владельцев и погибших владельцев |
+| Autobattle/Projection/ContactArea.asset | 0 | 1 | Сумма выпусков за окно lifetime; см. таблицу carrier. Учитывать общих владельцев и погибших владельцев |
+| Autobattle/Projection/DaggerProjectile.asset | 0 | 1 | Сумма выпусков за окно lifetime; см. таблицу carrier. Учитывать общих владельцев и погибших владельцев |
+| Autobattle/Projection/LightningBoltProjectile.asset | 0 | 1 | Сумма выпусков за окно lifetime; см. таблицу carrier. Учитывать общих владельцев и погибших владельцев |
+| Autobattle/Projection/TurretKettleProjectile.asset | 0 | 1 | Сумма выпусков за окно lifetime; см. таблицу carrier. Учитывать общих владельцев и погибших владельцев |
 | Board/Economy/BoardHost.asset | 1 | 0 | Нет prefab reference: настройка пула сама по себе не создаёт представление |
 | Board/Economy/BoardPopulationProducer.asset | 32 | 1 | Нет prefab reference: настройка пула сама по себе не создаёт представление |
 | Board/Economy/BoostersPopulationProducer.asset | 32 | 1 | Нет prefab reference: настройка пула сама по себе не создаёт представление |
 | Board/Economy/BuffsPopulationProducer.asset | 32 | 1 | Нет prefab reference: настройка пула сама по себе не создаёт представление |
-| Board/Economy/ColaBoardBase.asset | 36 | 1 | ≤16 занятых клеток; учесть ещё удерживаемые views предыдущего заполнения |
-| Board/Economy/DefenseBoardBase.asset | 36 | 1 | ≤16 занятых клеток; учесть ещё удерживаемые views предыдущего заполнения |
-| Board/Economy/GoldBoardBase.asset | 36 | 1 | ≤16 занятых клеток; учесть ещё удерживаемые views предыдущего заполнения |
+| Board/Economy/ColaBoardBase.asset | 0 | 1 | ≤16 занятых клеток; учесть ещё удерживаемые views предыдущего заполнения |
+| Board/Economy/DefenseBoardBase.asset | 0 | 1 | ≤16 занятых клеток; учесть ещё удерживаемые views предыдущего заполнения |
+| Board/Economy/GoldBoardBase.asset | 0 | 1 | ≤16 занятых клеток; учесть ещё удерживаемые views предыдущего заполнения |
 | Board/Economy/GoldPopulationProducer.asset | 32 | 1 | Нет prefab reference: настройка пула сама по себе не создаёт представление |
-| Board/Economy/HealBoardBase.asset | 36 | 1 | ≤16 занятых клеток; учесть ещё удерживаемые views предыдущего заполнения |
-| Board/Economy/HealthBoardBase.asset | 36 | 1 | ≤16 занятых клеток; учесть ещё удерживаемые views предыдущего заполнения |
-| Board/Economy/LightningBoltBoardBase.asset | 36 | 1 | ≤16 занятых клеток; учесть ещё удерживаемые views предыдущего заполнения |
-| Board/Economy/PowerBoardBase.asset | 36 | 1 | ≤16 занятых клеток; учесть ещё удерживаемые views предыдущего заполнения |
-| Board/Economy/SkillSpeedBoardBase.asset | 36 | 1 | ≤16 занятых клеток; учесть ещё удерживаемые views предыдущего заполнения |
+| Board/Economy/HealBoardBase.asset | 0 | 1 | ≤16 занятых клеток; учесть ещё удерживаемые views предыдущего заполнения |
+| Board/Economy/HealthBoardBase.asset | 0 | 1 | ≤16 занятых клеток; учесть ещё удерживаемые views предыдущего заполнения |
+| Board/Economy/LightningBoltBoardBase.asset | 0 | 1 | ≤16 занятых клеток; учесть ещё удерживаемые views предыдущего заполнения |
+| Board/Economy/PowerBoardBase.asset | 0 | 1 | ≤16 занятых клеток; учесть ещё удерживаемые views предыдущего заполнения |
+| Board/Economy/SkillSpeedBoardBase.asset | 0 | 1 | ≤16 занятых клеток; учесть ещё удерживаемые views предыдущего заполнения |
 | Board/Economy/SkillsPopulationProducer.asset | 32 | 1 | Нет prefab reference: настройка пула сама по себе не создаёт представление |
-| Board/Economy/SpeedBoardBase.asset | 36 | 1 | ≤16 занятых клеток; учесть ещё удерживаемые views предыдущего заполнения |
-| Board/Economy/WaterBoardBase.asset | 36 | 1 | ≤16 занятых клеток; учесть ещё удерживаемые views предыдущего заполнения |
-| Shared/Units/Cola/ColaUnit.asset | 32 | 1 | Постоянный предел живых союзников в данных не задан |
-| Shared/Units/Cola/ColaUnit2.asset | 32 | 1 | Постоянный предел живых союзников в данных не задан |
-| Shared/Units/Cola/ColaUnit3.asset | 32 | 1 | Постоянный предел живых союзников в данных не задан |
-| Shared/Units/Cola/ColaUnit4.asset | 32 | 1 | Постоянный предел живых союзников в данных не задан |
-| Shared/Units/Perfume/Perfume.asset | 32 | 1 | Стартовый host/герой выбранного Activity seed; не повторяющийся выпуск |
-| Shared/Units/Perfume/PerfumeDistance.asset | 32 | 1 | Стартовый host/герой выбранного Activity seed; не повторяющийся выпуск |
-| Shared/Units/Tabasco/Tabasco.asset | 32 | 1 | Стартовый host/герой выбранного Activity seed; не повторяющийся выпуск |
-| Shared/Units/Tabasco/TabascoDistance.asset | 32 | 1 | Стартовый host/герой выбранного Activity seed; не повторяющийся выпуск |
-| Shared/Units/Water/WaterUnit.asset | 32 | 1 | Постоянный предел живых союзников в данных не задан |
-| Shared/Units/Water/WaterUnit2.asset | 32 | 1 | Постоянный предел живых союзников в данных не задан |
-| Shared/Units/Water/WaterUnit3.asset | 32 | 1 | Постоянный предел живых союзников в данных не задан |
-| Shared/Units/Water/WaterUnit4.asset | 32 | 1 | Постоянный предел живых союзников в данных не задан |
+| Board/Economy/SpeedBoardBase.asset | 0 | 1 | ≤16 занятых клеток; учесть ещё удерживаемые views предыдущего заполнения |
+| Board/Economy/WaterBoardBase.asset | 0 | 1 | ≤16 занятых клеток; учесть ещё удерживаемые views предыдущего заполнения |
+| Shared/Units/Cola/ColaUnit.asset | 0 | 1 | Постоянный предел живых союзников в данных не задан |
+| Shared/Units/Cola/ColaUnit2.asset | 0 | 1 | Постоянный предел живых союзников в данных не задан |
+| Shared/Units/Cola/ColaUnit3.asset | 0 | 1 | Постоянный предел живых союзников в данных не задан |
+| Shared/Units/Cola/ColaUnit4.asset | 0 | 1 | Постоянный предел живых союзников в данных не задан |
+| Shared/Units/Perfume/Perfume.asset | 0 | 1 | Стартовый host/герой выбранного Activity seed; не повторяющийся выпуск |
+| Shared/Units/Perfume/PerfumeDistance.asset | 0 | 1 | Стартовый host/герой выбранного Activity seed; не повторяющийся выпуск |
+| Shared/Units/Tabasco/Tabasco.asset | 0 | 1 | Стартовый host/герой выбранного Activity seed; не повторяющийся выпуск |
+| Shared/Units/Tabasco/TabascoDistance.asset | 0 | 1 | Стартовый host/герой выбранного Activity seed; не повторяющийся выпуск |
+| Shared/Units/Water/WaterUnit.asset | 0 | 1 | Постоянный предел живых союзников в данных не задан |
+| Shared/Units/Water/WaterUnit2.asset | 0 | 1 | Постоянный предел живых союзников в данных не задан |
+| Shared/Units/Water/WaterUnit3.asset | 0 | 1 | Постоянный предел живых союзников в данных не задан |
+| Shared/Units/Water/WaterUnit4.asset | 0 | 1 | Постоянный предел живых союзников в данных не задан |
 
 ## Carrier и общие пулы
 
@@ -128,14 +145,16 @@ Implementation decision: **working model**. Снимок authored-настрое
 - `DaggerProjectile`: общий пул Cola 1–4. Lifetime 30, burst 2/4; число Cola не ограничено. Постоянная числовая оценка не получена.
 - `ExperienceDrop`: число неподобранных контейнеров может накапливаться; постоянная числовая оценка не получена.
 - `BugGreenSmall/MediumWeaponArea`: один carrier на активное исполнение, удаляется вместе с ним. Верхняя оценка активных carrier каждого вида ≤20 при соблюдении лимита врагов; отдельно остаётся задержка освобождения view.
-- `BugPurpleSmall/MediumWeaponProjectile`: lifetime 120, burst 1/2. Для оценки 128 требуется учесть выпуск за 120 шагов, включая сменившихся врагов. Текущие 20 живых врагов не дают такой оценки сами по себе.
+- `BugPurpleSmall/MediumWeaponProjectile`: lifetime 120, burst 1/2. Для оценки прежнего лимита 128 требовалось учесть выпуск за 120 шагов, включая сменившихся врагов. Текущие 20 живых врагов не дают такой оценки сами по себе.
 - `TurretKettleProjectile`: один Perfume, burst 1, lifetime 30. При не более одного pulse в шаг консервативная оценка 31 carrier; отдельно учесть удержание views. Это расчётное условие, не результат исполнения.
 - `LightningBoltProjectile`: общий пул шести вариантов. Burst 2/3, lifetime 60. Один Perfume назначает состояния через общий brain. Для оценки учитывать смену состояний, атомарное исполнение и выдачу накопленных Stack; runtime-замер отсутствует.
 
-## Решение пользователя
+## Результат отдельного шага
 
-Требование плана о гарантированной вместимости нельзя закрыть только существующими размерами 32/64/128: для союзников и несобранного опыта не задан постоянный предел. Это не воспроизведённая ошибка и не доказательство фактического переполнения. Причина runtime-сбоя не установлена; сценарии не запускались.
+Пользователь выбрал общий режим `maxCapacity = 0`. Код Pooling и authoring Projection поддерживают его; все 38 prefab-backed определений из таблицы используют 0 при `expandable = true`. У 14 NonSpatial/непроецируемых определений нет prefab, поэтому их неиспользуемые pool-настройки сохранены. Начальное заполнение каждого действующего пула сохранено. Нулевой максимум не создаёт объекты заранее и не отключает reuse, возврат или закрытие контекста.
 
-**Согласовано пользователем 2026-09-23:** вынести решение по лимитам и настройке вместимости в отдельный шаг после реализации механик, до тестов. Сейчас сохранить пулы и игровые правила, продолжить остальные пункты. Гарантию вместимости пока не считать выполненной.
+Подготовлены четыре сценария CorePoolingEditModeTests: расширение и reuse с нулевым максимумом, смена конечного/нулевого лимита, независимость expandable и отказ отрицательного значения. Существующий игровой тест естественной смерти/дропа/следующего выпуска сохранён; ветка аренды до исчерпания удалена, поскольку больше не соответствует настройке игрового пула. Тесты не запускались.
 
-Не добавлять новый лимит живых юнитов, уничтожение/объединение опыта, задержку выпуска или увеличение пулов. Этот отдельный шаг не блокирует реализацию остальных механик. Его завершение не заменяет отдельного разрешения пользователя на тесты.
+Решение о максимальном размере закрыто. Численный предел игровых Entity не добавлен; производительность, память, возврат объектов и cleanup ещё требуют разрешённой приёмки. Это не доказательство неограниченных аппаратных ресурсов и не разрешение запускать тесты.
+
+Обычная компиляция после этой правки: ChainRush — `/tmp/chainrush-unlimited-pools-compile.log`; MorbooFramework — `/tmp/morboo-unlimited-pools-compile.log`. Оба импорта завершились успешно; Test Runner и FullUnitChain не вызывались.

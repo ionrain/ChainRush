@@ -40,6 +40,7 @@ MonoBehaviour:
   slotFootprint: 1
   stackCapacity: 0
   targetType: 2
+  executeWithoutTarget: 1
   targetCount:
     min: 1
     max: 256
@@ -55,6 +56,7 @@ MonoBehaviour:
   reloadTime: 3
   requirements: []
   effects:
+  - rid: 725000
   - rid: 6092004074608394851
   references:
     version: 2
@@ -64,51 +66,47 @@ MonoBehaviour:
       data:
         recipient: 0
         requiredTags: []
-        value: 0
+        value:
+          rid: 6092004074608394864
+        valueArgument:
+          rid: -2
         multiplier: {fileID: 0}
         carrier: {fileID: 11400000, guid: 1a90244b93655474789cb473f98f8c30, type: 2}
         carriedSkill: {fileID: 11400000, guid: a9e1acf81ac6e4c59b2be9ba24a560ff, type: 2}
         count: 1
         targetSelectionType: 1
-        targetQuery: {fileID: 11400000, guid: 7a57b56ea40174aa69a465460390b6b2, type: 2}
+        lifetimeType: 0
         spawnResolver:
           source: 1
+          rotationType: 0
+          rotationOffset: {x: 0, y: 0, z: 0}
+          bindPose: 0
+          anchorSource: 0
+          inheritAnchorRotation: 0
           originMarkerTags: []
           size: {x: 0, y: 0, z: 0}
           offset: {x: 0, y: 0, z: 0}
           spread: {x: 0, y: 0, z: 0}
           distributionType: 0
-        areaContact:
-          rid: 6092004074608394852
+        interactionGeometry:
+        - shape: {fileID: 11400000, guid: 1ffd8c4e50eea4ebd84c03248bcbb087, type: 2}
+          primitiveType: 1
+          usage:
+            fillType: 0
+            position: {x: 0, y: 0, z: 0}
+            size: {x: 1, y: 1, z: 1}
+            rotation: {x: 0, y: 0, z: 0}
+            cellSize: {x: 7000, y: 7000, z: 7000}
+            spacing: {x: 0, y: 0, z: 0}
+          interactionTags:
+          - {fileID: 11400000, guid: 2231ac3b695cc4d49895685ed991ab34, type: 2}
+        hitInteractionTags:
+        - {fileID: 11400000, guid: 2231ac3b695cc4d49895685ed991ab34, type: 2}
+        hitDiplomacyChannel: 0
+        hitDisposition: -1
         parameters:
         - rid: 6092004074608394853
         - rid: 6092004074608394854
-        - rid: 6092004074608394855
-        - rid: 6092004074608394856
-        - rid: 6092004074608394857
-        - rid: 6092004074608394858
-        - rid: 6092004074608394859
-        - rid: 6092004074608394860
-        - rid: 6092004074608394861
-        - rid: 6092004074608394862
-        - rid: 6092004074608394863
-    - rid: 6092004074608394852
-      type: {class: SkillCarrierAreaContactData, ns: Core.Skills, asm: Core}
-      data:
-        followOwner: 0
-        requiredOwnerValue: {fileID: 0}
-        minimumOwnerValue: 0
-        targetGeometryType: 1
-        interactionTags: []
-        sweepMovement: 0
-        shapeType: 0
-        boxSize: {x: 0, y: 0, z: 0}
-        boxOffset: {x: 0, y: 0, z: 0}
-        radius: 3500
-        repeatInterval: 3
-        maxCandidates: 256
-        diplomacyChannel: 0
-        requiredDisposition: -1
     - rid: 6092004074608394853
       type: {class: SkillCarrierScalarParameterValueData, ns: Core.Skills, asm: Core}
       data:
@@ -125,102 +123,29 @@ MonoBehaviour:
         minValue: 60
         maxValue: 60
         ownerMultiplier: {fileID: 0}
-    - rid: 6092004074608394855
-      type: {class: SkillCarrierHostValueParameterValueData, ns: Core.Skills, asm: Core}
+    - rid: 6092004074608394864
+      type: {class: LongFlatProgressionData, ns: Core, asm: Core}
       data:
-        value: {fileID: 11400000, guid: 650a5cdeeb83a431487b84c32c1d303e, type: 2}
-        minValue: 5600
-        maxValue: 5600
-        ownerMultiplier:
-          attribute: {fileID: 11400000, guid: 416c9668718b04d8b86345380084fa9f, type: 2}
-          qualifiers: []
-        allowMissingMultiplier: 1
-        missingMultiplierValue: 0
-    - rid: 6092004074608394856
-      type: {class: SkillCarrierHostValueParameterValueData, ns: Core.Skills, asm: Core}
+        value: 0
+    - rid: 725000
+      type: {class: SkillEconomyEffectData, ns: Core.Skills, asm: Core}
       data:
-        value: {fileID: 11400000, guid: 5e5a65f2b441a48af884912963b985aa, type: 2}
-        minValue: 5600
-        maxValue: 5600
-        ownerMultiplier:
-          attribute: {fileID: 11400000, guid: 3bdadc8cc7c6448bc9acfe8dcf416e3e, type: 2}
-          qualifiers: []
-        allowMissingMultiplier: 1
-        missingMultiplierValue: 0
-    - rid: 6092004074608394857
-      type: {class: SkillCarrierHostValueParameterValueData, ns: Core.Skills, asm: Core}
+        recipient: 3
+        repeatType: 1
+        requiredTags: []
+        value:
+          rid: 725001
+        valueArgument:
+          rid: -2
+        multiplier: {fileID: 0}
+        asset: {fileID: 11400000, guid: 7cccf2933a9744aff98a49bd2d5a1d94, type: 2}
+        walletTags:
+        - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
+        formType: 0
+        requiredRuntimeTags: []
+        formula:
+          terms: []
+    - rid: 725001
+      type: {class: LongFlatProgressionData, ns: Core, asm: Core}
       data:
-        value: {fileID: 11400000, guid: f62a406e531504ca89ba6cce84b06234, type: 2}
-        minValue: 5600
-        maxValue: 5600
-        ownerMultiplier:
-          attribute: {fileID: 11400000, guid: e72e9063b128a4876b59ad2d3acad474, type: 2}
-          qualifiers: []
-        allowMissingMultiplier: 1
-        missingMultiplierValue: 0
-    - rid: 6092004074608394858
-      type: {class: SkillCarrierHostValueParameterValueData, ns: Core.Skills, asm: Core}
-      data:
-        value: {fileID: 11400000, guid: f911597628d4248cc85c05130cc36046, type: 2}
-        minValue: 5600
-        maxValue: 5600
-        ownerMultiplier:
-          attribute: {fileID: 11400000, guid: 641036bf98c2d41e1ad600881e97aefa, type: 2}
-          qualifiers: []
-        allowMissingMultiplier: 1
-        missingMultiplierValue: 0
-    - rid: 6092004074608394859
-      type: {class: SkillCarrierHostValueParameterValueData, ns: Core.Skills, asm: Core}
-      data:
-        value: {fileID: 11400000, guid: 6fbd0b0b58e594f7fb4a5b02f17d5b81, type: 2}
-        minValue: 5600
-        maxValue: 5600
-        ownerMultiplier:
-          attribute: {fileID: 11400000, guid: 474ead2b8b706411495cbf7eb6f290e2, type: 2}
-          qualifiers: []
-        allowMissingMultiplier: 1
-        missingMultiplierValue: 0
-    - rid: 6092004074608394860
-      type: {class: SkillCarrierHostValueParameterValueData, ns: Core.Skills, asm: Core}
-      data:
-        value: {fileID: 11400000, guid: 3fa20882fa0254e6c9bff09158295eaf, type: 2}
-        minValue: 5600
-        maxValue: 5600
-        ownerMultiplier:
-          attribute: {fileID: 11400000, guid: 9d19c420f27d1432fb03d109c50650d6, type: 2}
-          qualifiers: []
-        allowMissingMultiplier: 1
-        missingMultiplierValue: 0
-    - rid: 6092004074608394861
-      type: {class: SkillCarrierHostValueParameterValueData, ns: Core.Skills, asm: Core}
-      data:
-        value: {fileID: 11400000, guid: e3486027562e741e08663a1592fcc754, type: 2}
-        minValue: 5600
-        maxValue: 5600
-        ownerMultiplier:
-          attribute: {fileID: 11400000, guid: 38f00695b16f54e949e3d55505ff48e3, type: 2}
-          qualifiers: []
-        allowMissingMultiplier: 1
-        missingMultiplierValue: 0
-    - rid: 6092004074608394862
-      type: {class: SkillCarrierHostValueParameterValueData, ns: Core.Skills, asm: Core}
-      data:
-        value: {fileID: 11400000, guid: 578916f591a654dfdb632ed88acdfc25, type: 2}
-        minValue: 5600
-        maxValue: 5600
-        ownerMultiplier:
-          attribute: {fileID: 11400000, guid: 730cab08548e5488b917a65bd4f1784e, type: 2}
-          qualifiers: []
-        allowMissingMultiplier: 1
-        missingMultiplierValue: 0
-    - rid: 6092004074608394863
-      type: {class: SkillCarrierHostValueParameterValueData, ns: Core.Skills, asm: Core}
-      data:
-        value: {fileID: 11400000, guid: 0f0934c91fc1342ffb485cb23b33acf0, type: 2}
-        minValue: 5600
-        maxValue: 5600
-        ownerMultiplier:
-          attribute: {fileID: 11400000, guid: 4d370ff22b24a4bba8fc7190e96613ce, type: 2}
-          qualifiers: []
-        allowMissingMultiplier: 1
-        missingMultiplierValue: 0
+        value: -1

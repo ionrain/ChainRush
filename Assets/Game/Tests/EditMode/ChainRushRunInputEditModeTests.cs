@@ -16,88 +16,17 @@ namespace ChainRush.Tests.EditMode
 {
     public sealed class ChainRushRunInputEditModeTests
     {
-        const string Root = "Assets/Game/Runtime/Run/";
-
-        [TestCase("Survive", "Level01", 300)]
-        [TestCase("Distance", "Level02", 150)]
-        public void AuthoredSelection_CapturesTheSelectedLevelAndRoster(string name, string levelId, int amount)
-        {
-            ScriptableObject selection = Load(name);
-            object snapshot = Capture(selection);
-            Assert.AreEqual(levelId, Read(snapshot, "LevelId"));
-            Assert.AreEqual(name, Read(snapshot, "GoalType").ToString());
-            Assert.AreEqual(amount, Read(snapshot, "GoalAmount"));
-            Assert.AreEqual(4, Read(snapshot, "BoardWidth"));
-            Assert.AreEqual(4, Read(snapshot, "BoardHeight"));
-            Assert.AreEqual(12345, Read(snapshot, "Seed"));
-            Assert.AreEqual("PerfumeData", Read(Read(snapshot, "Hero"), "ContentId"));
-            var units = (IList)Read(snapshot, "Units");
-            Assert.AreEqual(2, units.Count);
-            Assert.AreEqual("WaterData", Read(units[0], "ContentId"));
-            Assert.AreEqual("ColaData", Read(units[1], "ContentId"));
-            Assert.Throws<NotSupportedException>(() => units.Clear());
-            Assert.Throws<NotSupportedException>(() => ((IList)Read(units[0], "AcquiredSkills")).Clear());
-        }
-
-        [Test]
-        public void CapturedInput_IsUnaffectedByLaterSelectionChanges()
-        {
-            ScriptableObject selection = UnityEngine.Object.Instantiate(Load("Survive"));
-            try
-            {
-                object snapshot = Capture(selection);
-                var data = new SerializedObject(selection);
-                data.FindProperty("hero").FindPropertyRelative("level").intValue = 9;
-                data.FindProperty("units").arraySize = 0;
-                data.ApplyModifiedPropertiesWithoutUndo();
-                Assert.AreEqual(0, Read(Read(snapshot, "Hero"), "Level"));
-                Assert.AreEqual(2, ((IList)Read(snapshot, "Units")).Count);
-                Assert.AreEqual(9, Read(Read(Capture(selection), "Hero"), "Level"));
-                var attributes = (IDictionary)Read(Read(snapshot, "Hero"), "Attributes");
-                Assert.Greater(attributes.Count, 0);
-                Assert.Throws<NotSupportedException>(() => attributes.Clear());
-            }
-            finally { UnityEngine.Object.DestroyImmediate(selection); }
-        }
-
-        [Test]
-        public void IncompleteLevel_IsRejectedInsteadOfReceivingInferredDefaults()
-        {
-            ScriptableObject selection = UnityEngine.Object.Instantiate(Load("Survive"));
-            try
-            {
-                var data = new SerializedObject(selection);
-                data.FindProperty("level").objectReferenceValue = AssetDatabase.LoadAssetAtPath<ScriptableObject>(
-                    "Assets/Game/Resources/Levels/Location001/Loc001Lvl03Data.asset");
-                data.ApplyModifiedPropertiesWithoutUndo();
-                var exception = Assert.Throws<System.Reflection.TargetInvocationException>(() => Capture(selection));
-                Assert.IsInstanceOf<InvalidOperationException>(exception.InnerException);
-            }
-            finally { UnityEngine.Object.DestroyImmediate(selection); }
-        }
-
-        [Test]
-        public void IntegrationStartup_CapturesInputBeforeGameFlows()
-        {
-            var plan = AssetDatabase.LoadAssetAtPath<GameStartupPlanData>(
-                "Assets/Game/Runtime/Startup/ChainRushGameStartupPlan.asset");
-            Assert.AreEqual(3, plan.Actions.Length);
-            Assert.AreEqual("CaptureChainRushRunActionData", plan.Actions[0].GetType().Name);
-            Assert.AreEqual(GameStartupPhase.PreWorld, plan.Actions[0].Phase);
-            Assert.AreEqual(GameStartupPhase.PostWorld, plan.Actions[1].Phase);
-            Assert.AreEqual(GameStartupPhase.PostWorld, plan.Actions[2].Phase);
-        }
-
         [TestCase("Level01", "AutobattleActivity", "Loc001Lvl01Data")]
         [TestCase("Level02", "DistanceActivity", "Loc001Lvl02Data")]
         public void LevelPopulation_UsesSourceFloorCountsAndProgressCompositions(string level, string activityName, string sourceName)
         {
             const string battle = "Assets/Game/Activities/Autobattle/";
             var activity = AssetDatabase.LoadAssetAtPath<ActivityData>(battle + "Definition/" + activityName + ".asset");
-            var objective = activity.Teams[1].Objectives.Single().Template;
+            var objective = activity.Teams[1].Objectives.Single(value => value.Template.name == level + "ReplenishmentObjective").Template;
             Assert.AreEqual(ObjectiveCompletionPolicyType.ResetOnConditions, objective.CompletionPolicyType);
             var activation = objective.Root.ActivateConditions.OfType<ObjectiveConditionMaterializedEntity>().Single();
-            var target = objective.Root.SuccessConditions.OfType<ObjectiveConditionMaterializedEntity>().Single();
+            var target = objective.Root.SuccessConditions.OfType<ObjectiveConditionComposite>().Single()
+                .Conditions.OfType<ObjectiveConditionMaterializedEntity>().Single();
             Assert.AreEqual(CompareOperation.Less, activation.CompareOperation);
             Assert.AreEqual(CompareOperation.GreaterOrEqual, target.CompareOperation);
             Assert.AreNotSame(activation.TargetProgression, target.TargetProgression);
@@ -150,38 +79,30 @@ namespace ChainRush.Tests.EditMode
             var failures = new System.Collections.Generic.List<string>();
             if (features.Count != features.Select(feature => feature.GetType()).Distinct().Count())
                 failures.Add("Activity feature types must be unique.");
-            foreach (var feature in features)
-            {
-                var data = new SerializedObject(feature);
-                var heroes = data.FindProperty("heroes");
-                if (heroes == null) continue;
-                var definitions = Enumerable.Range(0, heroes.arraySize).Select(index =>
-                    heroes.GetArrayElementAtIndex(index).FindPropertyRelative("definition").objectReferenceValue);
-                if (!definitions.Contains(hero)) failures.Add(feature.name + " does not bind its activity's hero.");
-            }
+            var analytics = features.OfType<ActivityAnalyticsConfigData>().Single();
+            var metric = analytics.Metrics.Single();
             if (distance)
             {
-                var heal = features.SingleOrDefault(feature => feature.name == "DistanceHealFeature");
-                if (heal == null) failures.Add("Distance has no healing feature.");
-                if (heal != null)
-                {
-                    var recipients = new SerializedObject(heal).FindProperty("recipients");
-                    if (!Enumerable.Range(0, recipients.arraySize)
-                        .Select(index => recipients.GetArrayElementAtIndex(index).objectReferenceValue).Contains(hero))
-                        failures.Add("The Distance hero must be an authored healing recipient.");
-                }
+                Assert.IsInstanceOf<EntityMovementActivityAnalyticsMetricData>(metric);
+                Assert.AreSame(hero, ((EntityMovementActivityAnalyticsMetricData)metric).ExactAsset);
+                Assert.AreEqual(EntityMovementCalculationType.DisplacementAlongAxis,
+                    ((EntityMovementActivityAnalyticsMetricData)metric).CalculationType);
             }
+            else Assert.IsInstanceOf<ElapsedSimulationActivityAnalyticsMetricData>(metric);
+            var progress = activity.Teams[0].Objectives.Select(value => value.Template)
+                .Single(value => value.name.EndsWith("ProgressObjective"));
+            Assert.AreEqual(ObjectiveCompletionPolicyType.Reset, progress.CompletionPolicyType);
+            foreach (var condition in progress.Root.ActivateConditions.Concat(progress.Root.SuccessConditions)
+                .OfType<ObjectiveConditionEconomyMetric>())
+            {
+                Assert.AreEqual(ObjectiveProgressSourceType.Analytics, condition.TargetProgression.SourceType);
+                Assert.AreSame(metric, condition.TargetProgression.Metric);
+            }
+            bool healable = hero.Tags.Any(tag => tag.Id == "chainrush.autobattle.healable-target");
+            if (healable != distance)
+                failures.Add("Only the normal Distance hero is an authored healing recipient.");
             Assert.IsEmpty(failures);
         }
 
-        static ScriptableObject Load(string name)
-        {
-            var selection = AssetDatabase.LoadAssetAtPath<ScriptableObject>(Root + name + "RunSelection.asset");
-            Assert.NotNull(selection);
-            return selection;
-        }
-
-        static object Capture(ScriptableObject selection) => selection.GetType().GetMethod("Capture").Invoke(selection, new object[] { 12345 });
-        static object Read(object value, string property) => value.GetType().GetProperty(property).GetValue(value);
     }
 }

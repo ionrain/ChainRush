@@ -681,7 +681,10 @@ namespace ChainRush.Tests.EditMode
             Assert.IsTrue(release.Shapes.All(shape => shape.DesiredCount.Min == 0 && shape.DesiredCount.Max == 16));
             Assert.AreEqual(5, release.Content.Count);
             CollectionAssert.AreEqual(new[] { 0.175f, 0.175f, 0.175f, 0.175f, 0.3f }, release.Content.Select(content => content.Share));
-            Assert.AreEqual(450, ((LongFlatProgressionData)release.Content[3].Availability.Cooldown).Value);
+            var healCatalog = ((PopulationCatalogContentSourceData)release.Content[3].Source).Catalog;
+            Assert.IsTrue(healCatalog.CooldownEnabled);
+            Assert.IsTrue(healCatalog.ReadyAtStart);
+            Assert.AreEqual(450L, ReadField<long>(healCatalog, "cooldown"));
             Assert.IsTrue(release.Content.All(content => content.Source is PopulationCatalogContentSourceData catalog
                 && catalog.SelectionType == PopulationCatalogSelectionType.DeterministicRandom));
             var match = populationAgent.MatchConditions.OfType<ObjectiveConditionMaterializedRegionCoverage>().Single();
@@ -751,7 +754,7 @@ namespace ChainRush.Tests.EditMode
                 EconomyFormType.Token,
                 1L,
                 boardWalletTag);
-            Assert.AreEqual(BoardCellTagId, populationProduction.MaterializationProviderType.Id);
+            Assert.AreEqual(BoardCellTagId, populationProduction.MaterializationMarkerProvider.Id);
 
             for (int recipeIndex = 0; recipeIndex < mergeRecipes.Count; recipeIndex++)
             {
@@ -787,7 +790,7 @@ namespace ChainRush.Tests.EditMode
             CollectionAssert.AreEqual(
                 new[] { mergeCatalog },
                 mergeProduction.SupportedCatalogs);
-            Assert.IsNull(mergeProduction.MaterializationProviderType);
+            Assert.IsNull(mergeProduction.MaterializationMarkerProvider);
 
             CollectionAssert.AreEquivalent(
                 new[]
@@ -937,15 +940,15 @@ namespace ChainRush.Tests.EditMode
             Assert.AreEqual(CompareOperation.Equal, playerDeploymentSuccess.CompareOperation);
             Assert.IsNull(AssetDatabase.LoadAssetAtPath<AgentDefinitionData>(
                 AutobattleRoot + "/Agents/PlayerDeploymentAgent.asset"));
-            Assert.AreEqual(6, activity.Teams[0].Features.Count);
-            Assert.AreEqual(5, activity.Teams[1].Features.Count);
+            Assert.AreEqual(3, activity.Teams[0].Features.Count);
+            Assert.AreEqual(3, activity.Teams[1].Features.Count);
             Assert.AreEqual(1, activity.WorldWallets.Count);
 
-            ActivityTeamWalletData playerWallet = activity.Teams[0].Wallets.Single();
+            ActivityTeamWalletData playerWallet = activity.Teams[0].Wallets.Single(wallet => wallet.Seed.Any(seed => seed.Seed.Asset == playerSpawner));
             Assert.IsTrue(playerWallet.Seed.Any(seed =>
                 seed.Seed.Asset == playerSpawner
                 && seed.Seed.FormType == EconomyFormType.Token
-                && seed.MaterializationType == ActivitySeedMaterializationType.Spatial));
+                && seed.MaterializationType == ActivitySeedMaterializationType.NonSpatial));
             ActivityWalletSeedEntryData collectorSeed = playerWallet.Seed.Single(seed =>
                 seed.Seed.Asset == experienceCollector);
             Assert.AreEqual(EconomyFormType.Token, collectorSeed.Seed.FormType);
@@ -962,7 +965,7 @@ namespace ChainRush.Tests.EditMode
             Assert.IsTrue(enemyWallet.Seed.Any(seed =>
                 seed.Seed.Asset == enemySpawner
                 && seed.Seed.FormType == EconomyFormType.Token
-                && seed.MaterializationType == ActivitySeedMaterializationType.Spatial));
+                && seed.MaterializationType == ActivitySeedMaterializationType.NonSpatial));
 
             Assert.AreEqual(1, deployment.Inputs.Count);
             AssertEconomyOperation(
@@ -992,14 +995,14 @@ namespace ChainRush.Tests.EditMode
                 Assert.AreEqual(amounts[i], amount);
             }
 
-            Assert.NotNull(playerProduction.MaterializationProviderType);
+            Assert.NotNull(playerProduction.MaterializationMarkerProvider);
             Assert.AreEqual(
                 "chainrush.autobattle.marker.allied-spawn",
-                playerProduction.MaterializationProviderType.Id);
-            Assert.NotNull(enemyProduction.MaterializationProviderType);
+                playerProduction.MaterializationMarkerProvider.Id);
+            Assert.NotNull(enemyProduction.MaterializationMarkerProvider);
             Assert.AreEqual(
                 "chainrush.autobattle.marker.enemy-spawn",
-                enemyProduction.MaterializationProviderType.Id);
+                enemyProduction.MaterializationMarkerProvider.Id);
 
             Assert.AreEqual(8, playerBrain.Operators.Count);
             Assert.AreEqual(
@@ -1169,8 +1172,6 @@ namespace ChainRush.Tests.EditMode
 
             string[] projectionPaths =
             {
-                AutobattleRoot + "/Projection/PlayerSpawner.prefab",
-                AutobattleRoot + "/Projection/EnemySpawner.prefab",
                 AutobattleRoot + "/Projection/WaterUnit.prefab",
                 AutobattleRoot + "/Projection/BugBrownSmall.prefab",
                 ExperienceDropPrefabPath,
@@ -1178,20 +1179,8 @@ namespace ChainRush.Tests.EditMode
             };
             GameObject enemyProjection = LoadRequiredAsset<GameObject>(
                 AutobattleRoot + "/Projection/BugBrownSmall.prefab");
-            SpatialShapeData spawnArea =
-                LoadRequiredAsset<SpatialShapeData>(SpawnAreaShapePath);
-            GameObject playerSpawnerProjection =
-                LoadRequiredAsset<GameObject>(projectionPaths[0]);
-            GameObject enemySpawnerProjection =
-                LoadRequiredAsset<GameObject>(projectionPaths[1]);
-            AssertSpawnerShapeProvider(
-                playerSpawnerProjection,
-                spawnArea,
-                Vector3Int.zero);
-            AssertSpawnerShapeProvider(
-                enemySpawnerProjection,
-                spawnArea,
-                new Vector3Int(-6000, 0, 0));
+            Assert.IsTrue(string.IsNullOrEmpty(playerSpawner.ProjectionPrefabReference.AssetGUID));
+            Assert.IsTrue(string.IsNullOrEmpty(enemySpawner.ProjectionPrefabReference.AssetGUID));
             GameObject experienceProjection = LoadRequiredAsset<GameObject>(ExperienceDropPrefabPath);
             GameObject collectorProjection =
                 LoadRequiredAsset<GameObject>(ExperienceCollectorPrefabPath);
@@ -1389,24 +1378,14 @@ namespace ChainRush.Tests.EditMode
                 LoadRequiredAsset<UnityEngine.Object>(CapabilityHostDiplomacyModulePath),
                 diplomacyModules.GetArrayElementAtIndex(1).objectReferenceValue);
 
-            Assert.AreEqual(3, startup.Actions.Length);
-            Assert.AreEqual("CaptureChainRushRunActionData", startup.Actions[0].GetType().Name);
+            Assert.AreEqual(2, startup.Actions.Length);
+            Assert.IsInstanceOf<AddGameFlowRuntimeActionData>(startup.Actions[0]);
             Assert.IsInstanceOf<AddGameFlowRuntimeActionData>(startup.Actions[1]);
-            Assert.AreEqual("StartChainRushLevelActionData", startup.Actions[2].GetType().Name);
+            var boardFlow = LoadRequiredAsset<GameFlowTemplateData>(BoardFlowPath);
+            var autobattleFlow = LoadRequiredAsset<GameFlowTemplateData>(AutobattleFlowPath);
+            Assert.AreSame(boardFlow, ReadTemplate(startup.Actions[0]));
+            Assert.AreSame(autobattleFlow, ReadTemplate(startup.Actions[1]));
 
-            GameFlowTemplateData boardFlow =
-                LoadRequiredAsset<GameFlowTemplateData>(BoardFlowPath);
-            GameFlowTemplateData autobattleFlow =
-                LoadRequiredAsset<GameFlowTemplateData>(AutobattleFlowPath);
-            Assert.AreSame(boardFlow, ReadTemplate(startup.Actions[1]));
-            var levelStartup = new SerializedObject(startup.Actions[2]);
-            var levelFlows = levelStartup.FindProperty("levels");
-            Assert.AreEqual(4, levelFlows.arraySize);
-            Assert.AreEqual("Level01", levelFlows.GetArrayElementAtIndex(0).FindPropertyRelative("levelId").stringValue);
-            Assert.AreSame(autobattleFlow, levelFlows.GetArrayElementAtIndex(0).FindPropertyRelative("flow").objectReferenceValue);
-            Assert.AreEqual("Level02", levelFlows.GetArrayElementAtIndex(2).FindPropertyRelative("levelId").stringValue);
-            Assert.AreEqual("chainrush.flow.autobattle.level02",
-                ((GameFlowTemplateData)levelFlows.GetArrayElementAtIndex(2).FindPropertyRelative("flow").objectReferenceValue).Id);
         }
 
         [Test]
@@ -1768,23 +1747,6 @@ namespace ChainRush.Tests.EditMode
             Assert.AreSame(walletTag, output.WalletTags[0]);
         }
 
-        static void AssertSpawnerShapeProvider(
-            GameObject projection,
-            SpatialShapeData shape,
-            Vector3Int expectedPosition)
-        {
-            Assert.AreEqual(1, projection.GetComponents<SpatialMarkerProviderController>().Length);
-            SpatialShapeProviderController provider =
-                projection.GetComponent<SpatialShapeProviderController>();
-            Assert.NotNull(provider);
-            Assert.AreSame(shape, provider.Shape);
-            Assert.IsTrue(provider.PublishMarkers);
-            Assert.AreEqual(new Vector3Int(7, 1, 21), provider.Usage.Size);
-            Assert.AreEqual(expectedPosition, provider.Usage.Position);
-            Assert.AreEqual(new Vector3Int(1000, 1, 1000), provider.Usage.CellSize);
-            Assert.AreEqual(Vector3Int.zero, provider.Usage.Spacing);
-            Assert.AreEqual(SpatialMarkerReusePolicyType.ReuseAllowed, provider.UsagePolicy.ReusePolicyType);
-        }
 
         static void AssertTopology(
             TopologyDefinitionData topology,

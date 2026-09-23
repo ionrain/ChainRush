@@ -278,28 +278,26 @@ MonoBehaviour:
           - source:
               rid: 6092004074608394339
             share: 0.175
-            availability: {fileID: 11400000, guid: 142e28f77fc9a4ba59d76f9a17661d98,
-              type: 2}
+            requireParticipantContent: 1
+            participantWalletTags:
+            - {fileID: 11400000, guid: 1057a25bd092c4257a0155805859f368, type: 2}
+            participantContentForm: 0
           - source:
               rid: 6092004074608394340
             share: 0.175
-            availability: {fileID: 11400000, guid: a3d647ebe34414c30aeca35dbc392b8b,
-              type: 2}
           - source:
               rid: 6092004074608394341
             share: 0.175
-            availability: {fileID: 11400000, guid: feec29ebf36274dd4a29bb6af9319d5a,
-              type: 2}
+            requireParticipantContent: 1
+            participantWalletTags:
+            - {fileID: 11400000, guid: 1057a25bd092c4257a0155805859f368, type: 2}
+            participantContentForm: 0
           - source:
               rid: 6092004074608394342
             share: 0.175
-            availability: {fileID: 11400000, guid: ef59c430e570047ccb22447ac3d8d834,
-              type: 2}
           - source:
               rid: 6092004074608394343
             share: 0.3
-            availability: {fileID: 11400000, guid: 6cf26b8648f13497eaf8855777ec775e,
-              type: 2}
         distribution:
           rid: 6092004074608394350
         workBudget: 256
@@ -314,31 +312,26 @@ MonoBehaviour:
       data:
         catalog: {fileID: 11400000, guid: 1d5a88be6035845348142a2d07f8fa08, type: 2}
         selectionType: 1
-        eligibility: {fileID: 11400000, guid: c731b7ffdbc864e00a1421129ae2f956, type: 2}
     - rid: 6092004074608394340
       type: {class: PopulationCatalogContentSourceData, ns: Core.Orchestration, asm: Core}
       data:
         catalog: {fileID: 11400000, guid: 24a7cf5e0b06e4dcd81cff0c3310325c, type: 2}
         selectionType: 1
-        eligibility: {fileID: 0}
     - rid: 6092004074608394341
       type: {class: PopulationCatalogContentSourceData, ns: Core.Orchestration, asm: Core}
       data:
         catalog: {fileID: 11400000, guid: 3881d957fe5994dc58e313f410415ce7, type: 2}
         selectionType: 1
-        eligibility: {fileID: 11400000, guid: c731b7ffdbc864e00a1421129ae2f956, type: 2}
     - rid: 6092004074608394342
       type: {class: PopulationCatalogContentSourceData, ns: Core.Orchestration, asm: Core}
       data:
         catalog: {fileID: 11400000, guid: b2c2e3012bff24fe78357823d8966237, type: 2}
         selectionType: 1
-        eligibility: {fileID: 0}
     - rid: 6092004074608394343
       type: {class: PopulationCatalogContentSourceData, ns: Core.Orchestration, asm: Core}
       data:
         catalog: {fileID: 11400000, guid: 4cc39cf67fbbd415e92305bfc4444b80, type: 2}
         selectionType: 1
-        eligibility: {fileID: 0}
     - rid: 6092004074608394350
       type: {class: GridPopulationDistributionAlgorithmData, ns: Core.Orchestration,
         asm: Core}

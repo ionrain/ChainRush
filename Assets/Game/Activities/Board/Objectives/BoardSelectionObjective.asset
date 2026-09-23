@@ -66,6 +66,24 @@ MonoBehaviour:
     - Name: 
       Entry: 7
       Data: 3|Core.Objectives.ObjectiveConditionEconomyMetric, Core
+    - Name: observedOwner
+      Entry: 7
+      Data: 19|Core.Economy.Authoring.EconomyOperationOwnerBindingData, Core
+    - Name: bindingType
+      Entry: 3
+      Data: 0
+    - Name: owner
+      Entry: 7
+      Data: Core.Economy.Authoring.EconomyOwnerRef, Core
+    - Name: source
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: _targetValue
       Entry: 3
       Data: 0

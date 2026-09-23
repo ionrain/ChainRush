@@ -50,6 +50,17 @@ MonoBehaviour:
       spacing: {x: 0, y: 0, z: 0}
     interactionTags:
     - {fileID: 11400000, guid: 2231ac3b695cc4d49895685ed991ab34, type: 2}
+  - shape: {fileID: 11400000, guid: 1ffd8c4e50eea4ebd84c03248bcbb087, type: 2}
+    primitiveType: 1
+    usage:
+      fillType: 0
+      position: {x: 0, y: 0, z: 0}
+      size: {x: 1, y: 1, z: 1}
+      rotation: {x: 0, y: 0, z: 0}
+      cellSize: {x: 2200, y: 2200, z: 2200}
+      spacing: {x: 0, y: 0, z: 0}
+    interactionTags:
+    - {fileID: 11400000, guid: 9f9827a3b72c7468eb5ea89726565ca3, type: 2}
   references:
     version: 2
     RefIds: []

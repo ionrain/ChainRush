@@ -45,11 +45,50 @@ MonoBehaviour:
     selectorTags: []
   - capabilityType: 2
     selectorTags: []
+  - capabilityType: 0
+    selectorTags: []
+  - capabilityType: 4
+    selectorTags: []
   walletEntries:
   - wallet: {fileID: 11400000, guid: 5e352fdca6ae04c9b931f9fd2bd9519d, type: 2}
     seed:
     - entry:
         asset: {fileID: 11400000, guid: 6e7ef418bd659426e8ea6665ce3857e1, type: 2}
+        formType: 0
+        amount: 1
+      runtimeTags: []
+    - entry:
+        asset: {fileID: 11400000, guid: fc65612ee733d4eedbd18faf5e885f08, type: 2}
+        formType: 0
+        amount: 1
+      runtimeTags: []
+    - entry:
+        asset: {fileID: 11400000, guid: 89ab8150a515f4594b8afea1522225c5, type: 2}
+        formType: 0
+        amount: 1
+      runtimeTags: []
+    - entry:
+        asset: {fileID: 11400000, guid: 20103cc99a4c9420997ba9b7ae3243eb, type: 2}
+        formType: 0
+        amount: 1
+      runtimeTags: []
+    - entry:
+        asset: {fileID: 11400000, guid: 5bf2648a9032a4df79b92ed24c4bc59e, type: 2}
+        formType: 0
+        amount: 1
+      runtimeTags: []
+    - entry:
+        asset: {fileID: 11400000, guid: 37b9e53d83a544f678b0ef4400a1d6d7, type: 2}
+        formType: 0
+        amount: 1
+      runtimeTags: []
+    - entry:
+        asset: {fileID: 11400000, guid: b89dc2a59e0bd4f378734f336bfdb4a1, type: 2}
+        formType: 0
+        amount: 1
+      runtimeTags: []
+    - entry:
+        asset: {fileID: 11400000, guid: 7d69e8215a207441687ee6106bd36795, type: 2}
         formType: 0
         amount: 1
       runtimeTags: []

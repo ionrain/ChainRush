@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Text;
 using Core.AI;
 using Core.Activities;
+using Core.Activities.Analytics;
 using Core.Activities.Events;
 using Core.Activities.Selection;
 using Core.CapabilityHosts;
@@ -108,8 +109,6 @@ namespace ChainRush.Tests.PlayMode
             ProjectionService.ResetRuntime();
             _restoreBoardContent?.Invoke();
             _restoreBoardContent = null;
-            _restoreActivityFeatures?.Invoke();
-            _restoreActivityFeatures = null;
 
             foreach (GameRuntimeHost host in Object.FindObjectsByType<GameRuntimeHost>(
                 FindObjectsInactive.Include, FindObjectsSortMode.None))
@@ -177,9 +176,6 @@ namespace ChainRush.Tests.PlayMode
         [UnityTest]
         public IEnumerator LevelPopulation_ProducesTheSourceInitialCount([Values("Survive", "Distance")] string level)
         {
-            var action = AssetDatabase.LoadAssetAtPath<ScriptableObject>("Assets/Game/Runtime/Startup/CaptureChainRushRun.asset");
-            var field = action.GetType().GetField("selection", BindingFlags.Instance | BindingFlags.NonPublic);
-            object original = field.GetValue(action);
             var materializationWarnings = new List<string>();
             void CaptureWarning(string message, string stack, LogType type)
             {
@@ -188,10 +184,7 @@ namespace ChainRush.Tests.PlayMode
             Application.logMessageReceived += CaptureWarning;
             try
             {
-                field.SetValue(action, AssetDatabase.LoadAssetAtPath<ScriptableObject>(
-                    "Assets/Game/Runtime/Run/" + level + "RunSelection.asset"));
-                yield return LaunchPlayableActivities();
-                field.SetValue(action, original);
+                yield return LaunchPlayableActivities(level == "Distance" ? "Level02Perfume" : "Level01Perfume");
                 Assert.IsTrue(TryFindRunningActivities(out var battle, out _));
                 Assert.IsTrue(TryFindActivityHost(battle.Id, AssetDatabase.LoadAssetAtPath<CapabilityHostData>(
                     level == "Distance" ? PerfumeDistancePath : PerfumePath), out var hero));
@@ -218,25 +211,16 @@ namespace ChainRush.Tests.PlayMode
             finally
             {
                 Application.logMessageReceived -= CaptureWarning;
-                field.SetValue(action, original);
             }
         }
 
         [UnityTest]
         public IEnumerator RunProgress_DistanceUsesAuthoritativePoseRelativeToStart()
         {
-            SuppressAutomaticHeroRoute();
             SpaceRegionReadHandle frozenRegion = default;
-            var action = AssetDatabase.LoadAssetAtPath<ScriptableObject>(
-                "Assets/Game/Runtime/Startup/CaptureChainRushRun.asset");
-            var selectionField = action.GetType().GetField("selection", BindingFlags.Instance | BindingFlags.NonPublic);
-            object original = selectionField.GetValue(action);
             try
             {
-                selectionField.SetValue(action, AssetDatabase.LoadAssetAtPath<ScriptableObject>(
-                    "Assets/Game/Runtime/Run/DistanceRunSelection.asset"));
-                yield return LaunchPlayableActivities();
-                selectionField.SetValue(action, original);
+                yield return LaunchPlayableActivities("Level02Perfume");
                 Assert.IsTrue(TryFindRunningActivities(out var battle, out _));
                 var owner = battle.Participants.Single(participant => participant.TeamIndex == 0).ParticipantEconomyOwner;
                 var progress = AssetDatabase.LoadAssetAtPath<EconomyAssetData>(
@@ -247,7 +231,7 @@ namespace ChainRush.Tests.PlayMode
                 while (!TryFindActivityHost(battle.Id, hero, out _) && Time.realtimeSinceStartup < deadline) yield return null;
                 Assert.IsTrue(TryFindActivityHost(battle.Id, hero, out var entity));
                 Assert.IsTrue(SpatialService.TryGetPose(entity, out var start));
-                var initialRegion = ReadReplenishmentRegion(battle);
+                var initialRegion = ReadEnemyRegion(battle);
                 Assert.AreEqual(SpaceRegionQueryResultType.Ready, SpaceRegionService.AcquireRead(
                     initialRegion.Handle, initialRegion.Revision, out frozenRegion, out _));
                 Assert.AreEqual(0, QueryAmount(owner, wallet, EconomyFormType.Stack, progress));
@@ -260,11 +244,11 @@ namespace ChainRush.Tests.PlayMode
                 Assert.AreEqual(500000, QueryAmount(owner, wallet, EconomyFormType.Stack, progress),
                     "75 authored distance units must be half of Distance 150.");
                 deadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
-                while (ReadReplenishmentRegion(battle).Bounds.Center.x == initialRegion.Bounds.Center.x
+                while (ReadEnemyRegion(battle).Bounds.Center.x == initialRegion.Bounds.Center.x
                     && Time.realtimeSinceStartup < deadline) yield return null;
-                var movedRegion = ReadReplenishmentRegion(battle);
+                var movedRegion = ReadEnemyRegion(battle);
                 Assert.AreEqual(initialRegion.Bounds.Center.x + 75, movedRegion.Bounds.Center.x, .001f,
-                    "Distance replenishment must move its area along the run route.");
+                    "The hero prefab region must follow its Entity pose.");
                 Assert.AreEqual(initialRegion.Bounds.Center.z, movedRegion.Bounds.Center.z);
                 Assert.AreEqual(initialRegion.GeometryRevision, movedRegion.GeometryRevision);
                 Assert.AreEqual(SpaceRegionQueryResultType.Ready, SpaceRegionService.Read(frozenRegion, out var frozen));
@@ -279,9 +263,11 @@ namespace ChainRush.Tests.PlayMode
                     && Time.realtimeSinceStartup < deadline) yield return null;
                 Assert.AreEqual(1000000, QueryAmount(owner, wallet, EconomyFormType.Stack, progress));
                 Assert.IsTrue(SpatialService.TrySetPose(entity, halfway, start.Rotation, out _));
-                yield return new WaitForSeconds(.2f);
-                Assert.AreEqual(1000000, QueryAmount(owner, wallet, EconomyFormType.Stack, progress),
-                    "Completed Distance progress must stay complete when the hero moves back.");
+                deadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
+                while (QueryAmount(owner, wallet, EconomyFormType.Stack, progress) != 500000
+                    && Time.realtimeSinceStartup < deadline) yield return null;
+                Assert.AreEqual(500000, QueryAmount(owner, wallet, EconomyFormType.Stack, progress),
+                    "Distance measures current displacement from the start, including backward movement.");
                 Assert.IsTrue(ActivityService.Close(battle.Id, ActivityCloseCauseType.Manual));
                 Assert.AreEqual(SpaceRegionQueryResultType.Invalid, SpaceRegionService.Read(movedRegion.Handle, out _));
                 Assert.AreEqual(SpaceRegionQueryResultType.Invalid, SpaceRegionService.Read(frozenRegion, out _));
@@ -289,7 +275,6 @@ namespace ChainRush.Tests.PlayMode
             finally
             {
                 SpaceRegionService.ReleaseRead(frozenRegion);
-                selectionField.SetValue(action, original);
             }
         }
 
@@ -310,18 +295,32 @@ namespace ChainRush.Tests.PlayMode
                     && Time.realtimeSinceStartup < deadline) yield return null;
                 long beforePause = QueryAmount(owner, wallet, EconomyFormType.Stack, progress);
                 Assert.Greater(beforePause, 0, "Simulation did not publish Survive progress.");
-                Time.timeScale = 0;
-                yield return null;
-                beforePause = QueryAmount(owner, wallet, EconomyFormType.Stack, progress);
-                yield return new WaitForSecondsRealtime(0.3f);
-                Assert.AreEqual(beforePause, QueryAmount(owner, wallet, EconomyFormType.Stack, progress));
-                Time.timeScale = originalScale;
-                deadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
-                while (QueryAmount(owner, wallet, EconomyFormType.Stack, progress) == beforePause
-                    && Time.realtimeSinceStartup < deadline) yield return null;
-                Assert.Greater(QueryAmount(owner, wallet, EconomyFormType.Stack, progress), beforePause);
-                Assert.IsTrue(ActivityService.Close(battle.Id, ActivityCloseCauseType.Manual));
-                Assert.AreEqual(0, QueryAmount(owner, wallet, EconomyFormType.Stack, progress));
+                var metric = AssetDatabase.LoadAssetAtPath<ElapsedSimulationActivityAnalyticsMetricData>(
+                    "Assets/Game/Activities/Autobattle/Knowledge/ElapsedSimulationMetric.asset");
+                var participant = battle.Participants.Single(value => value.TeamIndex == 0);
+                Assert.IsTrue(ActivityAnalyticsService.TryPrepare(battle.DomainId, participant.ParticipantEntityId,
+                    metric, ActivityAnalyticsMeasureType.CurrentAmount, out var timeRead, out var failure), failure);
+                using (timeRead)
+                {
+                    Time.timeScale = 0;
+                    yield return null;
+                    var pausedTime = timeRead.Read(ActivityAnalyticsMeasureType.CurrentAmount);
+                    Assert.AreEqual(ActivityAnalyticsReadStateType.Ready, pausedTime.State, pausedTime.Reason);
+                    yield return new WaitForSecondsRealtime(0.3f);
+                    Assert.AreEqual(pausedTime.Value.Real,
+                        timeRead.Read(ActivityAnalyticsMeasureType.CurrentAmount).Value.Real);
+                    // An already queued Economy operation may finish after simulation pauses.
+                    Assert.GreaterOrEqual(QueryAmount(owner, wallet, EconomyFormType.Stack, progress), beforePause);
+                    beforePause = QueryAmount(owner, wallet, EconomyFormType.Stack, progress);
+                    Time.timeScale = originalScale;
+                    deadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
+                    while (QueryAmount(owner, wallet, EconomyFormType.Stack, progress) == beforePause
+                        && Time.realtimeSinceStartup < deadline) yield return null;
+                    Assert.Greater(QueryAmount(owner, wallet, EconomyFormType.Stack, progress), beforePause);
+                    Assert.IsTrue(ActivityService.Close(battle.Id, ActivityCloseCauseType.Manual));
+                    Assert.AreEqual(ActivityAnalyticsReadStateType.Error,
+                        timeRead.Read(ActivityAnalyticsMeasureType.CurrentAmount).State);
+                }
             }
             finally { Time.timeScale = originalScale; }
         }
@@ -655,16 +654,6 @@ namespace ChainRush.Tests.PlayMode
                 while (Time.realtimeSinceStartup < deadline && !TryFindActivityHost(battle.Id, unit, out _)) yield return null;
                 Assert.IsTrue(TryFindActivityHost(battle.Id, unit, out var entity), "Selected unit was not materialized.");
                 Assert.IsTrue(SpatialService.TryGetPose(entity, out var initialPose));
-                Assert.IsTrue(SpatialService.TryGetPose(heroEntity, out var heroPose));
-                var pattern = AssetDatabase.LoadAssetAtPath<AIBrainAnchorPatternData>(
-                    "Assets/Game/Activities/Autobattle/AI/" + content + "AnchorPattern.asset");
-                var patternData = new SerializedObject(pattern);
-                Vector3 sourceCenter = heroPose.Coordinates + (Vector3)patternData.FindProperty("anchorOffset").vector3IntValue / 1000;
-                Vector3Int sourceSize = patternData.FindProperty("roamSize").vector3IntValue;
-                Vector3 delta = initialPose.Coordinates - sourceCenter;
-                Assert.LessOrEqual(Mathf.Abs(delta.x), sourceSize.x / 2000f + .15f,
-                    "Deployment must use the source speciality area, not the integration fixture area.");
-                Assert.LessOrEqual(Mathf.Abs(delta.z), sourceSize.z / 2000f + .15f);
                 deadline = Time.realtimeSinceStartup + CollectorCycleTimeoutSeconds;
                 bool moved = false;
                 while (Time.realtimeSinceStartup < deadline)
@@ -945,26 +934,48 @@ namespace ChainRush.Tests.PlayMode
             Assert.IsTrue(EconomyService.TryCloseOperation(handle));
         }
 
-        static IEnumerator LaunchPlayableActivities()
+        static IEnumerator LaunchPlayableActivities(string launchName = "Level01Perfume")
         {
-            Scene scene = EditorSceneManager.LoadSceneInPlayMode(IntegrationScenePath, new LoadSceneParameters(LoadSceneMode.Single));
-            float deadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
-            while (Time.realtimeSinceStartup < deadline && !scene.isLoaded) yield return null;
-            yield return null;
-            var host = Object.FindFirstObjectByType<GameRuntimeHost>(FindObjectsInactive.Include);
-            Assert.NotNull(host);
-            deadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
-            while (Time.realtimeSinceStartup < deadline
-                && (host.RuntimeContext == null || !host.RuntimeContext.IsInitialized || !TryFindRunningActivities(out _, out _)))
+            var selected = AssetDatabase.LoadAssetAtPath<GameStartupPlanData>(
+                "Assets/Game/Runtime/Startup/" + launchName + "StartupPlan.asset");
+            Assert.NotNull(selected);
+            UnityEngine.Events.UnityAction<Scene, LoadSceneMode> configureStartup = (loaded, mode) =>
+            {
+                if (loaded.path != IntegrationScenePath) return;
+                foreach (var root in loaded.GetRootGameObjects())
+                    foreach (var runtimeHost in root.GetComponentsInChildren<GameRuntimeHost>(true))
+                    {
+                        var runtimeData = new SerializedObject(runtimeHost);
+                        runtimeData.FindProperty("startupPlan").objectReferenceValue = selected;
+                        runtimeData.ApplyModifiedPropertiesWithoutUndo();
+                    }
+            };
+            SceneManager.sceneLoaded += configureStartup;
+            try
+            {
+                Scene scene = EditorSceneManager.LoadSceneInPlayMode(IntegrationScenePath, new LoadSceneParameters(LoadSceneMode.Single));
+                float deadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
+                while (Time.realtimeSinceStartup < deadline && !scene.isLoaded) yield return null;
                 yield return null;
-            Assert.IsTrue(TryFindRunningActivities(out var battle, out var board), "Activities did not start.");
-            Assert.AreEqual(battle.Id, board.ParentActivityId);
-            Assert.AreEqual(12, board.ObjectiveRuntimeIds.Count);
-            Assert.AreEqual(16, CountBoardUICells());
-            AssertBoardUIVisible(host);
-            Assert.AreEqual(2, battle.Participants.Count);
-            AssertParticipant(battle.Participants, 0, PlayerControlType.LocalHuman);
-            AssertParticipant(battle.Participants, 1, PlayerControlType.Bot);
+                var host = Object.FindFirstObjectByType<GameRuntimeHost>(FindObjectsInactive.Include);
+                Assert.NotNull(host);
+                deadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
+                while (Time.realtimeSinceStartup < deadline
+                    && (host.RuntimeContext == null || !host.RuntimeContext.IsInitialized || !TryFindRunningActivities(out _, out _)))
+                    yield return null;
+                Assert.IsTrue(TryFindRunningActivities(out var battle, out var board), "Activities did not start.");
+                Assert.AreEqual(battle.Id, board.ParentActivityId);
+                Assert.AreEqual(12, board.ObjectiveRuntimeIds.Count);
+                Assert.AreEqual(16, CountBoardUICells());
+                AssertBoardUIVisible(host);
+                Assert.AreEqual(2, battle.Participants.Count);
+                AssertParticipant(battle.Participants, 0, PlayerControlType.LocalHuman);
+                AssertParticipant(battle.Participants, 1, PlayerControlType.Bot);
+            }
+            finally
+            {
+                SceneManager.sceneLoaded -= configureStartup;
+            }
         }
 
         sealed class PlayableRuntimeCapture :

@@ -19,7 +19,6 @@ MonoBehaviour:
       attribute: {fileID: 11400000, guid: b42c9f1f607844b55a9f9e9df0020f73, type: 2}
       qualifiers: []
     defaultValue: 1
-    scaleType: 1
     requiredSkillTags:
     - {fileID: 11400000, guid: 12438b77b70234c1e9633a48f84610e6, type: 2}
   - property: 3
@@ -27,6 +26,5 @@ MonoBehaviour:
       attribute: {fileID: 11400000, guid: b42c9f1f607844b55a9f9e9df0020f73, type: 2}
       qualifiers: []
     defaultValue: 1
-    scaleType: 1
     requiredSkillTags:
     - {fileID: 11400000, guid: 12438b77b70234c1e9633a48f84610e6, type: 2}

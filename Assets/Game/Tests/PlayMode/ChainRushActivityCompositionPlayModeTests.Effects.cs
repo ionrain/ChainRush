@@ -94,11 +94,8 @@ namespace ChainRush.Tests.PlayMode
             yield return AwaitCompletedPopulation(board, tag, cell);
             CapabilityHostService.TryGetEffectiveAttribute(first, new AttributeSelectorData(attribute), out long before);
             Assert.Greater(before, 0, "The buff scenario must exercise a nonzero authored attribute.");
-            var feature = AssetDatabase.LoadAssetAtPath<ScriptableObject>("Assets/Game/Runtime/Run/RunAttributesFeature.asset");
-            var buffs = (IEnumerable)feature.GetType().GetField("buffs", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(feature);
-            object binding = buffs.Cast<object>().Single(value => (CapabilityHostData)value.GetType().GetField("Cell").GetValue(value) == cell);
-            float grade = ((List<float>)binding.GetType().GetField("Grades").GetValue(binding))[2];
-            long expected = checked((long)Math.Round(before * (1d + grade), MidpointRounding.AwayFromZero));
+            // A chain of three cells issues ten percentage points.
+            long expected = checked(before + before * 10L / 100L);
             var capture = new SelectionEffectReplayCapture(board.Id, null);
             EventBus.Register<SelectionResultEvent>(capture);
             try

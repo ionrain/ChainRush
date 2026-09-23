@@ -88,11 +88,6 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
-    - rid: 2807516363299750081
-      type: {class: RemoveEntityAIBrainActionData, ns: Core.AI.Actions, asm: Core}
-      data: 
     - rid: 2807516363299750082
       type: {class: HostValueConditionAIBrainConditionData, ns: Core.AI.Conditions,
         asm: Core}
@@ -110,6 +105,9 @@ MonoBehaviour:
         asm: Core}
       data:
         requiredResults: 6
+    - rid: 2807516363299750081
+      type: {class: RemoveEntityAIBrainActionData, ns: Core.AI.Actions, asm: Core}
+      data: 
     - rid: 6092004074608394247
       type: {class: SelectEntityTargetByQueryAIBrainActionData, ns: Core.AI.Actions,
         asm: Core}
@@ -118,11 +116,6 @@ MonoBehaviour:
         additionalTargetKeys: []
         searchOriginType: 0
         searchOriginKey: {fileID: 0}
-        captureSearchOrigin: 0
-        distanceScore:
-          rid: -2
-        recentValueDecrease:
-          rid: -2
         searchRadius: 2000
         maxCandidates: 256
         diplomacyChannel: 0
@@ -141,7 +134,6 @@ MonoBehaviour:
       data:
         skill: {fileID: 11400000, guid: 79f6e38cceff940698a3cf9afba68830, type: 2}
         targetKey: {fileID: 11400000, guid: 41b5c641941e34ce99d3a4aea74acd72, type: 2}
-        targetResolver: {fileID: 0}
         completionPolicy: 0
     - rid: 6092004074608394249
       type: {class: SelectEntityTargetByQueryAIBrainActionData, ns: Core.AI.Actions,
@@ -151,11 +143,6 @@ MonoBehaviour:
         additionalTargetKeys: []
         searchOriginType: 0
         searchOriginKey: {fileID: 0}
-        captureSearchOrigin: 0
-        distanceScore:
-          rid: -2
-        recentValueDecrease:
-          rid: -2
         searchRadius: 2000
         maxCandidates: 256
         diplomacyChannel: 0
@@ -174,5 +161,4 @@ MonoBehaviour:
       data:
         skill: {fileID: 11400000, guid: 79f6e38cceff940698a3cf9afba68830, type: 2}
         targetKey: {fileID: 11400000, guid: 41b5c641941e34ce99d3a4aea74acd72, type: 2}
-        targetResolver: {fileID: 0}
         completionPolicy: 0

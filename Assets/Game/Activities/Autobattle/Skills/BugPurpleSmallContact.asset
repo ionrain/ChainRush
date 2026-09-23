@@ -41,7 +41,7 @@ MonoBehaviour:
   targetType: 2
   targetCount:
     min: 1
-    max: 1
+    max: 2147483647
   analyticSupposedTarget: -1
   targetTags:
   - {fileID: 11400000, guid: 2231ac3b695cc4d49895685ed991ab34, type: 2}
@@ -52,6 +52,8 @@ MonoBehaviour:
   actionInterval: 0
   actionCount: 1
   reloadTime: 0
+  actionProtectionTag: {fileID: 11400000, guid: e7692d65f982341c29fcc86a064e2a5f, type: 2}
+  actionProtectionDuration: 6
   requirements: []
   effects:
   - rid: 6092004074608394836
@@ -63,7 +65,10 @@ MonoBehaviour:
       data:
         recipient: 1
         requiredTags: []
-        value: -10000
+        value:
+          rid: 6092004074608394838
+        valueArgument:
+          rid: -2
         multiplier: {fileID: 0}
         hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
         formula:
@@ -73,10 +78,11 @@ MonoBehaviour:
             operandType: 1
             value: {fileID: 0}
             attribute:
-              attribute: {fileID: 11400000, guid: 416c9668718b04d8b86345380084fa9f,
+              attribute: {fileID: 11400000, guid: b92048bd2f85042ee97f6a25f6a4f99b,
                 type: 2}
-              qualifiers: []
-            allowMissingAttribute: 1
+              qualifiers:
+              - {fileID: 11400000, guid: d078fa8c1956f4a1b825a2d83c7f5cf0, type: 2}
+            allowMissingAttribute: 0
             missingAttributeValue: 0
             stopWhenNonPositive: 1
             multiplier:
@@ -87,20 +93,19 @@ MonoBehaviour:
             operandType: 1
             value: {fileID: 0}
             attribute:
-              attribute: {fileID: 11400000, guid: a1bc193123f8b411e81864b0f3a83fb4,
+              attribute: {fileID: 11400000, guid: 9c6a46d64e754495294c47772e712bd5,
                 type: 2}
-              qualifiers: []
+              qualifiers:
+              - {fileID: 11400000, guid: d078fa8c1956f4a1b825a2d83c7f5cf0, type: 2}
             allowMissingAttribute: 1
             missingAttributeValue: 0
             stopWhenNonPositive: 0
+            requirePositiveOperand: 1
+            minimumMagnitude: 1000
             multiplier:
               attribute: {fileID: 0}
               qualifiers: []
-          minimumMagnitude: 1000
-        protection:
-          rid: 6092004074608394837
-    - rid: 6092004074608394837
-      type: {class: SkillHostValueProtectionData, ns: Core.Skills, asm: Core}
+    - rid: 6092004074608394838
+      type: {class: LongFlatProgressionData, ns: Core, asm: Core}
       data:
-        tag: {fileID: 11400000, guid: e7692d65f982341c29fcc86a064e2a5f, type: 2}
-        duration: 6
+        value: -10000

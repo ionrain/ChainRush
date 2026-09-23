@@ -125,3 +125,8 @@ These rules are strict for project-owned code and naming.
    This restriction covers every test run, including focused diagnostic/reproducing tests, smoke tests, package suites, integration tests, FullUnitChain, and tests launched indirectly through scripts, agents, tools, or automation.
    Do not request test approval before completing the implementation. Once implementation is complete, report that fact and wait for explicit approval before any test execution.
    This rule takes precedence over per-stage validation and diagnostic instructions that would otherwise require an earlier test run. Use existing evidence in the meantime, and do not claim unperformed validation has passed.
+
+26. Targets are always Entity references.
+   Position, coordinates, points, or other location-only values must never be introduced as alternative target types or substituted for Entity targets. Spatial coordinates are data of an Entity, not a separate target.
+   This contract must not be changed or extended under any pretext without a separate discussion of that exact change and the user's explicit, unambiguous approval of that step.
+   General approval of a plan, an instruction to implement or continue, silence, implementation convenience, or a technical limitation does not authorize changing this contract.

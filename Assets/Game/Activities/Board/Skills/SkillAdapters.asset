@@ -20,7 +20,6 @@ MonoBehaviour:
   - rid: 930010005
   - rid: 930010006
   - rid: 2807516363299750066
-  - rid: 6092004072085520610
   references:
     version: 2
     RefIds:
@@ -44,7 +43,4 @@ MonoBehaviour:
       data: 
     - rid: 2807516363299750066
       type: {class: SkillEconomyEntryEffectAdapterData, ns: Core.Skills, asm: Core}
-      data: 
-    - rid: 6092004072085520610
-      type: {class: SkillCarrierForceEffectAdapterData, ns: Core.Skills, asm: Core}
       data: 

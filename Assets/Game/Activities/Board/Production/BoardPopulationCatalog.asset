@@ -47,6 +47,20 @@ MonoBehaviour:
     workDuration: 1
     recoveryDuration: 0
     reservationPolicy: 0
+  cooldownEnabled: 1
+  readyAtStart: 0
+  initialElapsed: 240
+  cooldown: 240
+  cooldownProgression:
+    rid: -2
+  cooldownProgressResource: {fileID: 0}
+  cooldownProgressOwner:
+    bindingType: 0
+    owner:
+      source: {fileID: 0}
+  cooldownProgressWalletTags: []
+  cooldownProgressScale: 0
+  cooldownProgressRelativeBase: 0
   references:
     version: 2
     RefIds: []

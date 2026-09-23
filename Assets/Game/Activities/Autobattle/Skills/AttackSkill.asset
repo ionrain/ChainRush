@@ -71,8 +71,15 @@ MonoBehaviour:
       data:
         recipient: 1
         requiredTags: []
-        value: -1
+        value:
+          rid: 2807516363299750087
+        valueArgument:
+          rid: -2
         multiplier: {fileID: 0}
         hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
         formula:
           terms: []
+    - rid: 2807516363299750087
+      type: {class: LongFlatProgressionData, ns: Core, asm: Core}
+      data:
+        value: -1

@@ -1,0 +1,156 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b65a5bf3374d4d3597b95a983d584f0b, type: 3}
+  m_Name: SpeedBuff
+  m_EditorClassIdentifier: Core::Core.Skills.SkillData
+  domainTypePreview: 10
+  id: chainrush.skill.speed-buff
+  title:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  description:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  icon: {fileID: 0}
+  precision: 0
+  allowedOperations: 31
+  tags: []
+  slotFootprint: 1
+  stackCapacity: 0
+  targetType: 2
+  executeWithoutTarget: 1
+  targetCount:
+    min: 1
+    max: 2147483647
+  analyticSupposedTarget: -1
+  targetTags:
+  - {fileID: 11400000, guid: 1c4da6ecd53374492a7c2eddc0cf92b2, type: 2}
+  targetSlot: {fileID: 0}
+  executionSlot: {fileID: 0}
+  startDelay: 0
+  endDelay: 0
+  actionInterval: 0
+  actionCount: 1
+  reloadTime: 0
+  requirements: []
+  effects:
+  - rid: 720000
+  - rid: 720001
+  references:
+    version: 2
+    RefIds:
+    - rid: 720000
+      type: {class: SkillEconomyEffectData, ns: Core.Skills, asm: Core}
+      data:
+        recipient: 3
+        repeatType: 1
+        requiredTags: []
+        value:
+          rid: 720002
+        valueArgument:
+          rid: -2
+        multiplier: {fileID: 0}
+        asset: {fileID: 11400000, guid: e8a82c2ef62684484a1dc4a73dbb0b19, type: 2}
+        walletTags:
+        - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
+        formType: 0
+        requiredRuntimeTags: []
+        formula:
+          terms:
+          - operation: 3
+            parameterTarget: 0
+            operandType: 2
+            value: {fileID: 0}
+            attribute:
+              attribute: {fileID: 0}
+              qualifiers: []
+            allowMissingAttribute: 0
+            missingAttributeValue: 0
+            stopWhenNonPositive: 1
+            requirePositiveOperand: 0
+            minimumMagnitude: 0
+            multiplier:
+              attribute: {fileID: 0}
+              qualifiers: []
+            economyOwnerType: 1
+            economySelection:
+              walletTags:
+              - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
+              formTypes: 00000000
+              exactAsset: {fileID: 11400000, guid: e8a82c2ef62684484a1dc4a73dbb0b19, type: 2}
+              requiredAssetTags: []
+              excludedAssetTags: []
+              requiredRuntimeTags: []
+              excludedRuntimeTags: []
+    - rid: 720001
+      type: {class: SkillEconomyEffectData, ns: Core.Skills, asm: Core}
+      data:
+        recipient: 3
+        repeatType: 1
+        requiredTags: []
+        value:
+          rid: 720003
+        valueArgument:
+          rid: -2
+        multiplier: {fileID: 0}
+        asset: {fileID: 11400000, guid: da5a177a59ab14463841fd8c7424048a, type: 2}
+        walletTags:
+        - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
+        formType: 0
+        requiredRuntimeTags: []
+        formula:
+          terms:
+          - operation: 3
+            parameterTarget: 0
+            operandType: 2
+            value: {fileID: 0}
+            attribute:
+              attribute: {fileID: 0}
+              qualifiers: []
+            allowMissingAttribute: 0
+            missingAttributeValue: 0
+            stopWhenNonPositive: 1
+            requirePositiveOperand: 0
+            minimumMagnitude: 0
+            multiplier:
+              attribute: {fileID: 0}
+              qualifiers: []
+            economyOwnerType: 1
+            economySelection:
+              walletTags:
+              - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
+              formTypes: 00000000
+              exactAsset: {fileID: 11400000, guid: e8a82c2ef62684484a1dc4a73dbb0b19, type: 2}
+              requiredAssetTags: []
+              excludedAssetTags: []
+              requiredRuntimeTags: []
+              excludedRuntimeTags: []
+    - rid: 720002
+      type: {class: LongFlatProgressionData, ns: Core, asm: Core}
+      data:
+        value: -1
+    - rid: 720003
+      type: {class: LongFlatProgressionData, ns: Core, asm: Core}
+      data:
+        value: 1

@@ -4,6 +4,8 @@ using System.Reflection;
 using System.Text;
 using Core;
 using Core.Activities;
+using Core.Activities.Analytics;
+using Core.Production;
 using Core.CapabilityHosts;
 using Core.CapabilityHosts.Runtime;
 using Core.Economy;
@@ -23,33 +25,17 @@ namespace ChainRush.Tests.PlayMode
 {
     public sealed partial class ChainRushActivityCompositionPlayModeTests
     {
-        System.Action _restoreActivityFeatures;
-
-        void SuppressAutomaticHeroRoute()
-        {
-            var activity = AssetDatabase.LoadAssetAtPath<ActivityData>(
-                "Assets/Game/Activities/Autobattle/Definition/DistanceActivity.asset");
-            var original = activity.Teams[0].Features.ToList();
-            Assert.AreEqual(1, activity.Teams[0].Features.RemoveAll(feature => feature.GetType().Name == "ChainRushHeroRouteFeatureData"));
-            _restoreActivityFeatures = () => { activity.Teams[0].Features.Clear(); activity.Teams[0].Features.AddRange(original); };
-        }
-
-        static SpaceRegionSnapshot ReadReplenishmentRegion(ActivityRuntimeSnapshot battle)
+        static SpaceRegionSnapshot ReadEnemyRegion(ActivityRuntimeSnapshot battle)
         {
             var regions = new System.Collections.Generic.List<SpaceRegionSnapshot>();
             Assert.AreEqual(SpaceRegionQueryResultType.Ready, SpaceRegionService.Collect(
-                new SpaceRegionResolvedQuery(battle.Id, battle.ActivityRootEntityId, default, default, default), regions));
-            return regions.Single(region => region.RegionId.Value == "chainrush.autobattle.replenishment");
+                new SpaceRegionResolvedQuery(battle.Id, default, default, default, default), regions));
+            return regions.Single(region => region.RegionId.Value == "chainrush.autobattle.enemies");
         }
 
         [UnityTest]
         public IEnumerator LevelPopulation_ReplenishesAfterDeaths_ChangesComposition_StopsAtEnd()
         {
-            SuppressAutomaticHeroRoute();
-            var action = AssetDatabase.LoadAssetAtPath<ScriptableObject>(
-                "Assets/Game/Runtime/Startup/CaptureChainRushRun.asset");
-            var field = action.GetType().GetField("selection", BindingFlags.Instance | BindingFlags.NonPublic);
-            object original = field.GetValue(action);
             var materializationWarnings = new System.Collections.Generic.List<string>();
             void CaptureWarning(string message, string stack, LogType type)
             {
@@ -58,10 +44,7 @@ namespace ChainRush.Tests.PlayMode
             Application.logMessageReceived += CaptureWarning;
             try
             {
-                field.SetValue(action, AssetDatabase.LoadAssetAtPath<ScriptableObject>(
-                    "Assets/Game/Runtime/Run/DistanceRunSelection.asset"));
-                yield return LaunchPlayableActivities();
-                field.SetValue(action, original);
+                yield return LaunchPlayableActivities("Level02Perfume");
                 Assert.IsTrue(TryFindRunningActivities(out var battle, out _));
                 var player = battle.Participants.Single(participant => participant.TeamIndex == 0).ParticipantEconomyOwner;
                 var enemyOwner = battle.Participants.Single(participant => participant.TeamIndex == 1).ParticipantEconomyOwner;
@@ -72,7 +55,8 @@ namespace ChainRush.Tests.PlayMode
                 var wallet = AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(SharedWalletTagPath);
                 var activity = AssetDatabase.LoadAssetAtPath<ActivityData>(
                     "Assets/Game/Activities/Autobattle/Definition/DistanceActivity.asset");
-                var target = activity.Teams[1].Objectives.Single().Template.Root.SuccessConditions
+                var target = activity.Teams[1].Objectives.Single(value => value.Template.name == "Level02ReplenishmentObjective").Template.Root.SuccessConditions
+                    .OfType<ObjectiveConditionComposite>().Single().NestedConditions
                     .OfType<ObjectiveConditionMaterializedEntity>().Single().TargetProgression;
                 var curve = (LongProgressionData)typeof(ObjectiveLongTargetProgressionData)
                     .GetField("progression", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(target);
@@ -168,21 +152,37 @@ namespace ChainRush.Tests.PlayMode
                         yield return new WaitForSeconds(1);
                         ReadEnemies();
                         Assert.IsEmpty(enemies, "Full progress must stop new replenishment assignments.");
-                        object fieldSnapshot = null;
+                        var fieldTemplate = AssetDatabase.LoadAssetAtPath<ObjectiveTemplateData>(
+                            "Assets/Game/Activities/Autobattle/Objectives/EnemyFieldClearedObjective.asset");
+                        var fieldObjective = battle.Objectives.Single(value => value.RootNodeId == fieldTemplate.Root.Id);
                         deadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
-                        do
+                        ObjectiveState observed = ObjectiveState.None;
+                        while (Time.realtimeSinceStartup < deadline)
                         {
-                            fieldSnapshot = ReadEnemyField(battle.Id);
-                            if (fieldSnapshot != null && ReadField<bool>(fieldSnapshot, "FieldCleared")) break;
+                            Assert.IsTrue(ObjectiveService.TryGetNodeState(battle.DomainId, fieldObjective.RuntimeId,
+                                fieldTemplate.Root.Id, out observed));
+                            if (observed == ObjectiveState.Completed) break;
                             yield return null;
-                        } while (Time.realtimeSinceStartup < deadline);
-                        Assert.IsNotNull(fieldSnapshot);
-                        Assert.IsTrue(ReadField<bool>(fieldSnapshot, "IsReady"), ReadField<string>(fieldSnapshot, "Diagnostic"));
-                        Assert.IsTrue(ReadField<bool>(fieldSnapshot, "ProgressComplete"));
-                        Assert.IsTrue(ReadField<bool>(fieldSnapshot, "EmissionSettled"));
-                        Assert.IsTrue(ReadField<bool>(fieldSnapshot, "FieldCleared"));
-                        Assert.AreEqual(0L, ReadField<long>(fieldSnapshot, "Incoming"));
-                        Assert.AreEqual(0L, ReadField<long>(fieldSnapshot, "Existing"));
+                        }
+                        Assert.AreEqual(ObjectiveState.Completed, observed);
+                        var participant = battle.Participants.Single(value => value.TeamIndex == 1);
+                        var metric = AssetDatabase.LoadAssetAtPath<EntityCountActivityAnalyticsMetricData>(
+                            "Assets/Game/Activities/Autobattle/Knowledge/EnemyPopulationMetric.asset");
+                        Assert.IsTrue(ActivityAnalyticsService.TryPrepare(battle.DomainId, participant.ParticipantEntityId,
+                            metric, ActivityAnalyticsMeasureType.ExistingEntities, out var read, out var readFailure), readFailure);
+                        using (read)
+                        {
+                            var existing = read.Read(ActivityAnalyticsMeasureType.ExistingEntities);
+                            var incoming = read.Read(ActivityAnalyticsMeasureType.AcceptedOutputs);
+                            Assert.AreEqual(ActivityAnalyticsReadStateType.Ready, existing.State, existing.Reason);
+                            Assert.AreEqual(ActivityAnalyticsReadStateType.Ready, incoming.State, incoming.Reason);
+                            Assert.AreEqual(0L, existing.Value.Integer);
+                            Assert.AreEqual(0L, incoming.Value.Integer);
+                        }
+                        Assert.IsFalse(ProductionService.GetSnapshots(battle.DomainId).Any(value =>
+                            value.Owner?.StableSimulationKey == enemyOwner.StableSimulationKey
+                            && (value.QueueCount != 0 || value.ActivePipelineCount != 0)));
+
                     }
                     else
                     {
@@ -199,34 +199,15 @@ namespace ChainRush.Tests.PlayMode
                 }
                 Assert.IsEmpty(materializationWarnings, "Every replenishment output must settle its placement lease.");
                 Assert.IsTrue(ActivityService.Close(battle.Id, ActivityCloseCauseType.Manual));
-                Assert.IsNull(ReadEnemyField(battle.Id), "Closed activity must release its field observer.");
+                Assert.IsFalse(ActivityAnalyticsService.TryGetSnapshot(battle.DomainId,
+                    battle.Participants.Single(value => value.TeamIndex == 1).ParticipantEntityId, out _),
+                    "Closed activity must release its Analytics domain.");
             }
             finally
             {
                 Application.logMessageReceived -= CaptureWarning;
-                field.SetValue(action, original);
             }
         }
 
-        static T ReadField<T>(object snapshot, string name) => (T)snapshot.GetType().GetProperty(name).GetValue(snapshot);
-
-        static void CaptureEnemyField<T>(System.Action<object> capture, T snapshot) => capture(snapshot);
-
-        static object ReadEnemyField(ActivityId activity)
-        {
-            var feature = AssetDatabase.LoadAssetAtPath<ScriptableObject>("Assets/Game/Runtime/Run/Level02EnemyField.asset");
-            Assert.IsNotNull(feature);
-            var assembly = feature.GetType().Assembly;
-            var snapshotType = assembly.GetType("ChainRush.Gameplay.ChainRushEnemyFieldSnapshot", true);
-            var requestType = assembly.GetType("ChainRush.Gameplay.ChainRushEnemyFieldRequestEvent", true);
-            object observed = null;
-            System.Action<object> capture = value => observed = value;
-            var callback = System.Delegate.CreateDelegate(typeof(System.Action<>).MakeGenericType(snapshotType), capture,
-                typeof(ChainRushActivityCompositionPlayModeTests).GetMethod(nameof(CaptureEnemyField),
-                    BindingFlags.Static | BindingFlags.NonPublic).MakeGenericMethod(snapshotType));
-            object request = System.Activator.CreateInstance(requestType, activity, callback);
-            typeof(EventBus).GetMethod(nameof(EventBus.Trigger)).MakeGenericMethod(requestType).Invoke(null, new[] { request });
-            return observed;
-        }
     }
 }

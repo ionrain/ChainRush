@@ -92,6 +92,23 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: 2807516363299750082
+      type: {class: HostValueConditionAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
+        compareOperation: 5
+        targetValue: 0
+    - rid: 2807516363299750083
+      type: {class: CurrentStateResultMatchesAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        requiredResults: 6
+    - rid: 2807516363299750084
+      type: {class: CurrentStateResultMatchesAIBrainConditionData, ns: Core.AI.Conditions,
+        asm: Core}
+      data:
+        requiredResults: 6
     - rid: 2807516363299750074
       type: {class: SelectActivityTargetAIBrainActionData, ns: Core.CapabilityHosts,
         asm: Core}
@@ -155,24 +172,7 @@ MonoBehaviour:
     - rid: 2807516363299750081
       type: {class: RemoveEntityAIBrainActionData, ns: Core.AI.Actions, asm: Core}
       data: 
-    - rid: 2807516363299750082
-      type: {class: HostValueConditionAIBrainConditionData, ns: Core.AI.Conditions,
-        asm: Core}
-      data:
-        hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
-        compareOperation: 5
-        targetValue: 0
-    - rid: 2807516363299750083
-      type: {class: CurrentStateResultMatchesAIBrainConditionData, ns: Core.AI.Conditions,
-        asm: Core}
-      data:
-        requiredResults: 6
     - rid: 2807516363299750085
       type: {class: RemoveEntityAIBrainExitActionData, ns: Core.AI.Actions, asm: Core}
       data:
         triggerResults: 2
-    - rid: 2807516363299750084
-      type: {class: CurrentStateResultMatchesAIBrainConditionData, ns: Core.AI.Conditions,
-        asm: Core}
-      data:
-        requiredResults: 6

@@ -83,6 +83,9 @@ MonoBehaviour:
       data:
         _targetValue: 1
         targetProgression:
+          sourceType: 0
+          metric: {fileID: 0}
+          measure: 0
           resource: {fileID: 0}
           owner:
             bindingType: 0
@@ -142,7 +145,7 @@ MonoBehaviour:
             maximum: 0.25
             hasMaximum: 1
           space:
-            scopeType: 1
+            scopeType: 0
             requiredTags:
             - {fileID: 11400000, guid: aa92cc0714f724a0491b75e03d6282a9, type: 2}
             excludedTags: []
@@ -165,13 +168,12 @@ MonoBehaviour:
           - source:
               rid: 6092004074608394366
             share: 1
-            availability: {fileID: 0}
         - interval:
             minimum: 0.25
             maximum: 0.5
             hasMaximum: 1
           space:
-            scopeType: 1
+            scopeType: 0
             requiredTags:
             - {fileID: 11400000, guid: aa92cc0714f724a0491b75e03d6282a9, type: 2}
             excludedTags: []
@@ -194,17 +196,15 @@ MonoBehaviour:
           - source:
               rid: 6092004074608394367
             share: 0.5
-            availability: {fileID: 0}
           - source:
               rid: 6092004074608394368
             share: 0.5
-            availability: {fileID: 0}
         - interval:
             minimum: 0.5
             maximum: 0.75
             hasMaximum: 1
           space:
-            scopeType: 1
+            scopeType: 0
             requiredTags:
             - {fileID: 11400000, guid: aa92cc0714f724a0491b75e03d6282a9, type: 2}
             excludedTags: []
@@ -227,17 +227,15 @@ MonoBehaviour:
           - source:
               rid: 6092004074608394369
             share: 0.3
-            availability: {fileID: 0}
           - source:
               rid: 6092004074608394370
             share: 0.7
-            availability: {fileID: 0}
         - interval:
             minimum: 0.75
             maximum: 1
             hasMaximum: 1
           space:
-            scopeType: 1
+            scopeType: 0
             requiredTags:
             - {fileID: 11400000, guid: aa92cc0714f724a0491b75e03d6282a9, type: 2}
             excludedTags: []
@@ -260,15 +258,12 @@ MonoBehaviour:
           - source:
               rid: 6092004074608394371
             share: 0.4
-            availability: {fileID: 0}
           - source:
               rid: 6092004074608394372
             share: 0.4
-            availability: {fileID: 0}
           - source:
               rid: 6092004074608394373
             share: 0.2
-            availability: {fileID: 0}
         distribution:
           rid: 6092004074608394374
         workBudget: 256

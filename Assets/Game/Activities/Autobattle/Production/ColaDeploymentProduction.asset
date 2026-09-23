@@ -44,7 +44,8 @@ MonoBehaviour:
   maxParallelPipelines: 1
   limitReachedPolicy: 1
   startPolicy: 0
-  materializationProviderType: {fileID: 11400000, guid: 624032c4a778d4ad7b42cb7845a24f3b,
+  materializationMarkerProviderType: 1
+  materializationMarkerProvider: {fileID: 11400000, guid: 624032c4a778d4ad7b42cb7845a24f3b,
     type: 2}
   references:
     version: 2

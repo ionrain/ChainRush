@@ -64,7 +64,10 @@ MonoBehaviour:
       data:
         recipient: 1
         requiredTags: []
-        value: 0
+        value:
+          rid: 2807516542362452068
+        valueArgument:
+          rid: -2
         multiplier: {fileID: 0}
         sourceType: 0
         sourceOwnerType: 0
@@ -87,7 +90,10 @@ MonoBehaviour:
       data:
         recipient: 1
         requiredTags: []
-        value: 0
+        value:
+          rid: 2807516542362452069
+        valueArgument:
+          rid: -2
         multiplier: {fileID: 0}
         sourceType: 1
         sourceOwnerType: 0
@@ -104,3 +110,11 @@ MonoBehaviour:
         destinationRecipient: 1
         destinationOwnerType: 0
         destinationWalletTags: []
+    - rid: 2807516542362452068
+      type: {class: LongFlatProgressionData, ns: Core, asm: Core}
+      data:
+        value: 0
+    - rid: 2807516542362452069
+      type: {class: LongFlatProgressionData, ns: Core, asm: Core}
+      data:
+        value: 0

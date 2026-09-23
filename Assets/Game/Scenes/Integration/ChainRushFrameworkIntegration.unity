@@ -131,7 +131,6 @@ GameObject:
   - component: {fileID: 45768142}
   - component: {fileID: 45768144}
   - component: {fileID: 45768145}
-  - component: {fileID: 45768146}
   m_Layer: 0
   m_Name: AutobattleCamera
   m_TagString: MainCamera
@@ -266,19 +265,8 @@ MonoBehaviour:
     requiredRuntimeTags:
     - {fileID: 11400000, guid: a09d83a16ee224bc4981ca811308d0fd, type: 2}
   viewport: {fileID: 45768142}
---- !u!114 &45768146
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 45768141}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 109caf085582842298e834da0eafbf20, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ChainRush.Gameplay.ChainRushCombatViewAdapter
-  combatCamera: {fileID: 45768142}
+  viewKey: {fileID: 11400000, guid: a1126730f4cd0417b8e6d6c9a941db88, type: 2}
+  participantIndex: 0
 --- !u!1001 &384846279
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -605,6 +593,159 @@ MonoBehaviour:
   m_PointerBehavior: 0
   m_CursorLockBehavior: 0
   m_ScrollDeltaPerTick: 6
+--- !u!1 &950000001
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 950000002}
+  - component: {fileID: 950000003}
+  m_Layer: 0
+  m_Name: DistanceActivityViewport
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &950000002
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 950000001}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &950000003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 950000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e96e588eb131493e891de874ba551be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Core::Core.Projection.ActivityViewportController
+  activitySelector:
+    definition: {fileID: 11400000, guid: d08522137cf72449f9553e319c82f0f2, type: 2}
+    requiredRuntimeTags:
+    - {fileID: 11400000, guid: a09d83a16ee224bc4981ca811308d0fd, type: 2}
+  viewport: {fileID: 45768142}
+  viewKey: {fileID: 11400000, guid: a1126730f4cd0417b8e6d6c9a941db88, type: 2}
+  participantIndex: 0
+--- !u!1 &950000011
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 950000012}
+  - component: {fileID: 950000013}
+  m_Layer: 0
+  m_Name: Level01TabascoActivityViewport
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &950000012
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 950000011}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &950000013
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 950000011}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e96e588eb131493e891de874ba551be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Core::Core.Projection.ActivityViewportController
+  activitySelector:
+    definition: {fileID: 11400000, guid: 57200e31b0a714af79dde3ad821e3550, type: 2}
+    requiredRuntimeTags:
+    - {fileID: 11400000, guid: a09d83a16ee224bc4981ca811308d0fd, type: 2}
+  viewport: {fileID: 45768142}
+  viewKey: {fileID: 11400000, guid: a1126730f4cd0417b8e6d6c9a941db88, type: 2}
+  participantIndex: 0
+--- !u!1 &950000021
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 950000022}
+  - component: {fileID: 950000023}
+  m_Layer: 0
+  m_Name: Level02TabascoActivityViewport
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &950000022
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 950000021}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &950000023
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 950000021}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e96e588eb131493e891de874ba551be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Core::Core.Projection.ActivityViewportController
+  activitySelector:
+    definition: {fileID: 11400000, guid: 79717be500684481dadc1446f640249d, type: 2}
+    requiredRuntimeTags:
+    - {fileID: 11400000, guid: a09d83a16ee224bc4981ca811308d0fd, type: 2}
+  viewport: {fileID: 45768142}
+  viewKey: {fileID: 11400000, guid: a1126730f4cd0417b8e6d6c9a941db88, type: 2}
+  participantIndex: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -613,3 +754,6 @@ SceneRoots:
   - {fileID: 2070000003}
   - {fileID: 45768143}
   - {fileID: 384846279}
+  - {fileID: 950000002}
+  - {fileID: 950000012}
+  - {fileID: 950000022}

@@ -81,18 +81,8 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 833fe77fcef9b4b17a89c4a90dda01c7
-    m_Address: Assets/Game/Activities/Autobattle/Projection/WaterDeploymentHost.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 884e7c191c4684ff68e3f8db37de3568
     m_Address: Assets/Game/Activities/Autobattle/Projection/Perfume.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 9855d08c0803240c4a870e469bfb2860
-    m_Address: Assets/Game/Activities/Autobattle/Projection/EnemySpawner.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -111,18 +101,8 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: b35c324e789914b05bd57c20e70dbc73
-    m_Address: Assets/Game/Activities/Autobattle/Projection/PlayerSpawner.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b54498f86397040cfa7dd1589b867f36
     m_Address: Assets/Game/Activities/Autobattle/Projection/BugGreenMediumWeaponArea.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: b5ebce06dc7dd41aeb88660468760482
-    m_Address: Assets/Game/Activities/Autobattle/Projection/ColaDeploymentHost.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

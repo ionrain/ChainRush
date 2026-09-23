@@ -1,0 +1,399 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da96b7a2c335d49a5875e768ce52b227, type: 3}
+  m_Name: SurviveProgressObjective
+  m_EditorClassIdentifier: Core::Core.Objectives.ObjectiveTemplateData
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects:
+    - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
+    - {fileID: 11400000, guid: ef0765d17832a45dea743411aa4d6a9c, type: 2}
+    - {fileID: 11400000, guid: c06287e1198114988a5451d078565429, type: 2}
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: root
+      Entry: 7
+      Data: 0|Core.Objectives.ObjectiveNode, Core
+    - Name: _id
+      Entry: 1
+      Data: chainrush-progress-survive
+    - Name: _data
+      Entry: 6
+      Data: 
+    - Name: _state
+      Entry: 3
+      Data: 1
+    - Name: _completionPolicyType
+      Entry: 3
+      Data: 0
+    - Name: _activateConditions
+      Entry: 7
+      Data: 1|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition, Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: 2|Core.Objectives.ObjectiveConditionEconomyMetric, Core
+    - Name: observedOwner
+      Entry: 7
+      Data: 3|Core.Economy.Authoring.EconomyOperationOwnerBindingData, Core
+    - Name: bindingType
+      Entry: 3
+      Data: 0
+    - Name: owner
+      Entry: 7
+      Data: Core.Economy.Authoring.EconomyOwnerRef, Core
+    - Name: source
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: targetProgression
+      Entry: 7
+      Data: 4|Core.Objectives.ObjectiveLongTargetProgressionData, Core
+    - Name: sourceType
+      Entry: 3
+      Data: 1
+    - Name: metric
+      Entry: 10
+      Data: 2
+    - Name: measure
+      Entry: 3
+      Data: 0
+    - Name: resource
+      Entry: 6
+      Data: 
+    - Name: owner
+      Entry: 7
+      Data: 5|Core.Economy.Authoring.EconomyOperationOwnerBindingData, Core
+    - Name: bindingType
+      Entry: 3
+      Data: 0
+    - Name: owner
+      Entry: 7
+      Data: Core.Economy.Authoring.EconomyOwnerRef, Core
+    - Name: source
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: walletTags
+      Entry: 7
+      Data: 6|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData, Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: scaleType
+      Entry: 3
+      Data: 1
+    - Name: relativeBase
+      Entry: 3
+      Data: 300
+    - Name: progression
+      Entry: 7
+      Data: 7|Core.LongCappedProgressionData, Core
+    - Name: source
+      Entry: 7
+      Data: 8|Core.LongLinearProgressionData, Core
+    - Name: baseValue
+      Entry: 3
+      Data: 0
+    - Name: step
+      Entry: 3
+      Data: 1000000
+    - Name: inputOrigin
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: maximum
+      Entry: 3
+      Data: 1000000
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: _targetValue
+      Entry: 3
+      Data: 0
+    - Name: _walletTags
+      Entry: 7
+      Data: 9|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData, Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 10
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: _asset
+      Entry: 10
+      Data: 1
+    - Name: _requiredAssetTags
+      Entry: 7
+      Data: 10|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData, Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: _requiredRuntimeTags
+      Entry: 7
+      Data: 11|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData, Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: _formType
+      Entry: 3
+      Data: 0
+    - Name: _compareOperation
+      Entry: 3
+      Data: 1
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: _successConditions
+      Entry: 7
+      Data: 12|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition, Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: 13|Core.Objectives.ObjectiveConditionEconomyMetric, Core
+    - Name: observedOwner
+      Entry: 7
+      Data: 14|Core.Economy.Authoring.EconomyOperationOwnerBindingData, Core
+    - Name: bindingType
+      Entry: 3
+      Data: 0
+    - Name: owner
+      Entry: 7
+      Data: Core.Economy.Authoring.EconomyOwnerRef, Core
+    - Name: source
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: targetProgression
+      Entry: 7
+      Data: 15|Core.Objectives.ObjectiveLongTargetProgressionData, Core
+    - Name: sourceType
+      Entry: 3
+      Data: 1
+    - Name: metric
+      Entry: 10
+      Data: 2
+    - Name: measure
+      Entry: 3
+      Data: 0
+    - Name: resource
+      Entry: 6
+      Data: 
+    - Name: owner
+      Entry: 7
+      Data: 16|Core.Economy.Authoring.EconomyOperationOwnerBindingData, Core
+    - Name: bindingType
+      Entry: 3
+      Data: 0
+    - Name: owner
+      Entry: 7
+      Data: Core.Economy.Authoring.EconomyOwnerRef, Core
+    - Name: source
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: walletTags
+      Entry: 7
+      Data: 17|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData, Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: scaleType
+      Entry: 3
+      Data: 1
+    - Name: relativeBase
+      Entry: 3
+      Data: 300
+    - Name: progression
+      Entry: 7
+      Data: 18|Core.LongCappedProgressionData, Core
+    - Name: source
+      Entry: 7
+      Data: 19|Core.LongLinearProgressionData, Core
+    - Name: baseValue
+      Entry: 3
+      Data: 0
+    - Name: step
+      Entry: 3
+      Data: 1000000
+    - Name: inputOrigin
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: maximum
+      Entry: 3
+      Data: 1000000
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: _targetValue
+      Entry: 3
+      Data: 0
+    - Name: _walletTags
+      Entry: 7
+      Data: 20|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData, Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 10
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: _asset
+      Entry: 10
+      Data: 1
+    - Name: _requiredAssetTags
+      Entry: 7
+      Data: 21|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData, Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: _requiredRuntimeTags
+      Entry: 7
+      Data: 22|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData, Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: _formType
+      Entry: 3
+      Data: 0
+    - Name: _compareOperation
+      Entry: 3
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: _failConditions
+      Entry: 7
+      Data: 23|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition, Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: resetConditions
+      Entry: 7
+      Data: 24|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition, Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+  completionPolicyType: 1

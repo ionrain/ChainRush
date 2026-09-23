@@ -52,18 +52,11 @@ MonoBehaviour:
   actionInterval: 0
   actionCount: 1
   reloadTime: 0
+  actionProtectionTag: {fileID: 11400000, guid: e7692d65f982341c29fcc86a064e2a5f, type: 2}
+  actionProtectionDuration: 3
   requirements: []
   effects:
   - rid: 6092004074608394902
-  - rid: 6092004074608394903
-  - rid: 6092004074608394904
-  - rid: 6092004074608394905
-  - rid: 6092004074608394906
-  - rid: 6092004074608394907
-  - rid: 6092004074608394908
-  - rid: 6092004074608394909
-  - rid: 6092004074608394910
-  - rid: 6092004074608394911
   references:
     version: 2
     RefIds:
@@ -72,18 +65,22 @@ MonoBehaviour:
       data:
         recipient: 1
         requiredTags: []
-        value: -1
+        value:
+          rid: 6092004074608394921
+        valueArgument:
+          rid: -2
         multiplier: {fileID: 0}
         hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
         formula:
           terms:
-          - operation: 0
-            parameterTarget: 2
-            operandType: 0
-            value: {fileID: 11400000, guid: 650a5cdeeb83a431487b84c32c1d303e, type: 2}
+          - operation: 3
+            parameterTarget: 0
+            operandType: 1
+            value: {fileID: 0}
             attribute:
-              attribute: {fileID: 0}
-              qualifiers: []
+              attribute: {fileID: 11400000, guid: b92048bd2f85042ee97f6a25f6a4f99b, type: 2}
+              qualifiers:
+              - {fileID: 11400000, guid: d078fa8c1956f4a1b825a2d83c7f5cf0, type: 2}
             allowMissingAttribute: 0
             missingAttributeValue: 0
             stopWhenNonPositive: 1
@@ -95,390 +92,19 @@ MonoBehaviour:
             operandType: 1
             value: {fileID: 0}
             attribute:
-              attribute: {fileID: 11400000, guid: a1bc193123f8b411e81864b0f3a83fb4,
+              attribute: {fileID: 11400000, guid: 9c6a46d64e754495294c47772e712bd5,
                 type: 2}
-              qualifiers: []
+              qualifiers:
+              - {fileID: 11400000, guid: d078fa8c1956f4a1b825a2d83c7f5cf0, type: 2}
             allowMissingAttribute: 1
             missingAttributeValue: 0
             stopWhenNonPositive: 0
+            requirePositiveOperand: 1
+            minimumMagnitude: 1000
             multiplier:
               attribute: {fileID: 0}
               qualifiers: []
-          minimumMagnitude: 1000
-        protection:
-          rid: 6092004074608394912
-    - rid: 6092004074608394903
-      type: {class: SkillHostValueEffectData, ns: Core.Skills, asm: Core}
+    - rid: 6092004074608394921
+      type: {class: LongFlatProgressionData, ns: Core, asm: Core}
       data:
-        recipient: 1
-        requiredTags: []
-        value: -1
-        multiplier: {fileID: 0}
-        hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
-        formula:
-          terms:
-          - operation: 0
-            parameterTarget: 2
-            operandType: 0
-            value: {fileID: 11400000, guid: 5e5a65f2b441a48af884912963b985aa, type: 2}
-            attribute:
-              attribute: {fileID: 0}
-              qualifiers: []
-            allowMissingAttribute: 0
-            missingAttributeValue: 0
-            stopWhenNonPositive: 1
-            multiplier:
-              attribute: {fileID: 0}
-              qualifiers: []
-          - operation: 2
-            parameterTarget: 1
-            operandType: 1
-            value: {fileID: 0}
-            attribute:
-              attribute: {fileID: 11400000, guid: 141ce3e84a25948f68e24ce949729feb,
-                type: 2}
-              qualifiers: []
-            allowMissingAttribute: 1
-            missingAttributeValue: 0
-            stopWhenNonPositive: 0
-            multiplier:
-              attribute: {fileID: 0}
-              qualifiers: []
-          minimumMagnitude: 1000
-        protection:
-          rid: 6092004074608394913
-    - rid: 6092004074608394904
-      type: {class: SkillHostValueEffectData, ns: Core.Skills, asm: Core}
-      data:
-        recipient: 1
-        requiredTags: []
-        value: -1
-        multiplier: {fileID: 0}
-        hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
-        formula:
-          terms:
-          - operation: 0
-            parameterTarget: 2
-            operandType: 0
-            value: {fileID: 11400000, guid: f62a406e531504ca89ba6cce84b06234, type: 2}
-            attribute:
-              attribute: {fileID: 0}
-              qualifiers: []
-            allowMissingAttribute: 0
-            missingAttributeValue: 0
-            stopWhenNonPositive: 1
-            multiplier:
-              attribute: {fileID: 0}
-              qualifiers: []
-          - operation: 2
-            parameterTarget: 1
-            operandType: 1
-            value: {fileID: 0}
-            attribute:
-              attribute: {fileID: 11400000, guid: 105a2872729b147f58e292890866f850,
-                type: 2}
-              qualifiers: []
-            allowMissingAttribute: 1
-            missingAttributeValue: 0
-            stopWhenNonPositive: 0
-            multiplier:
-              attribute: {fileID: 0}
-              qualifiers: []
-          minimumMagnitude: 1000
-        protection:
-          rid: 6092004074608394914
-    - rid: 6092004074608394905
-      type: {class: SkillHostValueEffectData, ns: Core.Skills, asm: Core}
-      data:
-        recipient: 1
-        requiredTags: []
-        value: -1
-        multiplier: {fileID: 0}
-        hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
-        formula:
-          terms:
-          - operation: 0
-            parameterTarget: 2
-            operandType: 0
-            value: {fileID: 11400000, guid: f911597628d4248cc85c05130cc36046, type: 2}
-            attribute:
-              attribute: {fileID: 0}
-              qualifiers: []
-            allowMissingAttribute: 0
-            missingAttributeValue: 0
-            stopWhenNonPositive: 1
-            multiplier:
-              attribute: {fileID: 0}
-              qualifiers: []
-          - operation: 2
-            parameterTarget: 1
-            operandType: 1
-            value: {fileID: 0}
-            attribute:
-              attribute: {fileID: 11400000, guid: f151869719a324912b1004dd9741d07c,
-                type: 2}
-              qualifiers: []
-            allowMissingAttribute: 1
-            missingAttributeValue: 0
-            stopWhenNonPositive: 0
-            multiplier:
-              attribute: {fileID: 0}
-              qualifiers: []
-          minimumMagnitude: 1000
-        protection:
-          rid: 6092004074608394915
-    - rid: 6092004074608394906
-      type: {class: SkillHostValueEffectData, ns: Core.Skills, asm: Core}
-      data:
-        recipient: 1
-        requiredTags: []
-        value: -1
-        multiplier: {fileID: 0}
-        hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
-        formula:
-          terms:
-          - operation: 0
-            parameterTarget: 2
-            operandType: 0
-            value: {fileID: 11400000, guid: 6fbd0b0b58e594f7fb4a5b02f17d5b81, type: 2}
-            attribute:
-              attribute: {fileID: 0}
-              qualifiers: []
-            allowMissingAttribute: 0
-            missingAttributeValue: 0
-            stopWhenNonPositive: 1
-            multiplier:
-              attribute: {fileID: 0}
-              qualifiers: []
-          - operation: 2
-            parameterTarget: 1
-            operandType: 1
-            value: {fileID: 0}
-            attribute:
-              attribute: {fileID: 11400000, guid: 2b4f31fa4c7cd44d9a4a4e5fc422683e,
-                type: 2}
-              qualifiers: []
-            allowMissingAttribute: 1
-            missingAttributeValue: 0
-            stopWhenNonPositive: 0
-            multiplier:
-              attribute: {fileID: 0}
-              qualifiers: []
-          minimumMagnitude: 1000
-        protection:
-          rid: 6092004074608394916
-    - rid: 6092004074608394907
-      type: {class: SkillHostValueEffectData, ns: Core.Skills, asm: Core}
-      data:
-        recipient: 1
-        requiredTags: []
-        value: -1
-        multiplier: {fileID: 0}
-        hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
-        formula:
-          terms:
-          - operation: 0
-            parameterTarget: 2
-            operandType: 0
-            value: {fileID: 11400000, guid: 3fa20882fa0254e6c9bff09158295eaf, type: 2}
-            attribute:
-              attribute: {fileID: 0}
-              qualifiers: []
-            allowMissingAttribute: 0
-            missingAttributeValue: 0
-            stopWhenNonPositive: 1
-            multiplier:
-              attribute: {fileID: 0}
-              qualifiers: []
-          - operation: 2
-            parameterTarget: 1
-            operandType: 1
-            value: {fileID: 0}
-            attribute:
-              attribute: {fileID: 11400000, guid: 5f38e77339e504e3d899e35c6808ebd1,
-                type: 2}
-              qualifiers: []
-            allowMissingAttribute: 1
-            missingAttributeValue: 0
-            stopWhenNonPositive: 0
-            multiplier:
-              attribute: {fileID: 0}
-              qualifiers: []
-          minimumMagnitude: 1000
-        protection:
-          rid: 6092004074608394917
-    - rid: 6092004074608394908
-      type: {class: SkillHostValueEffectData, ns: Core.Skills, asm: Core}
-      data:
-        recipient: 1
-        requiredTags: []
-        value: -1
-        multiplier: {fileID: 0}
-        hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
-        formula:
-          terms:
-          - operation: 0
-            parameterTarget: 2
-            operandType: 0
-            value: {fileID: 11400000, guid: e3486027562e741e08663a1592fcc754, type: 2}
-            attribute:
-              attribute: {fileID: 0}
-              qualifiers: []
-            allowMissingAttribute: 0
-            missingAttributeValue: 0
-            stopWhenNonPositive: 1
-            multiplier:
-              attribute: {fileID: 0}
-              qualifiers: []
-          - operation: 2
-            parameterTarget: 1
-            operandType: 1
-            value: {fileID: 0}
-            attribute:
-              attribute: {fileID: 11400000, guid: 388b64df6b4c244ff861adbaa74759bf,
-                type: 2}
-              qualifiers: []
-            allowMissingAttribute: 1
-            missingAttributeValue: 0
-            stopWhenNonPositive: 0
-            multiplier:
-              attribute: {fileID: 0}
-              qualifiers: []
-          minimumMagnitude: 1000
-        protection:
-          rid: 6092004074608394918
-    - rid: 6092004074608394909
-      type: {class: SkillHostValueEffectData, ns: Core.Skills, asm: Core}
-      data:
-        recipient: 1
-        requiredTags: []
-        value: -1
-        multiplier: {fileID: 0}
-        hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
-        formula:
-          terms:
-          - operation: 0
-            parameterTarget: 2
-            operandType: 0
-            value: {fileID: 11400000, guid: 578916f591a654dfdb632ed88acdfc25, type: 2}
-            attribute:
-              attribute: {fileID: 0}
-              qualifiers: []
-            allowMissingAttribute: 0
-            missingAttributeValue: 0
-            stopWhenNonPositive: 1
-            multiplier:
-              attribute: {fileID: 0}
-              qualifiers: []
-          - operation: 2
-            parameterTarget: 1
-            operandType: 1
-            value: {fileID: 0}
-            attribute:
-              attribute: {fileID: 11400000, guid: 4bd7da3825b29470ebe2acd7a870dcb4,
-                type: 2}
-              qualifiers: []
-            allowMissingAttribute: 1
-            missingAttributeValue: 0
-            stopWhenNonPositive: 0
-            multiplier:
-              attribute: {fileID: 0}
-              qualifiers: []
-          minimumMagnitude: 1000
-        protection:
-          rid: 6092004074608394919
-    - rid: 6092004074608394910
-      type: {class: SkillHostValueEffectData, ns: Core.Skills, asm: Core}
-      data:
-        recipient: 1
-        requiredTags: []
-        value: -1
-        multiplier: {fileID: 0}
-        hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
-        formula:
-          terms:
-          - operation: 0
-            parameterTarget: 2
-            operandType: 0
-            value: {fileID: 11400000, guid: 0f0934c91fc1342ffb485cb23b33acf0, type: 2}
-            attribute:
-              attribute: {fileID: 0}
-              qualifiers: []
-            allowMissingAttribute: 0
-            missingAttributeValue: 0
-            stopWhenNonPositive: 1
-            multiplier:
-              attribute: {fileID: 0}
-              qualifiers: []
-          - operation: 2
-            parameterTarget: 1
-            operandType: 1
-            value: {fileID: 0}
-            attribute:
-              attribute: {fileID: 11400000, guid: 6caa73a2b97a94e419afb668ab0cd6a7,
-                type: 2}
-              qualifiers: []
-            allowMissingAttribute: 1
-            missingAttributeValue: 0
-            stopWhenNonPositive: 0
-            multiplier:
-              attribute: {fileID: 0}
-              qualifiers: []
-          minimumMagnitude: 1000
-        protection:
-          rid: 6092004074608394920
-    - rid: 6092004074608394911
-      type: {class: SkillCarrierForceEffectData, ns: Core.Skills, asm: Core}
-      data:
-        recipient: 1
-        requiredTags: []
-        value: 300000
-        multiplier: {fileID: 0}
-        directionType: 1
-        protectionTag: {fileID: 11400000, guid: e7692d65f982341c29fcc86a064e2a5f,
-          type: 2}
-    - rid: 6092004074608394912
-      type: {class: SkillHostValueProtectionData, ns: Core.Skills, asm: Core}
-      data:
-        tag: {fileID: 11400000, guid: e7692d65f982341c29fcc86a064e2a5f, type: 2}
-        duration: 3
-    - rid: 6092004074608394913
-      type: {class: SkillHostValueProtectionData, ns: Core.Skills, asm: Core}
-      data:
-        tag: {fileID: 11400000, guid: e7692d65f982341c29fcc86a064e2a5f, type: 2}
-        duration: 3
-    - rid: 6092004074608394914
-      type: {class: SkillHostValueProtectionData, ns: Core.Skills, asm: Core}
-      data:
-        tag: {fileID: 11400000, guid: e7692d65f982341c29fcc86a064e2a5f, type: 2}
-        duration: 3
-    - rid: 6092004074608394915
-      type: {class: SkillHostValueProtectionData, ns: Core.Skills, asm: Core}
-      data:
-        tag: {fileID: 11400000, guid: e7692d65f982341c29fcc86a064e2a5f, type: 2}
-        duration: 3
-    - rid: 6092004074608394916
-      type: {class: SkillHostValueProtectionData, ns: Core.Skills, asm: Core}
-      data:
-        tag: {fileID: 11400000, guid: e7692d65f982341c29fcc86a064e2a5f, type: 2}
-        duration: 3
-    - rid: 6092004074608394917
-      type: {class: SkillHostValueProtectionData, ns: Core.Skills, asm: Core}
-      data:
-        tag: {fileID: 11400000, guid: e7692d65f982341c29fcc86a064e2a5f, type: 2}
-        duration: 3
-    - rid: 6092004074608394918
-      type: {class: SkillHostValueProtectionData, ns: Core.Skills, asm: Core}
-      data:
-        tag: {fileID: 11400000, guid: e7692d65f982341c29fcc86a064e2a5f, type: 2}
-        duration: 3
-    - rid: 6092004074608394919
-      type: {class: SkillHostValueProtectionData, ns: Core.Skills, asm: Core}
-      data:
-        tag: {fileID: 11400000, guid: e7692d65f982341c29fcc86a064e2a5f, type: 2}
-        duration: 3
-    - rid: 6092004074608394920
-      type: {class: SkillHostValueProtectionData, ns: Core.Skills, asm: Core}
-      data:
-        tag: {fileID: 11400000, guid: e7692d65f982341c29fcc86a064e2a5f, type: 2}
-        duration: 3
+        value: -1000

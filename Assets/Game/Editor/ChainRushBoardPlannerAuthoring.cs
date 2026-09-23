@@ -394,7 +394,7 @@ namespace ChainRush.Editor
         static void ConfigureProduction(
             ProductionData production,
             ProductionCatalogData catalog,
-            TaxonomyTermData materializationProviderType)
+            TaxonomyTermData materializationMarkerProvider)
         {
             production.SupportedCatalogs.Clear();
             production.SupportedCatalogs.Add(catalog);
@@ -402,7 +402,7 @@ namespace ChainRush.Editor
             SetField(production, "maxParallelPipelines", 1);
             SetField(production, "limitReachedPolicy", ProductionLimitReachedPolicy.DisableProduction);
             SetField(production, "startPolicy", ProductionStartPolicyType.Explicit);
-            SetField(production, "materializationProviderType", materializationProviderType);
+            SetField(production, "materializationMarkerProvider", materializationMarkerProvider);
             EditorUtility.SetDirty(production);
         }
 
@@ -715,9 +715,10 @@ namespace ChainRush.Editor
                     CreateBoardRegionQuery(LoadRequired<TaxonomyTermData>(BoardCellTagPath)), shapeRules,
                     new List<PopulationContentRuleData>
                     {
-                        new PopulationContentRuleData(new PopulationCatalogContentSourceData(LoadRequired<ProductionCatalogData>(PopulationCatalogPath), PopulationCatalogSelectionType.DeterministicRandom), 0.2334f),
-                        new PopulationContentRuleData(new PopulationCatalogContentSourceData(LoadRequired<ProductionCatalogData>(BoardRoot + "/Production/BuffsPopulationCatalog.asset"), PopulationCatalogSelectionType.DeterministicRandom), 0.2333f),
-                        new PopulationContentRuleData(new PopulationCatalogContentSourceData(LoadRequired<ProductionCatalogData>(BoardRoot + "/Production/SkillsPopulationCatalog.asset"), PopulationCatalogSelectionType.DeterministicRandom), 0.2333f),
+                        new PopulationContentRuleData(new PopulationCatalogContentSourceData(LoadRequired<ProductionCatalogData>(PopulationCatalogPath), PopulationCatalogSelectionType.DeterministicRandom), 0.175f),
+                        new PopulationContentRuleData(new PopulationCatalogContentSourceData(LoadRequired<ProductionCatalogData>(BoardRoot + "/Production/BuffsPopulationCatalog.asset"), PopulationCatalogSelectionType.DeterministicRandom), 0.175f),
+                        new PopulationContentRuleData(new PopulationCatalogContentSourceData(LoadRequired<ProductionCatalogData>(BoardRoot + "/Production/SkillsPopulationCatalog.asset"), PopulationCatalogSelectionType.DeterministicRandom), 0.175f),
+                        new PopulationContentRuleData(new PopulationCatalogContentSourceData(LoadRequired<ProductionCatalogData>(BoardRoot + "/Production/BoostersPopulationCatalog.asset"), PopulationCatalogSelectionType.DeterministicRandom), 0.175f),
                         new PopulationContentRuleData(new PopulationCatalogContentSourceData(LoadRequired<ProductionCatalogData>(BoardRoot + "/Production/GoldPopulationCatalog.asset"), PopulationCatalogSelectionType.DeterministicRandom), 0.3f)
                     })
             });

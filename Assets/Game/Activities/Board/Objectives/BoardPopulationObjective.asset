@@ -62,6 +62,24 @@ MonoBehaviour:
     - Name: 
       Entry: 7
       Data: 2|Core.Objectives.ObjectiveConditionEconomyMetric, Core
+    - Name: observedOwner
+      Entry: 7
+      Data: 102|Core.Economy.Authoring.EconomyOperationOwnerBindingData, Core
+    - Name: bindingType
+      Entry: 3
+      Data: 0
+    - Name: owner
+      Entry: 7
+      Data: Core.Economy.Authoring.EconomyOwnerRef, Core
+    - Name: source
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: _targetValue
       Entry: 3
       Data: 1
@@ -125,6 +143,24 @@ MonoBehaviour:
     - Name: 
       Entry: 7
       Data: 6|Core.Objectives.ObjectiveConditionEconomyMetric, Core
+    - Name: observedOwner
+      Entry: 7
+      Data: 103|Core.Economy.Authoring.EconomyOperationOwnerBindingData, Core
+    - Name: bindingType
+      Entry: 3
+      Data: 0
+    - Name: owner
+      Entry: 7
+      Data: Core.Economy.Authoring.EconomyOwnerRef, Core
+    - Name: source
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: _targetValue
       Entry: 3
       Data: 0
@@ -549,6 +585,24 @@ MonoBehaviour:
     - Name: 
       Entry: 7
       Data: 37|Core.Objectives.ObjectiveConditionEconomyMetric, Core
+    - Name: observedOwner
+      Entry: 7
+      Data: 104|Core.Economy.Authoring.EconomyOperationOwnerBindingData, Core
+    - Name: bindingType
+      Entry: 3
+      Data: 0
+    - Name: owner
+      Entry: 7
+      Data: Core.Economy.Authoring.EconomyOwnerRef, Core
+    - Name: source
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: _targetValue
       Entry: 3
       Data: 0
@@ -615,6 +669,24 @@ MonoBehaviour:
     - Name: 
       Entry: 7
       Data: 41|Core.Objectives.ObjectiveConditionEconomyMetric, Core
+    - Name: observedOwner
+      Entry: 7
+      Data: 105|Core.Economy.Authoring.EconomyOperationOwnerBindingData, Core
+    - Name: bindingType
+      Entry: 3
+      Data: 0
+    - Name: owner
+      Entry: 7
+      Data: Core.Economy.Authoring.EconomyOwnerRef, Core
+    - Name: source
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: _targetValue
       Entry: 3
       Data: 0
@@ -681,6 +753,24 @@ MonoBehaviour:
     - Name: 
       Entry: 7
       Data: 45|Core.Objectives.ObjectiveConditionEconomyMetric, Core
+    - Name: observedOwner
+      Entry: 7
+      Data: 106|Core.Economy.Authoring.EconomyOperationOwnerBindingData, Core
+    - Name: bindingType
+      Entry: 3
+      Data: 0
+    - Name: owner
+      Entry: 7
+      Data: Core.Economy.Authoring.EconomyOwnerRef, Core
+    - Name: source
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: _targetValue
       Entry: 3
       Data: 0
@@ -747,6 +837,24 @@ MonoBehaviour:
     - Name: 
       Entry: 7
       Data: 49|Core.Objectives.ObjectiveConditionEconomyMetric, Core
+    - Name: observedOwner
+      Entry: 7
+      Data: 107|Core.Economy.Authoring.EconomyOperationOwnerBindingData, Core
+    - Name: bindingType
+      Entry: 3
+      Data: 0
+    - Name: owner
+      Entry: 7
+      Data: Core.Economy.Authoring.EconomyOwnerRef, Core
+    - Name: source
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: _targetValue
       Entry: 3
       Data: 0
@@ -813,6 +921,24 @@ MonoBehaviour:
     - Name: 
       Entry: 7
       Data: 53|Core.Objectives.ObjectiveConditionEconomyMetric, Core
+    - Name: observedOwner
+      Entry: 7
+      Data: 108|Core.Economy.Authoring.EconomyOperationOwnerBindingData, Core
+    - Name: bindingType
+      Entry: 3
+      Data: 0
+    - Name: owner
+      Entry: 7
+      Data: Core.Economy.Authoring.EconomyOwnerRef, Core
+    - Name: source
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: _targetValue
       Entry: 3
       Data: 0
@@ -879,6 +1005,24 @@ MonoBehaviour:
     - Name: 
       Entry: 7
       Data: 57|Core.Objectives.ObjectiveConditionEconomyMetric, Core
+    - Name: observedOwner
+      Entry: 7
+      Data: 109|Core.Economy.Authoring.EconomyOperationOwnerBindingData, Core
+    - Name: bindingType
+      Entry: 3
+      Data: 0
+    - Name: owner
+      Entry: 7
+      Data: Core.Economy.Authoring.EconomyOwnerRef, Core
+    - Name: source
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: _targetValue
       Entry: 3
       Data: 0
@@ -945,6 +1089,24 @@ MonoBehaviour:
     - Name: 
       Entry: 7
       Data: 61|Core.Objectives.ObjectiveConditionEconomyMetric, Core
+    - Name: observedOwner
+      Entry: 7
+      Data: 110|Core.Economy.Authoring.EconomyOperationOwnerBindingData, Core
+    - Name: bindingType
+      Entry: 3
+      Data: 0
+    - Name: owner
+      Entry: 7
+      Data: Core.Economy.Authoring.EconomyOwnerRef, Core
+    - Name: source
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: _targetValue
       Entry: 3
       Data: 0
@@ -1011,6 +1173,24 @@ MonoBehaviour:
     - Name: 
       Entry: 7
       Data: 65|Core.Objectives.ObjectiveConditionEconomyMetric, Core
+    - Name: observedOwner
+      Entry: 7
+      Data: 111|Core.Economy.Authoring.EconomyOperationOwnerBindingData, Core
+    - Name: bindingType
+      Entry: 3
+      Data: 0
+    - Name: owner
+      Entry: 7
+      Data: Core.Economy.Authoring.EconomyOwnerRef, Core
+    - Name: source
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: _targetValue
       Entry: 3
       Data: 0
@@ -1077,6 +1257,24 @@ MonoBehaviour:
     - Name: 
       Entry: 7
       Data: 69|Core.Objectives.ObjectiveConditionEconomyMetric, Core
+    - Name: observedOwner
+      Entry: 7
+      Data: 112|Core.Economy.Authoring.EconomyOperationOwnerBindingData, Core
+    - Name: bindingType
+      Entry: 3
+      Data: 0
+    - Name: owner
+      Entry: 7
+      Data: Core.Economy.Authoring.EconomyOwnerRef, Core
+    - Name: source
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: _targetValue
       Entry: 3
       Data: 0
@@ -1143,6 +1341,24 @@ MonoBehaviour:
     - Name: 
       Entry: 7
       Data: 73|Core.Objectives.ObjectiveConditionEconomyMetric, Core
+    - Name: observedOwner
+      Entry: 7
+      Data: 113|Core.Economy.Authoring.EconomyOperationOwnerBindingData, Core
+    - Name: bindingType
+      Entry: 3
+      Data: 0
+    - Name: owner
+      Entry: 7
+      Data: Core.Economy.Authoring.EconomyOwnerRef, Core
+    - Name: source
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: _targetValue
       Entry: 3
       Data: 0

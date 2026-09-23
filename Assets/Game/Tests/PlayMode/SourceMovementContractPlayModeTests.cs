@@ -53,39 +53,5 @@ namespace ChainRush.Tests.PlayMode
             }
         }
 
-        [TestCase(0f)]
-        [TestCase(4f)]
-        public void SourceController_ComposesMovementAndMassScaledKnockback(float speed)
-        {
-            var scene = SceneManager.CreateScene("SourceMovementContract" + speed, new CreateSceneParameters(LocalPhysicsMode.Physics2D));
-            try
-            {
-                var type = AppDomain.CurrentDomain.GetAssemblies().Select(assembly => assembly.GetType("MoreMountains.TopDownEngine.TopDownController2D"))
-                    .Single(value => value != null);
-                var root = new GameObject("SourceController"); SceneManager.MoveGameObjectToScene(root, scene);
-                var body = root.AddComponent<Rigidbody2D>(); body.mass = 10; body.gravityScale = 0;
-                root.AddComponent<BoxCollider2D>().size = new Vector2(1.4f, 1.5f);
-                var controller = root.AddComponent(type);
-                type.GetMethod("Awake", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(controller, null);
-                type.GetMethod("SetMovement").Invoke(controller, new object[] { Vector3.right * speed });
-                type.GetMethod("AddForce").Invoke(controller, new object[] { Vector3.right * 50 });
-                type.GetMethod("FixedUpdate", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(controller, null);
-                Assert.IsTrue(scene.GetPhysicsScene2D().Simulate(Time.fixedDeltaTime));
-                float displacement = speed * Time.fixedDeltaTime + 50 / body.mass * Time.fixedDeltaTime * Time.fixedDeltaTime;
-                Assert.That(body.position.x, Is.EqualTo(displacement).Within(.0001f),
-                    "The source composes normal movement with the mass-scaled force during the same physics step.");
-                body.position = Vector2.zero; body.linearVelocity = Vector2.zero;
-                type.GetField("FreeMovement").SetValue(controller, false);
-                type.GetMethod("AddForce").Invoke(controller, new object[] { Vector3.right * 50 });
-                type.GetMethod("FixedUpdate", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(controller, null);
-                Assert.IsTrue(scene.GetPhysicsScene2D().Simulate(Time.fixedDeltaTime));
-                Assert.Greater(body.position.x, 0, "Without movement ownership the same body and force must produce displacement.");
-            }
-            finally
-            {
-                foreach (var root in scene.GetRootGameObjects()) UnityEngine.Object.DestroyImmediate(root);
-                SceneManager.UnloadSceneAsync(scene);
-            }
-        }
     }
 }

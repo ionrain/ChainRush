@@ -48,7 +48,7 @@ MonoBehaviour:
   targetSlot: {fileID: 0}
   executionSlot: {fileID: 0}
   startDelay: 0
-  endDelay: 0
+  endDelay: 3
   actionInterval: 3
   actionCount: 1
   reloadTime: 90
@@ -71,43 +71,46 @@ MonoBehaviour:
       data:
         recipient: 0
         requiredTags: []
-        value: 0
+        value:
+          rid: 6092004074608394902
+        valueArgument:
+          rid: -2
         multiplier: {fileID: 0}
         carrier: {fileID: 11400000, guid: 5745bc9a5f6a0481c801936cf70fc94c, type: 2}
         carriedSkill: {fileID: 11400000, guid: fb3bb2e2b72254d49b7839f0ceef432b, type: 2}
         count: 1
         targetSelectionType: 0
-        targetQuery: {fileID: 0}
+        lifetimeType: 1
         spawnResolver:
           source: 0
+          rotationType: 0
+          rotationOffset: {x: 0, y: 0, z: 0}
+          bindPose: 1
+          anchorSource: 0
+          inheritAnchorRotation: 0
           originMarkerTags: []
           size: {x: 0, y: 0, z: 0}
           offset: {x: 0, y: 0, z: 0}
           spread: {x: 0, y: 0, z: 0}
           distributionType: 0
-        areaContact:
-          rid: 6092004074608394898
+        interactionGeometry:
+        - shape: {fileID: 11400000, guid: 1ffd8c4e50eea4ebd84c03248bcbb087, type: 2}
+          primitiveType: 1
+          usage:
+            fillType: 0
+            position: {x: 0, y: 0, z: 0}
+            size: {x: 1, y: 1, z: 1}
+            rotation: {x: 0, y: 0, z: 0}
+            cellSize: {x: 6000, y: 6000, z: 6000}
+            spacing: {x: 0, y: 0, z: 0}
+          interactionTags:
+          - {fileID: 11400000, guid: 2231ac3b695cc4d49895685ed991ab34, type: 2}
+        hitInteractionTags:
+        - {fileID: 11400000, guid: 2231ac3b695cc4d49895685ed991ab34, type: 2}
+        hitDiplomacyChannel: 0
+        hitDisposition: -1
         parameters:
         - rid: 6092004074608394899
-        - rid: 6092004074608394900
-        - rid: 6092004074608394901
-    - rid: 6092004074608394898
-      type: {class: SkillCarrierAreaContactData, ns: Core.Skills, asm: Core}
-      data:
-        followOwner: 1
-        requiredOwnerValue: {fileID: 0}
-        minimumOwnerValue: 0
-        targetGeometryType: 1
-        interactionTags: []
-        sweepMovement: 0
-        shapeType: 0
-        boxSize: {x: 0, y: 0, z: 0}
-        boxOffset: {x: 0, y: 0, z: 0}
-        radius: 3000
-        repeatInterval: 3
-        maxCandidates: 256
-        diplomacyChannel: 0
-        requiredDisposition: -1
     - rid: 6092004074608394899
       type: {class: SkillCarrierScalarParameterValueData, ns: Core.Skills, asm: Core}
       data:
@@ -116,22 +119,7 @@ MonoBehaviour:
         minValue: 1
         maxValue: 1
         ownerMultiplier: {fileID: 0}
-    - rid: 6092004074608394900
-      type: {class: SkillCarrierScalarParameterValueData, ns: Core.Skills, asm: Core}
+    - rid: 6092004074608394902
+      type: {class: LongFlatProgressionData, ns: Core, asm: Core}
       data:
-        parameterType: 1
-        carrierHostValue: {fileID: 0}
-        minValue: 3
-        maxValue: 3
-        ownerMultiplier: {fileID: 0}
-    - rid: 6092004074608394901
-      type: {class: SkillCarrierHostValueParameterValueData, ns: Core.Skills, asm: Core}
-      data:
-        value: {fileID: 11400000, guid: 650a5cdeeb83a431487b84c32c1d303e, type: 2}
-        minValue: 60000
-        maxValue: 60000
-        ownerMultiplier:
-          attribute: {fileID: 11400000, guid: 416c9668718b04d8b86345380084fa9f, type: 2}
-          qualifiers: []
-        allowMissingMultiplier: 1
-        missingMultiplierValue: 0
+        value: 0

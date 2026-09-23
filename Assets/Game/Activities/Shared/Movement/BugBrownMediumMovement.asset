@@ -43,15 +43,6 @@ MonoBehaviour:
   destinationFallback:
     fallbackType: 1
     searchRadius: 1400
-  forceResponse:
-    rid: 6092004074610229510
   references:
     version: 2
-    RefIds:
-    - rid: 6092004074610229510
-      type: {class: MovementForceResponseData, ns: Core.World, asm: Core}
-      data:
-        mass: 1
-        stepDuration: 0.019999992
-        decayPerSecond: 5
-        minimumForce: 200
+    RefIds: []

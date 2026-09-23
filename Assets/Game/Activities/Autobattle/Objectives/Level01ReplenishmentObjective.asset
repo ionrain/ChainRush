@@ -46,7 +46,7 @@ MonoBehaviour:
         Core]], mscorlib
     - Name: 
       Entry: 12
-      Data: 1
+      Data: 2
     - Name: 
       Entry: 7
       Data: 2|Core.Objectives.ObjectiveConditionMaterializedEntity, Core
@@ -56,6 +56,15 @@ MonoBehaviour:
     - Name: targetProgression
       Entry: 7
       Data: 3|Core.Objectives.ObjectiveLongTargetProgressionData, Core
+    - Name: sourceType
+      Entry: 3
+      Data: 0
+    - Name: metric
+      Entry: 6
+      Data: 
+    - Name: measure
+      Entry: 3
+      Data: 0
     - Name: resource
       Entry: 10
       Data: 0
@@ -745,6 +754,84 @@ MonoBehaviour:
       Entry: 8
       Data: 
     - Name: 
+      Entry: 7
+      Data: 143|Core.Objectives.ObjectiveConditionEconomyMetric, Core
+    - Name: observedOwner
+      Entry: 7
+      Data: 157|Core.Economy.Authoring.EconomyOperationOwnerBindingData, Core
+    - Name: bindingType
+      Entry: 3
+      Data: 1
+    - Name: owner
+      Entry: 7
+      Data: Core.Economy.Authoring.EconomyOwnerRef, Core
+    - Name: source
+      Entry: 10
+      Data: 1
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: _targetValue
+      Entry: 3
+      Data: 1000000
+    - Name: targetProgression
+      Entry: 6
+      Data: 
+    - Name: _walletTags
+      Entry: 7
+      Data: 144|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData, Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 10
+      Data: 2
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: _asset
+      Entry: 10
+      Data: 0
+    - Name: _requiredAssetTags
+      Entry: 7
+      Data: 145|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData, Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: _requiredRuntimeTags
+      Entry: 7
+      Data: 146|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData, Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: _formType
+      Entry: 3
+      Data: 0
+    - Name: _compareOperation
+      Entry: 3
+      Data: 4
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
       Entry: 13
       Data: 
     - Name: 
@@ -759,6 +846,15 @@ MonoBehaviour:
       Data: 1
     - Name: 
       Entry: 7
+      Data: 147|Core.Objectives.ObjectiveConditionComposite, Core
+    - Name: _conditions
+      Entry: 7
+      Data: 152|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition, Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 2
+    - Name: 
+      Entry: 7
       Data: 49|Core.Objectives.ObjectiveConditionMaterializedEntity, Core
     - Name: _targetValue
       Entry: 3
@@ -766,6 +862,15 @@ MonoBehaviour:
     - Name: targetProgression
       Entry: 7
       Data: 50|Core.Objectives.ObjectiveLongTargetProgressionData, Core
+    - Name: sourceType
+      Entry: 3
+      Data: 0
+    - Name: metric
+      Entry: 6
+      Data: 
+    - Name: measure
+      Entry: 3
+      Data: 0
     - Name: resource
       Entry: 10
       Data: 0
@@ -1455,6 +1560,96 @@ MonoBehaviour:
       Entry: 8
       Data: 
     - Name: 
+      Entry: 7
+      Data: 148|Core.Objectives.ObjectiveConditionEconomyMetric, Core
+    - Name: observedOwner
+      Entry: 7
+      Data: 158|Core.Economy.Authoring.EconomyOperationOwnerBindingData, Core
+    - Name: bindingType
+      Entry: 3
+      Data: 1
+    - Name: owner
+      Entry: 7
+      Data: Core.Economy.Authoring.EconomyOwnerRef, Core
+    - Name: source
+      Entry: 10
+      Data: 1
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: _targetValue
+      Entry: 3
+      Data: 1000000
+    - Name: targetProgression
+      Entry: 6
+      Data: 
+    - Name: _walletTags
+      Entry: 7
+      Data: 149|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData, Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 10
+      Data: 2
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: _asset
+      Entry: 10
+      Data: 0
+    - Name: _requiredAssetTags
+      Entry: 7
+      Data: 150|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData, Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: _requiredRuntimeTags
+      Entry: 7
+      Data: 151|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData, Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: _formType
+      Entry: 3
+      Data: 0
+    - Name: _compareOperation
+      Entry: 3
+      Data: 3
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: _operation
+      Entry: 3
+      Data: 1
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
       Entry: 13
       Data: 
     - Name: 
@@ -1482,7 +1677,7 @@ MonoBehaviour:
         Core]], mscorlib
     - Name: 
       Entry: 12
-      Data: 1
+      Data: 2
     - Name: 
       Entry: 7
       Data: 97|Core.Objectives.ObjectiveConditionMaterializedEntity, Core
@@ -1492,6 +1687,15 @@ MonoBehaviour:
     - Name: targetProgression
       Entry: 7
       Data: 98|Core.Objectives.ObjectiveLongTargetProgressionData, Core
+    - Name: sourceType
+      Entry: 3
+      Data: 0
+    - Name: metric
+      Entry: 6
+      Data: 
+    - Name: measure
+      Entry: 3
+      Data: 0
     - Name: resource
       Entry: 10
       Data: 0
@@ -2177,6 +2381,84 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 153|Core.Objectives.ObjectiveConditionEconomyMetric, Core
+    - Name: observedOwner
+      Entry: 7
+      Data: 159|Core.Economy.Authoring.EconomyOperationOwnerBindingData, Core
+    - Name: bindingType
+      Entry: 3
+      Data: 1
+    - Name: owner
+      Entry: 7
+      Data: Core.Economy.Authoring.EconomyOwnerRef, Core
+    - Name: source
+      Entry: 10
+      Data: 1
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: _targetValue
+      Entry: 3
+      Data: 1000000
+    - Name: targetProgression
+      Entry: 6
+      Data: 
+    - Name: _walletTags
+      Entry: 7
+      Data: 154|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData, Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 10
+      Data: 2
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: _asset
+      Entry: 10
+      Data: 0
+    - Name: _requiredAssetTags
+      Entry: 7
+      Data: 155|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData, Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: _requiredRuntimeTags
+      Entry: 7
+      Data: 156|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData, Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: _formType
+      Entry: 3
+      Data: 0
+    - Name: _compareOperation
+      Entry: 3
+      Data: 4
     - Name: 
       Entry: 8
       Data: 

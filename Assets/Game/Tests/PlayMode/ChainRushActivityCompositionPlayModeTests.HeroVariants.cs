@@ -132,28 +132,12 @@ namespace ChainRush.Tests.PlayMode
         [UnityTest]
         public IEnumerator TabascoLevelVariant_PreservesSourceBodyAndAttackReach([Values("Survive", "Distance")] string level)
         {
-            var action = AssetDatabase.LoadAssetAtPath<ScriptableObject>("Assets/Game/Runtime/Startup/CaptureChainRushRun.asset");
-            var field = action.GetType().GetField("selection", BindingFlags.Instance | BindingFlags.NonPublic);
-            object original = field.GetValue(action);
-            var selection = Object.Instantiate(AssetDatabase.LoadAssetAtPath<ScriptableObject>(
-                "Assets/Game/Runtime/Run/" + level + "RunSelection.asset"));
-            var data = new SerializedObject(selection);
-            var heroSelection = data.FindProperty("hero");
-            heroSelection.FindPropertyRelative("definition").objectReferenceValue = AssetDatabase.LoadAssetAtPath<ScriptableObject>(
-                "Assets/Game/Resources/Units/TabascoData.asset");
-            var acquired = heroSelection.FindPropertyRelative("acquiredSkills");
-            acquired.arraySize = 1;
-            acquired.GetArrayElementAtIndex(0).objectReferenceValue = AssetDatabase.LoadAssetAtPath<ScriptableObject>(
-                "Assets/Game/Resources/Skills/SkillMightyBlow.asset");
-            data.ApplyModifiedPropertiesWithoutUndo();
             var capture = new PlayableRuntimeCapture();
             float scale = Time.timeScale;
             capture.Register();
             try
             {
-                field.SetValue(action, selection);
-                yield return LaunchPlayableActivities();
-                field.SetValue(action, original);
+                yield return LaunchPlayableActivities(level == "Distance" ? "Level02Tabasco" : "Level01Tabasco");
                 Assert.IsTrue(TryFindRunningActivities(out var battle, out _));
                 var definition = AssetDatabase.LoadAssetAtPath<CapabilityHostData>(
                     "Assets/Game/Activities/Shared/Units/Tabasco/Tabasco" + (level == "Distance" ? "Distance" : "") + ".asset");
@@ -166,7 +150,9 @@ namespace ChainRush.Tests.PlayMode
                     // with the original controller and colliders. The migration preserves the source radius.
                     var attack = AssetDatabase.LoadAssetAtPath<Core.Skills.SkillData>(
                         "Assets/Game/Activities/Autobattle/Skills/TabascoAttack.asset");
-                    Assert.AreEqual(2000, attack.Effects.OfType<SkillSpawnCarrierEffectData>().Single().AreaContact.Radius);
+                    var geometry = attack.Effects.OfType<SkillSpawnCarrierEffectData>().Single().InteractionGeometry.Single();
+                    Assert.AreEqual(InteractionGeometryPrimitiveType.Sphere, geometry.PrimitiveType);
+                    Assert.AreEqual(new Vector3Int(4000, 4000, 4000), geometry.Usage.CellSize);
                     var enemyOwner = battle.Participants.Single(value => value.TeamIndex == 1).ParticipantEconomyOwner;
                     float deadline = Time.realtimeSinceStartup + 2;
                     while (Time.realtimeSinceStartup < deadline) yield return null;
@@ -195,9 +181,7 @@ namespace ChainRush.Tests.PlayMode
             finally
             {
                 Time.timeScale = scale;
-                field.SetValue(action, original);
                 capture.Unregister();
-                Object.Destroy(selection);
             }
         }
     }

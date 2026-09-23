@@ -40,7 +40,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 16c5f9df2fe1845909ebb58747ac47c9, type: 2}
   slotFootprint: 1
   stackCapacity: 0
-  footprintSize: {x: 1000, y: 0, z: 1000}
+  footprintSize: {x: 0, y: 0, z: 0}
   capabilities:
   - capabilityType: 2
     selectorTags: []
@@ -57,7 +57,7 @@ MonoBehaviour:
     diplomacyCompareOperation: 3
     diplomacyScoreThreshold: -100
   projectionPrefabReference:
-    m_AssetGUID: b35c324e789914b05bd57c20e70dbc73
+    m_AssetGUID: 
     m_SubObjectName: 
     m_SubObjectType: 
     m_SubObjectGUID: 

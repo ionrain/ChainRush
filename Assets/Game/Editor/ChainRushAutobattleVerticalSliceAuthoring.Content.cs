@@ -171,7 +171,7 @@ namespace ChainRush.Editor
                 {
                     approach = ChainRushBoardPlannerAuthoring.WriteContentAsset(SkillsRoot + "/" + name + "Approach.asset",
                         LoadRequired<FrameworkSkillData>(ApproachSkillPath), id + ".approach", definitions);
-                    SetField(approach.Effects[0], "value", RoundContent(BaseAttribute(source, form, global::Attribute.Speed) * 1000 * step));
+                    SetField(approach.Effects[0], "value", new Core.LongFlatProgressionData(RoundContent(BaseAttribute(source, form, global::Attribute.Speed) * 1000 * step)));
                     AddUnique(skills, approach);
                 }
                 var brain = WriteContentBrain(name, attack, approach, radius, definitions);
@@ -278,9 +278,28 @@ namespace ChainRush.Editor
             SetField(velocity, "minSpeed", speedValue);
             SetField(velocity, "maxSpeed", speedValue);
             var spawn = new SkillSpawnCarrierEffectData();
+            SetField(spawn, "value", new Core.LongFlatProgressionData(0));
             SetField(spawn, "carrier", carrier);
             SetField(spawn, "carriedSkill", hit);
-            ConfigureProjectileContact(spawn, original, step);
+            var box = original.GetComponent<BoxCollider2D>();
+            if (box == null || box.edgeRadius != 0)
+                throw new InvalidOperationException(projectileName + " requires its authored rectangular geometry.");
+            var bodyTag = LoadRequired<TaxonomyTermData>(CombatantRolePath);
+            var geometry = new InteractionGeometryBindingData();
+            SetField(geometry, "shape", LoadRequired<SpatialShapeData>(SpawnAreaShapePath));
+            SetField(geometry, "primitiveType", InteractionGeometryPrimitiveType.Box);
+            SetField(geometry, "usage", new SpatialShapeUsageData(SpatialShapeFillType.Inside,
+                new Vector3Int(checked((int)RoundContent(box.offset.x * 1000)), 0,
+                    checked((int)RoundContent(box.offset.y * 1000))),
+                Vector3Int.one, Vector3Int.zero,
+                new Vector3Int(checked((int)RoundContent(box.size.x * 1000)), 500,
+                    checked((int)RoundContent(box.size.y * 1000))), Vector3Int.zero));
+            SetField(geometry, "interactionTags", new List<TaxonomyTermData> { bodyTag });
+            SetField(spawn, "interactionGeometry", new List<InteractionGeometryBindingData> { geometry });
+            SetField(spawn, "hitInteractionTags", new List<TaxonomyTermData> { bodyTag });
+            SetField(spawn, "lifetimeType", SkillCarrierLifetimeType.Independent);
+            SetField(spawn.SpawnResolver, "rotationType", SkillCarrierSpawnRotationType.InitialVelocity);
+            SetField(spawn.SpawnResolver, "rotationOffset", new Vector3Int(0, -90, 0));
             SetField(spawn, "parameters", new List<SkillCarrierParameterValueData>
             {
                 CarrierScalar(SkillCarrierScalarParameterType.Lives, 1, lives),

@@ -63,7 +63,10 @@ MonoBehaviour:
       data:
         recipient: 0
         requiredTags: []
-        value: 100
+        value:
+          rid: 2807516363299750114
+        valueArgument:
+          rid: -2
         multiplier: {fileID: 0}
         targetTrackingMode: 1
         repathDistanceThreshold: 250
@@ -71,3 +74,7 @@ MonoBehaviour:
         decelerationDuration: 2
         targetGeometryType: 1
         approachInteractionTags: []
+    - rid: 2807516363299750114
+      type: {class: LongFlatProgressionData, ns: Core, asm: Core}
+      data:
+        value: 100

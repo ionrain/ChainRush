@@ -1092,7 +1092,7 @@ namespace ChainRush.Editor
             var damageEffect = new SkillHostValueEffectData();
             ConfigureEffect(damageEffect, EffectRecipient.Target, -1L);
             SetField(damageEffect, "hostValue", content.Health);
-            SetField(damageEffect, "formula", new SkillHostValueFormulaData());
+            SetField(damageEffect, "formula", new SkillEffectFormulaData());
             SetField(
                 content.AttackSkill,
                 "requirements",
@@ -2385,7 +2385,7 @@ namespace ChainRush.Editor
             string name,
             string id,
             ProductionCatalogData catalog,
-            TaxonomyTermData materializationProviderType,
+            TaxonomyTermData materializationMarkerProvider,
             List<string> createdPaths)
         {
             ProductionData production = CreateEconomyAsset<ProductionData>(
@@ -2403,7 +2403,7 @@ namespace ChainRush.Editor
                 "limitReachedPolicy",
                 ProductionLimitReachedPolicy.DisableProduction);
             SetField(production, "startPolicy", ProductionStartPolicyType.Explicit);
-            SetField(production, "materializationProviderType", materializationProviderType);
+            SetField(production, "materializationMarkerProvider", materializationMarkerProvider);
             EditorUtility.SetDirty(production);
             return production;
         }
@@ -2440,6 +2440,7 @@ namespace ChainRush.Editor
             List<TaxonomyTermData> destinationWalletTags)
         {
             var effect = new SkillEconomyEntryEffectData();
+            SetField(effect, "value", new Core.LongFlatProgressionData(0));
             ConfigureEffect(effect, recipient, 0L);
             SetField(effect, "sourceType", sourceType);
             SetField(effect, "sourceOwnerType", sourceOwnerType);
@@ -2461,7 +2462,7 @@ namespace ChainRush.Editor
         {
             SetField(effect, "recipient", recipient);
             SetField(effect, "requiredTags", new List<TaxonomyTermData>(0));
-            SetField(effect, "value", value);
+            SetField(effect, "value", new Core.LongFlatProgressionData(value));
             SetField<Core.Attributes.AttributeData>(effect, "multiplier", null);
         }
 

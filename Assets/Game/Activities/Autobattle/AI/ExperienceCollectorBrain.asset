@@ -106,27 +106,6 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 2807516542362452068
-      type: {class: SelectActivityTargetAIBrainActionData, ns: Core.CapabilityHosts,
-        asm: Core}
-      data:
-        targetKey: {fileID: 11400000, guid: e6a2d9e778d6242dea866b8afb2c10a3, type: 2}
-        additionalTargetKeys: []
-        diplomacyChannel: 0
-        requiredDisposition: 0
-        requiredTargetTags:
-        - {fileID: 11400000, guid: dbbed6d69bfb64f2681885eff3a7271a, type: 2}
-        blockedTargetTags: []
-        requiredTargetStates: []
-        blockedTargetStates: []
-        compatibleSkill: {fileID: 11400000, guid: 30080af789ba3432b9b8308ad9595703,
-          type: 2}
-    - rid: 2807516542362452069
-      type: {class: UseSkillAIBrainActionData, ns: Core.AI.Actions, asm: Core}
-      data:
-        skill: {fileID: 11400000, guid: 30080af789ba3432b9b8308ad9595703, type: 2}
-        targetKey: {fileID: 11400000, guid: e6a2d9e778d6242dea866b8afb2c10a3, type: 2}
-        completionPolicy: 1
     - rid: 2807516542362452070
       type: {class: TargetEntityExistsAIBrainConditionData, ns: Core.AI.Conditions,
         asm: Core}
@@ -165,3 +144,24 @@ MonoBehaviour:
         asm: Core}
       data:
         requiredResults: 6
+    - rid: 2807516542362452068
+      type: {class: SelectActivityTargetAIBrainActionData, ns: Core.CapabilityHosts,
+        asm: Core}
+      data:
+        targetKey: {fileID: 11400000, guid: e6a2d9e778d6242dea866b8afb2c10a3, type: 2}
+        additionalTargetKeys: []
+        diplomacyChannel: 0
+        requiredDisposition: 0
+        requiredTargetTags:
+        - {fileID: 11400000, guid: dbbed6d69bfb64f2681885eff3a7271a, type: 2}
+        blockedTargetTags: []
+        requiredTargetStates: []
+        blockedTargetStates: []
+        compatibleSkill: {fileID: 11400000, guid: 30080af789ba3432b9b8308ad9595703,
+          type: 2}
+    - rid: 2807516542362452069
+      type: {class: UseSkillAIBrainActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        skill: {fileID: 11400000, guid: 30080af789ba3432b9b8308ad9595703, type: 2}
+        targetKey: {fileID: 11400000, guid: e6a2d9e778d6242dea866b8afb2c10a3, type: 2}
+        completionPolicy: 1

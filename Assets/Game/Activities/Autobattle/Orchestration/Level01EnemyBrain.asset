@@ -18,6 +18,7 @@ MonoBehaviour:
   - rid: 2807516363299750089
   - rid: 2807516363299750090
   - rid: 9201
+  - rid: 33001
   decisionGraph:
     nodes:
     - rid: 2807516363299750091
@@ -25,6 +26,7 @@ MonoBehaviour:
     - rid: 2807516363299750093
     - rid: 2807516363299750094
     - rid: 9202
+    - rid: 33002
   budget:
     maxDependencyDepth: 4
     maxGeneratedNodes: 64
@@ -139,3 +141,18 @@ MonoBehaviour:
         asm: Core}
       data:
         operatorId: {fileID: 11400000, guid: 75feb13c5e1254519a15de921f8b2f4c, type: 2}
+    - rid: 33001
+      type: {class: CompositeDecompOpData, ns: Core.Orchestration, asm: Core}
+      data:
+        operatorId: {fileID: 11400000, guid: 76bac4d8110c4450487dc6285d3be569, type: 2}
+    - rid: 33002
+      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
+      data:
+        decisionId: composite-requirement
+        conditions:
+        - rid: 33003
+        operatorId: {fileID: 11400000, guid: 76bac4d8110c4450487dc6285d3be569, type: 2}
+    - rid: 33003
+      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        factType: 22

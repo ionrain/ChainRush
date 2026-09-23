@@ -26,26 +26,6 @@ namespace ChainRush.Editor
             "Water", "Cola", "LightningBolt", "Power", "Defense", "Health", "Speed", "SkillSpeed", "Gold", "Heal"
         };
 
-        internal static void ApplyRunBoardContent()
-        {
-            var economy = LoadRequired<EconomyDefinitionsInstallerData>("Assets/Game/Runtime/Installers/ChainRushEconomyDefinitionsInstaller.asset");
-            var taxonomy = LoadRequired<TaxonomyRuntimeInstallerData>("Assets/Game/Runtime/Installers/ChainRushTaxonomyRuntimeInstaller.asset");
-            var definitions = GetField<List<EconomyAssetData>>(economy, "assets");
-            var terms = new List<TaxonomyTermData>(GetField<TaxonomyTermData[]>(taxonomy, "terms"));
-            var water = new List<CapabilityHostData>();
-            var cola = new List<CapabilityHostData>();
-            for (int form = 1; form <= 4; form++)
-            {
-                string suffix = form == 1 ? "" : form.ToString();
-                water.Add(LoadRequired<CapabilityHostData>("Assets/Game/Activities/Shared/Units/Water/WaterUnit" + suffix + ".asset"));
-                cola.Add(LoadRequired<CapabilityHostData>("Assets/Game/Activities/Shared/Units/Cola/ColaUnit" + suffix + ".asset"));
-            }
-            ApplyPlayableBoardContent(water, cola, definitions, terms);
-            SetField(taxonomy, "terms", terms.ToArray());
-            EditorUtility.SetDirty(economy);
-            EditorUtility.SetDirty(taxonomy);
-        }
-
         internal static void ApplyPlayableBoardContent(List<CapabilityHostData> waterForms,
             List<CapabilityHostData> colaForms, List<EconomyAssetData> definitions, List<TaxonomyTermData> terms)
         {
@@ -60,7 +40,6 @@ namespace ChainRush.Editor
             var walletTag = LoadRequired<TaxonomyTermData>(BoardWalletTagPath);
             var sharedWalletTag = LoadRequired<TaxonomyTermData>(SharedWalletTagPath);
             var selected = LoadRequired<TaxonomyTermData>(MergeSelectedTagPath);
-            var brain = LoadRequired<OrchestratorAIBrainData>(BrainPath);
             var activity = LoadRequired<ActivityData>(BoardActivityPath);
             var boardTeam = activity.Teams[0];
             var boardWalletData = boardTeam.Wallets.Find(entry => entry.Wallet == boardWallet);
@@ -119,25 +98,7 @@ namespace ChainRush.Editor
                 }
                 else if (content == "Gold")
                 {
-                    mergeRecipes.Add(WriteGoldRecipe(definitions));
-                    RemoveGoldConsumeOperator(brain, terms);
-                }
-                else
-                {
-                    var term = WriteContentTerm(OrchestrationTaxonomyRoot + "/" + content + "ConsumeOperator.asset",
-                        "chainrush.orchestration.board.consume." + id, 20 + index, terms,
-                        LoadRequired<TaxonomyFamilyData>(OperatorFamilyPath));
-                    var operation = new EconomyOperationDecompOpData();
-                    SetField(operation, "operatorId", term);
-                    SetField(operation, "operation", EconomyOperation.Consume);
-                    SetField(operation, "selection", new EconomyEntrySelectionData(cell, EconomyFormType.Token,
-                        new List<TaxonomyTermData> { walletTag }, null, null, new List<TaxonomyTermData> { selected }, null));
-                    brain.Operators.RemoveAll(item => item.OperatorId == term);
-                    brain.Operators.Add(operation);
-                    string decisionId = "board-consume-" + id;
-                    brain.DecisionGraph.Nodes.RemoveAll(item => item.DecisionId == decisionId);
-                    brain.DecisionGraph.Nodes.Insert(0, CreateDecision(decisionId,
-                        OrchestrationFactType.EconomyAmount, term, false, OrchestrationDecompositionScopeType.GlobalObjective));
+                    mergeRecipes.Add(LoadRequired<ProductionRecipeData>(BoardRoot + "/Production/GoldSelectionRecipe.asset"));
                 }
                 EditorUtility.SetDirty(objective);
                 EditorUtility.SetDirty(cell);
@@ -150,7 +111,6 @@ namespace ChainRush.Editor
             SetStructField(ref boardTeam, "objectives", objectives);
             activity.Teams[0] = boardTeam;
             EditorUtility.SetDirty(activity);
-            EditorUtility.SetDirty(brain);
 
             var selection = LoadRequired<AgentDefinitionData>(SelectionAgentPath);
             SetField(selection, "targetSelectionCriteria", new List<EntityCriterionEntryData>
@@ -234,7 +194,7 @@ namespace ChainRush.Editor
                 ConfigureCatalog(catalog, recipes.ToArray());
                 var production = WriteContentAsset(units ? PopulationProductionPath : BoardRoot + "/Production/" + group.Name + "PopulationProduction.asset",
                     productionTemplate, "chainrush.production.board.population." + id, definitions);
-                ConfigureProduction(production, catalog, productionTemplate.MaterializationProviderType);
+                ConfigureProduction(production, catalog, productionTemplate.MaterializationMarkerProvider);
                 var producer = WriteContentAsset(units ? PopulationProducerPath : BoardRoot + "/Economy/" + group.Name + "PopulationProducer.asset",
                     producerTemplate, "chainrush.board.population-producer." + id, definitions);
                 AddUnique(producer.Tags, producerTag);

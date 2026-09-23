@@ -1,0 +1,237 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b65a5bf3374d4d3597b95a983d584f0b, type: 3}
+  m_Name: IssueSkillSpeedBuff
+  m_EditorClassIdentifier: Core::Core.Skills.SkillData
+  domainTypePreview: 10
+  id: chainrush.skill.issue-skillspeed-buff
+  title:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  description:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  icon: {fileID: 0}
+  precision: 0
+  allowedOperations: 31
+  tags: []
+  slotFootprint: 1
+  stackCapacity: 0
+  targetType: 1
+  executeWithoutTarget: 0
+  targetCount:
+    min: 1
+    max: 1
+  analyticSupposedTarget: -1
+  targetTags: []
+  targetSlot: {fileID: 0}
+  executionSlot: {fileID: 0}
+  startDelay: 0
+  endDelay: 0
+  actionInterval: 0
+  actionCount: 1
+  reloadTime: 0
+  requirements: []
+  effects:
+  - rid: 721000
+  - rid: 721001
+  references:
+    version: 2
+    RefIds:
+    - rid: 721000
+      type: {class: SkillEconomyEffectData, ns: Core.Skills, asm: Core}
+      data:
+        recipient: 3
+        repeatType: 1
+        requiredTags: []
+        value:
+          rid: 721002
+        valueArgument:
+          rid: -2
+        multiplier: {fileID: 0}
+        asset: {fileID: 11400000, guid: 8ead9d1d4d59d4048b3e7c869a0acda5, type: 2}
+        walletTags:
+        - {fileID: 11400000, guid: 9cbb4f47a974c42cfa008dda55386302, type: 2}
+        formType: 1
+        requiredRuntimeTags:
+        - {fileID: 11400000, guid: a18044d5476ae485296043e6e5ba431f, type: 2}
+        formula:
+          terms:
+          - operation: 3
+            parameterTarget: 0
+            operandType: 2
+            value: {fileID: 0}
+            attribute:
+              attribute: {fileID: 0}
+              qualifiers: []
+            allowMissingAttribute: 0
+            missingAttributeValue: 0
+            stopWhenNonPositive: 1
+            requirePositiveOperand: 0
+            minimumMagnitude: 0
+            multiplier:
+              attribute: {fileID: 0}
+              qualifiers: []
+            economyOwnerType: 1
+            economySelection:
+              walletTags:
+              - {fileID: 11400000, guid: 9cbb4f47a974c42cfa008dda55386302, type: 2}
+              formTypes: 01000000
+              exactAsset: {fileID: 11400000, guid: 8ead9d1d4d59d4048b3e7c869a0acda5, type: 2}
+              requiredAssetTags: []
+              excludedAssetTags: []
+              requiredRuntimeTags:
+              - {fileID: 11400000, guid: a18044d5476ae485296043e6e5ba431f, type: 2}
+              excludedRuntimeTags: []
+    - rid: 721001
+      type: {class: SkillEconomyEffectData, ns: Core.Skills, asm: Core}
+      data:
+        recipient: 3
+        repeatType: 1
+        requiredTags: []
+        value:
+          rid: 721003
+        valueArgument:
+          rid: 721004
+        multiplier: {fileID: 0}
+        asset: {fileID: 11400000, guid: ae834fb74361a41d5a823185572def60, type: 2}
+        walletTags:
+        - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
+        formType: 0
+        requiredRuntimeTags: []
+        formula:
+          terms: []
+    - rid: 721002
+      type: {class: LongFlatProgressionData, ns: Core, asm: Core}
+      data:
+        value: -1
+    - rid: 721003
+      type: {class: LongDependentProgressionData, ns: Core, asm: Core}
+      data:
+        entries:
+        - interval:
+            minimum: 0
+            maximum: 1
+            hasMaximum: 1
+          value:
+            rid: 721010
+        - interval:
+            minimum: 1
+            maximum: 2
+            hasMaximum: 1
+          value:
+            rid: 721011
+        - interval:
+            minimum: 2
+            maximum: 3
+            hasMaximum: 1
+          value:
+            rid: 721012
+        - interval:
+            minimum: 3
+            maximum: 4
+            hasMaximum: 1
+          value:
+            rid: 721013
+        - interval:
+            minimum: 4
+            maximum: 5
+            hasMaximum: 1
+          value:
+            rid: 721014
+        - interval:
+            minimum: 5
+            maximum: 6
+            hasMaximum: 1
+          value:
+            rid: 721015
+        - interval:
+            minimum: 6
+            maximum: 7
+            hasMaximum: 1
+          value:
+            rid: 721016
+        - interval:
+            minimum: 7
+            maximum: 0
+            hasMaximum: 0
+          value:
+            rid: 721017
+    - rid: 721004
+      type: {class: SkillEffectValueSourceData, ns: Core.Skills, asm: Core}
+      data:
+        parameterTarget: 0
+        operandType: 2
+        value: {fileID: 0}
+        attribute:
+          attribute: {fileID: 0}
+          qualifiers: []
+        allowMissingAttribute: 0
+        missingAttributeValue: 0
+        multiplier:
+          attribute: {fileID: 0}
+          qualifiers: []
+        economyOwnerType: 1
+        economySelection:
+          walletTags:
+          - {fileID: 11400000, guid: 9cbb4f47a974c42cfa008dda55386302, type: 2}
+          formTypes: 01000000
+          exactAsset: {fileID: 11400000, guid: 8ead9d1d4d59d4048b3e7c869a0acda5, type: 2}
+          requiredAssetTags: []
+          excludedAssetTags: []
+          requiredRuntimeTags:
+          - {fileID: 11400000, guid: a18044d5476ae485296043e6e5ba431f, type: 2}
+          excludedRuntimeTags: []
+    - rid: 721010
+      type: {class: LongFlatProgressionData, ns: Core, asm: Core}
+      data:
+        value: 0
+    - rid: 721011
+      type: {class: LongFlatProgressionData, ns: Core, asm: Core}
+      data:
+        value: 2
+    - rid: 721012
+      type: {class: LongFlatProgressionData, ns: Core, asm: Core}
+      data:
+        value: 5
+    - rid: 721013
+      type: {class: LongFlatProgressionData, ns: Core, asm: Core}
+      data:
+        value: 10
+    - rid: 721014
+      type: {class: LongFlatProgressionData, ns: Core, asm: Core}
+      data:
+        value: 15
+    - rid: 721015
+      type: {class: LongFlatProgressionData, ns: Core, asm: Core}
+      data:
+        value: 20
+    - rid: 721016
+      type: {class: LongFlatProgressionData, ns: Core, asm: Core}
+      data:
+        value: 25
+    - rid: 721017
+      type: {class: LongFlatProgressionData, ns: Core, asm: Core}
+      data:
+        value: 30

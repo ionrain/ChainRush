@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6627756266092799010}
   - component: {fileID: 6435131217845347708}
+  - component: {fileID: 3995501627947361182}
   m_Layer: 0
   m_Name: HeroSpawn
   m_TagString: Untagged
@@ -48,6 +49,39 @@ MonoBehaviour:
   - {fileID: 11400000, guid: dff54a12e3d9149bbb614308f1b2d9c9, type: 2}
   topologyCoordinates: {x: -10000, y: 0, z: 0}
   cellSize: {x: 0, y: 0, z: 0}
+--- !u!114 &3995501627947361182
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2360587120536511742}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f18b24255ff5f4f639f97a14c56d1d2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Core::Core.World.SpatialShapeProviderController
+  providerId: initial-hero-production
+  providerType: {fileID: 11400000, guid: 1145dd53437d5463b9b11c1379bf6a9d, type: 2}
+  usagePolicy:
+    selectionType: 0
+    reusePolicyType: 0
+  shape: {fileID: 11400000, guid: 1ffd8c4e50eea4ebd84c03248bcbb087, type: 2}
+  usage:
+    fillType: 0
+    position: {x: -10000, y: 0, z: 0}
+    size: {x: 1, y: 1, z: 1}
+    rotation: {x: 0, y: 0, z: 0}
+    cellSize: {x: 1000, y: 1, z: 1000}
+    spacing: {x: 0, y: 0, z: 0}
+  regionTags:
+  - {fileID: 11400000, guid: 1145dd53437d5463b9b11c1379bf6a9d, type: 2}
+  cellTags: []
+  cellMetadata: []
+  publishMarkers: 1
+  markerTags:
+  - {fileID: 11400000, guid: 1145dd53437d5463b9b11c1379bf6a9d, type: 2}
+  drawGizmo: 0
 --- !u!1 &5377253934661751569
 GameObject:
   m_ObjectHideFlags: 0

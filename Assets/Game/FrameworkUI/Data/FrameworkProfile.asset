@@ -1,0 +1,94 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b76e218b7b284768b51cd4001d4e7d4, type: 3}
+  m_Name: FrameworkProfile
+  m_EditorClassIdentifier: Core::Core.Players.PlayerData
+  id: FrameworkProfile
+  playerType: 0
+  walletEntries:
+  - wallet: {fileID: 11400000, guid: 436f4be84853d4f22898fa04f9f19a52, type: 2}
+    seed:
+    - entry:
+        asset: {fileID: 11400000, guid: 7070d9e2c0c244d008f0b10c7c645d5f, type: 2}
+        formType: 0
+        amount: 1
+      runtimeTags:
+      - {fileID: 11400000, guid: 84fd69cac776646f584b9091787254c8, type: 2}
+      - {fileID: 11400000, guid: 8d743fde6a7e8458fa69d1bb1acc750d, type: 2}
+      - {fileID: 11400000, guid: 9bd6d0d9a1c9248d9836792500f67fd1, type: 2}
+    - entry:
+        asset: {fileID: 11400000, guid: 8db50e93758004f94a56175bec699dbe, type: 2}
+        formType: 0
+        amount: 1
+      runtimeTags:
+      - {fileID: 11400000, guid: 84fd69cac776646f584b9091787254c8, type: 2}
+    - entry:
+        asset: {fileID: 11400000, guid: ba6dc7b2969654c0c96dd451c9a18987, type: 2}
+        formType: 0
+        amount: 1
+      runtimeTags:
+      - {fileID: 11400000, guid: 84fd69cac776646f584b9091787254c8, type: 2}
+      - {fileID: 11400000, guid: 8d743fde6a7e8458fa69d1bb1acc750d, type: 2}
+      - {fileID: 11400000, guid: 9bd6d0d9a1c9248d9836792500f67fd1, type: 2}
+    - entry:
+        asset: {fileID: 11400000, guid: 46569493007b140dcacc76e0f0aabc0d, type: 2}
+        formType: 0
+        amount: 1
+      runtimeTags:
+      - {fileID: 11400000, guid: 84fd69cac776646f584b9091787254c8, type: 2}
+      - {fileID: 11400000, guid: 8d743fde6a7e8458fa69d1bb1acc750d, type: 2}
+      - {fileID: 11400000, guid: 9bd6d0d9a1c9248d9836792500f67fd1, type: 2}
+  - wallet: {fileID: 11400000, guid: 3a1e35ef47e0b4fa39f9d7cbb846dffc, type: 2}
+    seed:
+    - entry:
+        asset: {fileID: 11400000, guid: bcf9bddf9eb164cf2938e463d817a75b, type: 2}
+        formType: 0
+        amount: 4000
+      runtimeTags: []
+  - wallet: {fileID: 11400000, guid: 5867ef23dcfad4ad0884db5bb7917bf7, type: 2}
+    seed:
+    - entry:
+        asset: {fileID: 11400000, guid: 8eb4a4dd97f724538ab90660efdb26cf, type: 2}
+        formType: 0
+        amount: 5
+      runtimeTags: []
+    - entry:
+        asset: {fileID: 11400000, guid: d79ee007b6fae4b3dbbdff0f043f6392, type: 2}
+        formType: 0
+        amount: 5
+      runtimeTags: []
+    - entry:
+        asset: {fileID: 11400000, guid: 6f73b67c0792746c9a4205d969878716, type: 2}
+        formType: 0
+        amount: 5
+      runtimeTags: []
+    - entry:
+        asset: {fileID: 11400000, guid: e5c9e98b3750c41faaa3e82f510788ec, type: 2}
+        formType: 0
+        amount: 5
+      runtimeTags: []
+  - wallet: {fileID: 11400000, guid: d05dcf275ff4446b5a1b349022cd9f86, type: 2}
+    seed:
+    - entry:
+        asset: {fileID: 11400000, guid: 47ae82ad7cab24d298ee11e58cf69538, type: 2}
+        formType: 0
+        amount: 1
+      runtimeTags:
+      - {fileID: 11400000, guid: 8d743fde6a7e8458fa69d1bb1acc750d, type: 2}
+      - {fileID: 11400000, guid: 9bd6d0d9a1c9248d9836792500f67fd1, type: 2}
+    - entry:
+        asset: {fileID: 11400000, guid: d08522137cf72449f9553e319c82f0f2, type: 2}
+        formType: 0
+        amount: 1
+      runtimeTags:
+      - {fileID: 11400000, guid: 8d743fde6a7e8458fa69d1bb1acc750d, type: 2}
+  orchestrationProfile: {fileID: 0}

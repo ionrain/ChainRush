@@ -59,6 +59,8 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
     - rid: 2807516363299750085
       type: {class: SkillTargetDistanceRequirementData, ns: Core.Skills, asm: Core}
       data:
@@ -71,15 +73,17 @@ MonoBehaviour:
       data:
         recipient: 1
         requiredTags: []
-        value:
-          rid: 2807516363299750087
-        valueArgument:
-          rid: -2
-        multiplier: {fileID: 0}
         hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
         formula:
-          terms: []
-    - rid: 2807516363299750087
+          root:
+            rid: 2807516363299750088
+    - rid: 2807516363299750089
       type: {class: LongFlatProgressionData, ns: Core, asm: Core}
       data:
         value: -1
+    - rid: 2807516363299750088
+      type: {class: SkillEffectProgressionNodeData, ns: Core.Skills, asm: Core}
+      data:
+        progression: {rid: 2807516363299750089}
+        argument: {rid: -2}
+        precision: 3

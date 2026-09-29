@@ -17,7 +17,6 @@ MonoBehaviour:
     SerializedBytes: 
     ReferencedUnityObjects:
     - {fileID: 11400000, guid: ef0765d17832a45dea743411aa4d6a9c, type: 2}
-    - {fileID: 11400000, guid: 97e9ee6284cd14460961d53ac3b9c613, type: 2}
     - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
     - {fileID: 11400000, guid: 6fb733e20a01b4d3c8a49458cc9e8447, type: 2}
     SerializedBytesString: 
@@ -73,13 +72,26 @@ MonoBehaviour:
       Data: 4|Core.Economy.Authoring.EconomyOperationOwnerBindingData, Core
     - Name: bindingType
       Entry: 3
-      Data: 1
+      Data: 0
     - Name: owner
       Entry: 7
       Data: Core.Economy.Authoring.EconomyOwnerRef, Core
     - Name: source
-      Entry: 10
-      Data: 1
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: entryPath
+      Entry: 7
+      Data: 5|System.Collections.Generic.List`1[[Core.Economy.EconomyEntrySelectionData,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
     - Name: 
       Entry: 8
       Data: 
@@ -88,14 +100,14 @@ MonoBehaviour:
       Data: 
     - Name: walletTags
       Entry: 7
-      Data: 5|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+      Data: 6|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
         Core]], mscorlib
     - Name: 
       Entry: 12
       Data: 1
     - Name: 
       Entry: 10
-      Data: 2
+      Data: 1
     - Name: 
       Entry: 13
       Data: 
@@ -110,17 +122,17 @@ MonoBehaviour:
       Data: 0
     - Name: progression
       Entry: 7
-      Data: 6|Core.LongDependentProgressionData, Core
+      Data: 7|Core.LongDependentProgressionData, Core
     - Name: entries
       Entry: 7
-      Data: 7|System.Collections.Generic.List`1[[Core.LongProgressionIntervalData,
+      Data: 8|System.Collections.Generic.List`1[[Core.LongProgressionIntervalData,
         Core]], mscorlib
     - Name: 
       Entry: 12
       Data: 17
     - Name: 
       Entry: 7
-      Data: 8|Core.LongProgressionIntervalData, Core
+      Data: 9|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -138,7 +150,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 9|Core.LongFlatProgressionData, Core
+      Data: 10|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 4
@@ -150,7 +162,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 10|Core.LongProgressionIntervalData, Core
+      Data: 11|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -168,7 +180,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 11|Core.LongFlatProgressionData, Core
+      Data: 12|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 5
@@ -180,7 +192,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 12|Core.LongProgressionIntervalData, Core
+      Data: 13|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -198,7 +210,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 13|Core.LongFlatProgressionData, Core
+      Data: 14|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 6
@@ -210,7 +222,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 14|Core.LongProgressionIntervalData, Core
+      Data: 15|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -228,7 +240,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 15|Core.LongFlatProgressionData, Core
+      Data: 16|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 7
@@ -240,7 +252,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 16|Core.LongProgressionIntervalData, Core
+      Data: 17|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -258,7 +270,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 17|Core.LongFlatProgressionData, Core
+      Data: 18|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 8
@@ -270,7 +282,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 18|Core.LongProgressionIntervalData, Core
+      Data: 19|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -288,7 +300,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 19|Core.LongFlatProgressionData, Core
+      Data: 20|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 9
@@ -300,7 +312,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 20|Core.LongProgressionIntervalData, Core
+      Data: 21|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -318,7 +330,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 21|Core.LongFlatProgressionData, Core
+      Data: 22|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 10
@@ -330,7 +342,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 22|Core.LongProgressionIntervalData, Core
+      Data: 23|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -348,7 +360,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 23|Core.LongFlatProgressionData, Core
+      Data: 24|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 11
@@ -360,7 +372,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 24|Core.LongProgressionIntervalData, Core
+      Data: 25|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -378,7 +390,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 25|Core.LongFlatProgressionData, Core
+      Data: 26|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 12
@@ -390,7 +402,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 26|Core.LongProgressionIntervalData, Core
+      Data: 27|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -408,7 +420,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 27|Core.LongFlatProgressionData, Core
+      Data: 28|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 13
@@ -420,7 +432,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 28|Core.LongProgressionIntervalData, Core
+      Data: 29|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -438,7 +450,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 29|Core.LongFlatProgressionData, Core
+      Data: 30|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 14
@@ -450,7 +462,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 30|Core.LongProgressionIntervalData, Core
+      Data: 31|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -468,7 +480,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 31|Core.LongFlatProgressionData, Core
+      Data: 32|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 15
@@ -480,7 +492,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 32|Core.LongProgressionIntervalData, Core
+      Data: 33|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -498,7 +510,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 33|Core.LongFlatProgressionData, Core
+      Data: 34|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 16
@@ -510,7 +522,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 34|Core.LongProgressionIntervalData, Core
+      Data: 35|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -528,7 +540,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 35|Core.LongFlatProgressionData, Core
+      Data: 36|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 17
@@ -540,7 +552,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 36|Core.LongProgressionIntervalData, Core
+      Data: 37|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -558,7 +570,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 37|Core.LongFlatProgressionData, Core
+      Data: 38|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 18
@@ -570,7 +582,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 38|Core.LongProgressionIntervalData, Core
+      Data: 39|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -588,7 +600,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 39|Core.LongFlatProgressionData, Core
+      Data: 40|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 19
@@ -600,7 +612,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 40|Core.LongProgressionIntervalData, Core
+      Data: 41|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -618,7 +630,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 41|Core.LongFlatProgressionData, Core
+      Data: 42|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 20
@@ -654,14 +666,14 @@ MonoBehaviour:
       Data: 1
     - Name: requiredAssetTags
       Entry: 7
-      Data: 42|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+      Data: 43|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
         Core]], mscorlib
     - Name: 
       Entry: 12
       Data: 1
     - Name: 
       Entry: 10
-      Data: 3
+      Data: 2
     - Name: 
       Entry: 13
       Data: 
@@ -670,7 +682,7 @@ MonoBehaviour:
       Data: 
     - Name: requiredCapabilityTypes
       Entry: 7
-      Data: 43|System.Collections.Generic.List`1[[Core.CapabilityHosts.CapabilityHostType,
+      Data: 44|System.Collections.Generic.List`1[[Core.CapabilityHosts.CapabilityHostType,
         Core]], mscorlib
     - Name: 
       Entry: 12
@@ -695,40 +707,54 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 131|Core.Objectives.ObjectiveConditionEconomyMetric, Core
+      Data: 45|Core.Objectives.ObjectiveConditionEconomyMetric, Core
+    - Name: _targetValue
+      Entry: 3
+      Data: 1000000
     - Name: observedOwner
       Entry: 7
-      Data: 145|Core.Economy.Authoring.EconomyOperationOwnerBindingData, Core
+      Data: 46|Core.Economy.Authoring.EconomyOperationOwnerBindingData, Core
     - Name: bindingType
       Entry: 3
-      Data: 1
+      Data: 0
     - Name: owner
       Entry: 7
       Data: Core.Economy.Authoring.EconomyOwnerRef, Core
     - Name: source
-      Entry: 10
-      Data: 1
-    - Name: 
-      Entry: 8
+      Entry: 6
       Data: 
     - Name: 
       Entry: 8
       Data: 
-    - Name: _targetValue
-      Entry: 3
-      Data: 1000000
+    - Name: entryPath
+      Entry: 7
+      Data: 47|System.Collections.Generic.List`1[[Core.Economy.EconomyEntrySelectionData,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: targetProgression
       Entry: 6
       Data: 
     - Name: _walletTags
       Entry: 7
-      Data: 132|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData, Core]], mscorlib
+      Data: 48|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+        Core]], mscorlib
     - Name: 
       Entry: 12
       Data: 1
     - Name: 
       Entry: 10
-      Data: 2
+      Data: 1
     - Name: 
       Entry: 13
       Data: 
@@ -740,7 +766,8 @@ MonoBehaviour:
       Data: 0
     - Name: _requiredAssetTags
       Entry: 7
-      Data: 133|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData, Core]], mscorlib
+      Data: 49|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+        Core]], mscorlib
     - Name: 
       Entry: 12
       Data: 0
@@ -752,7 +779,8 @@ MonoBehaviour:
       Data: 
     - Name: _requiredRuntimeTags
       Entry: 7
-      Data: 134|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData, Core]], mscorlib
+      Data: 50|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+        Core]], mscorlib
     - Name: 
       Entry: 12
       Data: 0
@@ -779,29 +807,30 @@ MonoBehaviour:
       Data: 
     - Name: _successConditions
       Entry: 7
-      Data: 44|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition,
+      Data: 51|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition,
         Core]], mscorlib
     - Name: 
       Entry: 12
       Data: 1
     - Name: 
       Entry: 7
-      Data: 135|Core.Objectives.ObjectiveConditionComposite, Core
+      Data: 52|Core.Objectives.ObjectiveConditionComposite, Core
     - Name: _conditions
       Entry: 7
-      Data: 140|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition, Core]], mscorlib
+      Data: 53|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition,
+        Core]], mscorlib
     - Name: 
       Entry: 12
       Data: 2
     - Name: 
       Entry: 7
-      Data: 45|Core.Objectives.ObjectiveConditionMaterializedEntity, Core
+      Data: 54|Core.Objectives.ObjectiveConditionMaterializedEntity, Core
     - Name: _targetValue
       Entry: 3
       Data: 0
     - Name: targetProgression
       Entry: 7
-      Data: 46|Core.Objectives.ObjectiveLongTargetProgressionData, Core
+      Data: 55|Core.Objectives.ObjectiveLongTargetProgressionData, Core
     - Name: sourceType
       Entry: 3
       Data: 0
@@ -816,16 +845,29 @@ MonoBehaviour:
       Data: 0
     - Name: owner
       Entry: 7
-      Data: 47|Core.Economy.Authoring.EconomyOperationOwnerBindingData, Core
+      Data: 56|Core.Economy.Authoring.EconomyOperationOwnerBindingData, Core
     - Name: bindingType
       Entry: 3
-      Data: 1
+      Data: 0
     - Name: owner
       Entry: 7
       Data: Core.Economy.Authoring.EconomyOwnerRef, Core
     - Name: source
-      Entry: 10
-      Data: 1
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: entryPath
+      Entry: 7
+      Data: 57|System.Collections.Generic.List`1[[Core.Economy.EconomyEntrySelectionData,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
     - Name: 
       Entry: 8
       Data: 
@@ -834,14 +876,14 @@ MonoBehaviour:
       Data: 
     - Name: walletTags
       Entry: 7
-      Data: 48|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+      Data: 58|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
         Core]], mscorlib
     - Name: 
       Entry: 12
       Data: 1
     - Name: 
       Entry: 10
-      Data: 2
+      Data: 1
     - Name: 
       Entry: 13
       Data: 
@@ -856,17 +898,17 @@ MonoBehaviour:
       Data: 0
     - Name: progression
       Entry: 7
-      Data: 49|Core.LongDependentProgressionData, Core
+      Data: 59|Core.LongDependentProgressionData, Core
     - Name: entries
       Entry: 7
-      Data: 50|System.Collections.Generic.List`1[[Core.LongProgressionIntervalData,
+      Data: 60|System.Collections.Generic.List`1[[Core.LongProgressionIntervalData,
         Core]], mscorlib
     - Name: 
       Entry: 12
       Data: 17
     - Name: 
       Entry: 7
-      Data: 51|Core.LongProgressionIntervalData, Core
+      Data: 61|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -884,7 +926,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 52|Core.LongFlatProgressionData, Core
+      Data: 62|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 4
@@ -896,7 +938,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 53|Core.LongProgressionIntervalData, Core
+      Data: 63|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -914,7 +956,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 54|Core.LongFlatProgressionData, Core
+      Data: 64|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 5
@@ -926,7 +968,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 55|Core.LongProgressionIntervalData, Core
+      Data: 65|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -944,7 +986,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 56|Core.LongFlatProgressionData, Core
+      Data: 66|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 6
@@ -956,7 +998,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 57|Core.LongProgressionIntervalData, Core
+      Data: 67|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -974,7 +1016,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 58|Core.LongFlatProgressionData, Core
+      Data: 68|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 7
@@ -986,7 +1028,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 59|Core.LongProgressionIntervalData, Core
+      Data: 69|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -1004,7 +1046,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 60|Core.LongFlatProgressionData, Core
+      Data: 70|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 8
@@ -1016,7 +1058,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 61|Core.LongProgressionIntervalData, Core
+      Data: 71|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -1034,7 +1076,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 62|Core.LongFlatProgressionData, Core
+      Data: 72|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 9
@@ -1046,7 +1088,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 63|Core.LongProgressionIntervalData, Core
+      Data: 73|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -1064,7 +1106,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 64|Core.LongFlatProgressionData, Core
+      Data: 74|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 10
@@ -1076,7 +1118,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 65|Core.LongProgressionIntervalData, Core
+      Data: 75|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -1094,7 +1136,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 66|Core.LongFlatProgressionData, Core
+      Data: 76|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 11
@@ -1106,7 +1148,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 67|Core.LongProgressionIntervalData, Core
+      Data: 77|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -1124,7 +1166,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 68|Core.LongFlatProgressionData, Core
+      Data: 78|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 12
@@ -1136,7 +1178,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 69|Core.LongProgressionIntervalData, Core
+      Data: 79|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -1154,7 +1196,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 70|Core.LongFlatProgressionData, Core
+      Data: 80|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 13
@@ -1166,7 +1208,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 71|Core.LongProgressionIntervalData, Core
+      Data: 81|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -1184,7 +1226,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 72|Core.LongFlatProgressionData, Core
+      Data: 82|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 14
@@ -1196,7 +1238,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 73|Core.LongProgressionIntervalData, Core
+      Data: 83|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -1214,7 +1256,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 74|Core.LongFlatProgressionData, Core
+      Data: 84|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 15
@@ -1226,7 +1268,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 75|Core.LongProgressionIntervalData, Core
+      Data: 85|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -1244,7 +1286,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 76|Core.LongFlatProgressionData, Core
+      Data: 86|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 16
@@ -1256,7 +1298,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 77|Core.LongProgressionIntervalData, Core
+      Data: 87|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -1274,7 +1316,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 78|Core.LongFlatProgressionData, Core
+      Data: 88|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 17
@@ -1286,7 +1328,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 79|Core.LongProgressionIntervalData, Core
+      Data: 89|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -1304,7 +1346,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 80|Core.LongFlatProgressionData, Core
+      Data: 90|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 18
@@ -1316,7 +1358,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 81|Core.LongProgressionIntervalData, Core
+      Data: 91|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -1334,7 +1376,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 82|Core.LongFlatProgressionData, Core
+      Data: 92|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 19
@@ -1346,7 +1388,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 83|Core.LongProgressionIntervalData, Core
+      Data: 93|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -1364,7 +1406,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 84|Core.LongFlatProgressionData, Core
+      Data: 94|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 20
@@ -1400,14 +1442,14 @@ MonoBehaviour:
       Data: 1
     - Name: requiredAssetTags
       Entry: 7
-      Data: 85|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+      Data: 95|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
         Core]], mscorlib
     - Name: 
       Entry: 12
       Data: 1
     - Name: 
       Entry: 10
-      Data: 3
+      Data: 2
     - Name: 
       Entry: 13
       Data: 
@@ -1416,7 +1458,7 @@ MonoBehaviour:
       Data: 
     - Name: requiredCapabilityTypes
       Entry: 7
-      Data: 86|System.Collections.Generic.List`1[[Core.CapabilityHosts.CapabilityHostType,
+      Data: 96|System.Collections.Generic.List`1[[Core.CapabilityHosts.CapabilityHostType,
         Core]], mscorlib
     - Name: 
       Entry: 12
@@ -1441,40 +1483,54 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 136|Core.Objectives.ObjectiveConditionEconomyMetric, Core
+      Data: 97|Core.Objectives.ObjectiveConditionEconomyMetric, Core
+    - Name: _targetValue
+      Entry: 3
+      Data: 1000000
     - Name: observedOwner
       Entry: 7
-      Data: 146|Core.Economy.Authoring.EconomyOperationOwnerBindingData, Core
+      Data: 98|Core.Economy.Authoring.EconomyOperationOwnerBindingData, Core
     - Name: bindingType
       Entry: 3
-      Data: 1
+      Data: 0
     - Name: owner
       Entry: 7
       Data: Core.Economy.Authoring.EconomyOwnerRef, Core
     - Name: source
-      Entry: 10
-      Data: 1
-    - Name: 
-      Entry: 8
+      Entry: 6
       Data: 
     - Name: 
       Entry: 8
       Data: 
-    - Name: _targetValue
-      Entry: 3
-      Data: 1000000
+    - Name: entryPath
+      Entry: 7
+      Data: 99|System.Collections.Generic.List`1[[Core.Economy.EconomyEntrySelectionData,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: targetProgression
       Entry: 6
       Data: 
     - Name: _walletTags
       Entry: 7
-      Data: 137|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData, Core]], mscorlib
+      Data: 100|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+        Core]], mscorlib
     - Name: 
       Entry: 12
       Data: 1
     - Name: 
       Entry: 10
-      Data: 2
+      Data: 1
     - Name: 
       Entry: 13
       Data: 
@@ -1486,7 +1542,8 @@ MonoBehaviour:
       Data: 0
     - Name: _requiredAssetTags
       Entry: 7
-      Data: 138|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData, Core]], mscorlib
+      Data: 101|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+        Core]], mscorlib
     - Name: 
       Entry: 12
       Data: 0
@@ -1498,7 +1555,8 @@ MonoBehaviour:
       Data: 
     - Name: _requiredRuntimeTags
       Entry: 7
-      Data: 139|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData, Core]], mscorlib
+      Data: 102|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+        Core]], mscorlib
     - Name: 
       Entry: 12
       Data: 0
@@ -1537,7 +1595,7 @@ MonoBehaviour:
       Data: 
     - Name: _failConditions
       Entry: 7
-      Data: 87|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition,
+      Data: 103|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition,
         Core]], mscorlib
     - Name: 
       Entry: 12
@@ -1553,20 +1611,20 @@ MonoBehaviour:
       Data: 
     - Name: resetConditions
       Entry: 7
-      Data: 88|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition,
+      Data: 104|System.Collections.Generic.List`1[[Core.Objectives.ObjectiveCondition,
         Core]], mscorlib
     - Name: 
       Entry: 12
       Data: 2
     - Name: 
       Entry: 7
-      Data: 89|Core.Objectives.ObjectiveConditionMaterializedEntity, Core
+      Data: 105|Core.Objectives.ObjectiveConditionMaterializedEntity, Core
     - Name: _targetValue
       Entry: 3
       Data: 0
     - Name: targetProgression
       Entry: 7
-      Data: 90|Core.Objectives.ObjectiveLongTargetProgressionData, Core
+      Data: 106|Core.Objectives.ObjectiveLongTargetProgressionData, Core
     - Name: sourceType
       Entry: 3
       Data: 0
@@ -1581,16 +1639,29 @@ MonoBehaviour:
       Data: 0
     - Name: owner
       Entry: 7
-      Data: 91|Core.Economy.Authoring.EconomyOperationOwnerBindingData, Core
+      Data: 107|Core.Economy.Authoring.EconomyOperationOwnerBindingData, Core
     - Name: bindingType
       Entry: 3
-      Data: 1
+      Data: 0
     - Name: owner
       Entry: 7
       Data: Core.Economy.Authoring.EconomyOwnerRef, Core
     - Name: source
-      Entry: 10
-      Data: 1
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: entryPath
+      Entry: 7
+      Data: 108|System.Collections.Generic.List`1[[Core.Economy.EconomyEntrySelectionData,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
     - Name: 
       Entry: 8
       Data: 
@@ -1599,14 +1670,14 @@ MonoBehaviour:
       Data: 
     - Name: walletTags
       Entry: 7
-      Data: 92|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+      Data: 109|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
         Core]], mscorlib
     - Name: 
       Entry: 12
       Data: 1
     - Name: 
       Entry: 10
-      Data: 2
+      Data: 1
     - Name: 
       Entry: 13
       Data: 
@@ -1621,17 +1692,17 @@ MonoBehaviour:
       Data: 0
     - Name: progression
       Entry: 7
-      Data: 93|Core.LongDependentProgressionData, Core
+      Data: 110|Core.LongDependentProgressionData, Core
     - Name: entries
       Entry: 7
-      Data: 94|System.Collections.Generic.List`1[[Core.LongProgressionIntervalData,
+      Data: 111|System.Collections.Generic.List`1[[Core.LongProgressionIntervalData,
         Core]], mscorlib
     - Name: 
       Entry: 12
       Data: 17
     - Name: 
       Entry: 7
-      Data: 95|Core.LongProgressionIntervalData, Core
+      Data: 112|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -1649,7 +1720,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 96|Core.LongFlatProgressionData, Core
+      Data: 113|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 4
@@ -1661,7 +1732,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 97|Core.LongProgressionIntervalData, Core
+      Data: 114|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -1679,7 +1750,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 98|Core.LongFlatProgressionData, Core
+      Data: 115|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 5
@@ -1691,7 +1762,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 99|Core.LongProgressionIntervalData, Core
+      Data: 116|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -1709,7 +1780,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 100|Core.LongFlatProgressionData, Core
+      Data: 117|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 6
@@ -1721,7 +1792,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 101|Core.LongProgressionIntervalData, Core
+      Data: 118|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -1739,7 +1810,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 102|Core.LongFlatProgressionData, Core
+      Data: 119|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 7
@@ -1751,7 +1822,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 103|Core.LongProgressionIntervalData, Core
+      Data: 120|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -1769,7 +1840,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 104|Core.LongFlatProgressionData, Core
+      Data: 121|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 8
@@ -1781,7 +1852,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 105|Core.LongProgressionIntervalData, Core
+      Data: 122|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -1799,7 +1870,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 106|Core.LongFlatProgressionData, Core
+      Data: 123|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 9
@@ -1811,7 +1882,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 107|Core.LongProgressionIntervalData, Core
+      Data: 124|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -1829,7 +1900,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 108|Core.LongFlatProgressionData, Core
+      Data: 125|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 10
@@ -1841,7 +1912,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 109|Core.LongProgressionIntervalData, Core
+      Data: 126|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -1859,7 +1930,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 110|Core.LongFlatProgressionData, Core
+      Data: 127|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 11
@@ -1871,7 +1942,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 111|Core.LongProgressionIntervalData, Core
+      Data: 128|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -1889,7 +1960,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 112|Core.LongFlatProgressionData, Core
+      Data: 129|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 12
@@ -1901,7 +1972,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 113|Core.LongProgressionIntervalData, Core
+      Data: 130|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -1919,7 +1990,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 114|Core.LongFlatProgressionData, Core
+      Data: 131|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 13
@@ -1931,7 +2002,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 115|Core.LongProgressionIntervalData, Core
+      Data: 132|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -1949,7 +2020,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 116|Core.LongFlatProgressionData, Core
+      Data: 133|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 14
@@ -1961,7 +2032,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 117|Core.LongProgressionIntervalData, Core
+      Data: 134|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -1979,7 +2050,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 118|Core.LongFlatProgressionData, Core
+      Data: 135|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 15
@@ -1991,7 +2062,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 119|Core.LongProgressionIntervalData, Core
+      Data: 136|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -2009,7 +2080,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 120|Core.LongFlatProgressionData, Core
+      Data: 137|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 16
@@ -2021,7 +2092,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 121|Core.LongProgressionIntervalData, Core
+      Data: 138|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -2039,7 +2110,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 122|Core.LongFlatProgressionData, Core
+      Data: 139|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 17
@@ -2051,7 +2122,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 123|Core.LongProgressionIntervalData, Core
+      Data: 140|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -2069,7 +2140,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 124|Core.LongFlatProgressionData, Core
+      Data: 141|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 18
@@ -2081,7 +2152,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 125|Core.LongProgressionIntervalData, Core
+      Data: 142|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -2099,7 +2170,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 126|Core.LongFlatProgressionData, Core
+      Data: 143|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 19
@@ -2111,7 +2182,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 127|Core.LongProgressionIntervalData, Core
+      Data: 144|Core.LongProgressionIntervalData, Core
     - Name: interval
       Entry: 7
       Data: Core.ProgressInterval, Core
@@ -2129,7 +2200,7 @@ MonoBehaviour:
       Data: 
     - Name: value
       Entry: 7
-      Data: 128|Core.LongFlatProgressionData, Core
+      Data: 145|Core.LongFlatProgressionData, Core
     - Name: value
       Entry: 3
       Data: 20
@@ -2165,14 +2236,14 @@ MonoBehaviour:
       Data: 1
     - Name: requiredAssetTags
       Entry: 7
-      Data: 129|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+      Data: 146|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
         Core]], mscorlib
     - Name: 
       Entry: 12
       Data: 1
     - Name: 
       Entry: 10
-      Data: 3
+      Data: 2
     - Name: 
       Entry: 13
       Data: 
@@ -2181,7 +2252,7 @@ MonoBehaviour:
       Data: 
     - Name: requiredCapabilityTypes
       Entry: 7
-      Data: 130|System.Collections.Generic.List`1[[Core.CapabilityHosts.CapabilityHostType,
+      Data: 147|System.Collections.Generic.List`1[[Core.CapabilityHosts.CapabilityHostType,
         Core]], mscorlib
     - Name: 
       Entry: 12
@@ -2206,40 +2277,54 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 141|Core.Objectives.ObjectiveConditionEconomyMetric, Core
+      Data: 148|Core.Objectives.ObjectiveConditionEconomyMetric, Core
+    - Name: _targetValue
+      Entry: 3
+      Data: 1000000
     - Name: observedOwner
       Entry: 7
-      Data: 147|Core.Economy.Authoring.EconomyOperationOwnerBindingData, Core
+      Data: 149|Core.Economy.Authoring.EconomyOperationOwnerBindingData, Core
     - Name: bindingType
       Entry: 3
-      Data: 1
+      Data: 0
     - Name: owner
       Entry: 7
       Data: Core.Economy.Authoring.EconomyOwnerRef, Core
     - Name: source
-      Entry: 10
-      Data: 1
-    - Name: 
-      Entry: 8
+      Entry: 6
       Data: 
     - Name: 
       Entry: 8
       Data: 
-    - Name: _targetValue
-      Entry: 3
-      Data: 1000000
+    - Name: entryPath
+      Entry: 7
+      Data: 150|System.Collections.Generic.List`1[[Core.Economy.EconomyEntrySelectionData,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: targetProgression
       Entry: 6
       Data: 
     - Name: _walletTags
       Entry: 7
-      Data: 142|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData, Core]], mscorlib
+      Data: 151|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+        Core]], mscorlib
     - Name: 
       Entry: 12
       Data: 1
     - Name: 
       Entry: 10
-      Data: 2
+      Data: 1
     - Name: 
       Entry: 13
       Data: 
@@ -2251,7 +2336,8 @@ MonoBehaviour:
       Data: 0
     - Name: _requiredAssetTags
       Entry: 7
-      Data: 143|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData, Core]], mscorlib
+      Data: 152|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+        Core]], mscorlib
     - Name: 
       Entry: 12
       Data: 0
@@ -2263,7 +2349,8 @@ MonoBehaviour:
       Data: 
     - Name: _requiredRuntimeTags
       Entry: 7
-      Data: 144|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData, Core]], mscorlib
+      Data: 153|System.Collections.Generic.List`1[[Core.Taxonomy.TaxonomyTermData,
+        Core]], mscorlib
     - Name: 
       Entry: 12
       Data: 0

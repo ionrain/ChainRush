@@ -61,16 +61,13 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
     - rid: 6092004074608394747
       type: {class: SkillSpawnCarrierEffectData, ns: Core.Skills, asm: Core}
       data:
         recipient: 0
         requiredTags: []
-        value:
-          rid: 6092004074608394760
-        valueArgument:
-          rid: -2
-        multiplier: {fileID: 0}
         carrier: {fileID: 11400000, guid: 1a90244b93655474789cb473f98f8c30, type: 2}
         carriedSkill: {fileID: 11400000, guid: 0db89ce18bf0440e69e8ed2097aa1c1a, type: 2}
         count: 1
@@ -107,6 +104,30 @@ MonoBehaviour:
         parameters:
         - rid: 6092004074608394749
         - rid: 6092004074608394750
+    - rid: 725000
+      type: {class: SkillEconomyEffectData, ns: Core.Skills, asm: Core}
+      data:
+        recipient: 3
+        repeatType: 1
+        requiredTags: []
+        asset: {fileID: 11400000, guid: 2cbf36acf2a164d3e8cb433bf7b16771, type: 2}
+        walletTags:
+        - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
+        formType: 0
+        requiredRuntimeTags: []
+        formula:
+          root:
+            rid: 6092004074608394761
+    - rid: 6092004074608394762
+      type: {class: LongFlatProgressionData, ns: Core, asm: Core}
+      data:
+        value: -1
+    - rid: 6092004074608394761
+      type: {class: SkillEffectProgressionNodeData, ns: Core.Skills, asm: Core}
+      data:
+        progression: {rid: 6092004074608394762}
+        argument: {rid: -2}
+        precision: 0
     - rid: 6092004074608394749
       type: {class: SkillCarrierScalarParameterValueData, ns: Core.Skills, asm: Core}
       data:
@@ -123,29 +144,3 @@ MonoBehaviour:
         minValue: 60
         maxValue: 60
         ownerMultiplier: {fileID: 0}
-    - rid: 6092004074608394760
-      type: {class: LongFlatProgressionData, ns: Core, asm: Core}
-      data:
-        value: 0
-    - rid: 725000
-      type: {class: SkillEconomyEffectData, ns: Core.Skills, asm: Core}
-      data:
-        recipient: 3
-        repeatType: 1
-        requiredTags: []
-        value:
-          rid: 725001
-        valueArgument:
-          rid: -2
-        multiplier: {fileID: 0}
-        asset: {fileID: 11400000, guid: 2cbf36acf2a164d3e8cb433bf7b16771, type: 2}
-        walletTags:
-        - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
-        formType: 0
-        requiredRuntimeTags: []
-        formula:
-          terms: []
-    - rid: 725001
-      type: {class: LongFlatProgressionData, ns: Core, asm: Core}
-      data:
-        value: -1

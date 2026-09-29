@@ -225,8 +225,6 @@ MonoBehaviour:
         materializationType: 0
         materializationMarkerTags: []
         projectionTargetTags: []
-    - wallet: {fileID: 11400000, guid: 202de5d6e6d0a44c7b9851b7cd88dd4a, type: 2}
-      seed: []
     features:
     - {fileID: 11400000, guid: d1a497a418cfb4c2fa6e709b56630a3f, type: 2}
   activityContextTag: {fileID: 11400000, guid: 4ceffc5ec75d94a00b7a7b29748493b2, type: 2}
@@ -242,7 +240,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 2807516141394329704
-      type: {class: ActivityUISpaceData, ns: Core.Activities, asm: Core}
+      type: {class: ActivityUISpaceData, ns: Core.UI.Activities, asm: Core}
       data:
         markerProviders:
         - rid: 2807516545835073674

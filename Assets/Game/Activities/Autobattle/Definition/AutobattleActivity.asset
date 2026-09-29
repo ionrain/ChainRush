@@ -35,7 +35,8 @@ MonoBehaviour:
   icon: {fileID: 0}
   precision: 0
   allowedOperations: 15
-  tags: []
+  tags:
+  - {fileID: 11400000, guid: af9c7ce9f354f4dce9fefca5be5d625f, type: 2}
   slotFootprint: 1
   stackCapacity: 0
   activityType: {fileID: 11400000, guid: cf8ca0552267b47088289853db8427dd, type: 2}
@@ -56,8 +57,44 @@ MonoBehaviour:
     rid: 2807516141394329705
   teams:
   - slotCount: 1
-    entryRules: []
+    entryRules:
+    - walletTags:
+      - {fileID: 11400000, guid: 7cd328b496c6b4597b1eb29be6efbc72, type: 2}
+      assetTags:
+      - {fileID: 11400000, guid: c03c233cfc9f64712bf39c5d6311aee8, type: 2}
+      runtimeTags:
+      - {fileID: 11400000, guid: 8d743fde6a7e8458fa69d1bb1acc750d, type: 2}
+      - {fileID: 11400000, guid: 9bd6d0d9a1c9248d9836792500f67fd1, type: 2}
+      asset: {fileID: 0}
+      formType: 0
+      compareOperation: 0
+      amount: 1
+    - walletTags:
+      - {fileID: 11400000, guid: 7cd328b496c6b4597b1eb29be6efbc72, type: 2}
+      assetTags:
+      - {fileID: 11400000, guid: 1c6fb44fa762c46d1a24efe2d8a844f8, type: 2}
+      runtimeTags:
+      - {fileID: 11400000, guid: 9bd6d0d9a1c9248d9836792500f67fd1, type: 2}
+      - {fileID: 11400000, guid: 8d743fde6a7e8458fa69d1bb1acc750d, type: 2}
+      asset: {fileID: 0}
+      formType: 0
+      compareOperation: 3
+      amount: 1
+    - walletTags:
+      - {fileID: 11400000, guid: 7cd328b496c6b4597b1eb29be6efbc72, type: 2}
+      assetTags:
+      - {fileID: 11400000, guid: 1c6fb44fa762c46d1a24efe2d8a844f8, type: 2}
+      runtimeTags:
+      - {fileID: 11400000, guid: 9bd6d0d9a1c9248d9836792500f67fd1, type: 2}
+      - {fileID: 11400000, guid: 8d743fde6a7e8458fa69d1bb1acc750d, type: 2}
+      asset: {fileID: 0}
+      formType: 0
+      compareOperation: 5
+      amount: 4
     objectives:
+    - template: {fileID: 11400000, guid: dca8a1a2fbf3049cf95298d24d146cfb, type: 2}
+      successScoreDelta: 0
+      failScoreDelta: 0
     - template: {fileID: 11400000, guid: 83a8e5cc9a1d14533add087b1f659a85, type: 2}
       successScoreDelta: 0
       failScoreDelta: 0
@@ -157,16 +194,6 @@ MonoBehaviour:
         projectionTargetTags: []
       - seed:
           entry:
-            asset: {fileID: 11400000, guid: 7070d9e2c0c244d008f0b10c7c645d5f, type: 2}
-            formType: 1
-            amount: 1
-          runtimeTags: []
-        materializationType: 1
-        materializationMarkerTags:
-        - {fileID: 11400000, guid: dff54a12e3d9149bbb614308f1b2d9c9, type: 2}
-        projectionTargetTags: []
-      - seed:
-          entry:
             asset: {fileID: 11400000, guid: 259d489182ff948c89087a556c82369d, type: 2}
             formType: 1
             amount: 1
@@ -183,481 +210,18 @@ MonoBehaviour:
         materializationType: 2
         materializationMarkerTags: []
         projectionTargetTags: []
-    - wallet: {fileID: 11400000, guid: d0208bd82a130417e92b79990be919f4, type: 2}
-      seed:
       - seed:
           entry:
-            asset: {fileID: 11400000, guid: b92048bd2f85042ee97f6a25f6a4f99b, type: 2}
-            formType: 0
-            amount: 10000
-          runtimeTags:
-          - {fileID: 11400000, guid: d078fa8c1956f4a1b825a2d83c7f5cf0, type: 2}
-          - {fileID: 11400000, guid: e07b3e23c72e34d88b987da96d7eb5c0, type: 2}
-        materializationType: 0
+            asset: {fileID: 11400000, guid: 8dea503a9b5334a9ca967a4d06d7bb35, type: 2}
+            formType: 1
+            amount: 1
+          runtimeTags: []
+        materializationType: 2
         materializationMarkerTags: []
         projectionTargetTags: []
       - seed:
           entry:
-            asset: {fileID: 11400000, guid: 9c6a46d64e754495294c47772e712bd5, type: 2}
-            formType: 0
-            amount: 5000
-          runtimeTags:
-          - {fileID: 11400000, guid: d078fa8c1956f4a1b825a2d83c7f5cf0, type: 2}
-          - {fileID: 11400000, guid: e07b3e23c72e34d88b987da96d7eb5c0, type: 2}
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: 8c0f2453a88154d458b494f57e5b4722, type: 2}
-            formType: 0
-            amount: 100000
-          runtimeTags:
-          - {fileID: 11400000, guid: e07b3e23c72e34d88b987da96d7eb5c0, type: 2}
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: 2d9f6059fa0ff4f01af05e6d0a60008f, type: 2}
-            formType: 0
-            amount: 2000
-          runtimeTags:
-          - {fileID: 11400000, guid: e07b3e23c72e34d88b987da96d7eb5c0, type: 2}
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: b42c9f1f607844b55a9f9e9df0020f73, type: 2}
-            formType: 0
-            amount: 1000
-          runtimeTags:
-          - {fileID: 11400000, guid: e07b3e23c72e34d88b987da96d7eb5c0, type: 2}
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: b92048bd2f85042ee97f6a25f6a4f99b, type: 2}
-            formType: 0
-            amount: 10000
-          runtimeTags:
-          - {fileID: 11400000, guid: d078fa8c1956f4a1b825a2d83c7f5cf0, type: 2}
-          - {fileID: 11400000, guid: 9a2c26e9930534235a6644d337dbe04e, type: 2}
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: 9c6a46d64e754495294c47772e712bd5, type: 2}
-            formType: 0
-            amount: 5000
-          runtimeTags:
-          - {fileID: 11400000, guid: d078fa8c1956f4a1b825a2d83c7f5cf0, type: 2}
-          - {fileID: 11400000, guid: 9a2c26e9930534235a6644d337dbe04e, type: 2}
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: 8c0f2453a88154d458b494f57e5b4722, type: 2}
-            formType: 0
-            amount: 150000
-          runtimeTags:
-          - {fileID: 11400000, guid: 9a2c26e9930534235a6644d337dbe04e, type: 2}
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: 2d9f6059fa0ff4f01af05e6d0a60008f, type: 2}
-            formType: 0
-            amount: 2000
-          runtimeTags:
-          - {fileID: 11400000, guid: 9a2c26e9930534235a6644d337dbe04e, type: 2}
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: b42c9f1f607844b55a9f9e9df0020f73, type: 2}
-            formType: 0
-            amount: 1000
-          runtimeTags:
-          - {fileID: 11400000, guid: 9a2c26e9930534235a6644d337dbe04e, type: 2}
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: b92048bd2f85042ee97f6a25f6a4f99b, type: 2}
-            formType: 0
-            amount: 10000
-          runtimeTags:
-          - {fileID: 11400000, guid: d078fa8c1956f4a1b825a2d83c7f5cf0, type: 2}
-          - {fileID: 11400000, guid: c3d0a433032074792a97dacefb2d8c73, type: 2}
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: 9c6a46d64e754495294c47772e712bd5, type: 2}
-            formType: 0
-            amount: 5000
-          runtimeTags:
-          - {fileID: 11400000, guid: d078fa8c1956f4a1b825a2d83c7f5cf0, type: 2}
-          - {fileID: 11400000, guid: c3d0a433032074792a97dacefb2d8c73, type: 2}
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: 8c0f2453a88154d458b494f57e5b4722, type: 2}
-            formType: 0
-            amount: 200000
-          runtimeTags:
-          - {fileID: 11400000, guid: c3d0a433032074792a97dacefb2d8c73, type: 2}
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: 2d9f6059fa0ff4f01af05e6d0a60008f, type: 2}
-            formType: 0
-            amount: 2000
-          runtimeTags:
-          - {fileID: 11400000, guid: c3d0a433032074792a97dacefb2d8c73, type: 2}
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: b42c9f1f607844b55a9f9e9df0020f73, type: 2}
-            formType: 0
-            amount: 1000
-          runtimeTags:
-          - {fileID: 11400000, guid: c3d0a433032074792a97dacefb2d8c73, type: 2}
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: b92048bd2f85042ee97f6a25f6a4f99b, type: 2}
-            formType: 0
-            amount: 10000
-          runtimeTags:
-          - {fileID: 11400000, guid: d078fa8c1956f4a1b825a2d83c7f5cf0, type: 2}
-          - {fileID: 11400000, guid: cd0a626ad56464f288080bd671eafc4d, type: 2}
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: 9c6a46d64e754495294c47772e712bd5, type: 2}
-            formType: 0
-            amount: 5000
-          runtimeTags:
-          - {fileID: 11400000, guid: d078fa8c1956f4a1b825a2d83c7f5cf0, type: 2}
-          - {fileID: 11400000, guid: cd0a626ad56464f288080bd671eafc4d, type: 2}
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: 8c0f2453a88154d458b494f57e5b4722, type: 2}
-            formType: 0
-            amount: 250000
-          runtimeTags:
-          - {fileID: 11400000, guid: cd0a626ad56464f288080bd671eafc4d, type: 2}
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: 2d9f6059fa0ff4f01af05e6d0a60008f, type: 2}
-            formType: 0
-            amount: 2000
-          runtimeTags:
-          - {fileID: 11400000, guid: cd0a626ad56464f288080bd671eafc4d, type: 2}
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: b42c9f1f607844b55a9f9e9df0020f73, type: 2}
-            formType: 0
-            amount: 1000
-          runtimeTags:
-          - {fileID: 11400000, guid: cd0a626ad56464f288080bd671eafc4d, type: 2}
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: b92048bd2f85042ee97f6a25f6a4f99b, type: 2}
-            formType: 0
-            amount: 10000
-          runtimeTags:
-          - {fileID: 11400000, guid: d078fa8c1956f4a1b825a2d83c7f5cf0, type: 2}
-          - {fileID: 11400000, guid: 6012092f5d8ea4796a831f16ce0b652e, type: 2}
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: 9c6a46d64e754495294c47772e712bd5, type: 2}
-            formType: 0
-            amount: 5000
-          runtimeTags:
-          - {fileID: 11400000, guid: d078fa8c1956f4a1b825a2d83c7f5cf0, type: 2}
-          - {fileID: 11400000, guid: 6012092f5d8ea4796a831f16ce0b652e, type: 2}
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: 8c0f2453a88154d458b494f57e5b4722, type: 2}
-            formType: 0
-            amount: 1000000
-          runtimeTags:
-          - {fileID: 11400000, guid: 6012092f5d8ea4796a831f16ce0b652e, type: 2}
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: 2d9f6059fa0ff4f01af05e6d0a60008f, type: 2}
-            formType: 0
-            amount: 500
-          runtimeTags:
-          - {fileID: 11400000, guid: 6012092f5d8ea4796a831f16ce0b652e, type: 2}
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: b42c9f1f607844b55a9f9e9df0020f73, type: 2}
-            formType: 0
-            amount: 1000
-          runtimeTags:
-          - {fileID: 11400000, guid: 6012092f5d8ea4796a831f16ce0b652e, type: 2}
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: b92048bd2f85042ee97f6a25f6a4f99b, type: 2}
-            formType: 0
-            amount: 10000
-          runtimeTags:
-          - {fileID: 11400000, guid: d078fa8c1956f4a1b825a2d83c7f5cf0, type: 2}
-          - {fileID: 11400000, guid: b0a942a7287134f12a0b5b169e9bfb51, type: 2}
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: 9c6a46d64e754495294c47772e712bd5, type: 2}
-            formType: 0
-            amount: 5000
-          runtimeTags:
-          - {fileID: 11400000, guid: d078fa8c1956f4a1b825a2d83c7f5cf0, type: 2}
-          - {fileID: 11400000, guid: b0a942a7287134f12a0b5b169e9bfb51, type: 2}
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: 8c0f2453a88154d458b494f57e5b4722, type: 2}
-            formType: 0
-            amount: 100000
-          runtimeTags:
-          - {fileID: 11400000, guid: b0a942a7287134f12a0b5b169e9bfb51, type: 2}
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: 2d9f6059fa0ff4f01af05e6d0a60008f, type: 2}
-            formType: 0
-            amount: 3000
-          runtimeTags:
-          - {fileID: 11400000, guid: b0a942a7287134f12a0b5b169e9bfb51, type: 2}
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: b42c9f1f607844b55a9f9e9df0020f73, type: 2}
-            formType: 0
-            amount: 1000
-          runtimeTags:
-          - {fileID: 11400000, guid: b0a942a7287134f12a0b5b169e9bfb51, type: 2}
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: b92048bd2f85042ee97f6a25f6a4f99b, type: 2}
-            formType: 0
-            amount: 10000
-          runtimeTags:
-          - {fileID: 11400000, guid: d078fa8c1956f4a1b825a2d83c7f5cf0, type: 2}
-          - {fileID: 11400000, guid: 6485428ef1e30452fbfa7a907e5ae46d, type: 2}
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: 9c6a46d64e754495294c47772e712bd5, type: 2}
-            formType: 0
-            amount: 5000
-          runtimeTags:
-          - {fileID: 11400000, guid: d078fa8c1956f4a1b825a2d83c7f5cf0, type: 2}
-          - {fileID: 11400000, guid: 6485428ef1e30452fbfa7a907e5ae46d, type: 2}
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: 8c0f2453a88154d458b494f57e5b4722, type: 2}
-            formType: 0
-            amount: 200000
-          runtimeTags:
-          - {fileID: 11400000, guid: 6485428ef1e30452fbfa7a907e5ae46d, type: 2}
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: 2d9f6059fa0ff4f01af05e6d0a60008f, type: 2}
-            formType: 0
-            amount: 3000
-          runtimeTags:
-          - {fileID: 11400000, guid: 6485428ef1e30452fbfa7a907e5ae46d, type: 2}
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: b42c9f1f607844b55a9f9e9df0020f73, type: 2}
-            formType: 0
-            amount: 1000
-          runtimeTags:
-          - {fileID: 11400000, guid: 6485428ef1e30452fbfa7a907e5ae46d, type: 2}
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: b92048bd2f85042ee97f6a25f6a4f99b, type: 2}
-            formType: 0
-            amount: 10000
-          runtimeTags:
-          - {fileID: 11400000, guid: d078fa8c1956f4a1b825a2d83c7f5cf0, type: 2}
-          - {fileID: 11400000, guid: 468f090c5c01245f0a992d394ad03650, type: 2}
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: 9c6a46d64e754495294c47772e712bd5, type: 2}
-            formType: 0
-            amount: 5000
-          runtimeTags:
-          - {fileID: 11400000, guid: d078fa8c1956f4a1b825a2d83c7f5cf0, type: 2}
-          - {fileID: 11400000, guid: 468f090c5c01245f0a992d394ad03650, type: 2}
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: 8c0f2453a88154d458b494f57e5b4722, type: 2}
-            formType: 0
-            amount: 300000
-          runtimeTags:
-          - {fileID: 11400000, guid: 468f090c5c01245f0a992d394ad03650, type: 2}
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: 2d9f6059fa0ff4f01af05e6d0a60008f, type: 2}
-            formType: 0
-            amount: 3000
-          runtimeTags:
-          - {fileID: 11400000, guid: 468f090c5c01245f0a992d394ad03650, type: 2}
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: b42c9f1f607844b55a9f9e9df0020f73, type: 2}
-            formType: 0
-            amount: 1000
-          runtimeTags:
-          - {fileID: 11400000, guid: 468f090c5c01245f0a992d394ad03650, type: 2}
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: b92048bd2f85042ee97f6a25f6a4f99b, type: 2}
-            formType: 0
-            amount: 10000
-          runtimeTags:
-          - {fileID: 11400000, guid: d078fa8c1956f4a1b825a2d83c7f5cf0, type: 2}
-          - {fileID: 11400000, guid: ad3171eccfa494958a94bf3e07b4cd10, type: 2}
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: 9c6a46d64e754495294c47772e712bd5, type: 2}
-            formType: 0
-            amount: 5000
-          runtimeTags:
-          - {fileID: 11400000, guid: d078fa8c1956f4a1b825a2d83c7f5cf0, type: 2}
-          - {fileID: 11400000, guid: ad3171eccfa494958a94bf3e07b4cd10, type: 2}
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: 8c0f2453a88154d458b494f57e5b4722, type: 2}
-            formType: 0
-            amount: 400000
-          runtimeTags:
-          - {fileID: 11400000, guid: ad3171eccfa494958a94bf3e07b4cd10, type: 2}
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: 2d9f6059fa0ff4f01af05e6d0a60008f, type: 2}
-            formType: 0
-            amount: 3000
-          runtimeTags:
-          - {fileID: 11400000, guid: ad3171eccfa494958a94bf3e07b4cd10, type: 2}
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: b42c9f1f607844b55a9f9e9df0020f73, type: 2}
-            formType: 0
-            amount: 1000
-          runtimeTags:
-          - {fileID: 11400000, guid: ad3171eccfa494958a94bf3e07b4cd10, type: 2}
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-    - wallet: {fileID: 11400000, guid: 202de5d6e6d0a44c7b9851b7cd88dd4a, type: 2}
-      seed:
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: 1116b7b9d35a249b18741b1309a53cd1, type: 2}
+            asset: {fileID: 11400000, guid: 1ffd8c4e50eea4ebd84c03248bcbb087, type: 2}
             formType: 0
             amount: 1
           runtimeTags: []
@@ -666,16 +230,7 @@ MonoBehaviour:
         projectionTargetTags: []
       - seed:
           entry:
-            asset: {fileID: 11400000, guid: 3c69c74b28eea44aa87c88015c1871a3, type: 2}
-            formType: 0
-            amount: 1
-          runtimeTags: []
-        materializationType: 0
-        materializationMarkerTags: []
-        projectionTargetTags: []
-      - seed:
-          entry:
-            asset: {fileID: 11400000, guid: 7b42e70678d034765b77ab039ebb6f4f, type: 2}
+            asset: {fileID: 11400000, guid: 854a0cd2c05d9443ead51a662d4966bf, type: 2}
             formType: 0
             amount: 1
           runtimeTags: []
@@ -689,6 +244,9 @@ MonoBehaviour:
   - slotCount: 1
     entryRules: []
     objectives:
+    - template: {fileID: 11400000, guid: 83a8e5cc9a1d14533add087b1f659a85, type: 2}
+      successScoreDelta: 0
+      failScoreDelta: 0
     - template: {fileID: 11400000, guid: 922fec8d849ac4d9b8fb9a4d9c308120, type: 2}
       successScoreDelta: 0
       failScoreDelta: 0

@@ -39,54 +39,6 @@ MonoBehaviour:
   slotFootprint: 1
   stackCapacity: 0
   entries:
-    workDuration: 1
-    recoveryDuration: 0
-    reservationPolicy: 0
-    workDuration: 1
-    recoveryDuration: 0
-    reservationPolicy: 0
-    workDuration: 1
-    recoveryDuration: 0
-    reservationPolicy: 0
-    workDuration: 1
-    recoveryDuration: 0
-    reservationPolicy: 0
-    workDuration: 1
-    recoveryDuration: 0
-    reservationPolicy: 0
-    workDuration: 1
-    recoveryDuration: 0
-    reservationPolicy: 0
-    workDuration: 1
-    recoveryDuration: 0
-    reservationPolicy: 0
-    workDuration: 1
-    recoveryDuration: 0
-    reservationPolicy: 0
-    workDuration: 1
-    recoveryDuration: 0
-    reservationPolicy: 0
-    workDuration: 1
-    recoveryDuration: 0
-    reservationPolicy: 0
-    workDuration: 1
-    recoveryDuration: 0
-    reservationPolicy: 0
-    workDuration: 1
-    recoveryDuration: 0
-    reservationPolicy: 0
-    workDuration: 1
-    recoveryDuration: 0
-    reservationPolicy: 0
-    workDuration: 1
-    recoveryDuration: 0
-    reservationPolicy: 0
-    workDuration: 1
-    recoveryDuration: 0
-    reservationPolicy: 0
-    workDuration: 1
-    recoveryDuration: 0
-    reservationPolicy: 0
   - recipe: {fileID: 11400000, guid: f437d8148946247f4bf4a086d58618db, type: 2}
     workDuration: 1
     recoveryDuration: 0

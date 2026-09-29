@@ -130,17 +130,17 @@ namespace ChainRush.Tests.PlayMode
         }
 
         [UnityTest]
-        public IEnumerator TabascoLevelVariant_PreservesSourceBodyAndAttackReach([Values("Survive", "Distance")] string level)
+        public IEnumerator SelectedTabasco_PreservesCommonBodyAndAttackReach([Values("Survive", "Distance")] string level)
         {
             var capture = new PlayableRuntimeCapture();
             float scale = Time.timeScale;
             capture.Register();
             try
             {
-                yield return LaunchPlayableActivities(level == "Distance" ? "Level02Tabasco" : "Level01Tabasco");
+                yield return LaunchPlayableActivities(level, "Tabasco");
                 Assert.IsTrue(TryFindRunningActivities(out var battle, out _));
                 var definition = AssetDatabase.LoadAssetAtPath<CapabilityHostData>(
-                    "Assets/Game/Activities/Shared/Units/Tabasco/Tabasco" + (level == "Distance" ? "Distance" : "") + ".asset");
+                    "Assets/Game/Activities/Shared/Units/Tabasco/Tabasco.asset");
                 Assert.IsTrue(TryFindActivityHost(battle.Id, definition, out var hero));
                 Assert.IsTrue(InteractionGeometryService.TryGetSnapshot(hero, out _));
                 Time.timeScale = 4;

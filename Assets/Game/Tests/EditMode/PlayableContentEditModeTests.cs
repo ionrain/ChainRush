@@ -257,7 +257,11 @@ namespace ChainRush.Tests.EditMode
             var consumeLife = spawn.CarriedSkill.Effects.OfType<SkillHostValueEffectData>()
                 .Single(effect => effect.Recipient == EffectRecipient.Carrier);
             Assert.AreSame(lives.CarrierHostValue, consumeLife.HostValue);
-            Assert.AreEqual(-1, consumeLife.Value);
+            var lifeFormula = consumeLife.Formula.Root as SkillEffectProgressionNodeData;
+            Assert.NotNull(lifeFormula);
+            Assert.IsNull(lifeFormula.Argument);
+            Assert.AreEqual(0, lifeFormula.Precision);
+            Assert.AreEqual(-1, ((Core.LongFlatProgressionData)lifeFormula.Progression).Value);
             var lifetime = spawn.Parameters.OfType<SkillCarrierScalarParameterValueData>()
                 .Single(parameter => parameter.ParameterType == SkillCarrierScalarParameterType.Lifetime);
             Assert.Greater(lifetime.MinValue, 0);

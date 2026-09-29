@@ -171,7 +171,9 @@ namespace ChainRush.Editor
                 {
                     approach = ChainRushBoardPlannerAuthoring.WriteContentAsset(SkillsRoot + "/" + name + "Approach.asset",
                         LoadRequired<FrameworkSkillData>(ApproachSkillPath), id + ".approach", definitions);
-                    SetField(approach.Effects[0], "value", new Core.LongFlatProgressionData(RoundContent(BaseAttribute(source, form, global::Attribute.Speed) * 1000 * step)));
+                    SetField(approach.Effects[0], "formula", new SkillEffectFormulaData(
+                        new SkillEffectProgressionNodeData(new Core.LongFlatProgressionData(
+                            RoundContent(BaseAttribute(source, form, global::Attribute.Speed) * 1000 * step)), null, 0)));
                     AddUnique(skills, approach);
                 }
                 var brain = WriteContentBrain(name, attack, approach, radius, definitions);
@@ -252,8 +254,8 @@ namespace ChainRush.Editor
         static SkillHostValueEffectData ContentDamage(long damage)
         {
             var effect = new SkillHostValueEffectData();
-            ConfigureEffect(effect, EffectRecipient.Target, -damage);
             SetField(effect, "hostValue", LoadRequired<HostValueData>(HealthPath));
+            ConfigureEffect(effect, EffectRecipient.Target, -damage);
             return effect;
         }
 
@@ -263,8 +265,8 @@ namespace ChainRush.Editor
         {
             var hit = WriteContentSkill(SkillsRoot + "/" + name + "Hit.asset", attack.Id + ".hit", definitions, skills);
             var consumeLife = new SkillHostValueEffectData();
-            ConfigureEffect(consumeLife, EffectRecipient.Carrier, -1);
             SetField(consumeLife, "hostValue", lives);
+            ConfigureEffect(consumeLife, EffectRecipient.Carrier, -1);
             SetField(hit, "effects", new List<SkillEffectData> { ContentDamage(damage), consumeLife });
             string projectileName = unitName == "Cola" ? "DaggerProjectile" : "TurretKettleProjectile";
             var original = LoadRequired<GameObject>("Assets/Game/Prefabs/Skills/" + projectileName + ".prefab");
@@ -278,7 +280,6 @@ namespace ChainRush.Editor
             SetField(velocity, "minSpeed", speedValue);
             SetField(velocity, "maxSpeed", speedValue);
             var spawn = new SkillSpawnCarrierEffectData();
-            SetField(spawn, "value", new Core.LongFlatProgressionData(0));
             SetField(spawn, "carrier", carrier);
             SetField(spawn, "carriedSkill", hit);
             var box = original.GetComponent<BoxCollider2D>();

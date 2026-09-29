@@ -1090,9 +1090,8 @@ namespace ChainRush.Editor
             SetField(distanceRequirement, "compareOperation", CompareOperation.LessOrEqual);
             SetField(distanceRequirement, "interactionTags", new List<TaxonomyTermData>(0));
             var damageEffect = new SkillHostValueEffectData();
-            ConfigureEffect(damageEffect, EffectRecipient.Target, -1L);
             SetField(damageEffect, "hostValue", content.Health);
-            SetField(damageEffect, "formula", new SkillEffectFormulaData());
+            ConfigureEffect(damageEffect, EffectRecipient.Target, -1L);
             SetField(
                 content.AttackSkill,
                 "requirements",
@@ -2440,7 +2439,6 @@ namespace ChainRush.Editor
             List<TaxonomyTermData> destinationWalletTags)
         {
             var effect = new SkillEconomyEntryEffectData();
-            SetField(effect, "value", new Core.LongFlatProgressionData(0));
             ConfigureEffect(effect, recipient, 0L);
             SetField(effect, "sourceType", sourceType);
             SetField(effect, "sourceOwnerType", sourceOwnerType);
@@ -2462,8 +2460,14 @@ namespace ChainRush.Editor
         {
             SetField(effect, "recipient", recipient);
             SetField(effect, "requiredTags", new List<TaxonomyTermData>(0));
-            SetField(effect, "value", new Core.LongFlatProgressionData(value));
-            SetField<Core.Attributes.AttributeData>(effect, "multiplier", null);
+            if (effect is SkillNumericEffectData numeric)
+            {
+                int precision = effect is SkillHostValueEffectData host ? host.HostValue.Precision
+                    : effect is SkillEconomyEffectData economy && economy.FormType == EconomyFormType.Stack ? economy.Asset.Precision
+                    : effect is SkillAttributeModifierEffectData modifier ? modifier.Selector.Attribute.Precision : 0;
+                SetField(numeric, "formula", new SkillEffectFormulaData(
+                    new SkillEffectProgressionNodeData(new Core.LongFlatProgressionData(value), null, precision)));
+            }
         }
 
         static AIBrainStateData CreateCombatState(

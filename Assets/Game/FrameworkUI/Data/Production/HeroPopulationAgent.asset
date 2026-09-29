@@ -1,0 +1,186 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02d1a3baa20004b4c9af3160993765a5, type: 3}
+  m_Name: HeroPopulationAgent
+  m_EditorClassIdentifier: Core::Core.Orchestration.AgentDefinitionData
+  agentId: chainrush.hero.population
+  basePriority: 100
+  updateInterval: 1
+  applicabilityConditions: []
+  matchConditions:
+  - rid: 6092004206412824672
+  executorSelectionCriteria:
+  - requirementType: 0
+    criterion:
+      rid: 6092004206412824673
+  - requirementType: 0
+    criterion:
+      rid: 6092004206412824674
+  executorTargetRankingType: 0
+  targetSelectionCriteria:
+  - requirementType: 0
+    criterion:
+      rid: 6092004206412824675
+  - requirementType: 0
+    criterion:
+      rid: 6092004206412824676
+  targetRankingType: 0
+  aiBrainTargetKey: {fileID: 0}
+  controlType: 2
+  agent:
+    rid: 6092004074608394364
+  stopPolicyType: 0
+  timeLimit: 0
+  tokenReservationPolicyType: 0
+  targetAssignmentPolicyType: 0
+  movementPolicyType: 0
+  executorLossPolicyType: 0
+  executorBusyPolicyType: 1
+  executorReservationPolicyType: 1
+  negativeImpactPolicyType: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 6092004074608394364
+      type: {class: PopulationAgentData, ns: Core.Orchestration, asm: Core}
+      data:
+        progress:
+          resource: {fileID: 0}
+          owner:
+            bindingType: 0
+            owner:
+              source: {fileID: 0}
+            entryPath: []
+          walletTags: []
+          scaleType: 0
+          relativeBase: 0
+        volume:
+          rid: 6092004206412824677
+        completionPolicy: 0
+        singleAssetPerShape: 0
+        releases:
+        - interval:
+            minimum: 0
+            maximum: 0
+            hasMaximum: 0
+          space:
+            scopeType: 0
+            requiredTags:
+            - {fileID: 11400000, guid: 1145dd53437d5463b9b11c1379bf6a9d, type: 2}
+            excludedTags: []
+            requiredCellTags: []
+            excludedCellTags: []
+          shapes:
+          - shape: {fileID: 11400000, guid: 1ffd8c4e50eea4ebd84c03248bcbb087, type: 2}
+            usages:
+            - fillType: 0
+              position: {x: 0, y: 0, z: 0}
+              size: {x: 1, y: 1, z: 1}
+              rotation: {x: 0, y: 0, z: 0}
+              cellSize: {x: 1000, y: 1, z: 1000}
+              spacing: {x: 0, y: 0, z: 0}
+            share: 1
+            desiredCount:
+              min: 0
+              max: 1
+          content:
+          - source:
+              rid: 6092004206412824678
+            share: 1
+            requireParticipantContent: 1
+            participantContentSource: 0
+            participantEntries:
+              walletTags:
+              - {fileID: 11400000, guid: 7cd328b496c6b4597b1eb29be6efbc72, type: 2}
+              formTypes: 00000000
+              exactAsset: {fileID: 0}
+              requiredAssetTags:
+              - {fileID: 11400000, guid: c03c233cfc9f64712bf39c5d6311aee8, type: 2}
+              excludedAssetTags: []
+              requiredRuntimeTags:
+              - {fileID: 11400000, guid: 8d743fde6a7e8458fa69d1bb1acc750d, type: 2}
+              - {fileID: 11400000, guid: 9bd6d0d9a1c9248d9836792500f67fd1, type: 2}
+              excludedRuntimeTags: []
+            entryWalletContent:
+              walletTags: []
+              formTypes: 
+              exactAsset: {fileID: 0}
+              requiredAssetTags: []
+              excludedAssetTags: []
+              requiredRuntimeTags: []
+              excludedRuntimeTags: []
+        distribution:
+          rid: 6092004074608394374
+        workBudget: 256
+        shapeWalletTags:
+        - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
+    - rid: 6092004074608394374
+      type: {class: SpatialPopulationDistributionAlgorithmData, ns: Core.Orchestration,
+        asm: Core}
+      data:
+        searchStep: {x: 1000, y: 1000, z: 1000}
+    - rid: 6092004206412824672
+      type: {class: ObjectiveConditionMaterializedEntity, ns: Core.Objectives, asm: Core}
+      data:
+        _targetValue: 1
+        targetProgression:
+          sourceType: 0
+          metric: {fileID: 0}
+          measure: 0
+          resource: {fileID: 0}
+          owner:
+            bindingType: 0
+            owner:
+              source: {fileID: 0}
+            entryPath: []
+          walletTags: []
+          scaleType: 0
+          relativeBase: 0
+          progression:
+            rid: -2
+        economyAsset: {fileID: 0}
+        economyFormType: 1
+        requiredAssetTags:
+        - {fileID: 11400000, guid: c03c233cfc9f64712bf39c5d6311aee8, type: 2}
+        requiredCapabilityTypes: 
+        compareOperation: 3
+    - rid: 6092004206412824673
+      type: {class: CapabilityHostCriterionData, ns: Core.Orchestration, asm: Core}
+      data:
+        definition: {fileID: 11400000, guid: 8dea503a9b5334a9ca967a4d06d7bb35, type: 2}
+        requiredAssetTags: []
+        requiredCapabilityTypes: 
+    - rid: 6092004206412824674
+      type: {class: OwnerCriterionData, ns: Core.Orchestration, asm: Core}
+      data:
+        ownerSelectionType: 0
+    - rid: 6092004206412824675
+      type: {class: CapabilityHostCriterionData, ns: Core.Orchestration, asm: Core}
+      data:
+        definition: {fileID: 11400000, guid: 8dea503a9b5334a9ca967a4d06d7bb35, type: 2}
+        requiredAssetTags: []
+        requiredCapabilityTypes: 
+    - rid: 6092004206412824676
+      type: {class: OwnerCriterionData, ns: Core.Orchestration, asm: Core}
+      data:
+        ownerSelectionType: 0
+    - rid: 6092004206412824677
+      type: {class: LongFlatProgressionData, ns: Core, asm: Core}
+      data:
+        value: 1
+    - rid: 6092004206412824678
+      type: {class: PopulationCatalogContentSourceData, ns: Core.Orchestration, asm: Core}
+      data:
+        catalog: {fileID: 11400000, guid: ba8f4a13bf76d44889bf832263bfd194, type: 2}
+        selectionType: 0

@@ -35,8 +35,10 @@ MonoBehaviour:
   - rid: 742040
   - rid: 742050
   - rid: 742060
+  - rid: 6092004206412824667
   decisionGraph:
     nodes:
+    - rid: 6092004206412824668
     - rid: 930011
     - rid: 930001
     - rid: 740011
@@ -51,20 +53,15 @@ MonoBehaviour:
     - rid: 2807516363299750043
     - rid: 9102
     - rid: 741011
-    - rid: 741013
-        operatorId: {fileID: 11400000, guid: 381177c4910c942f2813ed12892d8f13, type: 2}
+    - rid: -2
     - rid: 741021
-    - rid: 741023
-        operatorId: {fileID: 11400000, guid: ea7c58850bb084dd79384417bc6fd3c7, type: 2}
+    - rid: -2
     - rid: 741031
-    - rid: 741033
-        operatorId: {fileID: 11400000, guid: 8d949e3d5713e4f1faaad92e8cd2910a, type: 2}
+    - rid: -2
     - rid: 741041
-    - rid: 741043
-        operatorId: {fileID: 11400000, guid: 460135ecf7cb2413f9b7d0649e3db20e, type: 2}
+    - rid: -2
     - rid: 741051
-    - rid: 741053
-        operatorId: {fileID: 11400000, guid: 2f4048547c94b4d7b9661c747ebc41bf, type: 2}
+    - rid: -2
     - rid: 742011
     - rid: 742021
     - rid: 742031
@@ -83,6 +80,8 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
     - rid: 9101
       type: {class: AgentResourceRequestDecompOpData, ns: Core.Orchestration, asm: Core}
       data:
@@ -98,6 +97,555 @@ MonoBehaviour:
       type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
       data:
         factType: 18
+    - rid: 740010
+      type: {class: AIBrainDecompOpData, ns: Core.Orchestration, asm: Core}
+      data:
+        operatorId: {fileID: 11400000, guid: 895f3f25513f4427682312979ba730ee, type: 2}
+        inputFactTypes: 01000000
+        matchConditions:
+        - rid: 740012
+        executorTags:
+        - {fileID: 11400000, guid: 426a12ca82ef04682bd0fc90f1af969f, type: 2}
+        targetNodeTag: {fileID: 11400000, guid: 426a12ca82ef04682bd0fc90f1af969f,
+          type: 2}
+        targetStateTag: {fileID: 11400000, guid: 17b2642669b76436798c89f941d6f7d1,
+          type: 2}
+        targetResetType: 0
+    - rid: 740011
+      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
+      data:
+        decisionId: apply-heal
+        conditions:
+        - rid: 740013
+        operatorId: {fileID: 11400000, guid: 895f3f25513f4427682312979ba730ee, type: 2}
+    - rid: 740012
+      type: {class: ObjectiveConditionEconomyMetric, ns: Core.Objectives, asm: Core}
+      data:
+        _targetValue: 0
+        observedOwner:
+          bindingType: 0
+          owner:
+            source: {fileID: 0}
+          entryPath: []
+        targetProgression:
+          sourceType: 0
+          metric: {fileID: 0}
+          measure: 0
+          resource: {fileID: 0}
+          owner:
+            bindingType: 0
+            owner:
+              source: {fileID: 0}
+            entryPath: []
+          walletTags: []
+          scaleType: 0
+          relativeBase: 0
+          progression:
+            rid: -2
+        _walletTags:
+        - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
+        _asset: {fileID: 11400000, guid: 7bed56cc886944c76a7f8ecd10cffe43, type: 2}
+        _requiredAssetTags: []
+        _requiredRuntimeTags: []
+        _formType: 0
+        _compareOperation: 0
+    - rid: 740013
+      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        factType: 1
+    - rid: 741010
+      type: {class: AIBrainDecompOpData, ns: Core.Orchestration, asm: Core}
+      data:
+        operatorId: {fileID: 11400000, guid: 381177c4910c942f2813ed12892d8f13, type: 2}
+        inputFactTypes: 01000000
+        matchConditions:
+        - rid: -2
+        executorTags:
+        - {fileID: 11400000, guid: 426a12ca82ef04682bd0fc90f1af969f, type: 2}
+        targetNodeTag: {fileID: 11400000, guid: 426a12ca82ef04682bd0fc90f1af969f,
+          type: 2}
+        targetStateTag: {fileID: 11400000, guid: 53062b2c1cfe345f0b9c68e6e458e4cc,
+          type: 2}
+        targetResetType: 0
+    - rid: 741011
+      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
+      data:
+        decisionId: apply-power-buff
+        conditions:
+        - rid: -2
+        operatorId: {fileID: 0}
+    - rid: 741020
+      type: {class: AIBrainDecompOpData, ns: Core.Orchestration, asm: Core}
+      data:
+        operatorId: {fileID: 11400000, guid: ea7c58850bb084dd79384417bc6fd3c7, type: 2}
+        inputFactTypes: 01000000
+        matchConditions:
+        - rid: -2
+        executorTags:
+        - {fileID: 11400000, guid: 426a12ca82ef04682bd0fc90f1af969f, type: 2}
+        targetNodeTag: {fileID: 11400000, guid: 426a12ca82ef04682bd0fc90f1af969f,
+          type: 2}
+        targetStateTag: {fileID: 11400000, guid: f7f527e5a8a22420cbfab42a4e4c634b,
+          type: 2}
+        targetResetType: 0
+    - rid: 741021
+      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
+      data:
+        decisionId: apply-defense-buff
+        conditions:
+        - rid: -2
+        operatorId: {fileID: 0}
+    - rid: 741030
+      type: {class: AIBrainDecompOpData, ns: Core.Orchestration, asm: Core}
+      data:
+        operatorId: {fileID: 11400000, guid: 8d949e3d5713e4f1faaad92e8cd2910a, type: 2}
+        inputFactTypes: 01000000
+        matchConditions:
+        - rid: -2
+        executorTags:
+        - {fileID: 11400000, guid: 426a12ca82ef04682bd0fc90f1af969f, type: 2}
+        targetNodeTag: {fileID: 11400000, guid: 426a12ca82ef04682bd0fc90f1af969f,
+          type: 2}
+        targetStateTag: {fileID: 11400000, guid: f7fc7e7799c4b44c1891fadcc781fb48,
+          type: 2}
+        targetResetType: 0
+    - rid: 741031
+      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
+      data:
+        decisionId: apply-health-buff
+        conditions:
+        - rid: -2
+        operatorId: {fileID: 0}
+    - rid: 741040
+      type: {class: AIBrainDecompOpData, ns: Core.Orchestration, asm: Core}
+      data:
+        operatorId: {fileID: 11400000, guid: 460135ecf7cb2413f9b7d0649e3db20e, type: 2}
+        inputFactTypes: 01000000
+        matchConditions:
+        - rid: -2
+        executorTags:
+        - {fileID: 11400000, guid: 426a12ca82ef04682bd0fc90f1af969f, type: 2}
+        targetNodeTag: {fileID: 11400000, guid: 426a12ca82ef04682bd0fc90f1af969f,
+          type: 2}
+        targetStateTag: {fileID: 11400000, guid: 3cef5fde2a4564e66a93e17f81de98bd,
+          type: 2}
+        targetResetType: 0
+    - rid: 741041
+      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
+      data:
+        decisionId: apply-speed-buff
+        conditions:
+        - rid: -2
+        operatorId: {fileID: 0}
+    - rid: 741050
+      type: {class: AIBrainDecompOpData, ns: Core.Orchestration, asm: Core}
+      data:
+        operatorId: {fileID: 11400000, guid: 2f4048547c94b4d7b9661c747ebc41bf, type: 2}
+        inputFactTypes: 01000000
+        matchConditions:
+        - rid: -2
+        executorTags:
+        - {fileID: 11400000, guid: 426a12ca82ef04682bd0fc90f1af969f, type: 2}
+        targetNodeTag: {fileID: 11400000, guid: 426a12ca82ef04682bd0fc90f1af969f,
+          type: 2}
+        targetStateTag: {fileID: 11400000, guid: c4036efbda89b428aa76271e42dc2644,
+          type: 2}
+        targetResetType: 0
+    - rid: 741051
+      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
+      data:
+        decisionId: apply-skill-speed-buff
+        conditions:
+        - rid: -2
+        operatorId: {fileID: 0}
+    - rid: 742010
+      type: {class: AIBrainDecompOpData, ns: Core.Orchestration, asm: Core}
+      data:
+        operatorId: {fileID: 11400000, guid: 219720cba1cbe475092458a5514f19e9, type: 2}
+        inputFactTypes: 01000000
+        matchConditions:
+        - rid: 742012
+        executorTags:
+        - {fileID: 11400000, guid: c03c233cfc9f64712bf39c5d6311aee8, type: 2}
+        targetNodeTag: {fileID: 11400000, guid: 426a12ca82ef04682bd0fc90f1af969f,
+          type: 2}
+        targetStateTag: {fileID: 11400000, guid: 1aa806a1050b0490eb79bf69ae296635,
+          type: 2}
+        targetResetType: 0
+    - rid: 742011
+      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
+      data:
+        decisionId: apply-lightningbolt-1
+        conditions:
+        - rid: 742013
+        operatorId: {fileID: 11400000, guid: 219720cba1cbe475092458a5514f19e9, type: 2}
+    - rid: 742012
+      type: {class: ObjectiveConditionEconomyMetric, ns: Core.Objectives, asm: Core}
+      data:
+        _targetValue: 0
+        observedOwner:
+          bindingType: 0
+          owner:
+            source: {fileID: 0}
+          entryPath: []
+        targetProgression:
+          sourceType: 0
+          metric: {fileID: 0}
+          measure: 0
+          resource: {fileID: 0}
+          owner:
+            bindingType: 0
+            owner:
+              source: {fileID: 0}
+            entryPath: []
+          walletTags: []
+          scaleType: 0
+          relativeBase: 0
+          progression:
+            rid: -2
+        _walletTags:
+        - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
+        _asset: {fileID: 11400000, guid: 1bae959fc321a4b81b9a347d28e2ab4d, type: 2}
+        _requiredAssetTags: []
+        _requiredRuntimeTags: []
+        _formType: 0
+        _compareOperation: 0
+    - rid: 742013
+      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        factType: 1
+    - rid: 742020
+      type: {class: AIBrainDecompOpData, ns: Core.Orchestration, asm: Core}
+      data:
+        operatorId: {fileID: 11400000, guid: d801f7b8fadcb4befaedb62498096c3d, type: 2}
+        inputFactTypes: 01000000
+        matchConditions:
+        - rid: 742022
+        executorTags:
+        - {fileID: 11400000, guid: c03c233cfc9f64712bf39c5d6311aee8, type: 2}
+        targetNodeTag: {fileID: 11400000, guid: 426a12ca82ef04682bd0fc90f1af969f,
+          type: 2}
+        targetStateTag: {fileID: 11400000, guid: 14e03f673b1424b5f8d637544982c97e,
+          type: 2}
+        targetResetType: 0
+    - rid: 742021
+      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
+      data:
+        decisionId: apply-lightningbolt-2
+        conditions:
+        - rid: 742023
+        operatorId: {fileID: 11400000, guid: d801f7b8fadcb4befaedb62498096c3d, type: 2}
+    - rid: 742022
+      type: {class: ObjectiveConditionEconomyMetric, ns: Core.Objectives, asm: Core}
+      data:
+        _targetValue: 0
+        observedOwner:
+          bindingType: 0
+          owner:
+            source: {fileID: 0}
+          entryPath: []
+        targetProgression:
+          sourceType: 0
+          metric: {fileID: 0}
+          measure: 0
+          resource: {fileID: 0}
+          owner:
+            bindingType: 0
+            owner:
+              source: {fileID: 0}
+            entryPath: []
+          walletTags: []
+          scaleType: 0
+          relativeBase: 0
+          progression:
+            rid: -2
+        _walletTags:
+        - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
+        _asset: {fileID: 11400000, guid: cdd9192b1766a4e0d8517d87d486eeee, type: 2}
+        _requiredAssetTags: []
+        _requiredRuntimeTags: []
+        _formType: 0
+        _compareOperation: 0
+    - rid: 742023
+      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        factType: 1
+    - rid: 742030
+      type: {class: AIBrainDecompOpData, ns: Core.Orchestration, asm: Core}
+      data:
+        operatorId: {fileID: 11400000, guid: 176658d59324041c2ac20c6a9ae6d353, type: 2}
+        inputFactTypes: 01000000
+        matchConditions:
+        - rid: 742032
+        executorTags:
+        - {fileID: 11400000, guid: c03c233cfc9f64712bf39c5d6311aee8, type: 2}
+        targetNodeTag: {fileID: 11400000, guid: 426a12ca82ef04682bd0fc90f1af969f,
+          type: 2}
+        targetStateTag: {fileID: 11400000, guid: 360600a454c4c490e83b73ff7a8b6156,
+          type: 2}
+        targetResetType: 0
+    - rid: 742031
+      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
+      data:
+        decisionId: apply-lightningbolt-3
+        conditions:
+        - rid: 742033
+        operatorId: {fileID: 11400000, guid: 176658d59324041c2ac20c6a9ae6d353, type: 2}
+    - rid: 742032
+      type: {class: ObjectiveConditionEconomyMetric, ns: Core.Objectives, asm: Core}
+      data:
+        _targetValue: 0
+        observedOwner:
+          bindingType: 0
+          owner:
+            source: {fileID: 0}
+          entryPath: []
+        targetProgression:
+          sourceType: 0
+          metric: {fileID: 0}
+          measure: 0
+          resource: {fileID: 0}
+          owner:
+            bindingType: 0
+            owner:
+              source: {fileID: 0}
+            entryPath: []
+          walletTags: []
+          scaleType: 0
+          relativeBase: 0
+          progression:
+            rid: -2
+        _walletTags:
+        - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
+        _asset: {fileID: 11400000, guid: f927cf8418f604038917fba9fee41d05, type: 2}
+        _requiredAssetTags: []
+        _requiredRuntimeTags: []
+        _formType: 0
+        _compareOperation: 0
+    - rid: 742033
+      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        factType: 1
+    - rid: 742040
+      type: {class: AIBrainDecompOpData, ns: Core.Orchestration, asm: Core}
+      data:
+        operatorId: {fileID: 11400000, guid: 0d2ccebed6b714a6bbef23910ab6916b, type: 2}
+        inputFactTypes: 01000000
+        matchConditions:
+        - rid: 742042
+        executorTags:
+        - {fileID: 11400000, guid: c03c233cfc9f64712bf39c5d6311aee8, type: 2}
+        targetNodeTag: {fileID: 11400000, guid: 426a12ca82ef04682bd0fc90f1af969f,
+          type: 2}
+        targetStateTag: {fileID: 11400000, guid: f9ae3725f5f484b15b93894bfe6850d1,
+          type: 2}
+        targetResetType: 0
+    - rid: 742041
+      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
+      data:
+        decisionId: apply-lightningbolt-4
+        conditions:
+        - rid: 742043
+        operatorId: {fileID: 11400000, guid: 0d2ccebed6b714a6bbef23910ab6916b, type: 2}
+    - rid: 742042
+      type: {class: ObjectiveConditionEconomyMetric, ns: Core.Objectives, asm: Core}
+      data:
+        _targetValue: 0
+        observedOwner:
+          bindingType: 0
+          owner:
+            source: {fileID: 0}
+          entryPath: []
+        targetProgression:
+          sourceType: 0
+          metric: {fileID: 0}
+          measure: 0
+          resource: {fileID: 0}
+          owner:
+            bindingType: 0
+            owner:
+              source: {fileID: 0}
+            entryPath: []
+          walletTags: []
+          scaleType: 0
+          relativeBase: 0
+          progression:
+            rid: -2
+        _walletTags:
+        - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
+        _asset: {fileID: 11400000, guid: d3202e2acebaf4e0ca3be0e1c4b5c865, type: 2}
+        _requiredAssetTags: []
+        _requiredRuntimeTags: []
+        _formType: 0
+        _compareOperation: 0
+    - rid: 742043
+      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        factType: 1
+    - rid: 742050
+      type: {class: AIBrainDecompOpData, ns: Core.Orchestration, asm: Core}
+      data:
+        operatorId: {fileID: 11400000, guid: ef4bd5e52563f4b1884a33f59e4c0a0d, type: 2}
+        inputFactTypes: 01000000
+        matchConditions:
+        - rid: 742052
+        executorTags:
+        - {fileID: 11400000, guid: c03c233cfc9f64712bf39c5d6311aee8, type: 2}
+        targetNodeTag: {fileID: 11400000, guid: 426a12ca82ef04682bd0fc90f1af969f,
+          type: 2}
+        targetStateTag: {fileID: 11400000, guid: 84c718eaaef554799a96c255e29d67a1,
+          type: 2}
+        targetResetType: 0
+    - rid: 742051
+      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
+      data:
+        decisionId: apply-lightningbolt-5
+        conditions:
+        - rid: 742053
+        operatorId: {fileID: 11400000, guid: ef4bd5e52563f4b1884a33f59e4c0a0d, type: 2}
+    - rid: 742052
+      type: {class: ObjectiveConditionEconomyMetric, ns: Core.Objectives, asm: Core}
+      data:
+        _targetValue: 0
+        observedOwner:
+          bindingType: 0
+          owner:
+            source: {fileID: 0}
+          entryPath: []
+        targetProgression:
+          sourceType: 0
+          metric: {fileID: 0}
+          measure: 0
+          resource: {fileID: 0}
+          owner:
+            bindingType: 0
+            owner:
+              source: {fileID: 0}
+            entryPath: []
+          walletTags: []
+          scaleType: 0
+          relativeBase: 0
+          progression:
+            rid: -2
+        _walletTags:
+        - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
+        _asset: {fileID: 11400000, guid: 2cbf36acf2a164d3e8cb433bf7b16771, type: 2}
+        _requiredAssetTags: []
+        _requiredRuntimeTags: []
+        _formType: 0
+        _compareOperation: 0
+    - rid: 742053
+      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        factType: 1
+    - rid: 742060
+      type: {class: AIBrainDecompOpData, ns: Core.Orchestration, asm: Core}
+      data:
+        operatorId: {fileID: 11400000, guid: dc757caafde564193908af4b94c62362, type: 2}
+        inputFactTypes: 01000000
+        matchConditions:
+        - rid: 742062
+        executorTags:
+        - {fileID: 11400000, guid: c03c233cfc9f64712bf39c5d6311aee8, type: 2}
+        targetNodeTag: {fileID: 11400000, guid: 426a12ca82ef04682bd0fc90f1af969f,
+          type: 2}
+        targetStateTag: {fileID: 11400000, guid: 578993de11e4c422881f6ffd2533ed5c,
+          type: 2}
+        targetResetType: 0
+    - rid: 742061
+      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
+      data:
+        decisionId: apply-lightningbolt-6
+        conditions:
+        - rid: 742063
+        operatorId: {fileID: 11400000, guid: dc757caafde564193908af4b94c62362, type: 2}
+    - rid: 742062
+      type: {class: ObjectiveConditionEconomyMetric, ns: Core.Objectives, asm: Core}
+      data:
+        _targetValue: 0
+        observedOwner:
+          bindingType: 0
+          owner:
+            source: {fileID: 0}
+          entryPath: []
+        targetProgression:
+          sourceType: 0
+          metric: {fileID: 0}
+          measure: 0
+          resource: {fileID: 0}
+          owner:
+            bindingType: 0
+            owner:
+              source: {fileID: 0}
+            entryPath: []
+          walletTags: []
+          scaleType: 0
+          relativeBase: 0
+          progression:
+            rid: -2
+        _walletTags:
+        - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
+        _asset: {fileID: 11400000, guid: 7cccf2933a9744aff98a49bd2d5a1d94, type: 2}
+        _requiredAssetTags: []
+        _requiredRuntimeTags: []
+        _formType: 0
+        _compareOperation: 0
+    - rid: 742063
+      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        factType: 1
+    - rid: 930000
+      type: {class: EconomyOperationDecompOpData, ns: Core.Orchestration, asm: Core}
+      data:
+        operatorId: {fileID: 11400000, guid: 0c83bf4f378b94214a80eb705f658770, type: 2}
+        operation: 2
+        selection:
+          walletTags:
+          - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
+          formTypes: 00000000
+          exactAsset: {fileID: 11400000, guid: ef0765d17832a45dea743411aa4d6a9c, type: 2}
+          requiredAssetTags: []
+          excludedAssetTags: []
+          requiredRuntimeTags: []
+          excludedRuntimeTags: []
+        allowCrossOwnerTransfer: 0
+    - rid: 930001
+      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
+      data:
+        decisionId: IssueProgressOperator
+        conditions:
+        - rid: 930002
+        operatorId: {fileID: 11400000, guid: 0c83bf4f378b94214a80eb705f658770, type: 2}
+    - rid: 930002
+      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        factType: 1
+    - rid: 930010
+      type: {class: EconomyOperationDecompOpData, ns: Core.Orchestration, asm: Core}
+      data:
+        operatorId: {fileID: 11400000, guid: 3f5c3a43525d94dccbab2b47736583f5, type: 2}
+        operation: 4
+        selection:
+          walletTags:
+          - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
+          formTypes: 00000000
+          exactAsset: {fileID: 11400000, guid: ef0765d17832a45dea743411aa4d6a9c, type: 2}
+          requiredAssetTags: []
+          excludedAssetTags: []
+          requiredRuntimeTags: []
+          excludedRuntimeTags: []
+        allowCrossOwnerTransfer: 0
+    - rid: 930011
+      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
+      data:
+        decisionId: ConsumeProgressOperator
+        conditions:
+        - rid: 930012
+        operatorId: {fileID: 11400000, guid: 3f5c3a43525d94dccbab2b47736583f5, type: 2}
+    - rid: 930012
+      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        factType: 1
     - rid: 2807516363299750031
       type: {class: AgentDecompOpData, ns: Core.Orchestration, asm: Core}
       data:
@@ -316,501 +864,29 @@ MonoBehaviour:
         asm: Core}
       data:
         operatorId: {fileID: 11400000, guid: 75feb13c5e1254519a15de921f8b2f4c, type: 2}
-    - rid: 740010
-      type: {class: AIBrainDecompOpData, ns: Core.Orchestration, asm: Core}
+    - rid: 6092004206412824667
+      type: {class: AgentDecompOpData, ns: Core.Orchestration, asm: Core}
       data:
-        operatorId: {fileID: 11400000, guid: 895f3f25513f4427682312979ba730ee, type: 2}
-        inputFactTypes: 01000000
-        matchConditions:
-        - rid: 740012
-        executorTags:
-        - {fileID: 11400000, guid: 426a12ca82ef04682bd0fc90f1af969f, type: 2}
-        targetNodeTag: {fileID: 11400000, guid: 426a12ca82ef04682bd0fc90f1af969f, type: 2}
-        targetStateTag: {fileID: 11400000, guid: 17b2642669b76436798c89f941d6f7d1, type: 2}
-        targetResetType: 0
-    - rid: 740011
+        operatorId: {fileID: 11400000, guid: 1e978ee561fad49a698a620ea33f48f5, type: 2}
+        agentDefinition: {fileID: 11400000, guid: 043e59c26f1eb49019751a43f6770e64,
+          type: 2}
+    - rid: 6092004206412824668
       type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
       data:
-        decisionId: apply-heal
+        decisionId: initial-hero-population
         conditions:
-        - rid: 740013
-        operatorId: {fileID: 11400000, guid: 895f3f25513f4427682312979ba730ee, type: 2}
-    - rid: 740012
-      type: {class: ObjectiveConditionEconomyMetric, ns: Core.Objectives, asm: Core}
-      data:
-        observedOwner:
-          bindingType: 0
-          owner:
-            source: {fileID: 0}
-        _targetValue: 0
-        _walletTags:
-        - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
-        _asset: {fileID: 11400000, guid: 7bed56cc886944c76a7f8ecd10cffe43, type: 2}
-        _requiredAssetTags: []
-        _requiredRuntimeTags: []
-        _formType: 0
-        _compareOperation: 0
-    - rid: 740013
+        - rid: 6092004206412824669
+        - rid: 6092004206412824670
+        - rid: 6092004206412824671
+        operatorId: {fileID: 11400000, guid: 1e978ee561fad49a698a620ea33f48f5, type: 2}
+    - rid: 6092004206412824669
       type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
       data:
-        factType: 1
-    - rid: 741010
-      type: {class: AIBrainDecompOpData, ns: Core.Orchestration, asm: Core}
+        factType: 4
+    - rid: 6092004206412824670
+      type: {class: ScopeDecisionConditionData, ns: Core.Orchestration, asm: Core}
       data:
-        operatorId: {fileID: 11400000, guid: 381177c4910c942f2813ed12892d8f13, type: 2}
-        inputFactTypes: 01000000
-        matchConditions:
-        - rid: 741012
-        executorTags:
-        - {fileID: 11400000, guid: 426a12ca82ef04682bd0fc90f1af969f, type: 2}
-        targetNodeTag: {fileID: 11400000, guid: 426a12ca82ef04682bd0fc90f1af969f, type: 2}
-        targetStateTag: {fileID: 11400000, guid: 53062b2c1cfe345f0b9c68e6e458e4cc, type: 2}
-        targetResetType: 0
-    - rid: 741011
-      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
-      data:
-        decisionId: apply-power-buff
-        conditions:
-        - rid: 741012
-      type: {class: ObjectiveConditionEconomyMetric, ns: Core.Objectives, asm: Core}
-      data:
-        observedOwner:
-          bindingType: 0
-          owner:
-            source: {fileID: 0}
-        _targetValue: 0
-        _walletTags:
-        - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
-        _asset: {fileID: 11400000, guid: 839c1d8a662844abaa8388a2950bf11a, type: 2}
-        _requiredAssetTags: []
-        _requiredRuntimeTags: []
-        _formType: 0
-        _compareOperation: 0
-    - rid: 741013
-      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
-      data:
-        factType: 1
-    - rid: 741020
-      type: {class: AIBrainDecompOpData, ns: Core.Orchestration, asm: Core}
-      data:
-        operatorId: {fileID: 11400000, guid: ea7c58850bb084dd79384417bc6fd3c7, type: 2}
-        inputFactTypes: 01000000
-        matchConditions:
-        - rid: 741022
-        executorTags:
-        - {fileID: 11400000, guid: 426a12ca82ef04682bd0fc90f1af969f, type: 2}
-        targetNodeTag: {fileID: 11400000, guid: 426a12ca82ef04682bd0fc90f1af969f, type: 2}
-        targetStateTag: {fileID: 11400000, guid: f7f527e5a8a22420cbfab42a4e4c634b, type: 2}
-        targetResetType: 0
-    - rid: 741021
-      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
-      data:
-        decisionId: apply-defense-buff
-        conditions:
-        - rid: 741022
-      type: {class: ObjectiveConditionEconomyMetric, ns: Core.Objectives, asm: Core}
-      data:
-        observedOwner:
-          bindingType: 0
-          owner:
-            source: {fileID: 0}
-        _targetValue: 0
-        _walletTags:
-        - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
-        _asset: {fileID: 11400000, guid: 8a64003fa14f44e83aed0b1b4fe8be60, type: 2}
-        _requiredAssetTags: []
-        _requiredRuntimeTags: []
-        _formType: 0
-        _compareOperation: 0
-    - rid: 741023
-      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
-      data:
-        factType: 1
-    - rid: 741030
-      type: {class: AIBrainDecompOpData, ns: Core.Orchestration, asm: Core}
-      data:
-        operatorId: {fileID: 11400000, guid: 8d949e3d5713e4f1faaad92e8cd2910a, type: 2}
-        inputFactTypes: 01000000
-        matchConditions:
-        - rid: 741032
-        executorTags:
-        - {fileID: 11400000, guid: 426a12ca82ef04682bd0fc90f1af969f, type: 2}
-        targetNodeTag: {fileID: 11400000, guid: 426a12ca82ef04682bd0fc90f1af969f, type: 2}
-        targetStateTag: {fileID: 11400000, guid: f7fc7e7799c4b44c1891fadcc781fb48, type: 2}
-        targetResetType: 0
-    - rid: 741031
-      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
-      data:
-        decisionId: apply-health-buff
-        conditions:
-        - rid: 741032
-      type: {class: ObjectiveConditionEconomyMetric, ns: Core.Objectives, asm: Core}
-      data:
-        observedOwner:
-          bindingType: 0
-          owner:
-            source: {fileID: 0}
-        _targetValue: 0
-        _walletTags:
-        - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
-        _asset: {fileID: 11400000, guid: 47e08c5049e1c46c08a1843ccc821653, type: 2}
-        _requiredAssetTags: []
-        _requiredRuntimeTags: []
-        _formType: 0
-        _compareOperation: 0
-    - rid: 741033
-      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
-      data:
-        factType: 1
-    - rid: 741040
-      type: {class: AIBrainDecompOpData, ns: Core.Orchestration, asm: Core}
-      data:
-        operatorId: {fileID: 11400000, guid: 460135ecf7cb2413f9b7d0649e3db20e, type: 2}
-        inputFactTypes: 01000000
-        matchConditions:
-        - rid: 741042
-        executorTags:
-        - {fileID: 11400000, guid: 426a12ca82ef04682bd0fc90f1af969f, type: 2}
-        targetNodeTag: {fileID: 11400000, guid: 426a12ca82ef04682bd0fc90f1af969f, type: 2}
-        targetStateTag: {fileID: 11400000, guid: 3cef5fde2a4564e66a93e17f81de98bd, type: 2}
-        targetResetType: 0
-    - rid: 741041
-      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
-      data:
-        decisionId: apply-speed-buff
-        conditions:
-        - rid: 741042
-      type: {class: ObjectiveConditionEconomyMetric, ns: Core.Objectives, asm: Core}
-      data:
-        observedOwner:
-          bindingType: 0
-          owner:
-            source: {fileID: 0}
-        _targetValue: 0
-        _walletTags:
-        - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
-        _asset: {fileID: 11400000, guid: e8a82c2ef62684484a1dc4a73dbb0b19, type: 2}
-        _requiredAssetTags: []
-        _requiredRuntimeTags: []
-        _formType: 0
-        _compareOperation: 0
-    - rid: 741043
-      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
-      data:
-        factType: 1
-    - rid: 741050
-      type: {class: AIBrainDecompOpData, ns: Core.Orchestration, asm: Core}
-      data:
-        operatorId: {fileID: 11400000, guid: 2f4048547c94b4d7b9661c747ebc41bf, type: 2}
-        inputFactTypes: 01000000
-        matchConditions:
-        - rid: 741052
-        executorTags:
-        - {fileID: 11400000, guid: 426a12ca82ef04682bd0fc90f1af969f, type: 2}
-        targetNodeTag: {fileID: 11400000, guid: 426a12ca82ef04682bd0fc90f1af969f, type: 2}
-        targetStateTag: {fileID: 11400000, guid: c4036efbda89b428aa76271e42dc2644, type: 2}
-        targetResetType: 0
-    - rid: 741051
-      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
-      data:
-        decisionId: apply-skill-speed-buff
-        conditions:
-        - rid: 741052
-      type: {class: ObjectiveConditionEconomyMetric, ns: Core.Objectives, asm: Core}
-      data:
-        observedOwner:
-          bindingType: 0
-          owner:
-            source: {fileID: 0}
-        _targetValue: 0
-        _walletTags:
-        - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
-        _asset: {fileID: 11400000, guid: ae834fb74361a41d5a823185572def60, type: 2}
-        _requiredAssetTags: []
-        _requiredRuntimeTags: []
-        _formType: 0
-        _compareOperation: 0
-    - rid: 741053
-      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
-      data:
-        factType: 1
-    - rid: 742010
-      type: {class: AIBrainDecompOpData, ns: Core.Orchestration, asm: Core}
-      data:
-        operatorId: {fileID: 11400000, guid: 219720cba1cbe475092458a5514f19e9, type: 2}
-        inputFactTypes: 01000000
-        matchConditions:
-        - rid: 742012
-        executorTags:
-        - {fileID: 11400000, guid: c03c233cfc9f64712bf39c5d6311aee8, type: 2}
-        targetNodeTag: {fileID: 11400000, guid: 426a12ca82ef04682bd0fc90f1af969f, type: 2}
-        targetStateTag: {fileID: 11400000, guid: 1aa806a1050b0490eb79bf69ae296635, type: 2}
-        targetResetType: 0
-    - rid: 742011
-      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
-      data:
-        decisionId: apply-lightningbolt-1
-        conditions:
-        - rid: 742013
-        operatorId: {fileID: 11400000, guid: 219720cba1cbe475092458a5514f19e9, type: 2}
-    - rid: 742012
-      type: {class: ObjectiveConditionEconomyMetric, ns: Core.Objectives, asm: Core}
-      data:
-        observedOwner:
-          bindingType: 0
-          owner:
-            source: {fileID: 0}
-        _targetValue: 0
-        _walletTags:
-        - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
-        _asset: {fileID: 11400000, guid: 1bae959fc321a4b81b9a347d28e2ab4d, type: 2}
-        _requiredAssetTags: []
-        _requiredRuntimeTags: []
-        _formType: 0
-        _compareOperation: 0
-    - rid: 742013
-      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
-      data:
-        factType: 1
-    - rid: 742020
-      type: {class: AIBrainDecompOpData, ns: Core.Orchestration, asm: Core}
-      data:
-        operatorId: {fileID: 11400000, guid: d801f7b8fadcb4befaedb62498096c3d, type: 2}
-        inputFactTypes: 01000000
-        matchConditions:
-        - rid: 742022
-        executorTags:
-        - {fileID: 11400000, guid: c03c233cfc9f64712bf39c5d6311aee8, type: 2}
-        targetNodeTag: {fileID: 11400000, guid: 426a12ca82ef04682bd0fc90f1af969f, type: 2}
-        targetStateTag: {fileID: 11400000, guid: 14e03f673b1424b5f8d637544982c97e, type: 2}
-        targetResetType: 0
-    - rid: 742021
-      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
-      data:
-        decisionId: apply-lightningbolt-2
-        conditions:
-        - rid: 742023
-        operatorId: {fileID: 11400000, guid: d801f7b8fadcb4befaedb62498096c3d, type: 2}
-    - rid: 742022
-      type: {class: ObjectiveConditionEconomyMetric, ns: Core.Objectives, asm: Core}
-      data:
-        observedOwner:
-          bindingType: 0
-          owner:
-            source: {fileID: 0}
-        _targetValue: 0
-        _walletTags:
-        - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
-        _asset: {fileID: 11400000, guid: cdd9192b1766a4e0d8517d87d486eeee, type: 2}
-        _requiredAssetTags: []
-        _requiredRuntimeTags: []
-        _formType: 0
-        _compareOperation: 0
-    - rid: 742023
-      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
-      data:
-        factType: 1
-    - rid: 742030
-      type: {class: AIBrainDecompOpData, ns: Core.Orchestration, asm: Core}
-      data:
-        operatorId: {fileID: 11400000, guid: 176658d59324041c2ac20c6a9ae6d353, type: 2}
-        inputFactTypes: 01000000
-        matchConditions:
-        - rid: 742032
-        executorTags:
-        - {fileID: 11400000, guid: c03c233cfc9f64712bf39c5d6311aee8, type: 2}
-        targetNodeTag: {fileID: 11400000, guid: 426a12ca82ef04682bd0fc90f1af969f, type: 2}
-        targetStateTag: {fileID: 11400000, guid: 360600a454c4c490e83b73ff7a8b6156, type: 2}
-        targetResetType: 0
-    - rid: 742031
-      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
-      data:
-        decisionId: apply-lightningbolt-3
-        conditions:
-        - rid: 742033
-        operatorId: {fileID: 11400000, guid: 176658d59324041c2ac20c6a9ae6d353, type: 2}
-    - rid: 742032
-      type: {class: ObjectiveConditionEconomyMetric, ns: Core.Objectives, asm: Core}
-      data:
-        observedOwner:
-          bindingType: 0
-          owner:
-            source: {fileID: 0}
-        _targetValue: 0
-        _walletTags:
-        - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
-        _asset: {fileID: 11400000, guid: f927cf8418f604038917fba9fee41d05, type: 2}
-        _requiredAssetTags: []
-        _requiredRuntimeTags: []
-        _formType: 0
-        _compareOperation: 0
-    - rid: 742033
-      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
-      data:
-        factType: 1
-    - rid: 742040
-      type: {class: AIBrainDecompOpData, ns: Core.Orchestration, asm: Core}
-      data:
-        operatorId: {fileID: 11400000, guid: 0d2ccebed6b714a6bbef23910ab6916b, type: 2}
-        inputFactTypes: 01000000
-        matchConditions:
-        - rid: 742042
-        executorTags:
-        - {fileID: 11400000, guid: c03c233cfc9f64712bf39c5d6311aee8, type: 2}
-        targetNodeTag: {fileID: 11400000, guid: 426a12ca82ef04682bd0fc90f1af969f, type: 2}
-        targetStateTag: {fileID: 11400000, guid: f9ae3725f5f484b15b93894bfe6850d1, type: 2}
-        targetResetType: 0
-    - rid: 742041
-      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
-      data:
-        decisionId: apply-lightningbolt-4
-        conditions:
-        - rid: 742043
-        operatorId: {fileID: 11400000, guid: 0d2ccebed6b714a6bbef23910ab6916b, type: 2}
-    - rid: 742042
-      type: {class: ObjectiveConditionEconomyMetric, ns: Core.Objectives, asm: Core}
-      data:
-        observedOwner:
-          bindingType: 0
-          owner:
-            source: {fileID: 0}
-        _targetValue: 0
-        _walletTags:
-        - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
-        _asset: {fileID: 11400000, guid: d3202e2acebaf4e0ca3be0e1c4b5c865, type: 2}
-        _requiredAssetTags: []
-        _requiredRuntimeTags: []
-        _formType: 0
-        _compareOperation: 0
-    - rid: 742043
-      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
-      data:
-        factType: 1
-    - rid: 742050
-      type: {class: AIBrainDecompOpData, ns: Core.Orchestration, asm: Core}
-      data:
-        operatorId: {fileID: 11400000, guid: ef4bd5e52563f4b1884a33f59e4c0a0d, type: 2}
-        inputFactTypes: 01000000
-        matchConditions:
-        - rid: 742052
-        executorTags:
-        - {fileID: 11400000, guid: c03c233cfc9f64712bf39c5d6311aee8, type: 2}
-        targetNodeTag: {fileID: 11400000, guid: 426a12ca82ef04682bd0fc90f1af969f, type: 2}
-        targetStateTag: {fileID: 11400000, guid: 84c718eaaef554799a96c255e29d67a1, type: 2}
-        targetResetType: 0
-    - rid: 742051
-      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
-      data:
-        decisionId: apply-lightningbolt-5
-        conditions:
-        - rid: 742053
-        operatorId: {fileID: 11400000, guid: ef4bd5e52563f4b1884a33f59e4c0a0d, type: 2}
-    - rid: 742052
-      type: {class: ObjectiveConditionEconomyMetric, ns: Core.Objectives, asm: Core}
-      data:
-        observedOwner:
-          bindingType: 0
-          owner:
-            source: {fileID: 0}
-        _targetValue: 0
-        _walletTags:
-        - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
-        _asset: {fileID: 11400000, guid: 2cbf36acf2a164d3e8cb433bf7b16771, type: 2}
-        _requiredAssetTags: []
-        _requiredRuntimeTags: []
-        _formType: 0
-        _compareOperation: 0
-    - rid: 742053
-      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
-      data:
-        factType: 1
-    - rid: 742060
-      type: {class: AIBrainDecompOpData, ns: Core.Orchestration, asm: Core}
-      data:
-        operatorId: {fileID: 11400000, guid: dc757caafde564193908af4b94c62362, type: 2}
-        inputFactTypes: 01000000
-        matchConditions:
-        - rid: 742062
-        executorTags:
-        - {fileID: 11400000, guid: c03c233cfc9f64712bf39c5d6311aee8, type: 2}
-        targetNodeTag: {fileID: 11400000, guid: 426a12ca82ef04682bd0fc90f1af969f, type: 2}
-        targetStateTag: {fileID: 11400000, guid: 578993de11e4c422881f6ffd2533ed5c, type: 2}
-        targetResetType: 0
-    - rid: 742061
-      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
-      data:
-        decisionId: apply-lightningbolt-6
-        conditions:
-        - rid: 742063
-        operatorId: {fileID: 11400000, guid: dc757caafde564193908af4b94c62362, type: 2}
-    - rid: 742062
-      type: {class: ObjectiveConditionEconomyMetric, ns: Core.Objectives, asm: Core}
-      data:
-        observedOwner:
-          bindingType: 0
-          owner:
-            source: {fileID: 0}
-        _targetValue: 0
-        _walletTags:
-        - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
-        _asset: {fileID: 11400000, guid: 7cccf2933a9744aff98a49bd2d5a1d94, type: 2}
-        _requiredAssetTags: []
-        _requiredRuntimeTags: []
-        _formType: 0
-        _compareOperation: 0
-    - rid: 742063
-      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
-      data:
-        factType: 1
-    - rid: 930000
-      type: {class: EconomyOperationDecompOpData, ns: Core.Orchestration, asm: Core}
-      data:
-        operatorId: {fileID: 11400000, guid: 0c83bf4f378b94214a80eb705f658770, type: 2}
-        operation: 2
-        selection:
-          walletTags:
-          - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
-          formTypes: 00000000
-          exactAsset: {fileID: 11400000, guid: ef0765d17832a45dea743411aa4d6a9c, type: 2}
-          requiredAssetTags: []
-          excludedAssetTags: []
-          requiredRuntimeTags: []
-          excludedRuntimeTags: []
-        allowCrossOwnerTransfer: 0
-    - rid: 930001
-      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
-      data:
-        decisionId: IssueProgressOperator
-        conditions:
-        - rid: 930002
-        operatorId: {fileID: 11400000, guid: 0c83bf4f378b94214a80eb705f658770, type: 2}
-    - rid: 930002
-      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
-      data:
-        factType: 1
-    - rid: 930010
-      type: {class: EconomyOperationDecompOpData, ns: Core.Orchestration, asm: Core}
-      data:
-        operatorId: {fileID: 11400000, guid: 3f5c3a43525d94dccbab2b47736583f5, type: 2}
-        operation: 4
-        selection:
-          walletTags:
-          - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
-          formTypes: 00000000
-          exactAsset: {fileID: 11400000, guid: ef0765d17832a45dea743411aa4d6a9c, type: 2}
-          requiredAssetTags: []
-          excludedAssetTags: []
-          requiredRuntimeTags: []
-          excludedRuntimeTags: []
-        allowCrossOwnerTransfer: 0
-    - rid: 930011
-      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
-      data:
-        decisionId: ConsumeProgressOperator
-        conditions:
-        - rid: 930012
-        operatorId: {fileID: 11400000, guid: 3f5c3a43525d94dccbab2b47736583f5, type: 2}
-    - rid: 930012
-      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
-      data:
-        factType: 1
+        scopeType: 0
+    - rid: 6092004206412824671
+      type: {class: AgentMatchDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data: 

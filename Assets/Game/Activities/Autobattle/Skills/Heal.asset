@@ -60,108 +60,204 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
     - rid: 720000
       type: {class: SkillEconomyEffectData, ns: Core.Skills, asm: Core}
       data:
         recipient: 3
         repeatType: 1
         requiredTags: []
-        value:
-          rid: 720002
-        valueArgument:
-          rid: -2
-        multiplier: {fileID: 0}
         asset: {fileID: 11400000, guid: 7bed56cc886944c76a7f8ecd10cffe43, type: 2}
         walletTags:
         - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
         formType: 0
         requiredRuntimeTags: []
         formula:
-          terms:
-          - operation: 3
-            parameterTarget: 0
-            operandType: 2
-            value: {fileID: 0}
-            attribute:
-              attribute: {fileID: 0}
-              qualifiers: []
-            allowMissingAttribute: 0
-            missingAttributeValue: 0
-            stopWhenNonPositive: 1
-            requirePositiveOperand: 0
-            minimumMagnitude: 0
-            multiplier:
-              attribute: {fileID: 0}
-              qualifiers: []
-            economyOwnerType: 1
-            economySelection:
-              walletTags:
-              - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
-              formTypes: 00000000
-              exactAsset: {fileID: 11400000, guid: 7bed56cc886944c76a7f8ecd10cffe43, type: 2}
-              requiredAssetTags: []
-              excludedAssetTags: []
-              requiredRuntimeTags: []
-              excludedRuntimeTags: []
+          root:
+            rid: 800001
     - rid: 720001
       type: {class: SkillHostValueEffectData, ns: Core.Skills, asm: Core}
       data:
         recipient: 1
         repeatType: 1
         requiredTags: []
-        value:
-          rid: 720003
-        valueArgument:
-          rid: -2
-        multiplier: {fileID: 0}
         hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
         formula:
-          terms:
-          - operation: 3
-            parameterTarget: 0
-            operandType: 2
-            value: {fileID: 0}
-            attribute:
-              attribute: {fileID: 0}
-              qualifiers: []
-            allowMissingAttribute: 0
-            missingAttributeValue: 0
-            stopWhenNonPositive: 1
-            requirePositiveOperand: 0
-            minimumMagnitude: 0
-            multiplier:
-              attribute: {fileID: 0}
-              qualifiers: []
-            economyOwnerType: 1
-            economySelection:
-              walletTags:
-              - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
-              formTypes: 00000000
-              exactAsset: {fileID: 11400000, guid: 7bed56cc886944c76a7f8ecd10cffe43, type: 2}
-              requiredAssetTags: []
-              excludedAssetTags: []
-              requiredRuntimeTags: []
-              excludedRuntimeTags: []
-          - operation: 3
-            parameterTarget: 1
-            operandType: 1
-            value: {fileID: 0}
-            attribute:
-              attribute: {fileID: 11400000, guid: 8c0f2453a88154d458b494f57e5b4722, type: 2}
-              qualifiers: []
-            allowMissingAttribute: 0
-            missingAttributeValue: 0
-            stopWhenNonPositive: 0
-            requirePositiveOperand: 0
-            minimumMagnitude: 0
-            multiplier:
-              attribute: {fileID: 0}
-              qualifiers: []
-    - rid: 720002
+          root:
+            rid: 800014
+    - rid: 800002
+      type: {class: SkillEffectEconomyNodeData, ns: Core.Skills, asm: Core}
+      data:
+        parameterTarget: 0
+        ownerType: 1
+        selection:
+          walletTags:
+            - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
+          formTypes: 00000000
+          exactAsset: {fileID: 11400000, guid: 7bed56cc886944c76a7f8ecd10cffe43, type: 2}
+          requiredAssetTags: []
+          excludedAssetTags: []
+          requiredRuntimeTags: []
+          excludedRuntimeTags: []
+    - rid: 800004
+      type: {class: LongFlatProgressionData, ns: Core, asm: Core}
+      data:
+        value: 0
+    - rid: 800003
+      type: {class: SkillEffectProgressionNodeData, ns: Core.Skills, asm: Core}
+      data:
+        progression: {rid: 800004}
+        argument: {rid: -2}
+        precision: 0
+    - rid: 800008
+      type: {class: LongFlatProgressionData, ns: Core, asm: Core}
+      data:
+        value: 1
+    - rid: 800007
+      type: {class: SkillEffectProgressionNodeData, ns: Core.Skills, asm: Core}
+      data:
+        progression: {rid: 800008}
+        argument: {rid: -2}
+        precision: 0
+    - rid: 800009
+      type: {class: SkillEffectEconomyNodeData, ns: Core.Skills, asm: Core}
+      data:
+        parameterTarget: 0
+        ownerType: 1
+        selection:
+          walletTags:
+            - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
+          formTypes: 00000000
+          exactAsset: {fileID: 11400000, guid: 7bed56cc886944c76a7f8ecd10cffe43, type: 2}
+          requiredAssetTags: []
+          excludedAssetTags: []
+          requiredRuntimeTags: []
+          excludedRuntimeTags: []
+    - rid: 800006
+      type: {class: SkillEffectBinaryNodeData, ns: Core.Skills, asm: Core}
+      data:
+        operation: 2
+        left: {rid: 800007}
+        right: {rid: 800009}
+    - rid: 800011
       type: {class: LongFlatProgressionData, ns: Core, asm: Core}
       data:
         value: -1
-    - rid: 720003
+    - rid: 800010
+      type: {class: SkillEffectProgressionNodeData, ns: Core.Skills, asm: Core}
+      data:
+        progression: {rid: 800011}
+        argument: {rid: -2}
+        precision: 0
+    - rid: 800005
+      type: {class: SkillEffectBinaryNodeData, ns: Core.Skills, asm: Core}
+      data:
+        operation: 2
+        left: {rid: 800006}
+        right: {rid: 800010}
+    - rid: 800013
+      type: {class: LongFlatProgressionData, ns: Core, asm: Core}
+      data:
+        value: 0
+    - rid: 800012
+      type: {class: SkillEffectProgressionNodeData, ns: Core.Skills, asm: Core}
+      data:
+        progression: {rid: 800013}
+        argument: {rid: -2}
+        precision: 0
+    - rid: 800001
+      type: {class: SkillEffectConditionalNodeData, ns: Core.Skills, asm: Core}
+      data:
+        comparison: 2
+        left: {rid: 800002}
+        right: {rid: 800003}
+        whenTrue: {rid: 800005}
+        whenFalse: {rid: 800012}
+    - rid: 800015
+      type: {class: SkillEffectEconomyNodeData, ns: Core.Skills, asm: Core}
+      data:
+        parameterTarget: 0
+        ownerType: 1
+        selection:
+          walletTags:
+            - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
+          formTypes: 00000000
+          exactAsset: {fileID: 11400000, guid: 7bed56cc886944c76a7f8ecd10cffe43, type: 2}
+          requiredAssetTags: []
+          excludedAssetTags: []
+          requiredRuntimeTags: []
+          excludedRuntimeTags: []
+    - rid: 800017
+      type: {class: LongFlatProgressionData, ns: Core, asm: Core}
+      data:
+        value: 0
+    - rid: 800016
+      type: {class: SkillEffectProgressionNodeData, ns: Core.Skills, asm: Core}
+      data:
+        progression: {rid: 800017}
+        argument: {rid: -2}
+        precision: 0
+    - rid: 800021
       type: {class: LongFlatProgressionData, ns: Core, asm: Core}
       data:
         value: 100
+    - rid: 800020
+      type: {class: SkillEffectProgressionNodeData, ns: Core.Skills, asm: Core}
+      data:
+        progression: {rid: 800021}
+        argument: {rid: -2}
+        precision: 3
+    - rid: 800022
+      type: {class: SkillEffectEconomyNodeData, ns: Core.Skills, asm: Core}
+      data:
+        parameterTarget: 0
+        ownerType: 1
+        selection:
+          walletTags:
+            - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
+          formTypes: 00000000
+          exactAsset: {fileID: 11400000, guid: 7bed56cc886944c76a7f8ecd10cffe43, type: 2}
+          requiredAssetTags: []
+          excludedAssetTags: []
+          requiredRuntimeTags: []
+          excludedRuntimeTags: []
+    - rid: 800019
+      type: {class: SkillEffectBinaryNodeData, ns: Core.Skills, asm: Core}
+      data:
+        operation: 2
+        left: {rid: 800020}
+        right: {rid: 800022}
+    - rid: 800023
+      type: {class: SkillEffectAttributeNodeData, ns: Core.Skills, asm: Core}
+      data:
+        parameterTarget: 1
+        attribute:
+          attribute: {fileID: 11400000, guid: 8c0f2453a88154d458b494f57e5b4722, type: 2}
+          qualifiers: []
+        allowMissingAttribute: 0
+        missingAttributeValue: 0
+    - rid: 800018
+      type: {class: SkillEffectBinaryNodeData, ns: Core.Skills, asm: Core}
+      data:
+        operation: 2
+        left: {rid: 800019}
+        right: {rid: 800023}
+    - rid: 800025
+      type: {class: LongFlatProgressionData, ns: Core, asm: Core}
+      data:
+        value: 0
+    - rid: 800024
+      type: {class: SkillEffectProgressionNodeData, ns: Core.Skills, asm: Core}
+      data:
+        progression: {rid: 800025}
+        argument: {rid: -2}
+        precision: 3
+    - rid: 800014
+      type: {class: SkillEffectConditionalNodeData, ns: Core.Skills, asm: Core}
+      data:
+        comparison: 2
+        left: {rid: 800015}
+        right: {rid: 800016}
+        whenTrue: {rid: 800018}
+        whenFalse: {rid: 800024}

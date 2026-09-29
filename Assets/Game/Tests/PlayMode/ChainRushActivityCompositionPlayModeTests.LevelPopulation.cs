@@ -44,7 +44,7 @@ namespace ChainRush.Tests.PlayMode
             Application.logMessageReceived += CaptureWarning;
             try
             {
-                yield return LaunchPlayableActivities("Level02Perfume");
+                yield return LaunchPlayableActivities("Distance");
                 Assert.IsTrue(TryFindRunningActivities(out var battle, out _));
                 var player = battle.Participants.Single(participant => participant.TeamIndex == 0).ParticipantEconomyOwner;
                 var enemyOwner = battle.Participants.Single(participant => participant.TeamIndex == 1).ParticipantEconomyOwner;
@@ -60,7 +60,7 @@ namespace ChainRush.Tests.PlayMode
                     .OfType<ObjectiveConditionMaterializedEntity>().Single().TargetProgression;
                 var curve = (LongProgressionData)typeof(ObjectiveLongTargetProgressionData)
                     .GetField("progression", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(target);
-                var heroDefinition = AssetDatabase.LoadAssetAtPath<CapabilityHostData>(PerfumeDistancePath);
+                var heroDefinition = AssetDatabase.LoadAssetAtPath<CapabilityHostData>(PerfumePath);
                 Assert.IsTrue(TryFindActivityHost(battle.Id, heroDefinition, out var hero));
                 Assert.IsTrue(SpatialService.TryGetPose(hero, out var origin));
                 // Observe replenishment with controlled deaths; combat has separate integration scenarios.

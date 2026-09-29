@@ -31,6 +31,9 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8525488478839835818}
+  - {fileID: 8213313925905314053}
+  - {fileID: 6846502325063420532}
+  - {fileID: 905125493256644921}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5342047009290465473
@@ -187,3 +190,185 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3079918759460600295}
   m_Mesh: {fileID: 0}
+--- !u!1 &6486937030528633404
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8213313925905314053}
+  - component: {fileID: 1000335439531356450}
+  m_Layer: 0
+  m_Name: WaterProductionZone
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8213313925905314053
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6486937030528633404}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -6, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4669703136615534237}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1000335439531356450
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6486937030528633404}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f18b24255ff5f4f639f97a14c56d1d2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Core::Core.World.SpatialShapeProviderController
+  providerId: hero-water-production
+  providerType: {fileID: 11400000, guid: 4461c4cd2dfc24bf5acfbaf9cac9ed05, type: 2}
+  usagePolicy:
+    selectionType: 0
+    reusePolicyType: 0
+  shape: {fileID: 11400000, guid: 1ffd8c4e50eea4ebd84c03248bcbb087, type: 2}
+  usage:
+    fillType: 0
+    position: {x: 14350, y: 0, z: -12750}
+    size: {x: 4, y: 1, z: 24}
+    rotation: {x: 0, y: 0, z: 0}
+    cellSize: {x: 1000, y: 1, z: 1000}
+    spacing: {x: 0, y: 0, z: 0}
+  regionTags:
+  - {fileID: 11400000, guid: 4461c4cd2dfc24bf5acfbaf9cac9ed05, type: 2}
+  cellTags: []
+  cellMetadata: []
+  publishMarkers: 1
+  markerTags:
+  - {fileID: 11400000, guid: 4461c4cd2dfc24bf5acfbaf9cac9ed05, type: 2}
+  drawGizmo: 1
+--- !u!1 &7835660926045833811
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6846502325063420532}
+  - component: {fileID: 2095801761975670074}
+  m_Layer: 0
+  m_Name: ColaProductionZone
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6846502325063420532
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7835660926045833811}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -7, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4669703136615534237}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2095801761975670074
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7835660926045833811}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f18b24255ff5f4f639f97a14c56d1d2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Core::Core.World.SpatialShapeProviderController
+  providerId: hero-cola-production
+  providerType: {fileID: 11400000, guid: 02d85d0fb019e40ab818ec97c4caa89b, type: 2}
+  usagePolicy:
+    selectionType: 0
+    reusePolicyType: 0
+  shape: {fileID: 11400000, guid: 1ffd8c4e50eea4ebd84c03248bcbb087, type: 2}
+  usage:
+    fillType: 0
+    position: {x: 11300, y: 0, z: -12730}
+    size: {x: 4, y: 1, z: 24}
+    rotation: {x: 0, y: 0, z: 0}
+    cellSize: {x: 1000, y: 1, z: 1000}
+    spacing: {x: 0, y: 0, z: 0}
+  regionTags:
+  - {fileID: 11400000, guid: 02d85d0fb019e40ab818ec97c4caa89b, type: 2}
+  cellTags: []
+  cellMetadata: []
+  publishMarkers: 1
+  markerTags:
+  - {fileID: 11400000, guid: 02d85d0fb019e40ab818ec97c4caa89b, type: 2}
+  drawGizmo: 1
+--- !u!1 &8376639756866285731
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 905125493256644921}
+  - component: {fileID: 2623388053096378702}
+  m_Layer: 0
+  m_Name: EnemyProductionVolume
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &905125493256644921
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8376639756866285731}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4669703136615534237}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2623388053096378702
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8376639756866285731}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38d873a569c5d4e23983be59dd2f29c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Core::Core.World.SpaceRegionController
+  bindingType: 1
+  regionId: chainrush.autobattle.enemies
+  localCenter: {x: 32.4, y: 0, z: -8.8}
+  size: {x: 10, y: 0, z: 20}
+  stateType: 0
+  planningAvailabilityType: 0
+  tags:
+  - {fileID: 11400000, guid: 3907f18e3ea3b492ea006bc4e6ff0799, type: 2}

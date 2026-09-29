@@ -66,16 +66,18 @@ namespace ChainRush.Tests.EditMode
 
         [TestCase("AutobattleActivity", false)]
         [TestCase("DistanceActivity", true)]
-        [TestCase("Level01TabascoActivity", false)]
-        [TestCase("Level02TabascoActivity", true)]
-        public void AuthoredHeroVariants_BindOneFeaturePerTypeAndTheSeededHero(string name, bool distance)
+        public void AuthoredLevels_DeploySelectedHeroAndUseModeProgress(string name, bool distance)
         {
             var activity = AssetDatabase.LoadAssetAtPath<ActivityData>(
                 "Assets/Game/Activities/Autobattle/Definition/" + name + ".asset");
             var features = activity.Teams[0].Features;
-            var hero = activity.Teams[0].Wallets.SelectMany(wallet => wallet.Seed)
+            var seededHosts = activity.Teams[0].Wallets.SelectMany(wallet => wallet.Seed)
                 .Select(entry => entry.Seed.Asset).OfType<Core.CapabilityHosts.CapabilityHostData>()
-                .Single(value => value.Tags.Any(tag => tag.Id == "chainrush.autobattle.herorole"));
+                .ToList();
+            Assert.IsFalse(seededHosts.Any(value => value.Tags.Any(tag => tag.Id == "chainrush.autobattle.herorole")));
+            Assert.AreEqual(1, seededHosts.Count(value => value.name == "HeroProductionHost"));
+            var deployment = activity.Teams[0].Objectives.Single(value => value.Template.name == "HeroDeploymentObjective").Template;
+            Assert.AreEqual(ObjectiveCompletionPolicyType.Terminal, deployment.CompletionPolicyType);
             var failures = new System.Collections.Generic.List<string>();
             if (features.Count != features.Select(feature => feature.GetType()).Distinct().Count())
                 failures.Add("Activity feature types must be unique.");
@@ -84,7 +86,9 @@ namespace ChainRush.Tests.EditMode
             if (distance)
             {
                 Assert.IsInstanceOf<EntityMovementActivityAnalyticsMetricData>(metric);
-                Assert.AreSame(hero, ((EntityMovementActivityAnalyticsMetricData)metric).ExactAsset);
+                var movement = (EntityMovementActivityAnalyticsMetricData)metric;
+                Assert.IsNull(movement.ExactAsset);
+                Assert.IsTrue(movement.ObjectTags.IncludedTags.Any(tag => tag.Id == "chainrush.autobattle.herorole"));
                 Assert.AreEqual(EntityMovementCalculationType.DisplacementAlongAxis,
                     ((EntityMovementActivityAnalyticsMetricData)metric).CalculationType);
             }
@@ -98,9 +102,6 @@ namespace ChainRush.Tests.EditMode
                 Assert.AreEqual(ObjectiveProgressSourceType.Analytics, condition.TargetProgression.SourceType);
                 Assert.AreSame(metric, condition.TargetProgression.Metric);
             }
-            bool healable = hero.Tags.Any(tag => tag.Id == "chainrush.autobattle.healable-target");
-            if (healable != distance)
-                failures.Add("Only the normal Distance hero is an authored healing recipient.");
             Assert.IsEmpty(failures);
         }
 

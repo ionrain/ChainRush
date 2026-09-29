@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b0b89dd4d3b548888f84e9f3484e397, type: 3}
   m_Name: LevelProgressMetric
   m_EditorClassIdentifier: Core::Core.Activities.Analytics.ResourceActivityAnalyticsMetricData
-  scopeType: 2
+  scopeType: 0
   measures: 00000000
   resource: {fileID: 11400000, guid: ef0765d17832a45dea743411aa4d6a9c, type: 2}
   formType: 0

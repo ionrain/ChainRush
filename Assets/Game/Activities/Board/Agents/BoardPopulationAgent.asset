@@ -98,6 +98,7 @@ MonoBehaviour:
             bindingType: 0
             owner:
               source: {fileID: 0}
+            entryPath: []
           walletTags: []
           scaleType: 0
           relativeBase: 0
@@ -279,25 +280,117 @@ MonoBehaviour:
               rid: 6092004074608394339
             share: 0.175
             requireParticipantContent: 1
-            participantWalletTags:
-            - {fileID: 11400000, guid: 1057a25bd092c4257a0155805859f368, type: 2}
-            participantContentForm: 0
+            participantContentSource: 1
+            participantEntries:
+              walletTags:
+              - {fileID: 11400000, guid: 7cd328b496c6b4597b1eb29be6efbc72, type: 2}
+              formTypes: 00000000
+              exactAsset: {fileID: 0}
+              requiredAssetTags:
+              - {fileID: 11400000, guid: 1c6fb44fa762c46d1a24efe2d8a844f8, type: 2}
+              excludedAssetTags: []
+              requiredRuntimeTags:
+              - {fileID: 11400000, guid: 8d743fde6a7e8458fa69d1bb1acc750d, type: 2}
+              - {fileID: 11400000, guid: 9bd6d0d9a1c9248d9836792500f67fd1, type: 2}
+              excludedRuntimeTags: []
+            entryWalletContent:
+              walletTags:
+              - {fileID: 11400000, guid: 8886d9dcebac54b91995041b2efa99e0, type: 2}
+              formTypes: 00000000
+              exactAsset: {fileID: 0}
+              requiredAssetTags: []
+              excludedAssetTags: []
+              requiredRuntimeTags: []
+              excludedRuntimeTags: []
           - source:
               rid: 6092004074608394340
             share: 0.175
+            requireParticipantContent: 0
+            participantContentSource: 0
+            participantEntries:
+              walletTags: []
+              formTypes: 
+              exactAsset: {fileID: 0}
+              requiredAssetTags: []
+              excludedAssetTags: []
+              requiredRuntimeTags: []
+              excludedRuntimeTags: []
+            entryWalletContent:
+              walletTags: []
+              formTypes: 
+              exactAsset: {fileID: 0}
+              requiredAssetTags: []
+              excludedAssetTags: []
+              requiredRuntimeTags: []
+              excludedRuntimeTags: []
           - source:
               rid: 6092004074608394341
             share: 0.175
             requireParticipantContent: 1
-            participantWalletTags:
-            - {fileID: 11400000, guid: 1057a25bd092c4257a0155805859f368, type: 2}
-            participantContentForm: 0
+            participantContentSource: 1
+            participantEntries:
+              walletTags:
+              - {fileID: 11400000, guid: 7cd328b496c6b4597b1eb29be6efbc72, type: 2}
+              formTypes: 00000000
+              exactAsset: {fileID: 0}
+              requiredAssetTags:
+              - {fileID: 11400000, guid: c03c233cfc9f64712bf39c5d6311aee8, type: 2}
+              excludedAssetTags: []
+              requiredRuntimeTags:
+              - {fileID: 11400000, guid: 8d743fde6a7e8458fa69d1bb1acc750d, type: 2}
+              - {fileID: 11400000, guid: 9bd6d0d9a1c9248d9836792500f67fd1, type: 2}
+              excludedRuntimeTags: []
+            entryWalletContent:
+              walletTags:
+              - {fileID: 11400000, guid: 8886d9dcebac54b91995041b2efa99e0, type: 2}
+              formTypes: 00000000
+              exactAsset: {fileID: 0}
+              requiredAssetTags: []
+              excludedAssetTags: []
+              requiredRuntimeTags: []
+              excludedRuntimeTags: []
           - source:
               rid: 6092004074608394342
             share: 0.175
+            requireParticipantContent: 0
+            participantContentSource: 0
+            participantEntries:
+              walletTags: []
+              formTypes: 
+              exactAsset: {fileID: 0}
+              requiredAssetTags: []
+              excludedAssetTags: []
+              requiredRuntimeTags: []
+              excludedRuntimeTags: []
+            entryWalletContent:
+              walletTags: []
+              formTypes: 
+              exactAsset: {fileID: 0}
+              requiredAssetTags: []
+              excludedAssetTags: []
+              requiredRuntimeTags: []
+              excludedRuntimeTags: []
           - source:
               rid: 6092004074608394343
             share: 0.3
+            requireParticipantContent: 0
+            participantContentSource: 0
+            participantEntries:
+              walletTags: []
+              formTypes: 
+              exactAsset: {fileID: 0}
+              requiredAssetTags: []
+              excludedAssetTags: []
+              requiredRuntimeTags: []
+              excludedRuntimeTags: []
+            entryWalletContent:
+              walletTags: []
+              formTypes: 
+              exactAsset: {fileID: 0}
+              requiredAssetTags: []
+              excludedAssetTags: []
+              requiredRuntimeTags: []
+              excludedRuntimeTags: []
         distribution:
           rid: 6092004074608394350
         workBudget: 256

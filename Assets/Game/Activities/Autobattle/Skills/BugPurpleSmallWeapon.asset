@@ -71,11 +71,6 @@ MonoBehaviour:
       data:
         recipient: 0
         requiredTags: []
-        value:
-          rid: 6092004074608394814
-        valueArgument:
-          rid: -2
-        multiplier: {fileID: 0}
         carrier: {fileID: 11400000, guid: 90718f5951b6141dc859e817f3e4cee8, type: 2}
         carriedSkill: {fileID: 11400000, guid: db4d91b76aad34187a7f1c45ccc860fc, type: 2}
         count: 1
@@ -137,7 +132,3 @@ MonoBehaviour:
         minValue: 120
         maxValue: 120
         ownerMultiplier: {fileID: 0}
-    - rid: 6092004074608394814
-      type: {class: LongFlatProgressionData, ns: Core, asm: Core}
-      data:
-        value: 0

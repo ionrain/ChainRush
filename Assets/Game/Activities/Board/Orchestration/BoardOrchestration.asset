@@ -17,6 +17,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: e9bafe53f2a5c434d8c298754852d0d8, type: 2}
   - {fileID: 11400000, guid: f3cdaece17dd4435daab05dfdbd5c6f6, type: 2}
   - {fileID: 11400000, guid: 2f409e7a7ded44a63bd16a737543140f, type: 2}
+  - {fileID: 11400000, guid: fb8202b90bc1f4592850d6d606a15482, type: 2}
   tierPolicy:
     tiers:
     - tier: 2
@@ -83,3 +84,7 @@ MonoBehaviour:
     maxPlanningContinuationDuration: 300
     maxDirtyBranchesPerPass: 16
   debugName: ChainRush Board
+  externalFactBindings: []
+  references:
+    version: 2
+    RefIds: []

@@ -59,9 +59,10 @@ MonoBehaviour:
         asm: Core}
       data:
         owner:
-          bindingType: 1
+          bindingType: 0
           owner:
-            source: {fileID: 11400000, guid: 97e9ee6284cd14460961d53ac3b9c613, type: 2}
+            source: {fileID: 0}
+          entryPath: []
         selection:
           walletTags:
           - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
@@ -91,6 +92,7 @@ MonoBehaviour:
             bindingType: 0
             owner:
               source: {fileID: 0}
+            entryPath: []
           walletTags: []
           scaleType: 0
           relativeBase: 0
@@ -128,9 +130,10 @@ MonoBehaviour:
         progress:
           resource: {fileID: 11400000, guid: ef0765d17832a45dea743411aa4d6a9c, type: 2}
           owner:
-            bindingType: 1
+            bindingType: 0
             owner:
-              source: {fileID: 11400000, guid: 97e9ee6284cd14460961d53ac3b9c613, type: 2}
+              source: {fileID: 0}
+            entryPath: []
           walletTags:
           - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
           scaleType: 1
@@ -168,6 +171,24 @@ MonoBehaviour:
           - source:
               rid: 6092004074608394384
             share: 1
+            requireParticipantContent: 0
+            participantContentSource: 0
+            participantEntries:
+              walletTags: []
+              formTypes: 
+              exactAsset: {fileID: 0}
+              requiredAssetTags: []
+              excludedAssetTags: []
+              requiredRuntimeTags: []
+              excludedRuntimeTags: []
+            entryWalletContent:
+              walletTags: []
+              formTypes: 
+              exactAsset: {fileID: 0}
+              requiredAssetTags: []
+              excludedAssetTags: []
+              requiredRuntimeTags: []
+              excludedRuntimeTags: []
         - interval:
             minimum: 0.25
             maximum: 0.5
@@ -196,9 +217,45 @@ MonoBehaviour:
           - source:
               rid: 6092004074608394385
             share: 0.5
+            requireParticipantContent: 0
+            participantContentSource: 0
+            participantEntries:
+              walletTags: []
+              formTypes: 
+              exactAsset: {fileID: 0}
+              requiredAssetTags: []
+              excludedAssetTags: []
+              requiredRuntimeTags: []
+              excludedRuntimeTags: []
+            entryWalletContent:
+              walletTags: []
+              formTypes: 
+              exactAsset: {fileID: 0}
+              requiredAssetTags: []
+              excludedAssetTags: []
+              requiredRuntimeTags: []
+              excludedRuntimeTags: []
           - source:
               rid: 6092004074608394386
             share: 0.5
+            requireParticipantContent: 0
+            participantContentSource: 0
+            participantEntries:
+              walletTags: []
+              formTypes: 
+              exactAsset: {fileID: 0}
+              requiredAssetTags: []
+              excludedAssetTags: []
+              requiredRuntimeTags: []
+              excludedRuntimeTags: []
+            entryWalletContent:
+              walletTags: []
+              formTypes: 
+              exactAsset: {fileID: 0}
+              requiredAssetTags: []
+              excludedAssetTags: []
+              requiredRuntimeTags: []
+              excludedRuntimeTags: []
         - interval:
             minimum: 0.5
             maximum: 0.75
@@ -227,9 +284,45 @@ MonoBehaviour:
           - source:
               rid: 6092004074608394387
             share: 0.3
+            requireParticipantContent: 0
+            participantContentSource: 0
+            participantEntries:
+              walletTags: []
+              formTypes: 
+              exactAsset: {fileID: 0}
+              requiredAssetTags: []
+              excludedAssetTags: []
+              requiredRuntimeTags: []
+              excludedRuntimeTags: []
+            entryWalletContent:
+              walletTags: []
+              formTypes: 
+              exactAsset: {fileID: 0}
+              requiredAssetTags: []
+              excludedAssetTags: []
+              requiredRuntimeTags: []
+              excludedRuntimeTags: []
           - source:
               rid: 6092004074608394388
             share: 0.7
+            requireParticipantContent: 0
+            participantContentSource: 0
+            participantEntries:
+              walletTags: []
+              formTypes: 
+              exactAsset: {fileID: 0}
+              requiredAssetTags: []
+              excludedAssetTags: []
+              requiredRuntimeTags: []
+              excludedRuntimeTags: []
+            entryWalletContent:
+              walletTags: []
+              formTypes: 
+              exactAsset: {fileID: 0}
+              requiredAssetTags: []
+              excludedAssetTags: []
+              requiredRuntimeTags: []
+              excludedRuntimeTags: []
         - interval:
             minimum: 0.75
             maximum: 1
@@ -258,12 +351,66 @@ MonoBehaviour:
           - source:
               rid: 6092004074608394389
             share: 0.4
+            requireParticipantContent: 0
+            participantContentSource: 0
+            participantEntries:
+              walletTags: []
+              formTypes: 
+              exactAsset: {fileID: 0}
+              requiredAssetTags: []
+              excludedAssetTags: []
+              requiredRuntimeTags: []
+              excludedRuntimeTags: []
+            entryWalletContent:
+              walletTags: []
+              formTypes: 
+              exactAsset: {fileID: 0}
+              requiredAssetTags: []
+              excludedAssetTags: []
+              requiredRuntimeTags: []
+              excludedRuntimeTags: []
           - source:
               rid: 6092004074608394390
             share: 0.4
+            requireParticipantContent: 0
+            participantContentSource: 0
+            participantEntries:
+              walletTags: []
+              formTypes: 
+              exactAsset: {fileID: 0}
+              requiredAssetTags: []
+              excludedAssetTags: []
+              requiredRuntimeTags: []
+              excludedRuntimeTags: []
+            entryWalletContent:
+              walletTags: []
+              formTypes: 
+              exactAsset: {fileID: 0}
+              requiredAssetTags: []
+              excludedAssetTags: []
+              requiredRuntimeTags: []
+              excludedRuntimeTags: []
           - source:
               rid: 6092004074608394391
             share: 0.2
+            requireParticipantContent: 0
+            participantContentSource: 0
+            participantEntries:
+              walletTags: []
+              formTypes: 
+              exactAsset: {fileID: 0}
+              requiredAssetTags: []
+              excludedAssetTags: []
+              requiredRuntimeTags: []
+              excludedRuntimeTags: []
+            entryWalletContent:
+              walletTags: []
+              formTypes: 
+              exactAsset: {fileID: 0}
+              requiredAssetTags: []
+              excludedAssetTags: []
+              requiredRuntimeTags: []
+              excludedRuntimeTags: []
         distribution:
           rid: 6092004074608394392
         workBudget: 256

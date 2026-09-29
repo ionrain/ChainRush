@@ -65,6 +65,12 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5bd6fee205c3b4879a9556c61577b57a
+    m_Address: Assets/Game/Activities/Autobattle/Space/SurviveSpace.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - activity-space
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 5e3230375bf51449684beaac86fe4f8b
     m_Address: Assets/Game/Activities/Autobattle/Space/AutobattleSpace.prefab
     m_ReadOnly: 0

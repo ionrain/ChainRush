@@ -17,6 +17,18 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Game/Scenes/Level.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
+  - enabled: 1
+    path: Assets/Game/FrameworkUI/Scenes/FrameworkStart.unity
+    guid: ea80e08f18ec5423ca2a9e0b9f128a13
+  - enabled: 1
+    path: Assets/Game/FrameworkUI/Scenes/FrameworkMain.unity
+    guid: 63afc87465a0f4531a04aa58a03cec0a
+  - enabled: 1
+    path: Assets/Game/FrameworkUI/Scenes/FrameworkLoading.unity
+    guid: 874b1c372595e409aa7dd957f87d8f93
+  - enabled: 1
+    path: Assets/Game/FrameworkUI/Scenes/Integration/FrameworkGameplay.unity
+    guid: 31c54bcade047401ca4acb4d2816189b
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: 0e9d5fee86d1f4f568076d277ec6c3a9,
       type: 2}

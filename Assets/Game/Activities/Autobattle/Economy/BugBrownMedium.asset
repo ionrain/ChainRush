@@ -42,6 +42,7 @@ MonoBehaviour:
   slotFootprint: 1
   stackCapacity: 0
   footprintSize: {x: 1000, y: 0, z: 1000}
+  attributeSources: []
   capabilities:
   - capabilityType: 0
     selectorTags: []
@@ -87,54 +88,6 @@ MonoBehaviour:
       runtimeTags:
       - {fileID: 11400000, guid: d078fa8c1956f4a1b825a2d83c7f5cf0, type: 2}
     - entry:
-        asset: {fileID: 11400000, guid: b92048bd2f85042ee97f6a25f6a4f99b, type: 2}
-        formType: 0
-        amount: 1000
-      runtimeTags:
-      - {fileID: 11400000, guid: 4f6639ab0cd26404b8bab73f4dc70cb7, type: 2}
-    - entry:
-        asset: {fileID: 11400000, guid: b92048bd2f85042ee97f6a25f6a4f99b, type: 2}
-        formType: 0
-        amount: 1000
-      runtimeTags:
-      - {fileID: 11400000, guid: e3cb3d2f5cccb45c090d48b4130e9a9f, type: 2}
-    - entry:
-        asset: {fileID: 11400000, guid: b92048bd2f85042ee97f6a25f6a4f99b, type: 2}
-        formType: 0
-        amount: 1000
-      runtimeTags:
-      - {fileID: 11400000, guid: cc59eedef43c94b7cbb9caed52bc1b95, type: 2}
-    - entry:
-        asset: {fileID: 11400000, guid: b92048bd2f85042ee97f6a25f6a4f99b, type: 2}
-        formType: 0
-        amount: 1000
-      runtimeTags:
-      - {fileID: 11400000, guid: 4ab0d0a4cf7044f5c812bbba9f1cf1e1, type: 2}
-    - entry:
-        asset: {fileID: 11400000, guid: b92048bd2f85042ee97f6a25f6a4f99b, type: 2}
-        formType: 0
-        amount: 1000
-      runtimeTags:
-      - {fileID: 11400000, guid: 930ff01d5f0324dc2ad4d16a2d45e78d, type: 2}
-    - entry:
-        asset: {fileID: 11400000, guid: b92048bd2f85042ee97f6a25f6a4f99b, type: 2}
-        formType: 0
-        amount: 1000
-      runtimeTags:
-      - {fileID: 11400000, guid: 47693c7d192b74967ba03fa0a2408080, type: 2}
-    - entry:
-        asset: {fileID: 11400000, guid: b92048bd2f85042ee97f6a25f6a4f99b, type: 2}
-        formType: 0
-        amount: 1000
-      runtimeTags:
-      - {fileID: 11400000, guid: 2c49f09d153eb43adbcdc840d9d8ebec, type: 2}
-    - entry:
-        asset: {fileID: 11400000, guid: b92048bd2f85042ee97f6a25f6a4f99b, type: 2}
-        formType: 0
-        amount: 1000
-      runtimeTags:
-      - {fileID: 11400000, guid: 306cd37e3b9a747778391fb4d7a58ebd, type: 2}
-    - entry:
         asset: {fileID: 11400000, guid: 1c02a646db2d8418198bb49d1c8af4bb, type: 2}
         formType: 0
         amount: 1
@@ -165,6 +118,70 @@ MonoBehaviour:
         formType: 0
         amount: 1
       runtimeTags: []
+  - wallet: {fileID: 11400000, guid: 20a7662e631ab420b9220b09b4cd2c2f, type: 2}
+    seed:
+    - entry:
+        asset: {fileID: 11400000, guid: b92048bd2f85042ee97f6a25f6a4f99b, type: 2}
+        formType: 0
+        amount: 1000
+      runtimeTags:
+      - {fileID: 11400000, guid: 4f6639ab0cd26404b8bab73f4dc70cb7, type: 2}
+  - wallet: {fileID: 11400000, guid: c1bc5195ba6ee4a529809c54362e8581, type: 2}
+    seed:
+    - entry:
+        asset: {fileID: 11400000, guid: b92048bd2f85042ee97f6a25f6a4f99b, type: 2}
+        formType: 0
+        amount: 1000
+      runtimeTags:
+      - {fileID: 11400000, guid: e3cb3d2f5cccb45c090d48b4130e9a9f, type: 2}
+  - wallet: {fileID: 11400000, guid: d8598eae6a70b4594a48f6540652f459, type: 2}
+    seed:
+    - entry:
+        asset: {fileID: 11400000, guid: b92048bd2f85042ee97f6a25f6a4f99b, type: 2}
+        formType: 0
+        amount: 1000
+      runtimeTags:
+      - {fileID: 11400000, guid: cc59eedef43c94b7cbb9caed52bc1b95, type: 2}
+  - wallet: {fileID: 11400000, guid: c2633a5e4adee42639ebaf1221f78bde, type: 2}
+    seed:
+    - entry:
+        asset: {fileID: 11400000, guid: b92048bd2f85042ee97f6a25f6a4f99b, type: 2}
+        formType: 0
+        amount: 1000
+      runtimeTags:
+      - {fileID: 11400000, guid: 4ab0d0a4cf7044f5c812bbba9f1cf1e1, type: 2}
+  - wallet: {fileID: 11400000, guid: 707511bc9b9f74922abb4f2bab358535, type: 2}
+    seed:
+    - entry:
+        asset: {fileID: 11400000, guid: b92048bd2f85042ee97f6a25f6a4f99b, type: 2}
+        formType: 0
+        amount: 1000
+      runtimeTags:
+      - {fileID: 11400000, guid: 930ff01d5f0324dc2ad4d16a2d45e78d, type: 2}
+  - wallet: {fileID: 11400000, guid: 7cd7968417c2c45be89b90b4f7a7169e, type: 2}
+    seed:
+    - entry:
+        asset: {fileID: 11400000, guid: b92048bd2f85042ee97f6a25f6a4f99b, type: 2}
+        formType: 0
+        amount: 1000
+      runtimeTags:
+      - {fileID: 11400000, guid: 47693c7d192b74967ba03fa0a2408080, type: 2}
+  - wallet: {fileID: 11400000, guid: 73ccf68fda4624f07a82384fac3390b7, type: 2}
+    seed:
+    - entry:
+        asset: {fileID: 11400000, guid: b92048bd2f85042ee97f6a25f6a4f99b, type: 2}
+        formType: 0
+        amount: 1000
+      runtimeTags:
+      - {fileID: 11400000, guid: 2c49f09d153eb43adbcdc840d9d8ebec, type: 2}
+  - wallet: {fileID: 11400000, guid: 49a8626b325bc476c8cf285a31644f7e, type: 2}
+    seed:
+    - entry:
+        asset: {fileID: 11400000, guid: b92048bd2f85042ee97f6a25f6a4f99b, type: 2}
+        formType: 0
+        amount: 1000
+      runtimeTags:
+      - {fileID: 11400000, guid: 306cd37e3b9a747778391fb4d7a58ebd, type: 2}
   usagePolicy:
     accessType: 0
     diplomacyCompareOperation: 3

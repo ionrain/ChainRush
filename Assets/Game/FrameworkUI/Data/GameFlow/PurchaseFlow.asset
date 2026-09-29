@@ -1,0 +1,197 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e73a92c00aa44cf863e03930b0f81aa, type: 3}
+  m_Name: PurchaseFlow
+  m_EditorClassIdentifier: Core::Core.GameFlow.GameFlowTemplateData
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: root
+      Entry: 7
+      Data: 0|Core.GameFlow.GameFlowSequenceContainerData, Core
+    - Name: id
+      Entry: 1
+      Data: purchase
+    - Name: activateConditions
+      Entry: 7
+      Data: 1|System.Collections.Generic.List`1[[Core.GameFlow.GameFlowCondition,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: completedPolicy
+      Entry: 3
+      Data: 1
+    - Name: failedPolicy
+      Entry: 3
+      Data: 1
+    - Name: steps
+      Entry: 7
+      Data: 2|System.Collections.Generic.List`1[[Core.GameFlow.GameFlowStepData,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 2
+    - Name: 
+      Entry: 7
+      Data: 3|Core.GameFlow.GameFlowStepData, Core
+    - Name: id
+      Entry: 1
+      Data: order
+    - Name: successConditions
+      Entry: 7
+      Data: 4|System.Collections.Generic.List`1[[Core.GameFlow.GameFlowCondition,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: failConditions
+      Entry: 7
+      Data: 5|System.Collections.Generic.List`1[[Core.GameFlow.GameFlowCondition,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: executor
+      Entry: 7
+      Data: 6|Core.GameFlow.GameFlowProductionExecutorData, Core
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 7|Core.GameFlow.GameFlowStepData, Core
+    - Name: id
+      Entry: 1
+      Data: result
+    - Name: successConditions
+      Entry: 7
+      Data: 8|System.Collections.Generic.List`1[[Core.GameFlow.GameFlowCondition,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: 9|Core.GameFlow.GameFlowConditionProductionOrder, Core
+    - Name: stepId
+      Entry: 1
+      Data: order
+    - Name: statuses
+      Entry: 7
+      Data: 10|System.Collections.Generic.List`1[[Core.Production.ProductionOrderStatus,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 3
+      Data: 3
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: failConditions
+      Entry: 7
+      Data: 11|System.Collections.Generic.List`1[[Core.GameFlow.GameFlowCondition,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: 12|Core.GameFlow.GameFlowConditionProductionOrder, Core
+    - Name: stepId
+      Entry: 1
+      Data: order
+    - Name: statuses
+      Entry: 7
+      Data: 13|System.Collections.Generic.List`1[[Core.Production.ProductionOrderStatus,
+        Core]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 2
+    - Name: 
+      Entry: 3
+      Data: 4
+    - Name: 
+      Entry: 3
+      Data: 5
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: executor
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+  id: chainrush.meta.purchase

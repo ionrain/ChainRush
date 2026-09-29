@@ -58,23 +58,29 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
     - rid: 2807516363299750113
       type: {class: SkillMoveToTargetEffectData, ns: Core.Skills, asm: Core}
       data:
         recipient: 0
         requiredTags: []
-        value:
-          rid: 2807516363299750114
-        valueArgument:
-          rid: -2
-        multiplier: {fileID: 0}
         targetTrackingMode: 1
         repathDistanceThreshold: 250
         accelerationDuration: 2
         decelerationDuration: 2
         targetGeometryType: 1
         approachInteractionTags: []
-    - rid: 2807516363299750114
+        formula:
+          root:
+            rid: 2807516363299750115
+    - rid: 2807516363299750116
       type: {class: LongFlatProgressionData, ns: Core, asm: Core}
       data:
         value: 100
+    - rid: 2807516363299750115
+      type: {class: SkillEffectProgressionNodeData, ns: Core.Skills, asm: Core}
+      data:
+        progression: {rid: 2807516363299750116}
+        argument: {rid: -2}
+        precision: 0

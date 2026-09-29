@@ -19,6 +19,8 @@ MonoBehaviour:
   - rid: 2807516363299750090
   - rid: 9201
   - rid: 33001
+  - rid: 6092004249005457520
+  - rid: 6092004249005457521
   decisionGraph:
     nodes:
     - rid: 2807516363299750091
@@ -27,6 +29,8 @@ MonoBehaviour:
     - rid: 2807516363299750094
     - rid: 9202
     - rid: 33002
+    - rid: 6092004249005457522
+    - rid: 6092004249005457523
   budget:
     maxDependencyDepth: 4
     maxGeneratedNodes: 64
@@ -54,6 +58,21 @@ MonoBehaviour:
       type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
       data:
         factType: 18
+    - rid: 33001
+      type: {class: CompositeDecompOpData, ns: Core.Orchestration, asm: Core}
+      data:
+        operatorId: {fileID: 11400000, guid: 76bac4d8110c4450487dc6285d3be569, type: 2}
+    - rid: 33002
+      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
+      data:
+        decisionId: composite-requirement
+        conditions:
+        - rid: 33003
+        operatorId: {fileID: 11400000, guid: 76bac4d8110c4450487dc6285d3be569, type: 2}
+    - rid: 33003
+      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        factType: 22
     - rid: 2807516363299750087
       type: {class: AgentDecompOpData, ns: Core.Orchestration, asm: Core}
       data:
@@ -141,18 +160,69 @@ MonoBehaviour:
         asm: Core}
       data:
         operatorId: {fileID: 11400000, guid: 75feb13c5e1254519a15de921f8b2f4c, type: 2}
-    - rid: 33001
-      type: {class: CompositeDecompOpData, ns: Core.Orchestration, asm: Core}
+    - rid: 6092004249005457520
+      type: {class: EconomyOperationDecompOpData, ns: Core.Orchestration, asm: Core}
       data:
-        operatorId: {fileID: 11400000, guid: 76bac4d8110c4450487dc6285d3be569, type: 2}
-    - rid: 33002
+        operatorId: {fileID: 11400000, guid: 0c83bf4f378b94214a80eb705f658770, type: 2}
+        operation: 2
+        selection:
+          walletTags:
+          - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
+          formTypes: 00000000
+          exactAsset: {fileID: 11400000, guid: ef0765d17832a45dea743411aa4d6a9c, type: 2}
+          requiredAssetTags: []
+          excludedAssetTags: []
+          requiredRuntimeTags: []
+          excludedRuntimeTags: []
+        allowCrossOwnerTransfer: 0
+    - rid: 6092004249005457521
+      type: {class: EconomyOperationDecompOpData, ns: Core.Orchestration, asm: Core}
+      data:
+        operatorId: {fileID: 11400000, guid: 3f5c3a43525d94dccbab2b47736583f5, type: 2}
+        operation: 4
+        selection:
+          walletTags:
+          - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
+          formTypes: 00000000
+          exactAsset: {fileID: 11400000, guid: ef0765d17832a45dea743411aa4d6a9c, type: 2}
+          requiredAssetTags: []
+          excludedAssetTags: []
+          requiredRuntimeTags: []
+          excludedRuntimeTags: []
+        allowCrossOwnerTransfer: 0
+    - rid: 6092004249005457522
       type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
       data:
-        decisionId: composite-requirement
+        decisionId: IssueProgressOperator
         conditions:
-        - rid: 33003
-        operatorId: {fileID: 11400000, guid: 76bac4d8110c4450487dc6285d3be569, type: 2}
-    - rid: 33003
+        - rid: 6092004249005457524
+        - rid: 6092004249005457525
+        operatorId: {fileID: 11400000, guid: 0c83bf4f378b94214a80eb705f658770, type: 2}
+    - rid: 6092004249005457523
+      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
+      data:
+        decisionId: ConsumeProgressOperator
+        conditions:
+        - rid: 6092004249005457526
+        - rid: 6092004249005457527
+        operatorId: {fileID: 11400000, guid: 3f5c3a43525d94dccbab2b47736583f5, type: 2}
+    - rid: 6092004249005457524
       type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
       data:
-        factType: 22
+        factType: 1
+    - rid: 6092004249005457525
+      type: {class: CompareOperationDecisionConditionData, ns: Core.Orchestration,
+        asm: Core}
+      data:
+        compareOperations: 00000000
+        requireZeroTargetForEqual: 0
+    - rid: 6092004249005457526
+      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        factType: 1
+    - rid: 6092004249005457527
+      type: {class: CompareOperationDecisionConditionData, ns: Core.Orchestration,
+        asm: Core}
+      data:
+        compareOperations: 00000000
+        requireZeroTargetForEqual: 0

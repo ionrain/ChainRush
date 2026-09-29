@@ -41,9 +41,40 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 2231ac3b695cc4d49895685ed991ab34, type: 2}
   - {fileID: 11400000, guid: dcfabdb6edfc6474497f945d0a6a025c, type: 2}
   - {fileID: 11400000, guid: 35dd5fcbdbbc2499991c0dfcbff2a397, type: 2}
+  - {fileID: 11400000, guid: 1c6fb44fa762c46d1a24efe2d8a844f8, type: 2}
   slotFootprint: 1
   stackCapacity: 0
   footprintSize: {x: 1000, y: 0, z: 1000}
+  attributeSources:
+  - id: participant-bonuses
+    owner:
+      bindingType: 0
+      owner:
+        source: {fileID: 0}
+      entryPath: []
+    walletTags:
+    - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
+    requiredHostTags: []
+    hostSelectorFamilies: []
+  - id: participant-development
+    owner:
+      bindingType: 0
+      owner:
+        source: {fileID: 0}
+      entryPath:
+      - walletTags:
+        - {fileID: 11400000, guid: 7cd328b496c6b4597b1eb29be6efbc72, type: 2}
+        formTypes: 00000000
+        exactAsset: {fileID: 11400000, guid: ba6dc7b2969654c0c96dd451c9a18987, type: 2}
+        requiredAssetTags: []
+        excludedAssetTags: []
+        requiredRuntimeTags: []
+        excludedRuntimeTags: []
+    walletTags:
+    - {fileID: 11400000, guid: 46811b888310d48eaa15cf63c7b648ed, type: 2}
+    requiredHostTags: []
+    hostSelectorFamilies:
+    - {fileID: 11400000, guid: 19c2f687290064905b822d2a05efc1b2, type: 2}
   capabilities:
   - capabilityType: 0
     selectorTags: []
@@ -91,26 +122,35 @@ MonoBehaviour:
         formType: 0
         amount: 1
       runtimeTags: []
-  attributeSources:
-  - id: participant-bonuses
-    owner:
-      bindingType: 0
-      owner: {}
-    walletTags:
-    - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
-    requiredHostTags: []
-    hostSelectorFamilies: []
-  - id: participant-development
-    owner:
-      bindingType: 0
-      owner:
-        source: {fileID: 0}
-    walletTags:
-    - {fileID: 11400000, guid: 46811b888310d48eaa15cf63c7b648ed, type: 2}
-    requiredHostTags:
-    - {fileID: 11400000, guid: ad3171eccfa494958a94bf3e07b4cd10, type: 2}
-    hostSelectorFamilies:
-    - {fileID: 11400000, guid: 19c2f687290064905b822d2a05efc1b2, type: 2}
+  - wallet: {fileID: 11400000, guid: e277a6118ed4242719051673700f3e04, type: 2}
+    seed:
+    - entry:
+        asset: {fileID: 11400000, guid: b92048bd2f85042ee97f6a25f6a4f99b, type: 2}
+        formType: 0
+        amount: 10000
+      runtimeTags:
+      - {fileID: 11400000, guid: d078fa8c1956f4a1b825a2d83c7f5cf0, type: 2}
+    - entry:
+        asset: {fileID: 11400000, guid: 9c6a46d64e754495294c47772e712bd5, type: 2}
+        formType: 0
+        amount: 5000
+      runtimeTags:
+      - {fileID: 11400000, guid: d078fa8c1956f4a1b825a2d83c7f5cf0, type: 2}
+    - entry:
+        asset: {fileID: 11400000, guid: 8c0f2453a88154d458b494f57e5b4722, type: 2}
+        formType: 0
+        amount: 400000
+      runtimeTags: []
+    - entry:
+        asset: {fileID: 11400000, guid: 2d9f6059fa0ff4f01af05e6d0a60008f, type: 2}
+        formType: 0
+        amount: 3000
+      runtimeTags: []
+    - entry:
+        asset: {fileID: 11400000, guid: b42c9f1f607844b55a9f9e9df0020f73, type: 2}
+        formType: 0
+        amount: 1000
+      runtimeTags: []
   usagePolicy:
     accessType: 0
     diplomacyCompareOperation: 3

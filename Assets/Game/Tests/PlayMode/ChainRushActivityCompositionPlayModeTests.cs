@@ -1,3 +1,4 @@
+using Core.UI.Activities;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -170,7 +171,6 @@ namespace ChainRush.Tests.PlayMode
         }
 
         const string PerfumePath = "Assets/Game/Activities/Shared/Units/Perfume/Perfume.asset";
-        const string PerfumeDistancePath = "Assets/Game/Activities/Shared/Units/Perfume/PerfumeDistance.asset";
         System.Action _restoreBoardContent;
 
         [UnityTest]
@@ -184,10 +184,10 @@ namespace ChainRush.Tests.PlayMode
             Application.logMessageReceived += CaptureWarning;
             try
             {
-                yield return LaunchPlayableActivities(level == "Distance" ? "Level02Perfume" : "Level01Perfume");
+                yield return LaunchPlayableActivities(level == "Distance" ? "Distance" : "Survive");
                 Assert.IsTrue(TryFindRunningActivities(out var battle, out _));
                 Assert.IsTrue(TryFindActivityHost(battle.Id, AssetDatabase.LoadAssetAtPath<CapabilityHostData>(
-                    level == "Distance" ? PerfumeDistancePath : PerfumePath), out var hero));
+                    PerfumePath), out var hero));
                 foreach (var skill in CapabilityHostService.GetSkillSnapshots(hero))
                     Assert.IsTrue(CapabilityHostService.TrySetSkillEnabled(hero, skill.Id, false));
                 var owner = battle.Participants.Single(participant => participant.TeamIndex == 1).ParticipantEconomyOwner;
@@ -220,13 +220,13 @@ namespace ChainRush.Tests.PlayMode
             SpaceRegionReadHandle frozenRegion = default;
             try
             {
-                yield return LaunchPlayableActivities("Level02Perfume");
+                yield return LaunchPlayableActivities("Distance");
                 Assert.IsTrue(TryFindRunningActivities(out var battle, out _));
                 var owner = battle.Participants.Single(participant => participant.TeamIndex == 0).ParticipantEconomyOwner;
                 var progress = AssetDatabase.LoadAssetAtPath<EconomyAssetData>(
                     "Assets/Game/Activities/Shared/Economy/LevelProgress.asset");
                 var wallet = AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(SharedWalletTagPath);
-                var hero = AssetDatabase.LoadAssetAtPath<CapabilityHostData>(PerfumeDistancePath);
+                var hero = AssetDatabase.LoadAssetAtPath<CapabilityHostData>(PerfumePath);
                 float deadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
                 while (!TryFindActivityHost(battle.Id, hero, out _) && Time.realtimeSinceStartup < deadline) yield return null;
                 Assert.IsTrue(TryFindActivityHost(battle.Id, hero, out var entity));
@@ -884,10 +884,10 @@ namespace ChainRush.Tests.PlayMode
             Assert.IsTrue(EconomyService.TryCloseOperation(handle));
         }
 
-        static IEnumerator LaunchPlayableActivities(string launchName = "Level01Perfume")
+        static IEnumerator LaunchPlayableActivities(string level = "Survive", string hero = "Perfume")
         {
             var selected = AssetDatabase.LoadAssetAtPath<GameStartupPlanData>(
-                "Assets/Game/Runtime/Startup/" + launchName + "StartupPlan.asset");
+                "Assets/Game/FrameworkUI/Data/GameFlow/MetaStartupPlan.asset");
             Assert.NotNull(selected);
             UnityEngine.Events.UnityAction<Scene, LoadSceneMode> configureStartup = (loaded, mode) =>
             {
@@ -911,7 +911,16 @@ namespace ChainRush.Tests.PlayMode
                 Assert.NotNull(host);
                 deadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
                 while (Time.realtimeSinceStartup < deadline
-                    && (host.RuntimeContext == null || !host.RuntimeContext.IsInitialized || !TryFindRunningActivities(out _, out _)))
+                    && (host.RuntimeContext == null || !host.RuntimeContext.IsInitialized))
+                    yield return null;
+                Assert.IsNotNull(host.RuntimeContext);
+                Assert.IsTrue(host.RuntimeContext.IsInitialized);
+                ConfigurePlayableSelection(host.RuntimeContext.PrimaryOwner, level, hero);
+                EventBus.Trigger(new GameFlowEvent(new List<TaxonomyTermData> {
+                    AssetDatabase.LoadAssetAtPath<TaxonomyTermData>("Assets/Game/FrameworkUI/Data/Taxonomy/StartLevel.asset") }));
+                deadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
+                while (Time.realtimeSinceStartup < deadline
+                    && (!TryFindRunningActivities(out _, out _) || CountBoardUICells() != 16))
                     yield return null;
                 Assert.IsTrue(TryFindRunningActivities(out var battle, out var board), "Activities did not start.");
                 Assert.AreEqual(battle.Id, board.ParentActivityId);
@@ -925,6 +934,38 @@ namespace ChainRush.Tests.PlayMode
             finally
             {
                 SceneManager.sceneLoaded -= configureStartup;
+            }
+        }
+
+        static void ConfigurePlayableSelection(PlayerData definition, string level, string hero)
+        {
+            const string meta = "Assets/Game/FrameworkUI/Data/";
+            Assert.IsTrue(PlayerService.TryGet(definition, out var player));
+            var selected = AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(meta + "Taxonomy/Selected.asset");
+            var available = AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(meta + "Taxonomy/Available.asset");
+            var characters = AssetDatabase.LoadAssetAtPath<EconomyWalletData>(meta + "Wallets/CharacterCatalog.asset");
+            // Set up the fixture through the same persistent catalogue tags read by gameplay.
+            // No hero-specific Activity/seed or alternate materialization path is used.
+            {
+                foreach (string name in new[] { "Perfume", "Tabasco" })
+                {
+                    var character = AssetDatabase.LoadAssetAtPath<CapabilityHostData>(
+                        "Assets/Game/Activities/Shared/Units/" + name + "/" + name + ".asset");
+                    if (name == hero)
+                        EconomyService.AssignTags(player.EconomyOwner, characters.Tags, character,
+                            new List<TaxonomyTermData> { available, selected });
+                    else EconomyService.RemoveTags(player.EconomyOwner, characters.Tags, character,
+                        new List<TaxonomyTermData> { selected });
+                }
+                var levels = AssetDatabase.LoadAssetAtPath<EconomyWalletData>(meta + "Wallets/LevelCatalog.asset");
+                foreach (string name in new[] { "Survive", "Distance" })
+                {
+                    var activity = AssetDatabase.LoadAssetAtPath<ActivityData>(
+                        "Assets/Game/Activities/Autobattle/Definition/" + (name == "Distance" ? "DistanceActivity" : "AutobattleActivity") + ".asset");
+                    if (name == level)
+                        EconomyService.AssignTags(player.EconomyOwner, levels.Tags, activity, new List<TaxonomyTermData> { selected });
+                    else EconomyService.RemoveTags(player.EconomyOwner, levels.Tags, activity, new List<TaxonomyTermData> { selected });
+                }
             }
         }
 

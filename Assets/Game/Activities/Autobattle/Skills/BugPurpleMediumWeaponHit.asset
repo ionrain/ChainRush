@@ -52,7 +52,8 @@ MonoBehaviour:
   actionInterval: 0
   actionCount: 1
   reloadTime: 0
-  actionProtectionTag: {fileID: 11400000, guid: e7692d65f982341c29fcc86a064e2a5f, type: 2}
+  actionProtectionTag: {fileID: 11400000, guid: e7692d65f982341c29fcc86a064e2a5f,
+    type: 2}
   actionProtectionDuration: 3
   requirements: []
   effects:
@@ -62,7 +63,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: -2
-      type: {class: , ns: , asm: }
+      type: {class: '!!null ''''', ns: '!!null ''''', asm: '!!null '''''}
     - rid: 6092004074608394510
       type: {class: SkillHostValueEffectData, ns: Core.Skills, asm: Core}
       data:
@@ -90,25 +91,28 @@ MonoBehaviour:
     - rid: 6092004074608394518
       type: {class: SkillEffectProgressionNodeData, ns: Core.Skills, asm: Core}
       data:
-        progression: {rid: 6092004074608394519}
-        argument: {rid: -2}
+        progression:
+          rid: 6092004074608394519
+        argument:
+          rid: -2
         precision: 3
     - rid: 6092004074608394520
-      type: {class: SkillEffectAttributeNodeData, ns: Core.Skills, asm: Core}
+      type: {class: SkillEffectHostValueNodeData, ns: Core.Skills, asm: Core}
       data:
         parameterTarget: 0
-        attribute:
-          attribute: {fileID: 11400000, guid: b92048bd2f85042ee97f6a25f6a4f99b, type: 2}
-          qualifiers:
-            - {fileID: 11400000, guid: d078fa8c1956f4a1b825a2d83c7f5cf0, type: 2}
-        allowMissingAttribute: 0
-        missingAttributeValue: 0
+        hostValue: {fileID: 11400000, guid: ea47740bd2e2147dda44809d0e08dfdb, type: 2}
+        qualifiers:
+        - {fileID: 11400000, guid: d078fa8c1956f4a1b825a2d83c7f5cf0, type: 2}
+        ownerLevel: 2
+        property: 0
     - rid: 6092004074608394517
       type: {class: SkillEffectBinaryNodeData, ns: Core.Skills, asm: Core}
       data:
         operation: 2
-        left: {rid: 6092004074608394518}
-        right: {rid: 6092004074608394520}
+        left:
+          rid: 6092004074608394518
+        right:
+          rid: 6092004074608394520
     - rid: 6092004074608394522
       type: {class: LongFlatProgressionData, ns: Core, asm: Core}
       data:
@@ -116,8 +120,10 @@ MonoBehaviour:
     - rid: 6092004074608394521
       type: {class: SkillEffectProgressionNodeData, ns: Core.Skills, asm: Core}
       data:
-        progression: {rid: 6092004074608394522}
-        argument: {rid: -2}
+        progression:
+          rid: 6092004074608394522
+        argument:
+          rid: -2
         precision: 3
     - rid: 6092004074608394524
       type: {class: LongFlatProgressionData, ns: Core, asm: Core}
@@ -126,19 +132,20 @@ MonoBehaviour:
     - rid: 6092004074608394523
       type: {class: SkillEffectProgressionNodeData, ns: Core.Skills, asm: Core}
       data:
-        progression: {rid: 6092004074608394524}
-        argument: {rid: -2}
+        progression:
+          rid: 6092004074608394524
+        argument:
+          rid: -2
         precision: 3
     - rid: 6092004074608394527
-      type: {class: SkillEffectAttributeNodeData, ns: Core.Skills, asm: Core}
+      type: {class: SkillEffectHostValueNodeData, ns: Core.Skills, asm: Core}
       data:
         parameterTarget: 1
-        attribute:
-          attribute: {fileID: 11400000, guid: 9c6a46d64e754495294c47772e712bd5, type: 2}
-          qualifiers:
-            - {fileID: 11400000, guid: d078fa8c1956f4a1b825a2d83c7f5cf0, type: 2}
-        allowMissingAttribute: 1
-        missingAttributeValue: 0
+        hostValue: {fileID: 11400000, guid: 0c87eeb98c0774bc3ae7eb33addbaf4d, type: 2}
+        qualifiers:
+        - {fileID: 11400000, guid: d078fa8c1956f4a1b825a2d83c7f5cf0, type: 2}
+        ownerLevel: 2
+        property: 0
     - rid: 6092004074608394529
       type: {class: LongFlatProgressionData, ns: Core, asm: Core}
       data:
@@ -146,8 +153,10 @@ MonoBehaviour:
     - rid: 6092004074608394528
       type: {class: SkillEffectProgressionNodeData, ns: Core.Skills, asm: Core}
       data:
-        progression: {rid: 6092004074608394529}
-        argument: {rid: -2}
+        progression:
+          rid: 6092004074608394529
+        argument:
+          rid: -2
         precision: 3
     - rid: 6092004074608394534
       type: {class: LongFlatProgressionData, ns: Core, asm: Core}
@@ -156,41 +165,45 @@ MonoBehaviour:
     - rid: 6092004074608394533
       type: {class: SkillEffectProgressionNodeData, ns: Core.Skills, asm: Core}
       data:
-        progression: {rid: 6092004074608394534}
-        argument: {rid: -2}
+        progression:
+          rid: 6092004074608394534
+        argument:
+          rid: -2
         precision: 3
     - rid: 6092004074608394535
-      type: {class: SkillEffectAttributeNodeData, ns: Core.Skills, asm: Core}
+      type: {class: SkillEffectHostValueNodeData, ns: Core.Skills, asm: Core}
       data:
         parameterTarget: 0
-        attribute:
-          attribute: {fileID: 11400000, guid: b92048bd2f85042ee97f6a25f6a4f99b, type: 2}
-          qualifiers:
-            - {fileID: 11400000, guid: d078fa8c1956f4a1b825a2d83c7f5cf0, type: 2}
-        allowMissingAttribute: 0
-        missingAttributeValue: 0
+        hostValue: {fileID: 11400000, guid: ea47740bd2e2147dda44809d0e08dfdb, type: 2}
+        qualifiers:
+        - {fileID: 11400000, guid: d078fa8c1956f4a1b825a2d83c7f5cf0, type: 2}
+        ownerLevel: 2
+        property: 0
     - rid: 6092004074608394532
       type: {class: SkillEffectBinaryNodeData, ns: Core.Skills, asm: Core}
       data:
         operation: 2
-        left: {rid: 6092004074608394533}
-        right: {rid: 6092004074608394535}
+        left:
+          rid: 6092004074608394533
+        right:
+          rid: 6092004074608394535
     - rid: 6092004074608394536
-      type: {class: SkillEffectAttributeNodeData, ns: Core.Skills, asm: Core}
+      type: {class: SkillEffectHostValueNodeData, ns: Core.Skills, asm: Core}
       data:
         parameterTarget: 1
-        attribute:
-          attribute: {fileID: 11400000, guid: 9c6a46d64e754495294c47772e712bd5, type: 2}
-          qualifiers:
-            - {fileID: 11400000, guid: d078fa8c1956f4a1b825a2d83c7f5cf0, type: 2}
-        allowMissingAttribute: 1
-        missingAttributeValue: 0
+        hostValue: {fileID: 11400000, guid: 0c87eeb98c0774bc3ae7eb33addbaf4d, type: 2}
+        qualifiers:
+        - {fileID: 11400000, guid: d078fa8c1956f4a1b825a2d83c7f5cf0, type: 2}
+        ownerLevel: 2
+        property: 0
     - rid: 6092004074608394531
       type: {class: SkillEffectBinaryNodeData, ns: Core.Skills, asm: Core}
       data:
         operation: 1
-        left: {rid: 6092004074608394532}
-        right: {rid: 6092004074608394536}
+        left:
+          rid: 6092004074608394532
+        right:
+          rid: 6092004074608394536
     - rid: 6092004074608394538
       type: {class: LongFlatProgressionData, ns: Core, asm: Core}
       data:
@@ -198,15 +211,19 @@ MonoBehaviour:
     - rid: 6092004074608394537
       type: {class: SkillEffectProgressionNodeData, ns: Core.Skills, asm: Core}
       data:
-        progression: {rid: 6092004074608394538}
-        argument: {rid: -2}
+        progression:
+          rid: 6092004074608394538
+        argument:
+          rid: -2
         precision: 3
     - rid: 6092004074608394530
       type: {class: SkillEffectBinaryNodeData, ns: Core.Skills, asm: Core}
       data:
         operation: 5
-        left: {rid: 6092004074608394531}
-        right: {rid: 6092004074608394537}
+        left:
+          rid: 6092004074608394531
+        right:
+          rid: 6092004074608394537
     - rid: 6092004074608394541
       type: {class: LongFlatProgressionData, ns: Core, asm: Core}
       data:
@@ -214,33 +231,40 @@ MonoBehaviour:
     - rid: 6092004074608394540
       type: {class: SkillEffectProgressionNodeData, ns: Core.Skills, asm: Core}
       data:
-        progression: {rid: 6092004074608394541}
-        argument: {rid: -2}
+        progression:
+          rid: 6092004074608394541
+        argument:
+          rid: -2
         precision: 3
     - rid: 6092004074608394542
-      type: {class: SkillEffectAttributeNodeData, ns: Core.Skills, asm: Core}
+      type: {class: SkillEffectHostValueNodeData, ns: Core.Skills, asm: Core}
       data:
         parameterTarget: 0
-        attribute:
-          attribute: {fileID: 11400000, guid: b92048bd2f85042ee97f6a25f6a4f99b, type: 2}
-          qualifiers:
-            - {fileID: 11400000, guid: d078fa8c1956f4a1b825a2d83c7f5cf0, type: 2}
-        allowMissingAttribute: 0
-        missingAttributeValue: 0
+        hostValue: {fileID: 11400000, guid: ea47740bd2e2147dda44809d0e08dfdb, type: 2}
+        qualifiers:
+        - {fileID: 11400000, guid: d078fa8c1956f4a1b825a2d83c7f5cf0, type: 2}
+        ownerLevel: 2
+        property: 0
     - rid: 6092004074608394539
       type: {class: SkillEffectBinaryNodeData, ns: Core.Skills, asm: Core}
       data:
         operation: 2
-        left: {rid: 6092004074608394540}
-        right: {rid: 6092004074608394542}
+        left:
+          rid: 6092004074608394540
+        right:
+          rid: 6092004074608394542
     - rid: 6092004074608394526
       type: {class: SkillEffectConditionalNodeData, ns: Core.Skills, asm: Core}
       data:
         comparison: 2
-        left: {rid: 6092004074608394527}
-        right: {rid: 6092004074608394528}
-        whenTrue: {rid: 6092004074608394530}
-        whenFalse: {rid: 6092004074608394539}
+        left:
+          rid: 6092004074608394527
+        right:
+          rid: 6092004074608394528
+        whenTrue:
+          rid: 6092004074608394530
+        whenFalse:
+          rid: 6092004074608394539
     - rid: 6092004074608394544
       type: {class: LongFlatProgressionData, ns: Core, asm: Core}
       data:
@@ -248,23 +272,31 @@ MonoBehaviour:
     - rid: 6092004074608394543
       type: {class: SkillEffectProgressionNodeData, ns: Core.Skills, asm: Core}
       data:
-        progression: {rid: 6092004074608394544}
-        argument: {rid: -2}
+        progression:
+          rid: 6092004074608394544
+        argument:
+          rid: -2
         precision: 0
     - rid: 6092004074608394525
       type: {class: SkillEffectBinaryNodeData, ns: Core.Skills, asm: Core}
       data:
         operation: 2
-        left: {rid: 6092004074608394526}
-        right: {rid: 6092004074608394543}
+        left:
+          rid: 6092004074608394526
+        right:
+          rid: 6092004074608394543
     - rid: 6092004074608394516
       type: {class: SkillEffectConditionalNodeData, ns: Core.Skills, asm: Core}
       data:
         comparison: 5
-        left: {rid: 6092004074608394517}
-        right: {rid: 6092004074608394521}
-        whenTrue: {rid: 6092004074608394523}
-        whenFalse: {rid: 6092004074608394525}
+        left:
+          rid: 6092004074608394517
+        right:
+          rid: 6092004074608394521
+        whenTrue:
+          rid: 6092004074608394523
+        whenFalse:
+          rid: 6092004074608394525
     - rid: 6092004074608394546
       type: {class: LongFlatProgressionData, ns: Core, asm: Core}
       data:
@@ -272,6 +304,8 @@ MonoBehaviour:
     - rid: 6092004074608394545
       type: {class: SkillEffectProgressionNodeData, ns: Core.Skills, asm: Core}
       data:
-        progression: {rid: 6092004074608394546}
-        argument: {rid: -2}
+        progression:
+          rid: 6092004074608394546
+        argument:
+          rid: -2
         precision: 0

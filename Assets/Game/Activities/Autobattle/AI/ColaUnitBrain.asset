@@ -16,19 +16,19 @@ MonoBehaviour:
   id: chainrush.ai.colaunit
   title:
     m_TableReference:
-      m_TableCollectionName: 
+      m_TableCollectionName:
     m_TableEntryReference:
       m_KeyId: 0
-      m_Key: 
+      m_Key:
     m_FallbackState: 0
     m_WaitForCompletion: 0
     m_LocalVariables: []
   description:
     m_TableReference:
-      m_TableCollectionName: 
+      m_TableCollectionName:
     m_TableEntryReference:
       m_KeyId: 0
-      m_Key: 
+      m_Key:
     m_FallbackState: 0
     m_WaitForCompletion: 0
     m_LocalVariables: []
@@ -439,11 +439,352 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: 2807516363299750081
+      type: {class: RemoveEntityAIBrainActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+    - rid: 6092004074610229778
+      type: {class: ClearAIBrainTargetActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        targetKey: {fileID: 11400000, guid: dbdf9302a39294c8baed403be2acf9ff, type: 2}
+        additionalTargetKeys: []
+    - rid: 6092004074610229779
+      type: {class: SelectActivityTargetAIBrainActionData, ns: Core.CapabilityHosts,
+        asm: Core}
+      data:
+        targetKey: {fileID: 11400000, guid: dbdf9302a39294c8baed403be2acf9ff, type: 2}
+        additionalTargetKeys: []
+        diplomacyChannel: 0
+        requiredDisposition: 1
+        requiredTargetTags:
+        - {fileID: 11400000, guid: c03c233cfc9f64712bf39c5d6311aee8, type: 2}
+        blockedTargetTags: []
+        requiredTargetStates: []
+        blockedTargetStates:
+        - {fileID: 11400000, guid: e88efc3432a274ac4be8b016fc3ab8fa, type: 2}
+        selectAllTargets: 0
+        compatibleSkill: {fileID: 0}
+    - rid: 6092004074610229781
+      type: {class: ClearAIBrainTargetActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        targetKey: {fileID: 11400000, guid: 41b5c641941e34ce99d3a4aea74acd72, type: 2}
+        additionalTargetKeys: []
+    - rid: 6092004074610229782
+      type: {class: SelectEntityTargetByQueryAIBrainActionData, ns: Core.AI.Actions,
+        asm: Core}
+      data:
+        targetKey: {fileID: 11400000, guid: 41b5c641941e34ce99d3a4aea74acd72, type: 2}
+        additionalTargetKeys: []
+        searchOriginType: 2
+        searchOriginKey: {fileID: 11400000, guid: dbdf9302a39294c8baed403be2acf9ff,
+          type: 2}
+        queryType: 0
+        viewKey: {fileID: 0}
+        sourceInteractionTags: []
+        targetInteractionTags: []
+        recentDamageValue: {fileID: 0}
+        recentDamageQualifiers: []
+        responseDuration: 0
+        rankByDistance: 1
+        distanceOffset: 500
+        maximumOwnerDistance: 5500
+        preferredOriginRadius: 6000
+        originWeight: 3200
+        ownerWeight: 900
+        crowdWeight: 2.6
+        leashWeight: 0.0021
+        targetLockDuration: 35
+        searchRadius: 10000
+        maxCandidates: 10
+        diplomacyChannel: 0
+        requiredDisposition: -1
+        requiredTargetTags:
+        - {fileID: 11400000, guid: 2231ac3b695cc4d49895685ed991ab34, type: 2}
+        blockedTargetTags: []
+        requiredTargetStates: []
+        blockedTargetStates:
+        - {fileID: 11400000, guid: e88efc3432a274ac4be8b016fc3ab8fa, type: 2}
+        selectAllTargets: 0
+        compatibleSkill: {fileID: 11400000, guid: 2cd6bf23078024c55958a6033ffc96bc,
+          type: 2}
+        targetGeometryType: 1
+    - rid: 6092004074610229784
+      type: {class: UseSkillAIBrainActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        skill: {fileID: 11400000, guid: b36c858bd4e154ec28a4682c69ad537e, type: 2}
+        targetKey: {fileID: 11400000, guid: 41b5c641941e34ce99d3a4aea74acd72, type: 2}
+        completionPolicy: 1
+    - rid: 6092004074610229785
+      type: {class: InterruptSkillAIBrainExitActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        triggerResults: 7
+        skill: {fileID: 11400000, guid: b36c858bd4e154ec28a4682c69ad537e, type: 2}
+    - rid: 6092004074610229796
+      type: {class: ClearAIBrainTargetActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        targetKey: {fileID: 11400000, guid: f58706c60335d4a329e9a4925dffe5a8, type: 2}
+        additionalTargetKeys: []
+    - rid: 6092004074610229797
+      type: {class: SelectEntityTargetByQueryAIBrainActionData, ns: Core.AI.Actions,
+        asm: Core}
+      data:
+        targetKey: {fileID: 11400000, guid: f58706c60335d4a329e9a4925dffe5a8, type: 2}
+        additionalTargetKeys: []
+        searchOriginType: 0
+        searchOriginKey: {fileID: 0}
+        queryType: 0
+        viewKey: {fileID: 0}
+        sourceInteractionTags: []
+        targetInteractionTags: []
+        recentDamageValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b,
+          type: 2}
+        recentDamageQualifiers: []
+        responseDuration: 60
+        rankByDistance: 0
+        distanceOffset: 0
+        maximumOwnerDistance: 0
+        preferredOriginRadius: 0
+        originWeight: 0
+        ownerWeight: 0
+        crowdWeight: 0
+        leashWeight: 0
+        targetLockDuration: 0
+        searchRadius: 9000
+        maxCandidates: 256
+        diplomacyChannel: 0
+        requiredDisposition: 1
+        requiredTargetTags:
+        - {fileID: 11400000, guid: c03c233cfc9f64712bf39c5d6311aee8, type: 2}
+        blockedTargetTags: []
+        requiredTargetStates: []
+        blockedTargetStates:
+        - {fileID: 11400000, guid: e88efc3432a274ac4be8b016fc3ab8fa, type: 2}
+        selectAllTargets: 0
+        compatibleSkill: {fileID: 0}
+        targetGeometryType: 1
+    - rid: 6092004074610229798
+      type: {class: ClearAIBrainTargetActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        targetKey: {fileID: 11400000, guid: f58706c60335d4a329e9a4925dffe5a8, type: 2}
+        additionalTargetKeys: []
+    - rid: 6092004074610229799
+      type: {class: SelectEntityTargetByQueryAIBrainActionData, ns: Core.AI.Actions,
+        asm: Core}
+      data:
+        targetKey: {fileID: 11400000, guid: f58706c60335d4a329e9a4925dffe5a8, type: 2}
+        additionalTargetKeys: []
+        searchOriginType: 0
+        searchOriginKey: {fileID: 0}
+        queryType: 0
+        viewKey: {fileID: 0}
+        sourceInteractionTags: []
+        targetInteractionTags: []
+        recentDamageValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b,
+          type: 2}
+        recentDamageQualifiers: []
+        responseDuration: 45
+        rankByDistance: 0
+        distanceOffset: 0
+        maximumOwnerDistance: 0
+        preferredOriginRadius: 0
+        originWeight: 0
+        ownerWeight: 0
+        crowdWeight: 0
+        leashWeight: 0
+        targetLockDuration: 0
+        searchRadius: 9000
+        maxCandidates: 256
+        diplomacyChannel: 0
+        requiredDisposition: 1
+        requiredTargetTags:
+        - {fileID: 11400000, guid: 2231ac3b695cc4d49895685ed991ab34, type: 2}
+        blockedTargetTags: []
+        requiredTargetStates: []
+        blockedTargetStates:
+        - {fileID: 11400000, guid: e88efc3432a274ac4be8b016fc3ab8fa, type: 2}
+        selectAllTargets: 0
+        compatibleSkill: {fileID: 0}
+        targetGeometryType: 1
+    - rid: 6092004074610229800
+      type: {class: ClearAIBrainTargetActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        targetKey: {fileID: 11400000, guid: f58706c60335d4a329e9a4925dffe5a8, type: 2}
+        additionalTargetKeys: []
+    - rid: 6092004074610229801
+      type: {class: SelectEntityTargetByQueryAIBrainActionData, ns: Core.AI.Actions,
+        asm: Core}
+      data:
+        targetKey: {fileID: 11400000, guid: f58706c60335d4a329e9a4925dffe5a8, type: 2}
+        additionalTargetKeys: []
+        searchOriginType: 0
+        searchOriginKey: {fileID: 0}
+        queryType: 0
+        viewKey: {fileID: 0}
+        sourceInteractionTags: []
+        targetInteractionTags: []
+        recentDamageValue: {fileID: 0}
+        recentDamageQualifiers: []
+        responseDuration: 0
+        rankByDistance: 0
+        distanceOffset: 0
+        maximumOwnerDistance: 0
+        preferredOriginRadius: 0
+        originWeight: 0
+        ownerWeight: 0
+        crowdWeight: 0
+        leashWeight: 0
+        targetLockDuration: 0
+        searchRadius: 9000
+        maxCandidates: 256
+        diplomacyChannel: 0
+        requiredDisposition: 1
+        requiredTargetTags:
+        - {fileID: 11400000, guid: 2231ac3b695cc4d49895685ed991ab34, type: 2}
+        blockedTargetTags: []
+        requiredTargetStates:
+        - {fileID: 11400000, guid: b167cfbcf974f4e62a8315365308e3c5, type: 2}
+        - {fileID: 11400000, guid: bcb6da61a27f44b82850a593eb8ced3d, type: 2}
+        blockedTargetStates:
+        - {fileID: 11400000, guid: e88efc3432a274ac4be8b016fc3ab8fa, type: 2}
+        selectAllTargets: 0
+        compatibleSkill: {fileID: 0}
+        targetGeometryType: 1
+    - rid: 6092004074610229803
+      type: {class: UseSkillAIBrainActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        skill: {fileID: 11400000, guid: 4704f365ce08544a1911c1e82e1a6f0f, type: 2}
+        targetKey: {fileID: 11400000, guid: f58706c60335d4a329e9a4925dffe5a8, type: 2}
+        completionPolicy: 1
+    - rid: 6092004074610229804
+      type: {class: InterruptSkillAIBrainExitActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        triggerResults: 7
+        skill: {fileID: 11400000, guid: 4704f365ce08544a1911c1e82e1a6f0f, type: 2}
+    - rid: 6092004074610229806
+      type: {class: UseSkillAIBrainActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        skill: {fileID: 11400000, guid: 4704f365ce08544a1911c1e82e1a6f0f, type: 2}
+        targetKey: {fileID: 11400000, guid: f58706c60335d4a329e9a4925dffe5a8, type: 2}
+        completionPolicy: 1
+    - rid: 6092004074610229807
+      type: {class: InterruptSkillAIBrainExitActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        triggerResults: 7
+        skill: {fileID: 11400000, guid: 4704f365ce08544a1911c1e82e1a6f0f, type: 2}
+    - rid: 6092004074610229809
+      type: {class: UseSkillAIBrainActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        skill: {fileID: 11400000, guid: 4704f365ce08544a1911c1e82e1a6f0f, type: 2}
+        targetKey: {fileID: 11400000, guid: f58706c60335d4a329e9a4925dffe5a8, type: 2}
+        completionPolicy: 1
+    - rid: 6092004074610229810
+      type: {class: InterruptSkillAIBrainExitActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        triggerResults: 7
+        skill: {fileID: 11400000, guid: 4704f365ce08544a1911c1e82e1a6f0f, type: 2}
+    - rid: 6092004074610229811
+      type: {class: SelectEntityTargetByQueryAIBrainActionData, ns: Core.AI.Actions,
+        asm: Core}
+      data:
+        targetKey: {fileID: 11400000, guid: 769aebe22b9f6494abbec52fe0ffdc71, type: 2}
+        additionalTargetKeys: []
+        searchOriginType: 0
+        searchOriginKey: {fileID: 0}
+        queryType: 0
+        viewKey: {fileID: 0}
+        sourceInteractionTags: []
+        targetInteractionTags: []
+        recentDamageValue: {fileID: 0}
+        recentDamageQualifiers: []
+        responseDuration: 0
+        rankByDistance: 0
+        distanceOffset: 0
+        maximumOwnerDistance: 0
+        preferredOriginRadius: 0
+        originWeight: 0
+        ownerWeight: 0
+        crowdWeight: 0
+        leashWeight: 0
+        targetLockDuration: 0
+        searchRadius: 10000
+        maxCandidates: 256
+        diplomacyChannel: 0
+        requiredDisposition: -1
+        requiredTargetTags:
+        - {fileID: 11400000, guid: 2231ac3b695cc4d49895685ed991ab34, type: 2}
+        blockedTargetTags: []
+        requiredTargetStates: []
+        blockedTargetStates:
+        - {fileID: 11400000, guid: e88efc3432a274ac4be8b016fc3ab8fa, type: 2}
+        selectAllTargets: 0
+        compatibleSkill: {fileID: 11400000, guid: 2cd6bf23078024c55958a6033ffc96bc,
+          type: 2}
+        targetGeometryType: 1
+    - rid: 6092004074610229812
+      type: {class: UseSkillAIBrainActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        skill: {fileID: 11400000, guid: 2cd6bf23078024c55958a6033ffc96bc, type: 2}
+        targetKey: {fileID: 11400000, guid: 769aebe22b9f6494abbec52fe0ffdc71, type: 2}
+        completionPolicy: 1
+    - rid: 6092004074610229813
+      type: {class: InterruptSkillAIBrainExitActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        triggerResults: 7
+        skill: {fileID: 11400000, guid: 2cd6bf23078024c55958a6033ffc96bc, type: 2}
+    - rid: 6092004074610229814
+      type: {class: SelectEntityTargetByQueryAIBrainActionData, ns: Core.AI.Actions,
+        asm: Core}
+      data:
+        targetKey: {fileID: 11400000, guid: 769aebe22b9f6494abbec52fe0ffdc71, type: 2}
+        additionalTargetKeys: []
+        searchOriginType: 0
+        searchOriginKey: {fileID: 0}
+        queryType: 0
+        viewKey: {fileID: 0}
+        sourceInteractionTags: []
+        targetInteractionTags: []
+        recentDamageValue: {fileID: 0}
+        recentDamageQualifiers: []
+        responseDuration: 0
+        rankByDistance: 0
+        distanceOffset: 0
+        maximumOwnerDistance: 0
+        preferredOriginRadius: 0
+        originWeight: 0
+        ownerWeight: 0
+        crowdWeight: 0
+        leashWeight: 0
+        targetLockDuration: 0
+        searchRadius: 10000
+        maxCandidates: 256
+        diplomacyChannel: 0
+        requiredDisposition: -1
+        requiredTargetTags:
+        - {fileID: 11400000, guid: 2231ac3b695cc4d49895685ed991ab34, type: 2}
+        blockedTargetTags: []
+        requiredTargetStates: []
+        blockedTargetStates:
+        - {fileID: 11400000, guid: e88efc3432a274ac4be8b016fc3ab8fa, type: 2}
+        selectAllTargets: 0
+        compatibleSkill: {fileID: 11400000, guid: 2cd6bf23078024c55958a6033ffc96bc,
+          type: 2}
+        targetGeometryType: 1
+    - rid: 6092004074610229815
+      type: {class: UseSkillAIBrainActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        skill: {fileID: 11400000, guid: 2cd6bf23078024c55958a6033ffc96bc, type: 2}
+        targetKey: {fileID: 11400000, guid: 769aebe22b9f6494abbec52fe0ffdc71, type: 2}
+        completionPolicy: 1
+    - rid: 6092004074610229816
+      type: {class: InterruptSkillAIBrainExitActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        triggerResults: 7
+        skill: {fileID: 11400000, guid: 2cd6bf23078024c55958a6033ffc96bc, type: 2}
     - rid: 6092004074610229817
       type: {class: HostValueConditionAIBrainConditionData, ns: Core.AI.Conditions,
         asm: Core}
       data:
         hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
+        qualifiers: []
         compareOperation: 5
         targetValue: 0
     - rid: 6092004074610229818
@@ -451,6 +792,7 @@ MonoBehaviour:
         asm: Core}
       data:
         hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
+        qualifiers: []
         compareOperation: 5
         targetValue: 0
     - rid: 6092004074610229819
@@ -458,6 +800,7 @@ MonoBehaviour:
         asm: Core}
       data:
         hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
+        qualifiers: []
         compareOperation: 5
         targetValue: 0
     - rid: 6092004074610229820
@@ -465,6 +808,7 @@ MonoBehaviour:
         asm: Core}
       data:
         hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
+        qualifiers: []
         compareOperation: 5
         targetValue: 0
     - rid: 6092004074610229821
@@ -472,6 +816,7 @@ MonoBehaviour:
         asm: Core}
       data:
         hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
+        qualifiers: []
         compareOperation: 5
         targetValue: 0
     - rid: 6092004074610229822
@@ -479,6 +824,7 @@ MonoBehaviour:
         asm: Core}
       data:
         hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
+        qualifiers: []
         compareOperation: 5
         targetValue: 0
     - rid: 6092004074610229827
@@ -486,6 +832,7 @@ MonoBehaviour:
         asm: Core}
       data:
         hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
+        qualifiers: []
         compareOperation: 5
         targetValue: 0
     - rid: 6092004074610229828
@@ -493,6 +840,7 @@ MonoBehaviour:
         asm: Core}
       data:
         hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
+        qualifiers: []
         compareOperation: 5
         targetValue: 0
     - rid: 6092004074610229829
@@ -500,6 +848,7 @@ MonoBehaviour:
         asm: Core}
       data:
         hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
+        qualifiers: []
         compareOperation: 5
         targetValue: 0
     - rid: 6092004074610229830
@@ -507,6 +856,7 @@ MonoBehaviour:
         asm: Core}
       data:
         hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
+        qualifiers: []
         compareOperation: 5
         targetValue: 0
     - rid: 6092004074610229831
@@ -514,6 +864,7 @@ MonoBehaviour:
         asm: Core}
       data:
         hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
+        qualifiers: []
         compareOperation: 5
         targetValue: 0
     - rid: 6092004074610229832
@@ -521,6 +872,7 @@ MonoBehaviour:
         asm: Core}
       data:
         hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
+        qualifiers: []
         compareOperation: 5
         targetValue: 0
     - rid: 6092004074610229833
@@ -528,6 +880,7 @@ MonoBehaviour:
         asm: Core}
       data:
         hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
+        qualifiers: []
         compareOperation: 5
         targetValue: 0
     - rid: 6092004074610229834
@@ -535,6 +888,7 @@ MonoBehaviour:
         asm: Core}
       data:
         hostValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
+        qualifiers: []
         compareOperation: 5
         targetValue: 0
     - rid: 6092004074610229835
@@ -759,254 +1113,6 @@ MonoBehaviour:
       type: {class: TimeInStateAIBrainConditionData, ns: Core.AI.Conditions, asm: Core}
       data:
         minimumStateDuration: 9
-    - rid: 2807516363299750081
-      type: {class: RemoveEntityAIBrainActionData, ns: Core.AI.Actions, asm: Core}
-      data: 
-    - rid: 6092004074610229778
-      type: {class: ClearAIBrainTargetActionData, ns: Core.AI.Actions, asm: Core}
-      data:
-        targetKey: {fileID: 11400000, guid: dbdf9302a39294c8baed403be2acf9ff, type: 2}
-        additionalTargetKeys: []
-    - rid: 6092004074610229779
-      type: {class: SelectActivityTargetAIBrainActionData, ns: Core.CapabilityHosts,
-        asm: Core}
-      data:
-        targetKey: {fileID: 11400000, guid: dbdf9302a39294c8baed403be2acf9ff, type: 2}
-        additionalTargetKeys: []
-        diplomacyChannel: 0
-        requiredDisposition: 1
-        requiredTargetTags:
-        - {fileID: 11400000, guid: c03c233cfc9f64712bf39c5d6311aee8, type: 2}
-        blockedTargetTags: []
-        requiredTargetStates: []
-        blockedTargetStates:
-        - {fileID: 11400000, guid: e88efc3432a274ac4be8b016fc3ab8fa, type: 2}
-        compatibleSkill: {fileID: 0}
-    - rid: 6092004074610229781
-      type: {class: ClearAIBrainTargetActionData, ns: Core.AI.Actions, asm: Core}
-      data:
-        targetKey: {fileID: 11400000, guid: 41b5c641941e34ce99d3a4aea74acd72, type: 2}
-        additionalTargetKeys: []
-    - rid: 6092004074610229782
-      type: {class: SelectEntityTargetByQueryAIBrainActionData, ns: Core.AI.Actions,
-        asm: Core}
-      data:
-        rankByDistance: 1
-        distanceOffset: 500
-        maximumOwnerDistance: 5500
-        preferredOriginRadius: 6000
-        originWeight: 3200
-        ownerWeight: 900
-        crowdWeight: 2.6
-        leashWeight: 0.0021
-        targetLockDuration: 35
-        targetKey: {fileID: 11400000, guid: 41b5c641941e34ce99d3a4aea74acd72, type: 2}
-        additionalTargetKeys: []
-        searchOriginType: 2
-        searchOriginKey: {fileID: 11400000, guid: dbdf9302a39294c8baed403be2acf9ff,
-          type: 2}
-        searchRadius: 10000
-        maxCandidates: 10
-        diplomacyChannel: 0
-        requiredDisposition: -1
-        requiredTargetTags:
-        - {fileID: 11400000, guid: 2231ac3b695cc4d49895685ed991ab34, type: 2}
-        blockedTargetTags: []
-        requiredTargetStates: []
-        blockedTargetStates:
-        - {fileID: 11400000, guid: e88efc3432a274ac4be8b016fc3ab8fa, type: 2}
-        compatibleSkill: {fileID: 11400000, guid: 2cd6bf23078024c55958a6033ffc96bc,
-          type: 2}
-        targetGeometryType: 1
-    - rid: 6092004074610229784
-      type: {class: UseSkillAIBrainActionData, ns: Core.AI.Actions, asm: Core}
-      data:
-        skill: {fileID: 11400000, guid: b36c858bd4e154ec28a4682c69ad537e, type: 2}
-        targetKey: {fileID: 11400000, guid: 41b5c641941e34ce99d3a4aea74acd72, type: 2}
-        completionPolicy: 1
-    - rid: 6092004074610229785
-      type: {class: InterruptSkillAIBrainExitActionData, ns: Core.AI.Actions, asm: Core}
-      data:
-        triggerResults: 7
-        skill: {fileID: 11400000, guid: b36c858bd4e154ec28a4682c69ad537e, type: 2}
-    - rid: 6092004074610229796
-      type: {class: ClearAIBrainTargetActionData, ns: Core.AI.Actions, asm: Core}
-      data:
-        targetKey: {fileID: 11400000, guid: f58706c60335d4a329e9a4925dffe5a8, type: 2}
-        additionalTargetKeys: []
-    - rid: 6092004074610229797
-      type: {class: SelectEntityTargetByQueryAIBrainActionData, ns: Core.AI.Actions,
-        asm: Core}
-      data:
-        recentDamageValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
-        responseDuration: 60
-        targetKey: {fileID: 11400000, guid: f58706c60335d4a329e9a4925dffe5a8, type: 2}
-        additionalTargetKeys: []
-        searchOriginType: 0
-        searchOriginKey: {fileID: 0}
-        searchRadius: 9000
-        maxCandidates: 256
-        diplomacyChannel: 0
-        requiredDisposition: 1
-        requiredTargetTags:
-        - {fileID: 11400000, guid: c03c233cfc9f64712bf39c5d6311aee8, type: 2}
-        blockedTargetTags: []
-        requiredTargetStates: []
-        blockedTargetStates:
-        - {fileID: 11400000, guid: e88efc3432a274ac4be8b016fc3ab8fa, type: 2}
-        compatibleSkill: {fileID: 0}
-        targetGeometryType: 1
-    - rid: 6092004074610229798
-      type: {class: ClearAIBrainTargetActionData, ns: Core.AI.Actions, asm: Core}
-      data:
-        targetKey: {fileID: 11400000, guid: f58706c60335d4a329e9a4925dffe5a8, type: 2}
-        additionalTargetKeys: []
-    - rid: 6092004074610229799
-      type: {class: SelectEntityTargetByQueryAIBrainActionData, ns: Core.AI.Actions,
-        asm: Core}
-      data:
-        recentDamageValue: {fileID: 11400000, guid: 12ddbc399d55d4145b356ce3c0f8617b, type: 2}
-        responseDuration: 45
-        targetKey: {fileID: 11400000, guid: f58706c60335d4a329e9a4925dffe5a8, type: 2}
-        additionalTargetKeys: []
-        searchOriginType: 0
-        searchOriginKey: {fileID: 0}
-        searchRadius: 9000
-        maxCandidates: 256
-        diplomacyChannel: 0
-        requiredDisposition: 1
-        requiredTargetTags:
-        - {fileID: 11400000, guid: 2231ac3b695cc4d49895685ed991ab34, type: 2}
-        blockedTargetTags: []
-        requiredTargetStates: []
-        blockedTargetStates:
-        - {fileID: 11400000, guid: e88efc3432a274ac4be8b016fc3ab8fa, type: 2}
-        compatibleSkill: {fileID: 0}
-        targetGeometryType: 1
-    - rid: 6092004074610229800
-      type: {class: ClearAIBrainTargetActionData, ns: Core.AI.Actions, asm: Core}
-      data:
-        targetKey: {fileID: 11400000, guid: f58706c60335d4a329e9a4925dffe5a8, type: 2}
-        additionalTargetKeys: []
-    - rid: 6092004074610229801
-      type: {class: SelectEntityTargetByQueryAIBrainActionData, ns: Core.AI.Actions,
-        asm: Core}
-      data:
-        targetKey: {fileID: 11400000, guid: f58706c60335d4a329e9a4925dffe5a8, type: 2}
-        additionalTargetKeys: []
-        searchOriginType: 0
-        searchOriginKey: {fileID: 0}
-        searchRadius: 9000
-        maxCandidates: 256
-        diplomacyChannel: 0
-        requiredDisposition: 1
-        requiredTargetTags:
-        - {fileID: 11400000, guid: 2231ac3b695cc4d49895685ed991ab34, type: 2}
-        blockedTargetTags: []
-        requiredTargetStates:
-        - {fileID: 11400000, guid: b167cfbcf974f4e62a8315365308e3c5, type: 2}
-        - {fileID: 11400000, guid: bcb6da61a27f44b82850a593eb8ced3d, type: 2}
-        blockedTargetStates:
-        - {fileID: 11400000, guid: e88efc3432a274ac4be8b016fc3ab8fa, type: 2}
-        compatibleSkill: {fileID: 0}
-        targetGeometryType: 1
-    - rid: 6092004074610229803
-      type: {class: UseSkillAIBrainActionData, ns: Core.AI.Actions, asm: Core}
-      data:
-        skill: {fileID: 11400000, guid: 4704f365ce08544a1911c1e82e1a6f0f, type: 2}
-        targetKey: {fileID: 11400000, guid: f58706c60335d4a329e9a4925dffe5a8, type: 2}
-        completionPolicy: 1
-    - rid: 6092004074610229804
-      type: {class: InterruptSkillAIBrainExitActionData, ns: Core.AI.Actions, asm: Core}
-      data:
-        triggerResults: 7
-        skill: {fileID: 11400000, guid: 4704f365ce08544a1911c1e82e1a6f0f, type: 2}
-    - rid: 6092004074610229806
-      type: {class: UseSkillAIBrainActionData, ns: Core.AI.Actions, asm: Core}
-      data:
-        skill: {fileID: 11400000, guid: 4704f365ce08544a1911c1e82e1a6f0f, type: 2}
-        targetKey: {fileID: 11400000, guid: f58706c60335d4a329e9a4925dffe5a8, type: 2}
-        completionPolicy: 1
-    - rid: 6092004074610229807
-      type: {class: InterruptSkillAIBrainExitActionData, ns: Core.AI.Actions, asm: Core}
-      data:
-        triggerResults: 7
-        skill: {fileID: 11400000, guid: 4704f365ce08544a1911c1e82e1a6f0f, type: 2}
-    - rid: 6092004074610229809
-      type: {class: UseSkillAIBrainActionData, ns: Core.AI.Actions, asm: Core}
-      data:
-        skill: {fileID: 11400000, guid: 4704f365ce08544a1911c1e82e1a6f0f, type: 2}
-        targetKey: {fileID: 11400000, guid: f58706c60335d4a329e9a4925dffe5a8, type: 2}
-        completionPolicy: 1
-    - rid: 6092004074610229810
-      type: {class: InterruptSkillAIBrainExitActionData, ns: Core.AI.Actions, asm: Core}
-      data:
-        triggerResults: 7
-        skill: {fileID: 11400000, guid: 4704f365ce08544a1911c1e82e1a6f0f, type: 2}
-    - rid: 6092004074610229811
-      type: {class: SelectEntityTargetByQueryAIBrainActionData, ns: Core.AI.Actions,
-        asm: Core}
-      data:
-        targetKey: {fileID: 11400000, guid: 769aebe22b9f6494abbec52fe0ffdc71, type: 2}
-        additionalTargetKeys: []
-        searchOriginType: 0
-        searchOriginKey: {fileID: 0}
-        searchRadius: 10000
-        maxCandidates: 256
-        diplomacyChannel: 0
-        requiredDisposition: -1
-        requiredTargetTags:
-        - {fileID: 11400000, guid: 2231ac3b695cc4d49895685ed991ab34, type: 2}
-        blockedTargetTags: []
-        requiredTargetStates: []
-        blockedTargetStates:
-        - {fileID: 11400000, guid: e88efc3432a274ac4be8b016fc3ab8fa, type: 2}
-        compatibleSkill: {fileID: 11400000, guid: 2cd6bf23078024c55958a6033ffc96bc,
-          type: 2}
-        targetGeometryType: 1
-    - rid: 6092004074610229812
-      type: {class: UseSkillAIBrainActionData, ns: Core.AI.Actions, asm: Core}
-      data:
-        skill: {fileID: 11400000, guid: 2cd6bf23078024c55958a6033ffc96bc, type: 2}
-        targetKey: {fileID: 11400000, guid: 769aebe22b9f6494abbec52fe0ffdc71, type: 2}
-        completionPolicy: 1
-    - rid: 6092004074610229813
-      type: {class: InterruptSkillAIBrainExitActionData, ns: Core.AI.Actions, asm: Core}
-      data:
-        triggerResults: 7
-        skill: {fileID: 11400000, guid: 2cd6bf23078024c55958a6033ffc96bc, type: 2}
-    - rid: 6092004074610229814
-      type: {class: SelectEntityTargetByQueryAIBrainActionData, ns: Core.AI.Actions,
-        asm: Core}
-      data:
-        targetKey: {fileID: 11400000, guid: 769aebe22b9f6494abbec52fe0ffdc71, type: 2}
-        additionalTargetKeys: []
-        searchOriginType: 0
-        searchOriginKey: {fileID: 0}
-        searchRadius: 10000
-        maxCandidates: 256
-        diplomacyChannel: 0
-        requiredDisposition: -1
-        requiredTargetTags:
-        - {fileID: 11400000, guid: 2231ac3b695cc4d49895685ed991ab34, type: 2}
-        blockedTargetTags: []
-        requiredTargetStates: []
-        blockedTargetStates:
-        - {fileID: 11400000, guid: e88efc3432a274ac4be8b016fc3ab8fa, type: 2}
-        compatibleSkill: {fileID: 11400000, guid: 2cd6bf23078024c55958a6033ffc96bc,
-          type: 2}
-        targetGeometryType: 1
-    - rid: 6092004074610229815
-      type: {class: UseSkillAIBrainActionData, ns: Core.AI.Actions, asm: Core}
-      data:
-        skill: {fileID: 11400000, guid: 2cd6bf23078024c55958a6033ffc96bc, type: 2}
-        targetKey: {fileID: 11400000, guid: 769aebe22b9f6494abbec52fe0ffdc71, type: 2}
-        completionPolicy: 1
-    - rid: 6092004074610229816
-      type: {class: InterruptSkillAIBrainExitActionData, ns: Core.AI.Actions, asm: Core}
-      data:
-        triggerResults: 7
-        skill: {fileID: 11400000, guid: 2cd6bf23078024c55958a6033ffc96bc, type: 2}
     - rid: 6092004074610229898
       type: {class: TargetEntityExistsAIBrainConditionData, ns: Core.AI.Conditions,
         asm: Core}

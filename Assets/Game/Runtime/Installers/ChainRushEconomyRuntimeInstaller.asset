@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Core::Core.GameRuntime.Installers.EconomyRuntimeInstallerData
   clearExistingModulesOnInstall: 1
   domains: 0000000003000000090000000a0000000b0000000d0000000e0000000f000000110000001000000008000000
+  operationPreparationBudget: 128

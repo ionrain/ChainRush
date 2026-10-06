@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Core::Core.Economy.EconomyWalletData
   id: chainrush.wallet.autobattle.power.fire
   icon: {fileID: 0}
+  contributesToOwnerProjection: 1
   tags:
   - {fileID: 11400000, guid: 4f6639ab0cd26404b8bab73f4dc70cb7, type: 2}
   aggregationRules: []

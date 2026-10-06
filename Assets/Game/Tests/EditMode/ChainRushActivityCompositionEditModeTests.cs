@@ -548,7 +548,9 @@ namespace ChainRush.Tests.EditMode
             ObjectiveNode clear = children.Single(node => node.Id == "chainrush-board-clear");
             ObjectiveNode fill = children.Single(node => node.Id == "chainrush-board-fill-markers");
             var confirmation = (ObjectiveConditionEconomyOperation)payment.SuccessConditions.Single();
-            EconomyOperationRequest request = confirmation.Operation.CreateRequest(null, EconomyTransactionTraceContext.None);
+            EconomyOperationRequest request = confirmation.Operation.CreateRequest(
+                LoadRequiredAsset<Core.Players.PlayerData>("Assets/Game/FrameworkUI/Data/FrameworkProfile.asset"),
+                EconomyTransactionTraceContext.None, default);
             Assert.AreEqual(EconomyOperation.Consume, request.Operation);
             Assert.AreSame(turnToken, request.Asset);
             Assert.AreEqual(1L, request.Amount);
@@ -1005,7 +1007,8 @@ namespace ChainRush.Tests.EditMode
                 "chainrush.autobattle.marker.enemy-spawn",
                 enemyProduction.MaterializationMarkerProvider.Id);
 
-            Assert.AreEqual(8, playerBrain.Operators.Count);
+            Assert.AreEqual(24, playerBrain.Operators.Count);
+            Assert.AreEqual(1, playerBrain.Operators.OfType<PrototypePreparationDecompOpData>().Count());
             Assert.AreEqual(
                 1,
                 playerBrain.Operators.OfType<MaterializedEntityProductionDecompOpData>().Count());
@@ -1026,7 +1029,7 @@ namespace ChainRush.Tests.EditMode
             CollectionAssert.AreEqual(
                 new[] { OrchestrationPlanningFactType.EconomyAmount },
                 awaitFact.InputFactTypes);
-            Assert.AreEqual(10, playerBrain.DecisionGraph.Nodes.Count);
+            Assert.AreEqual(26, playerBrain.DecisionGraph.Nodes.Count);
             Assert.IsFalse(playerBrain.DecisionGraph.Nodes
                 .OfType<OrchestrationDecisionData>()
                 .Any(decision => decision.DecisionId == "player-deployment-agent"));

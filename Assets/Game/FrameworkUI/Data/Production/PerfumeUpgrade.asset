@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85e184825c3ab43e5a64ac84b7ab1ba9, type: 3}
   m_Name: PerfumeUpgrade
   m_EditorClassIdentifier: Core::Core.Production.Authoring.ProductionRecipeData
-  domainTypePreview: 0
+  domainTypePreview: 9
   id: chainrush.meta.perfumeupgrade
   title:
     m_TableReference:
@@ -40,6 +40,7 @@ MonoBehaviour:
   stackCapacity: 0
   inputs:
   - operation: 1
+    ownerLevel: 0
     asset: {fileID: 11400000, guid: 7070d9e2c0c244d008f0b10c7c645d5f, type: 2}
     formType: 0
     walletTags:
@@ -49,6 +50,7 @@ MonoBehaviour:
     amountProgression:
       rid: 6092004206412824643
   - operation: 4
+    ownerLevel: 0
     asset: {fileID: 11400000, guid: bcf9bddf9eb164cf2938e463d817a75b, type: 2}
     formType: 0
     walletTags:
@@ -57,6 +59,7 @@ MonoBehaviour:
     amountProgression:
       rid: 6092004206412824644
   - operation: 4
+    ownerLevel: 0
     asset: {fileID: 11400000, guid: 8eb4a4dd97f724538ab90660efdb26cf, type: 2}
     formType: 0
     walletTags:
@@ -66,6 +69,7 @@ MonoBehaviour:
       rid: 6092004206412824645
   outputs:
   - asset: {fileID: 11400000, guid: 1495adc81e8634340aa3c74fd1bdc5e3, type: 2}
+    ownerLevel: 0
     formType: 0
     walletTags:
     - {fileID: 11400000, guid: 7de0da75d51ae4eb0a59fd5397e57cb8, type: 2}
@@ -73,50 +77,51 @@ MonoBehaviour:
     amountProgression:
       rid: 6092004206412824646
   - asset: {fileID: 11400000, guid: b92048bd2f85042ee97f6a25f6a4f99b, type: 2}
+    ownerLevel: 0
     formType: 0
     walletTags:
     - {fileID: 11400000, guid: b739a2c14638440ee9523401d09a880f, type: 2}
     runtimeTags:
     - {fileID: 11400000, guid: d078fa8c1956f4a1b825a2d83c7f5cf0, type: 2}
-    - {fileID: 11400000, guid: 6012092f5d8ea4796a831f16ce0b652e, type: 2}
     amountProgression:
       rid: 6092004206412824647
   - asset: {fileID: 11400000, guid: 9c6a46d64e754495294c47772e712bd5, type: 2}
+    ownerLevel: 0
     formType: 0
     walletTags:
     - {fileID: 11400000, guid: b739a2c14638440ee9523401d09a880f, type: 2}
     runtimeTags:
     - {fileID: 11400000, guid: d078fa8c1956f4a1b825a2d83c7f5cf0, type: 2}
-    - {fileID: 11400000, guid: 6012092f5d8ea4796a831f16ce0b652e, type: 2}
     amountProgression:
       rid: 6092004206412824648
   - asset: {fileID: 11400000, guid: 8c0f2453a88154d458b494f57e5b4722, type: 2}
+    ownerLevel: 0
     formType: 0
     walletTags:
     - {fileID: 11400000, guid: b739a2c14638440ee9523401d09a880f, type: 2}
-    runtimeTags:
-    - {fileID: 11400000, guid: 6012092f5d8ea4796a831f16ce0b652e, type: 2}
+    runtimeTags: []
     amountProgression:
       rid: 6092004206412824649
   - asset: {fileID: 11400000, guid: 2d9f6059fa0ff4f01af05e6d0a60008f, type: 2}
+    ownerLevel: 0
     formType: 0
     walletTags:
     - {fileID: 11400000, guid: b739a2c14638440ee9523401d09a880f, type: 2}
-    runtimeTags:
-    - {fileID: 11400000, guid: 6012092f5d8ea4796a831f16ce0b652e, type: 2}
+    runtimeTags: []
     amountProgression:
       rid: 6092004206412824650
   - asset: {fileID: 11400000, guid: b42c9f1f607844b55a9f9e9df0020f73, type: 2}
+    ownerLevel: 0
     formType: 0
     walletTags:
     - {fileID: 11400000, guid: b739a2c14638440ee9523401d09a880f, type: 2}
-    runtimeTags:
-    - {fileID: 11400000, guid: 6012092f5d8ea4796a831f16ce0b652e, type: 2}
+    runtimeTags: []
     amountProgression:
       rid: 6092004206412824651
   limitMode: 0
   capValue: 0
   progressionSource: 1
+  progressionOwnerLevel: 0
   progressionResource:
     walletTags:
     - {fileID: 11400000, guid: 7de0da75d51ae4eb0a59fd5397e57cb8, type: 2}

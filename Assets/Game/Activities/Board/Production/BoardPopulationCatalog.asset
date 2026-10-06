@@ -58,9 +58,13 @@ MonoBehaviour:
     bindingType: 0
     owner:
       source: {fileID: 0}
+    entryPath: []
+    ownerLevel: 0
   cooldownProgressWalletTags: []
   cooldownProgressScale: 0
   cooldownProgressRelativeBase: 0
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }

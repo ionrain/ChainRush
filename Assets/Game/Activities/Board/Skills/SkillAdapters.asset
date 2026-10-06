@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Core::Core.Skills.SkillEffectAdapterCatalogData
   adapters:
   - rid: 930010001
-  - rid: 930010002
   - rid: 930010003
   - rid: 930010004
   - rid: 930010005
@@ -25,9 +24,6 @@ MonoBehaviour:
     RefIds:
     - rid: 930010001
       type: {class: SkillHostValueEffectAdapterData, ns: Core.Skills, asm: Core}
-      data: 
-    - rid: 930010002
-      type: {class: SkillAttributeModifierEffectAdapterData, ns: Core.Skills, asm: Core}
       data: 
     - rid: 930010003
       type: {class: SkillRuntimeTagEffectAdapterData, ns: Core.Skills, asm: Core}

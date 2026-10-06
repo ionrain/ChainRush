@@ -56,19 +56,19 @@ MonoBehaviour:
   requirements: []
   effects:
   - rid: 720000
-  - rid: 720001
+  - rid: 850000
   references:
     version: 2
     RefIds:
     - rid: -2
-      type: {class: , ns: , asm: }
+      type: {class: '!!null ''''', ns: '!!null ''''', asm: '!!null '''''}
     - rid: 720000
       type: {class: SkillEconomyEffectData, ns: Core.Skills, asm: Core}
       data:
         recipient: 3
         repeatType: 1
         requiredTags: []
-        asset: {fileID: 11400000, guid: 47e08c5049e1c46c08a1843ccc821653, type: 2}
+        asset: {fileID: 11400000}
         walletTags:
         - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
         formType: 0
@@ -76,20 +76,7 @@ MonoBehaviour:
         formula:
           root:
             rid: 800001
-    - rid: 720001
-      type: {class: SkillEconomyEffectData, ns: Core.Skills, asm: Core}
-      data:
-        recipient: 3
-        repeatType: 1
-        requiredTags: []
-        asset: {fileID: 11400000, guid: 19bcbad117d90468f956f09fc0470ccd, type: 2}
-        walletTags:
-        - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
-        formType: 0
-        requiredRuntimeTags: []
-        formula:
-          root:
-            rid: 800014
+        recipientLevel: 0
     - rid: 800002
       type: {class: SkillEffectEconomyNodeData, ns: Core.Skills, asm: Core}
       data:
@@ -97,9 +84,9 @@ MonoBehaviour:
         ownerType: 1
         selection:
           walletTags:
-            - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
+          - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
           formTypes: 00000000
-          exactAsset: {fileID: 11400000, guid: 47e08c5049e1c46c08a1843ccc821653, type: 2}
+          exactAsset: {fileID: 11400000}
           requiredAssetTags: []
           excludedAssetTags: []
           requiredRuntimeTags: []
@@ -111,8 +98,10 @@ MonoBehaviour:
     - rid: 800003
       type: {class: SkillEffectProgressionNodeData, ns: Core.Skills, asm: Core}
       data:
-        progression: {rid: 800004}
-        argument: {rid: -2}
+        progression:
+          rid: 800004
+        argument:
+          rid: -2
         precision: 0
     - rid: 800008
       type: {class: LongFlatProgressionData, ns: Core, asm: Core}
@@ -121,8 +110,10 @@ MonoBehaviour:
     - rid: 800007
       type: {class: SkillEffectProgressionNodeData, ns: Core.Skills, asm: Core}
       data:
-        progression: {rid: 800008}
-        argument: {rid: -2}
+        progression:
+          rid: 800008
+        argument:
+          rid: -2
         precision: 0
     - rid: 800009
       type: {class: SkillEffectEconomyNodeData, ns: Core.Skills, asm: Core}
@@ -131,9 +122,9 @@ MonoBehaviour:
         ownerType: 1
         selection:
           walletTags:
-            - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
+          - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
           formTypes: 00000000
-          exactAsset: {fileID: 11400000, guid: 47e08c5049e1c46c08a1843ccc821653, type: 2}
+          exactAsset: {fileID: 11400000}
           requiredAssetTags: []
           excludedAssetTags: []
           requiredRuntimeTags: []
@@ -142,8 +133,10 @@ MonoBehaviour:
       type: {class: SkillEffectBinaryNodeData, ns: Core.Skills, asm: Core}
       data:
         operation: 2
-        left: {rid: 800007}
-        right: {rid: 800009}
+        left:
+          rid: 800007
+        right:
+          rid: 800009
     - rid: 800011
       type: {class: LongFlatProgressionData, ns: Core, asm: Core}
       data:
@@ -151,15 +144,19 @@ MonoBehaviour:
     - rid: 800010
       type: {class: SkillEffectProgressionNodeData, ns: Core.Skills, asm: Core}
       data:
-        progression: {rid: 800011}
-        argument: {rid: -2}
+        progression:
+          rid: 800011
+        argument:
+          rid: -2
         precision: 0
     - rid: 800005
       type: {class: SkillEffectBinaryNodeData, ns: Core.Skills, asm: Core}
       data:
         operation: 2
-        left: {rid: 800006}
-        right: {rid: 800010}
+        left:
+          rid: 800006
+        right:
+          rid: 800010
     - rid: 800013
       type: {class: LongFlatProgressionData, ns: Core, asm: Core}
       data:
@@ -167,86 +164,50 @@ MonoBehaviour:
     - rid: 800012
       type: {class: SkillEffectProgressionNodeData, ns: Core.Skills, asm: Core}
       data:
-        progression: {rid: 800013}
-        argument: {rid: -2}
+        progression:
+          rid: 800013
+        argument:
+          rid: -2
         precision: 0
     - rid: 800001
       type: {class: SkillEffectConditionalNodeData, ns: Core.Skills, asm: Core}
       data:
         comparison: 2
-        left: {rid: 800002}
-        right: {rid: 800003}
-        whenTrue: {rid: 800005}
-        whenFalse: {rid: 800012}
-    - rid: 800015
+        left:
+          rid: 800002
+        right:
+          rid: 800003
+        whenTrue:
+          rid: 800005
+        whenFalse:
+          rid: 800012
+    - rid: 850000
+      type: {class: SkillEconomyEffectData, ns: Core.Skills, asm: Core}
+      data:
+        recipient: 1
+        recipientLevel: 1
+        repeatType: 1
+        requiredTags: []
+        asset: {fileID: 11400000, guid: 19bcbad117d90468f956f09fc0470ccd, type: 2}
+        walletTags:
+        - {fileID: 11400000, guid: e1606e1c5072c4c2ba9b309f76c3380e, type: 2}
+        formType: 0
+        requiredRuntimeTags: []
+        formula:
+          root:
+            rid: 850001
+    - rid: 850001
       type: {class: SkillEffectEconomyNodeData, ns: Core.Skills, asm: Core}
       data:
         parameterTarget: 0
         ownerType: 1
         selection:
           walletTags:
-            - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
+          - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
           formTypes: 00000000
-          exactAsset: {fileID: 11400000, guid: 47e08c5049e1c46c08a1843ccc821653, type: 2}
+          exactAsset: {fileID: 11400000}
           requiredAssetTags: []
           excludedAssetTags: []
           requiredRuntimeTags: []
           excludedRuntimeTags: []
-    - rid: 800017
-      type: {class: LongFlatProgressionData, ns: Core, asm: Core}
-      data:
-        value: 0
-    - rid: 800016
-      type: {class: SkillEffectProgressionNodeData, ns: Core.Skills, asm: Core}
-      data:
-        progression: {rid: 800017}
-        argument: {rid: -2}
-        precision: 0
-    - rid: 800020
-      type: {class: LongFlatProgressionData, ns: Core, asm: Core}
-      data:
-        value: 1
-    - rid: 800019
-      type: {class: SkillEffectProgressionNodeData, ns: Core.Skills, asm: Core}
-      data:
-        progression: {rid: 800020}
-        argument: {rid: -2}
-        precision: 2
-    - rid: 800021
-      type: {class: SkillEffectEconomyNodeData, ns: Core.Skills, asm: Core}
-      data:
-        parameterTarget: 0
-        ownerType: 1
-        selection:
-          walletTags:
-            - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
-          formTypes: 00000000
-          exactAsset: {fileID: 11400000, guid: 47e08c5049e1c46c08a1843ccc821653, type: 2}
-          requiredAssetTags: []
-          excludedAssetTags: []
-          requiredRuntimeTags: []
-          excludedRuntimeTags: []
-    - rid: 800018
-      type: {class: SkillEffectBinaryNodeData, ns: Core.Skills, asm: Core}
-      data:
-        operation: 2
-        left: {rid: 800019}
-        right: {rid: 800021}
-    - rid: 800023
-      type: {class: LongFlatProgressionData, ns: Core, asm: Core}
-      data:
-        value: 0
-    - rid: 800022
-      type: {class: SkillEffectProgressionNodeData, ns: Core.Skills, asm: Core}
-      data:
-        progression: {rid: 800023}
-        argument: {rid: -2}
-        precision: 2
-    - rid: 800014
-      type: {class: SkillEffectConditionalNodeData, ns: Core.Skills, asm: Core}
-      data:
-        comparison: 2
-        left: {rid: 800015}
-        right: {rid: 800016}
-        whenTrue: {rid: 800018}
-        whenFalse: {rid: 800022}
+        ownerLevel: 0

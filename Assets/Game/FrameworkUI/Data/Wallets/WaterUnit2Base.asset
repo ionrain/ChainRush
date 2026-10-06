@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Core::Core.Economy.EconomyWalletData
   id: chainrush.meta.wallet.waterunit2base
   icon: {fileID: 0}
+  contributesToOwnerProjection: 1
   tags: []
   aggregationRules: []

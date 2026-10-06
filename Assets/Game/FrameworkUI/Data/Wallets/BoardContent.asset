@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Core::Core.Economy.EconomyWalletData
   id: chainrush.meta.wallet.boardcontent
   icon: {fileID: 0}
+  contributesToOwnerProjection: 0
   tags:
   - {fileID: 11400000, guid: 8886d9dcebac54b91995041b2efa99e0, type: 2}
   aggregationRules: []

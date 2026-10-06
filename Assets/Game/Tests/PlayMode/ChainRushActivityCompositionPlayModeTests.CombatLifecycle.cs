@@ -35,7 +35,7 @@ namespace ChainRush.Tests.PlayMode
                 {
                     foreach (var pair in capture.Spawned)
                     {
-                        if (!CapabilityHostService.TryGetHostValue(pair.Key, health, out var current) || current.CurrentValue <= 0) continue;
+                        if (!HostValueService.TryGetHostValue(pair.Key, health, out var current) || current.CurrentValue <= 0) continue;
                         AIBrainService.TryGetState(pair.Key, out var brain);
                         string states = brain == null ? "no brain" : string.Join(";", brain.Nodes.Select(node =>
                             node.NodeId.name + ":" + node.CurrentState.name + "/completed=" + node.CurrentStateIsCompleted));

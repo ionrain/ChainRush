@@ -41,9 +41,12 @@ MonoBehaviour:
   slotFootprint: 1
   stackCapacity: 0
   footprintSize: {x: 1000, y: 0, z: 1000}
+  prototypePropagationType: 1
   capabilities: []
   walletEntries:
   - wallet: {fileID: 11400000, guid: 7e3980739fa284298b54f579bcdc610c, type: 2}
+    seed: []
+  - wallet: {fileID: 11400000, guid: c87c78cd26156452c8e556f10e50d7bd, type: 2}
     seed: []
   usagePolicy:
     accessType: 0
@@ -62,4 +65,6 @@ MonoBehaviour:
     maxCapacity: 0
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: -2
+      type: {class: '!!null ''''', ns: '!!null ''''', asm: '!!null '''''}

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b76e218b7b284768b51cd4001d4e7d4, type: 3}
   m_Name: FrameworkProfile
   m_EditorClassIdentifier: Core::Core.Players.PlayerData
-  id: FrameworkProfile
+  id: FrameworkPrototypesProfile
   playerType: 0
   walletEntries:
   - wallet: {fileID: 11400000, guid: 436f4be84853d4f22898fa04f9f19a52, type: 2}
@@ -32,7 +32,7 @@ MonoBehaviour:
       runtimeTags:
       - {fileID: 11400000, guid: 84fd69cac776646f584b9091787254c8, type: 2}
     - entry:
-        asset: {fileID: 11400000, guid: ba6dc7b2969654c0c96dd451c9a18987, type: 2}
+        asset: {fileID: 11400000, guid: 86bf036ec34e74c55aa415d60142b7d3, type: 2}
         formType: 0
         amount: 1
       runtimeTags:
@@ -40,7 +40,7 @@ MonoBehaviour:
       - {fileID: 11400000, guid: 8d743fde6a7e8458fa69d1bb1acc750d, type: 2}
       - {fileID: 11400000, guid: 9bd6d0d9a1c9248d9836792500f67fd1, type: 2}
     - entry:
-        asset: {fileID: 11400000, guid: 46569493007b140dcacc76e0f0aabc0d, type: 2}
+        asset: {fileID: 11400000, guid: 3749c6564975348f3a95edc9cf128916, type: 2}
         formType: 0
         amount: 1
       runtimeTags:

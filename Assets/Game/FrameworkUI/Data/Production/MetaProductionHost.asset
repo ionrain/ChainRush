@@ -40,7 +40,7 @@ MonoBehaviour:
   slotFootprint: 1
   stackCapacity: 0
   footprintSize: {x: 0, y: 0, z: 0}
-  attributeSources: []
+  prototypePropagationType: 1
   capabilities:
   - capabilityType: 2
     selectorTags: []

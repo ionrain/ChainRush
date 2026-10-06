@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Core::Core.Economy.EconomyWalletData
   id: chainrush.meta.wallet.tabascodevelopment
   icon: {fileID: 0}
+  contributesToOwnerProjection: 1
   tags:
   - {fileID: 11400000, guid: 46811b888310d48eaa15cf63c7b648ed, type: 2}
   - {fileID: 11400000, guid: aa8893a874a8a4f5cbcf9a15bc6b7727, type: 2}

@@ -1,0 +1,134 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9969bb010093e43c6993c07d9c072f75, type: 3}
+  m_Name: Water
+  m_EditorClassIdentifier: Core::Core.CapabilityHosts.CapabilityHostData
+  domainTypePreview: 3
+  id: chainrush.character.water
+  title:
+    m_TableReference:
+      m_TableCollectionName: GUID:3780f36a553b640fbbe57d99ea3ba447
+    m_TableEntryReference:
+      m_KeyId: 1362226085617664
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  description:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  icon: {fileID: 21300000, guid: ca61d7b760e884bf897678a2f3b4c871, type: 3}
+  precision: 0
+  allowedOperations: 31
+  tags:
+  - {fileID: 11400000, guid: b0a942a7287134f12a0b5b169e9bfb51, type: 2}
+  - {fileID: 11400000, guid: 1c4da6ecd53374492a7c2eddc0cf92b2, type: 2}
+  - {fileID: 11400000, guid: 2231ac3b695cc4d49895685ed991ab34, type: 2}
+  - {fileID: 11400000, guid: dcfabdb6edfc6474497f945d0a6a025c, type: 2}
+  - {fileID: 11400000, guid: 35dd5fcbdbbc2499991c0dfcbff2a397, type: 2}
+  - {fileID: 11400000, guid: 1c6fb44fa762c46d1a24efe2d8a844f8, type: 2}
+  slotFootprint: 1
+  stackCapacity: 0
+  footprintSize: {x: 1000, y: 0, z: 1000}
+  prototypePropagationType: 1
+  capabilities: []
+  walletEntries:
+  - wallet: {fileID: 11400000, guid: bba33dfa1847c4bab9da77bfea965c60, type: 2}
+    seed:
+    - entry:
+        asset: {fileID: 11400000, guid: b92048bd2f85042ee97f6a25f6a4f99b, type: 2}
+        formType: 0
+        amount: 10000
+      runtimeTags:
+      - {fileID: 11400000, guid: d078fa8c1956f4a1b825a2d83c7f5cf0, type: 2}
+    - entry:
+        asset: {fileID: 11400000, guid: 9c6a46d64e754495294c47772e712bd5, type: 2}
+        formType: 0
+        amount: 5000
+      runtimeTags:
+      - {fileID: 11400000, guid: d078fa8c1956f4a1b825a2d83c7f5cf0, type: 2}
+    - entry:
+        asset: {fileID: 11400000, guid: 8c0f2453a88154d458b494f57e5b4722, type: 2}
+        formType: 0
+        amount: 100000
+      runtimeTags: []
+    - entry:
+        asset: {fileID: 11400000, guid: 2d9f6059fa0ff4f01af05e6d0a60008f, type: 2}
+        formType: 0
+        amount: 3000
+      runtimeTags: []
+    - entry:
+        asset: {fileID: 11400000, guid: b42c9f1f607844b55a9f9e9df0020f73, type: 2}
+        formType: 0
+        amount: 1000
+      runtimeTags: []
+  - wallet: {fileID: 11400000, guid: 2a4952affe89248cd8591e5327d7b906, type: 2}
+    seed: []
+  - wallet: {fileID: 11400000, guid: 30b7c45af8e7d4164a1065380dc1cafc, type: 2}
+    seed: []
+  - wallet: {fileID: 11400000, guid: ce674286ffdc64ed792d6eaf9d45ab58, type: 2}
+    seed:
+    - entry:
+        asset: {fileID: 11400000, guid: 1116b7b9d35a249b18741b1309a53cd1, type: 2}
+        formType: 0
+        amount: 1
+      runtimeTags: []
+  - wallet: {fileID: 11400000, guid: c87c78cd26156452c8e556f10e50d7bd, type: 2}
+    seed: []
+  - wallet: {fileID: 11400000, guid: fd42566854e784109b083544505c8217, type: 2}
+    seed:
+    - entry:
+        asset: {fileID: 11400000, guid: ba6dc7b2969654c0c96dd451c9a18987, type: 2}
+        formType: 0
+        amount: 1
+      runtimeTags: []
+    - entry:
+        asset: {fileID: 11400000, guid: 5b99ada8e235d4203914240e2710c0df, type: 2}
+        formType: 0
+        amount: 1
+      runtimeTags: []
+    - entry:
+        asset: {fileID: 11400000, guid: 5e9ad888b0168403caa874ab14f1c41b, type: 2}
+        formType: 0
+        amount: 1
+      runtimeTags: []
+    - entry:
+        asset: {fileID: 11400000, guid: 33467b3f237134d939d494c8d3c0a5c3, type: 2}
+        formType: 0
+        amount: 1
+      runtimeTags: []
+  usagePolicy:
+    accessType: 0
+    diplomacyCompareOperation: 3
+    diplomacyScoreThreshold: -100
+  projectionPrefabReference:
+    m_AssetGUID: 22ee9ac4b5fce420f9c56639de2227de
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  projectionPool:
+    demandModeType: 0
+    demandValue: 0
+    expandable: 1
+    maxCapacity: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: '!!null ''''', ns: '!!null ''''', asm: '!!null '''''}

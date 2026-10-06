@@ -137,3 +137,20 @@ These rules are strict for project-owned code and naming.
    Position, coordinates, points, or other location-only values must never be introduced as alternative target types or substituted for Entity targets. Spatial coordinates are data of an Entity, not a separate target.
    This contract must not be changed or extended under any pretext without a separate discussion of that exact change and the user's explicit, unambiguous approval of that step.
    General approval of a plan, an instruction to implement or continue, silence, implementation convenience, or a technical limitation does not authorize changing this contract.
+
+27. Do not introduce user-authored string contracts.
+   Strings are permitted for debug information and internal implementation details that are not supplied by the user through authoring. Do not expose new string identifiers, keys, tags, selectors, references, paths, routing, or configuration in authored data.
+   The prototype implementation plan explicitly preserves the existing EconomyAssetRef, StableSimulationKey, Attribute qualifier identifiers, Production/Rewards correlation, and Storage addressing contracts. This exception does not authorize new authored string contracts.
+   Remove AttributeSourceIds with CapabilityHostAttributeSourceData; they are not a preserved authoring contract.
+   Debug strings may only convey information to a developer. Never parse or otherwise consume debug text to control behavior.
+   Obtain an explicit user decision before adding another authored string contract. Do not evade this rule by wrapping an authored string in another type.
+
+28. Isolate Unity diagnostics and Editor operations by the explicitly requested project.
+   The project-to-log mapping is:
+   - `/Users/ionrain/MorbooFramework` → `/Users/ionrain/Library/Logs/Unity/MorbooFramework.log`.
+   - `/Users/ionrain/ChainRush` → `/Users/ionrain/Library/Logs/Unity/ChainRush.log`.
+   Read only the dedicated log of the requested project. Never read the shared `/Users/ionrain/Library/Logs/Unity/Editor.log`, its previous-session copies, or another project's log as a fallback.
+   Every Editor-directed Unity CLI command must include the explicit `--project-path` for the requested project, even when only one Editor is running. Other Editor tools must use an equivalent explicit project selector. Verify the reported target project before using the returned data.
+   Never select an Editor by foreground focus, discovery order, last launch, or a previously remembered port alone. Unrelated projects may be open concurrently; do not inspect or operate on them as part of this repository's work.
+   If the requested Editor or dedicated log is unavailable, or the reported project does not match, report the missing evidence and stop the affected diagnostic operation. Do not switch to another Editor or the shared log.
+   The dedicated log path must be supplied through `-logFile` when launching the corresponding Editor. These instructions do not redirect an already running Editor and do not authorize restarting it, entering Play Mode, or running tests.

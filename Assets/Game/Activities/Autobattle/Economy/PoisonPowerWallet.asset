@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Core::Core.Economy.EconomyWalletData
   id: chainrush.wallet.autobattle.power.poison
   icon: {fileID: 0}
+  contributesToOwnerProjection: 1
   tags:
   - {fileID: 11400000, guid: 2c49f09d153eb43adbcdc840d9d8ebec, type: 2}
   aggregationRules: []

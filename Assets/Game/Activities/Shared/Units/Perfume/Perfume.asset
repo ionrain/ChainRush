@@ -44,36 +44,7 @@ MonoBehaviour:
   slotFootprint: 1
   stackCapacity: 0
   footprintSize: {x: 1000, y: 0, z: 1000}
-  attributeSources:
-  - id: participant-bonuses
-    owner:
-      bindingType: 0
-      owner:
-        source: {fileID: 0}
-      entryPath: []
-    walletTags:
-    - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
-    requiredHostTags: []
-    hostSelectorFamilies: []
-  - id: participant-development
-    owner:
-      bindingType: 0
-      owner:
-        source: {fileID: 0}
-      entryPath:
-      - walletTags:
-        - {fileID: 11400000, guid: 7cd328b496c6b4597b1eb29be6efbc72, type: 2}
-        formTypes: 00000000
-        exactAsset: {fileID: 11400000}
-        requiredAssetTags: []
-        excludedAssetTags: []
-        requiredRuntimeTags: []
-        excludedRuntimeTags: []
-    walletTags:
-    - {fileID: 11400000, guid: 46811b888310d48eaa15cf63c7b648ed, type: 2}
-    requiredHostTags: []
-    hostSelectorFamilies:
-    - {fileID: 11400000, guid: 19c2f687290064905b822d2a05efc1b2, type: 2}
+  prototypePropagationType: 1
   capabilities:
   - capabilityType: 0
     selectorTags: []
@@ -182,6 +153,8 @@ MonoBehaviour:
         formType: 0
         amount: 1
       runtimeTags: []
+  - wallet: {fileID: 11400000, guid: c87c78cd26156452c8e556f10e50d7bd, type: 2}
+    seed: []
   usagePolicy:
     accessType: 0
     diplomacyCompareOperation: 3
@@ -199,4 +172,6 @@ MonoBehaviour:
     maxCapacity: 0
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: -2
+      type: {class: '!!null ''''', ns: '!!null ''''', asm: '!!null '''''}

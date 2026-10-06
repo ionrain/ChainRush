@@ -20,7 +20,7 @@ MonoBehaviour:
     walletTags:
     - {fileID: 11400000, guid: 7cd328b496c6b4597b1eb29be6efbc72, type: 2}
     formTypes: 00000000
-    exactAsset: {fileID: 11400000, guid: 46569493007b140dcacc76e0f0aabc0d, type: 2}
+    exactAsset: {fileID: 11400000, guid: 3749c6564975348f3a95edc9cf128916, type: 2}
     requiredAssetTags: []
     excludedAssetTags: []
     requiredRuntimeTags:

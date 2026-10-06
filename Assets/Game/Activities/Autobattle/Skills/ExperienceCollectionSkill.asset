@@ -42,11 +42,14 @@ MonoBehaviour:
   targetCount:
     min: 1
     max: 1
+  executeWithoutTarget: 0
   analyticSupposedTarget: 0
   targetTags:
   - {fileID: 11400000, guid: dbbed6d69bfb64f2681885eff3a7271a, type: 2}
   targetSlot: {fileID: 0}
   executionSlot: {fileID: 0}
+  actionProtectionTag: {fileID: 0}
+  actionProtectionDuration: 0
   startDelay: 10
   endDelay: 0
   actionInterval: 0
@@ -63,9 +66,11 @@ MonoBehaviour:
       type: {class: SkillEconomyEntryEffectData, ns: Core.Skills, asm: Core}
       data:
         recipient: 1
+        repeatType: 0
         requiredTags: []
         sourceType: 0
         sourceOwnerType: 0
+        sourceLevel: 2
         selection:
           walletTags:
           - {fileID: 11400000, guid: 21722dfe6449d46f2bc8ed6823dca3ef, type: 2}
@@ -78,15 +83,18 @@ MonoBehaviour:
         operation: 8
         destinationRecipient: 0
         destinationOwnerType: 1
+        destinationLevel: 0
         destinationWalletTags:
         - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
     - rid: 2807516542362452067
       type: {class: SkillEconomyEntryEffectData, ns: Core.Skills, asm: Core}
       data:
         recipient: 1
+        repeatType: 0
         requiredTags: []
         sourceType: 1
         sourceOwnerType: 0
+        sourceLevel: 2
         selection:
           walletTags:
           - {fileID: 11400000, guid: 27077fc2f01864a96bd57fd170714ad9, type: 2}
@@ -99,4 +107,5 @@ MonoBehaviour:
         operation: 16
         destinationRecipient: 1
         destinationOwnerType: 0
+        destinationLevel: 2
         destinationWalletTags: []

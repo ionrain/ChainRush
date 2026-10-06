@@ -1,5 +1,11 @@
 # Gameplay migration, part 1
 
+## Отделение HostValues — 2026-10-02
+
+**Implementation decision: working model.** Внесено самостоятельное состояние HostValues по Entity, выделен расчёт Attributes, разделены контроллеры CapabilityHost и подключены carriers/читатели. Профиль и исходники fixtures обновлены. Компиляция, тесты и игровые прогоны этого этапа не выполнялись. [Подключение и границы этапа](HostValuesSeparationImplementation.md).
+
+Ниже сохранена история предыдущих этапов; она не подтверждает новую реализацию или новую модель баффов.
+
 ## Текущее состояние — 2026-09-23
 
 **Implementation decision: working model. Реализация промежуточного плана завершена; часть 1 ещё не принята, переход к фазе 2 закрыт.** Выполнены шаги 1–5 [PrePhase2Corrections.md](PrePhase2Corrections.md), включая согласованные R1/R1.1. Второй launch/seed payload удалён; зоны находятся в префабах стены/героя; время и перемещение измеряет Analytics, запись прогресса исполняет Orchestration/Economy.

@@ -15951,8 +15951,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3603df8708d74781a9e00266aa19551, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Core::Core.UI.EconomyValueUISource
-  attributeSourceIds:
-  - participant-development
   fields:
   - {fileID: 1311396758}
   - {fileID: 5134994223804837725}
@@ -223878,8 +223876,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3603df8708d74781a9e00266aa19551, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Core::Core.UI.EconomyValueUISource
-  attributeSourceIds:
-  - participant-development
   fields:
   - {fileID: 973759394}
   - {fileID: 218628241}

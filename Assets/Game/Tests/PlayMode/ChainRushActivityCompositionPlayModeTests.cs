@@ -105,22 +105,31 @@ namespace ChainRush.Tests.PlayMode
         public IEnumerator TearDownRuntime()
         {
             GameFlowService.ResetRuntime();
-            ActivityLauncher.ResetRuntime();
-            ActivityService.ResetRuntime();
-            ProjectionService.ResetRuntime();
-            _restoreBoardContent?.Invoke();
-            _restoreBoardContent = null;
-
             foreach (GameRuntimeHost host in Object.FindObjectsByType<GameRuntimeHost>(
                 FindObjectsInactive.Include, FindObjectsSortMode.None))
             {
                 typeof(GameRuntimeHost).GetField(
                     "_persistentEconomySaved", BindingFlags.Instance | BindingFlags.NonPublic)
                     .SetValue(host, true);
+                foreach (var driver in host.GetComponentsInChildren<LocalRealtimeDriverBehaviour>(true))
+                    driver.enabled = false;
+                var retirement = host.RuntimeContext != null
+                    ? host.RuntimeContext.RetireAsync() : PlayerService.RetireAsync();
+                while (!retirement.IsCompleted)
+                {
+                    EconomyService.PumpOperations();
+                    ActivityService.PumpRuntime();
+                    yield return null;
+                }
+                retirement.GetAwaiter().GetResult();
                 Object.Destroy(host.gameObject);
             }
-
             yield return null;
+            ActivityLauncher.ResetRuntime();
+            ActivityService.ResetRuntime();
+            ProjectionService.ResetRuntime();
+            _restoreBoardContent?.Invoke();
+            _restoreBoardContent = null;
         }
 
         [UnityTest]
@@ -952,9 +961,9 @@ namespace ChainRush.Tests.PlayMode
                     var character = AssetDatabase.LoadAssetAtPath<CapabilityHostData>(
                         "Assets/Game/Activities/Shared/Units/" + name + "/" + name + ".asset");
                     if (name == hero)
-                        EconomyService.AssignTags(player.EconomyOwner, characters.Tags, character,
+                        ChangeSelectionTags(player.EconomyOwner, characters, character, true,
                             new List<TaxonomyTermData> { available, selected });
-                    else EconomyService.RemoveTags(player.EconomyOwner, characters.Tags, character,
+                    else ChangeSelectionTags(player.EconomyOwner, characters, character, false,
                         new List<TaxonomyTermData> { selected });
                 }
                 var levels = AssetDatabase.LoadAssetAtPath<EconomyWalletData>(meta + "Wallets/LevelCatalog.asset");
@@ -963,10 +972,33 @@ namespace ChainRush.Tests.PlayMode
                     var activity = AssetDatabase.LoadAssetAtPath<ActivityData>(
                         "Assets/Game/Activities/Autobattle/Definition/" + (name == "Distance" ? "DistanceActivity" : "AutobattleActivity") + ".asset");
                     if (name == level)
-                        EconomyService.AssignTags(player.EconomyOwner, levels.Tags, activity, new List<TaxonomyTermData> { selected });
-                    else EconomyService.RemoveTags(player.EconomyOwner, levels.Tags, activity, new List<TaxonomyTermData> { selected });
+                        ChangeSelectionTags(player.EconomyOwner, levels, activity, true, new List<TaxonomyTermData> { selected });
+                    else ChangeSelectionTags(player.EconomyOwner, levels, activity, false, new List<TaxonomyTermData> { selected });
                 }
             }
+        }
+
+        static void ChangeSelectionTags(IEconomyAssetOwner owner, EconomyWalletData wallet,
+            EconomyAssetData asset, bool add, List<TaxonomyTermData> tags)
+        {
+            var query = EconomyService.Query(new EconomySelectionQuery(owner, wallet.Tags, EconomyFormType.Stack, asset, EconomyAggregationType.Detailed));
+            Assert.AreEqual(1, query.Items.Length);
+            Assert.IsTrue(EconomyService.TryRegisterOperation(owner, new List<EconomyEntryTagMutationRequest>
+            {
+                new EconomyEntryTagMutationRequest(add ? EconomyRuntimeTagMutationType.Add : EconomyRuntimeTagMutationType.Remove,
+                    new List<EconomyEntryHandle> { query.Items[0].Handle }, tags, EconomyTransactionTraceContext.None)
+            }, out var handle, out var failure), failure.Message);
+            try
+            {
+                EconomyService.TryExecuteOperation(handle, out var result, out _);
+                for (int i = 0; result.IsPending && i < 10000; i++)
+                {
+                    EconomyService.PumpOperations();
+                    Assert.IsTrue(EconomyService.TryGetOperation(handle, out result));
+                }
+                Assert.IsTrue(result.IsCommitted, result.Failure.Message);
+            }
+            finally { EconomyService.TryCloseOperation(handle); }
         }
 
         sealed class PlayableRuntimeCapture :
@@ -1723,7 +1755,7 @@ namespace ChainRush.Tests.PlayMode
                 var health = AssetDatabase.LoadAssetAtPath<HostValueData>("Assets/Game/Activities/Autobattle/HostValues/Health.asset");
                 foreach (var actor in CapabilityHostService.GetAll().Where(value => value.ActivityId == host.ActivityId))
                 {
-                    if (!CapabilityHostService.TryGetHostValue(actor.EntityId, health, out var value)) continue;
+                    if (!HostValueService.TryGetHostValue(actor.EntityId, health, out var value)) continue;
                     SpatialService.TryGetPose(actor.EntityId, out var pose);
                     reservationOwners.AppendLine($" actor={actor.EntityId} {actor.Definition.Id} health={value.CurrentValue} pose={pose.Coordinates}");
                     if (AIBrainService.TryGetState(actor.EntityId, out var brain))
@@ -1879,6 +1911,8 @@ namespace ChainRush.Tests.PlayMode
             if (!registry.TryGet(out IProductionStateModuleResult productionState)
                 || !productionState.TryGetProductionMethods(
                     planningContext,
+                    new OrchestrationOwnerRef(board.Participants[0].ParticipantEntityId,
+                        board.Participants[0].ParticipantEntityId, board.Participants[0].ParticipantEconomyOwner.StableSimulationKey),
                     out List<OrchestrationProductionMethodSnapshot> methods))
             {
                 message.AppendLine("ProductionMethods=<unavailable>");

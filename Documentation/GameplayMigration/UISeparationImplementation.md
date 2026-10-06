@@ -1,5 +1,7 @@
 # Отделение UI от сервисов
 
+> 2026-10-02: просмотр характеристик через CapabilityHostAttributeSources.ReadPreview переведён на AttributeProjectionCore. Он не создаёт Entity или HostValues. Источники и численные результаты сохраняются; прогон после замены пока не выполнялся. Подробности: [HostValuesSeparationImplementation.md](HostValuesSeparationImplementation.md).
+
 Implementation decision: **working model**. Реализован план, утверждённый пользователем 29 сентября 2026. Runtime-приёмка ещё не проводилась.
 
 ## Existing System Fit

@@ -116,7 +116,7 @@ namespace ChainRush.Tests.PlayMode
                 }
                 void Defeat(CapabilityHostSnapshot enemy)
                 {
-                    Assert.IsTrue(CapabilityHostService.TryApplyHostValueDelta(enemy.EntityId, health, -1000000,
+                    Assert.IsTrue(HostValueService.TryApplyHostValueDelta(enemy.EntityId, health, -1000000,
                         new RuntimeMutationContext(hero, hero, "level-replenishment-test", enemy.EntityId.ToString())));
                 }
                 yield return WaitForCount(4);

@@ -2464,7 +2464,7 @@ namespace ChainRush.Editor
             {
                 int precision = effect is SkillHostValueEffectData host ? host.HostValue.Precision
                     : effect is SkillEconomyEffectData economy && economy.FormType == EconomyFormType.Stack ? economy.Asset.Precision
-                    : effect is SkillAttributeModifierEffectData modifier ? modifier.Selector.Attribute.Precision : 0;
+                    : 0;
                 SetField(numeric, "formula", new SkillEffectFormulaData(
                     new SkillEffectProgressionNodeData(new Core.LongFlatProgressionData(value), null, precision)));
             }

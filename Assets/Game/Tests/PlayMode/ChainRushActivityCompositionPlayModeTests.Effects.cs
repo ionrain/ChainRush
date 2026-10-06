@@ -38,18 +38,18 @@ namespace ChainRush.Tests.PlayMode
             for (int frame = 0; frame < 900 && !TryFindActivityHost(battle.Id, water, out unit); frame++) yield return null;
             Assert.IsTrue(unit.IsValid, "The unit was not deployed through Production.");
             var health = AssetDatabase.LoadAssetAtPath<HostValueData>("Assets/Game/Activities/Autobattle/HostValues/Health.asset");
-            var maximum = AssetDatabase.LoadAssetAtPath<AttributeData>("Assets/Game/Activities/Shared/Attributes/Health.asset");
             var cell = AssetDatabase.LoadAssetAtPath<CapabilityHostData>("Assets/Game/Activities/Board/Economy/HealBoardBase.asset");
             var tag = AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(BoardCellTagPath);
             yield return AwaitCompletedPopulation(board, tag, cell);
             Assert.IsTrue(TryFindActivityHost(battle.Id, AssetDatabase.LoadAssetAtPath<CapabilityHostData>(PerfumePath), out var hero));
-            Assert.IsTrue(CapabilityHostService.TryGetEffectiveAttribute(unit, new AttributeSelectorData(maximum), out long unitMaximum));
-            Assert.IsTrue(CapabilityHostService.TryGetHostValue(unit, health, out var unitHealth));
-            Assert.IsTrue(CapabilityHostService.TryGetHostValue(hero, health, out var heroHealth));
+            Assert.IsTrue(HostValueService.TryGetHostValue(unit, health, out var unitHealth));
+            Assert.IsTrue(unitHealth.Maximum.HasValue);
+            long unitMaximum = unitHealth.Maximum.Value;
+            Assert.IsTrue(HostValueService.TryGetHostValue(hero, health, out var heroHealth));
             Assert.Greater(unitMaximum, 0);
             var mutation = new RuntimeMutationContext(hero, hero, "test:heal-precondition", "heal-selection");
-            Assert.IsTrue(CapabilityHostService.TryApplyHostValueDelta(unit, health, unitMaximum / 2 - unitHealth.CurrentValue, mutation));
-            Assert.IsTrue(CapabilityHostService.TryApplyHostValueDelta(hero, health, -heroHealth.CurrentValue / 2, mutation));
+            Assert.IsTrue(HostValueService.TryApplyHostValueDelta(unit, health, unitMaximum / 2 - unitHealth.CurrentValue, mutation));
+            Assert.IsTrue(HostValueService.TryApplyHostValueDelta(hero, health, -heroHealth.CurrentValue / 2, mutation));
             var capture = new SelectionEffectReplayCapture(board.Id, health);
             EventBus.Register<SelectionResultEvent>(capture);
             EventBus.Register<HostValueChangedEvent>(capture);
@@ -83,8 +83,14 @@ namespace ChainRush.Tests.PlayMode
             var wallet = AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(SharedWalletTagPath);
             IssueTestTurns(owner, wallet, AssetDatabase.LoadAssetAtPath<EconomyAssetData>(BoardTurnTokenPath), 1);
             var water = AssetDatabase.LoadAssetAtPath<CapabilityHostData>("Assets/Game/Activities/Shared/Units/Water/WaterUnit.asset");
-            string attributeName = content == "Power" || content == "Defense" ? content + "Physical" : content;
-            var attribute = AssetDatabase.LoadAssetAtPath<AttributeData>("Assets/Game/Activities/Shared/Attributes/" + attributeName + ".asset");
+            var value = AssetDatabase.LoadAssetAtPath<HostValueData>("Assets/Game/Activities/Autobattle/HostValues/" + content + ".asset");
+            var qualifiers = new List<TaxonomyTermData>();
+            if (content == "Power" || content == "Defense")
+                qualifiers.Add(AssetDatabase.LoadAssetAtPath<TaxonomyTermData>("Assets/Game/Activities/Shared/Taxonomy/PhysicalElement.asset"));
+            var valueKey = new HostValueKey(value, qualifiers);
+            var attribute = AssetDatabase.LoadAssetAtPath<AttributeData>("Assets/Game/Activities/Shared/Attributes/" + content + ".asset");
+            var attributeSelector = new AttributeSelectorData(attribute);
+            attributeSelector.Qualifiers.AddRange(qualifiers);
             IssueTestTurns(owner, wallet, water, 1);
             EntityId first = EntityId.Invalid;
             for (int frame = 0; frame < 900 && !TryFindActivityHost(battle.Id, water, out first); frame++) yield return null;
@@ -92,8 +98,9 @@ namespace ChainRush.Tests.PlayMode
             var cell = AssetDatabase.LoadAssetAtPath<CapabilityHostData>("Assets/Game/Activities/Board/Economy/" + content + "BoardBase.asset");
             var tag = AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(BoardCellTagPath);
             yield return AwaitCompletedPopulation(board, tag, cell);
-            CapabilityHostService.TryGetEffectiveAttribute(first, new AttributeSelectorData(attribute), out long before);
-            Assert.Greater(before, 0, "The buff scenario must exercise a nonzero authored attribute.");
+            long before = ReadBuffValue(first, valueKey, content);
+            Assert.Greater(before, 0, "The buff scenario must exercise a nonzero live value.");
+            Assert.IsTrue(CapabilityHostService.TryGetEffectiveAttribute(first, attributeSelector, out long permanentBefore));
             // A chain of three cells issues ten percentage points.
             long expected = checked(before + before * 10L / 100L);
             var capture = new SelectionEffectReplayCapture(board.Id, null);
@@ -108,7 +115,7 @@ namespace ChainRush.Tests.PlayMode
                 long actual = 0;
                 for (int frame = 0; frame < 120; frame++)
                 {
-                    CapabilityHostService.TryGetEffectiveAttribute(first, new AttributeSelectorData(attribute), out actual);
+                    actual = ReadBuffValue(first, valueKey, content);
                     if (actual == expected) break;
                     yield return null;
                 }
@@ -124,7 +131,7 @@ namespace ChainRush.Tests.PlayMode
                         && value.Definition.Matches(water) && value.EntityId != first).Select(value => value.EntityId).FirstOrDefault();
                     if (second.IsValid)
                     {
-                        CapabilityHostService.TryGetEffectiveAttribute(second, new AttributeSelectorData(attribute), out actual);
+                        actual = ReadBuffValue(second, valueKey, content);
                         if (actual == expected) break;
                     }
                     yield return null;
@@ -136,11 +143,22 @@ namespace ChainRush.Tests.PlayMode
                     + $" first={first} second={second} owner={secondHost.Owner?.StableSimulationKey} participant={owner.StableSimulationKey}"
                     + $" wallet={QueryAmount(secondHost.SelfEconomyOwner, unitWallet, EconomyFormType.Stack, attribute)}"
                     + BuildExecutorDiagnostic(second));
-                CapabilityHostService.TryGetEffectiveAttribute(first, new AttributeSelectorData(attribute), out actual);
+                actual = ReadBuffValue(first, valueKey, content);
                 Assert.AreEqual(expected, actual, "Repeated registration cannot add the buff again.");
+                Assert.IsTrue(CapabilityHostService.TryGetEffectiveAttribute(first, attributeSelector, out long permanentAfter));
+                Assert.AreEqual(permanentBefore, permanentAfter, "A buff must not modify permanent Attributes.");
+                Assert.AreEqual(firstHost.PrototypeEntityId, secondHost.PrototypeEntityId);
             }
             finally { EventBus.Unregister<SelectionResultEvent>(capture); }
             Assert.IsTrue(ActivityService.Close(battle.Id, ActivityCloseCauseType.Manual));
+        }
+
+        static long ReadBuffValue(EntityId entity, HostValueKey key, string content)
+        {
+            Assert.IsTrue(HostValueService.TryGetHostValue(entity, key, out var snapshot));
+            if (content != "Health") return snapshot.CurrentValue;
+            Assert.IsTrue(snapshot.Maximum.HasValue);
+            return snapshot.Maximum.Value;
         }
 
         sealed class SelectionEffectReplayCapture : IEventListener<SelectionResultEvent>, IEventListener<HostValueChangedEvent>

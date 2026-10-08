@@ -59,7 +59,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: -2
-      type: {class: '!!null ''''', ns: '!!null ''''', asm: '!!null '''''}
+      type: {class: , ns: , asm: }
     - rid: 2807516363299750113
       type: {class: SkillMoveToTargetEffectData, ns: Core.Skills, asm: Core}
       data:

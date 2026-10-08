@@ -1129,7 +1129,7 @@ namespace ChainRush.Tests.EditMode
                 effect => effect is SkillEconomyEntryEffectData));
             var transferEffect = (SkillEconomyEntryEffectData)collectionSkill.Effects[0];
             Assert.AreEqual(EffectRecipient.Target, transferEffect.Recipient);
-            Assert.AreEqual(SkillEconomyEntrySourceType.Wallet, transferEffect.SourceType);
+            Assert.AreEqual(SkillEconomyEntrySourceType.BackingEntryWallet, transferEffect.SourceType);
             Assert.AreEqual(SkillEconomyOwnerType.Host, transferEffect.SourceOwnerType);
             Assert.AreEqual(EconomyOperation.Transfer, transferEffect.Operation);
             Assert.AreEqual(EffectRecipient.Owner, transferEffect.DestinationRecipient);
@@ -1202,11 +1202,13 @@ namespace ChainRush.Tests.EditMode
             UIProjectionContextController uiContext =
                 experienceUI.GetComponent<UIProjectionContextController>();
             Assert.NotNull(uiContext);
-            ActivityRuntimeSelectorData uiSelector =
-                ReadField<ActivityRuntimeSelectorData>(uiContext, "activitySelector");
-            Assert.AreSame(activity, uiSelector.Definition);
-            Assert.AreEqual(1, uiSelector.RequiredRuntimeTags.Count);
-            Assert.AreSame(integrationRuntimeTag, uiSelector.RequiredRuntimeTags[0]);
+            List<ActivityRuntimeSelectorData> uiSelectors =
+                ReadField<List<ActivityRuntimeSelectorData>>(uiContext, "activitySelectors");
+            Assert.AreEqual(2, uiSelectors.Count);
+            Assert.AreSame(activity, uiSelectors[0].Definition);
+            Assert.AreSame(LoadRequiredAsset<ActivityData>(
+                AutobattleRoot + "/Definition/DistanceActivity.asset"), uiSelectors[1].Definition);
+            Assert.IsTrue(uiSelectors.All(selector => selector.RequiredRuntimeTags.Count == 0));
             UIProjectionTargetController uiTarget =
                 experienceUI.GetComponentInChildren<UIProjectionTargetController>(true);
             Assert.NotNull(uiTarget);

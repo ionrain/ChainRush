@@ -47,7 +47,7 @@ MonoBehaviour:
   providerId: hero-cola-production
   providerType: {fileID: 11400000, guid: 02d85d0fb019e40ab818ec97c4caa89b, type: 2}
   usagePolicy:
-    selectionType: 0
+    selectionType: 1
     reusePolicyType: 0
   shape: {fileID: 11400000, guid: 1ffd8c4e50eea4ebd84c03248bcbb087, type: 2}
   usage:
@@ -112,7 +112,7 @@ MonoBehaviour:
   providerId: hero-water-production
   providerType: {fileID: 11400000, guid: 4461c4cd2dfc24bf5acfbaf9cac9ed05, type: 2}
   usagePolicy:
-    selectionType: 0
+    selectionType: 1
     reusePolicyType: 0
   shape: {fileID: 11400000, guid: 1ffd8c4e50eea4ebd84c03248bcbb087, type: 2}
   usage:
@@ -208,9 +208,9 @@ MeshRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: 47421343
+  m_SortingLayer: 4
+  m_SortingOrder: 3
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &4519189881259231514
@@ -253,8 +253,8 @@ MonoBehaviour:
   physicsMovementRelativeTo: {fileID: 0}
   updateTiming: 1
   unscaledTime: 0
-  _animationName: 
-  loop: 0
+  _animationName: Idle
+  loop: 1
   timeScale: 1
 --- !u!33 &4972860547686491288
 MeshFilter:

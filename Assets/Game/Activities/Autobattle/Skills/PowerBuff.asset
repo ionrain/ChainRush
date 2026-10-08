@@ -69,7 +69,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: -2
-      type: {class: '!!null ''''', ns: '!!null ''''', asm: '!!null '''''}
+      type: {class: , ns: , asm: }
     - rid: 720000
       type: {class: SkillEconomyEffectData, ns: Core.Skills, asm: Core}
       data:

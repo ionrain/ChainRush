@@ -275,10 +275,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e28e06f10c8a44ada5f9d05eb5b1dd8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Core::Core.Projection.UIProjectionContextController
-  activitySelector:
-    definition: {fileID: 11400000, guid: 47ae82ad7cab24d298ee11e58cf69538, type: 2}
-    requiredRuntimeTags:
-    - {fileID: 11400000, guid: a09d83a16ee224bc4981ca811308d0fd, type: 2}
+  activitySelectors:
+  - definition: {fileID: 11400000, guid: 47ae82ad7cab24d298ee11e58cf69538, type: 2}
+    requiredRuntimeTags: []
+  - definition: {fileID: 11400000, guid: d08522137cf72449f9553e319c82f0f2, type: 2}
+    requiredRuntimeTags: []
   canvas: {fileID: 5375256221547096086}
 --- !u!1 &5719191938127650082
 GameObject:

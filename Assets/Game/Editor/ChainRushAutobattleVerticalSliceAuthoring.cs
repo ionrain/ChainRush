@@ -1385,7 +1385,7 @@ namespace ChainRush.Editor
         {
             SkillEconomyEntryEffectData transfer = CreateEconomyEntryEffect(
                 EffectRecipient.Target,
-                SkillEconomyEntrySourceType.Wallet,
+                SkillEconomyEntrySourceType.BackingEntryWallet,
                 SkillEconomyOwnerType.Host,
                 CreateSelection(
                     content.DropContentsWalletTag,
@@ -3473,8 +3473,8 @@ namespace ChainRush.Editor
                     root.AddComponent<UIProjectionContextController>();
                 SetField(
                     projectionContext,
-                    "activitySelector",
-                    CreateIntegrationActivitySelector(content));
+                    "activitySelectors",
+                    new List<ActivityRuntimeSelectorData> { CreateIntegrationActivitySelector(content) });
                 SetField(projectionContext, "canvas", canvas);
 
                 RectTransform panel = CreateUIRect(

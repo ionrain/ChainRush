@@ -43,6 +43,4 @@ MonoBehaviour:
   referenceValue: 1
   references:
     version: 2
-    RefIds:
-    - rid: -2
-      type: {class: '!!null ''''', ns: '!!null ''''', asm: '!!null '''''}
+    RefIds: []

@@ -173,7 +173,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 30
+  orthographic size: 50
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
@@ -198,7 +198,7 @@ Transform:
   m_GameObject: {fileID: 45768141}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 16, z: 0}
+  m_LocalPosition: {x: 20, y: 16, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -262,8 +262,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Core::Core.Projection.ActivityViewportController
   activitySelector:
     definition: {fileID: 11400000, guid: 47ae82ad7cab24d298ee11e58cf69538, type: 2}
-    requiredRuntimeTags:
-    - {fileID: 11400000, guid: a09d83a16ee224bc4981ca811308d0fd, type: 2}
+    requiredRuntimeTags: []
   viewport: {fileID: 45768142}
   viewKey: {fileID: 11400000, guid: a1126730f4cd0417b8e6d6c9a941db88, type: 2}
   participantIndex: 0
@@ -441,8 +440,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Core::Core.Projection.ActivityViewportController
   activitySelector:
     definition: {fileID: 11400000, guid: d08522137cf72449f9553e319c82f0f2, type: 2}
-    requiredRuntimeTags:
-    - {fileID: 11400000, guid: a09d83a16ee224bc4981ca811308d0fd, type: 2}
+    requiredRuntimeTags: []
   viewport: {fileID: 45768142}
   viewKey: {fileID: 11400000, guid: a1126730f4cd0417b8e6d6c9a941db88, type: 2}
   participantIndex: 0

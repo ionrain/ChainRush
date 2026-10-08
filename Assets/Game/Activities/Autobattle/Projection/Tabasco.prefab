@@ -237,7 +237,7 @@ MonoBehaviour:
   providerId: hero-water-production
   providerType: {fileID: 11400000, guid: 4461c4cd2dfc24bf5acfbaf9cac9ed05, type: 2}
   usagePolicy:
-    selectionType: 0
+    selectionType: 1
     reusePolicyType: 0
   shape: {fileID: 11400000, guid: 1ffd8c4e50eea4ebd84c03248bcbb087, type: 2}
   usage:
@@ -302,7 +302,7 @@ MonoBehaviour:
   providerId: hero-cola-production
   providerType: {fileID: 11400000, guid: 02d85d0fb019e40ab818ec97c4caa89b, type: 2}
   usagePolicy:
-    selectionType: 0
+    selectionType: 1
     reusePolicyType: 0
   shape: {fileID: 11400000, guid: 1ffd8c4e50eea4ebd84c03248bcbb087, type: 2}
   usage:

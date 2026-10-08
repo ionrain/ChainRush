@@ -47,7 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Core::Core.World.SpatialMarkerSocket
   tags:
   - {fileID: 11400000, guid: dff54a12e3d9149bbb614308f1b2d9c9, type: 2}
-  topologyCoordinates: {x: -10000, y: 0, z: 0}
+  topologyCoordinates: {x: 0, y: 0, z: 0}
   cellSize: {x: 0, y: 0, z: 0}
 --- !u!114 &3822054591947413395
 MonoBehaviour:
@@ -69,7 +69,7 @@ MonoBehaviour:
   shape: {fileID: 11400000, guid: 1ffd8c4e50eea4ebd84c03248bcbb087, type: 2}
   usage:
     fillType: 0
-    position: {x: -10000, y: 0, z: 0}
+    position: {x: 0, y: 0, z: 0}
     size: {x: 1, y: 1, z: 1}
     rotation: {x: 0, y: 0, z: 0}
     cellSize: {x: 1000, y: 1, z: 1000}

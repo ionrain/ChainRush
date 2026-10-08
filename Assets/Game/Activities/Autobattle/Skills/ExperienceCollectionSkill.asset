@@ -68,7 +68,7 @@ MonoBehaviour:
         recipient: 1
         repeatType: 0
         requiredTags: []
-        sourceType: 0
+        sourceType: 2
         sourceOwnerType: 0
         sourceLevel: 2
         selection:

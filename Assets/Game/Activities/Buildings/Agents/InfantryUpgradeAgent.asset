@@ -1,0 +1,82 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02d1a3baa20004b4c9af3160993765a5, type: 3}
+  m_Name: InfantryUpgradeAgent
+  m_EditorClassIdentifier: Core::Core.Orchestration.AgentDefinitionData
+  agentId: chainrush.buildings.agent.infantry.upgrade
+  basePriority: 100
+  updateInterval: 1
+  applicabilityConditions: []
+  matchConditions:
+  - rid: 1538158728978890912
+  executorSelectionCriteria:
+  - requirementType: 0
+    criterion:
+      rid: 1538158728978890904
+  - requirementType: 0
+    criterion:
+      rid: 1538158728978890905
+  executorTargetRankingType: 0
+  targetSelectionCriteria:
+  - requirementType: 0
+    criterion:
+      rid: 1538158728978890906
+  - requirementType: 0
+    criterion:
+      rid: 1538158728978890907
+  targetRankingType: 0
+  aiBrainTargetKey: {fileID: 0}
+  controlType: 2
+  agent:
+    rid: 1538158728978890913
+  stopPolicyType: 0
+  timeLimit: 0
+  tokenReservationPolicyType: 0
+  targetAssignmentPolicyType: 0
+  movementPolicyType: 0
+  executorLossPolicyType: 0
+  executorBusyPolicyType: 1
+  executorReservationPolicyType: 1
+  negativeImpactPolicyType: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: 1538158728978890904
+      type: {class: CapabilityHostCriterionData, ns: Core.Orchestration, asm: Core}
+      data:
+        definition: {fileID: 11400000, guid: 5e1ac8a207483462ca756737bc32e363, type: 2}
+        requiredAssetTags: []
+        requiredCapabilityTypes: 
+    - rid: 1538158728978890905
+      type: {class: OwnerCriterionData, ns: Core.Orchestration, asm: Core}
+      data:
+        ownerSelectionType: 0
+    - rid: 1538158728978890906
+      type: {class: CapabilityHostCriterionData, ns: Core.Orchestration, asm: Core}
+      data:
+        definition: {fileID: 11400000, guid: 5e1ac8a207483462ca756737bc32e363, type: 2}
+        requiredAssetTags: []
+        requiredCapabilityTypes: 
+    - rid: 1538158728978890907
+      type: {class: OwnerCriterionData, ns: Core.Orchestration, asm: Core}
+      data:
+        ownerSelectionType: 0
+    - rid: 1538158728978890912
+      type: {class: ObjectiveConditionExternalFactState, ns: Core.Objectives, asm: Core}
+      data:
+        _targetValue: 0
+        _factKey: chainrush.buildings.infantry.upgrade
+    - rid: 1538158728978890913
+      type: {class: ProductionAgentData, ns: Core.Orchestration, asm: Core}
+      data:
+        releaseVolume: 1
+        completionPolicy: 0

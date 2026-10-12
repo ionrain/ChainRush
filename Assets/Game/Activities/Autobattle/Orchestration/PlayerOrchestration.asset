@@ -83,3 +83,148 @@ MonoBehaviour:
     maxPlanningContinuationDuration: 300
     maxDirtyBranchesPerPass: 16
   debugName: Autobattle Player
+  externalFactBindings:
+  - rid: 1000
+  - rid: 1002
+  - rid: 1004
+  - rid: 1006
+  - rid: 1007
+  - rid: 1008
+  - rid: 1009
+  - rid: 1010
+  - rid: 1011
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: ProductionReleaseFactBindingData, ns: Core.Orchestration, asm: Core}
+      data:
+        factKey: chainrush.buildings.infantry.upgrade
+        recipient:
+          bindingType: 0
+          owner:
+            source: {fileID: 0}
+          entryPath:
+          - walletTags:
+            - {fileID: 11400000, guid: a72e9084f46b548afbd2d59769a70126, type: 2}
+            formTypes: 00000000
+            exactAsset: {fileID: 11400000, guid: 8526aee7a81c747678a175f55192fa68,
+              type: 2}
+            requiredAssetTags: []
+            excludedAssetTags: []
+            requiredRuntimeTags: []
+            excludedRuntimeTags: []
+          ownerLevel: 1
+        asset: {fileID: 11400000, guid: 87fa97b53619240488fd5e80e0881a28, type: 2}
+        formType: 0
+        requiredAssetTags: []
+    - rid: 1002
+      type: {class: ProductionReleaseFactBindingData, ns: Core.Orchestration, asm: Core}
+      data:
+        factKey: chainrush.buildings.ranged.upgrade
+        recipient:
+          bindingType: 0
+          owner:
+            source: {fileID: 0}
+          entryPath:
+          - walletTags:
+            - {fileID: 11400000, guid: a72e9084f46b548afbd2d59769a70126, type: 2}
+            formTypes: 00000000
+            exactAsset: {fileID: 11400000, guid: c3610288ffd724020bd4a042f003ca89,
+              type: 2}
+            requiredAssetTags: []
+            excludedAssetTags: []
+            requiredRuntimeTags: []
+            excludedRuntimeTags: []
+          ownerLevel: 1
+        asset: {fileID: 11400000, guid: 68f1933facafd4f74a7647cbe7f9fb75, type: 2}
+        formType: 0
+        requiredAssetTags: []
+    - rid: 1004
+      type: {class: ProductionReleaseFactBindingData, ns: Core.Orchestration, asm: Core}
+      data:
+        factKey: chainrush.buildings.heavy.upgrade
+        recipient:
+          bindingType: 0
+          owner:
+            source: {fileID: 0}
+          entryPath:
+          - walletTags:
+            - {fileID: 11400000, guid: a72e9084f46b548afbd2d59769a70126, type: 2}
+            formTypes: 00000000
+            exactAsset: {fileID: 11400000, guid: 0023b7fcd186a4e91b404ad6c5d41ef9,
+              type: 2}
+            requiredAssetTags: []
+            excludedAssetTags: []
+            requiredRuntimeTags: []
+            excludedRuntimeTags: []
+          ownerLevel: 1
+        asset: {fileID: 11400000, guid: 29d5381b7b7ff442983a353eb4219243, type: 2}
+        formType: 0
+        requiredAssetTags: []
+    - rid: 1006
+      type: {class: ProductionYieldFactBindingData, ns: Core.Orchestration, asm: Core}
+      data:
+        factKey: chainrush.buildings.infantry.release
+        recipe: {fileID: 11400000, guid: 1ac1d5398cdb04a5588a7240348d5e74, type: 2}
+        recipient:
+          bindingType: 0
+          owner:
+            source: {fileID: 0}
+          entryPath: []
+          ownerLevel: 0
+    - rid: 1007
+      type: {class: ProductionYieldFactBindingData, ns: Core.Orchestration, asm: Core}
+      data:
+        factKey: chainrush.buildings.recipe.infantryveteranrelease
+        recipe: {fileID: 11400000, guid: cfaf7f45b1bff48e496419771a549265, type: 2}
+        recipient:
+          bindingType: 0
+          owner:
+            source: {fileID: 0}
+          entryPath: []
+          ownerLevel: 0
+    - rid: 1008
+      type: {class: ProductionYieldFactBindingData, ns: Core.Orchestration, asm: Core}
+      data:
+        factKey: chainrush.buildings.ranged.release
+        recipe: {fileID: 11400000, guid: 2826c1c90a68541a5a6fd15f049478a9, type: 2}
+        recipient:
+          bindingType: 0
+          owner:
+            source: {fileID: 0}
+          entryPath: []
+          ownerLevel: 0
+    - rid: 1009
+      type: {class: ProductionYieldFactBindingData, ns: Core.Orchestration, asm: Core}
+      data:
+        factKey: chainrush.buildings.recipe.rangedveteranrelease
+        recipe: {fileID: 11400000, guid: fcc7e60964bb34fc9a9e2115932e6ca0, type: 2}
+        recipient:
+          bindingType: 0
+          owner:
+            source: {fileID: 0}
+          entryPath: []
+          ownerLevel: 0
+    - rid: 1010
+      type: {class: ProductionYieldFactBindingData, ns: Core.Orchestration, asm: Core}
+      data:
+        factKey: chainrush.buildings.heavy.release
+        recipe: {fileID: 11400000, guid: 4e49fafa7b0c9429ca4829f85ca10977, type: 2}
+        recipient:
+          bindingType: 0
+          owner:
+            source: {fileID: 0}
+          entryPath: []
+          ownerLevel: 0
+    - rid: 1011
+      type: {class: ProductionYieldFactBindingData, ns: Core.Orchestration, asm: Core}
+      data:
+        factKey: chainrush.buildings.recipe.heavyveteranrelease
+        recipe: {fileID: 11400000, guid: 5864dce5389514e1aa87a62370e1dabb, type: 2}
+        recipient:
+          bindingType: 0
+          owner:
+            source: {fileID: 0}
+          entryPath: []
+          ownerLevel: 0

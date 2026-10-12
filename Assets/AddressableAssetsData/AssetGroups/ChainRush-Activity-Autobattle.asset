@@ -15,8 +15,18 @@ MonoBehaviour:
   m_GroupName: ChainRush-Activity-Autobattle
   m_GUID: 27b10a11b30194cb2a038cd23d02bd61
   m_SerializeEntries:
+  - m_GUID: 06cbb722b70e94ddea786b11fd391383
+    m_Address: Assets/Game/Activities/Buildings/Projection/InfantryVeteran.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 0eb2838cdc1704034a13a23a1b4ee19f
     m_Address: Assets/Game/Activities/Autobattle/Projection/BugGreenSmall.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1165ca0a659734f48862cfd639317e73
+    m_Address: Assets/Game/Activities/Buildings/Projection/HeavyVeteran.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -40,6 +50,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 27c557a4dffb74795a49d7cc22cb5cf0
+    m_Address: Assets/Game/Activities/Buildings/Projection/RangedBuilding.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2b751e0f4cc08482fbde02181eee8129
     m_Address: Assets/Game/Activities/Autobattle/Projection/BugGreenMedium.prefab
     m_ReadOnly: 0
@@ -47,6 +62,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2d0d78d427cc34a85bbf5fa076cf92cb
     m_Address: Assets/Game/Activities/Autobattle/Projection/ColaUnit3.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3c6133675d8244c4d9ceeb6d7d4bd905
+    m_Address: Assets/Game/Activities/Buildings/Projection/HeavySoldier.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -62,6 +82,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 52cee269c8e1e4fbeaa895ea9556aa24
     m_Address: Assets/Game/Activities/Autobattle/Projection/DaggerProjectile.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 567afd76a41534f219a63146a455a9e8
+    m_Address: Assets/Game/Activities/Buildings/Projection/RangedSoldier.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -87,8 +112,18 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6dcc4f6f183f24eedb89edf5b6071a95
+    m_Address: Assets/Game/Activities/Buildings/Projection/HeavyBuilding.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 884e7c191c4684ff68e3f8db37de3568
     m_Address: Assets/Game/Activities/Autobattle/Projection/Perfume.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a5656fc4cc8fc4a1b9b1c9102aad5112
+    m_Address: Assets/Game/Activities/Buildings/Projection/RangedVeteran.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -104,6 +139,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: adf3ef7e614c540ef9556e46110df7b9
     m_Address: Assets/Game/Activities/Autobattle/Projection/ContactArea.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b3dcd0b7a630346b98c707e329d5eb33
+    m_Address: Assets/Game/Activities/Buildings/Projection/InfantrySoldier.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -144,6 +184,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d58f309c97fb24b2b916a858dcff56b2
     m_Address: Assets/Game/Activities/Autobattle/Projection/ColaUnit4.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ecf920eb40feb4261aada569df479c57
+    m_Address: Assets/Game/Activities/Buildings/Projection/InfantryBuilding.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

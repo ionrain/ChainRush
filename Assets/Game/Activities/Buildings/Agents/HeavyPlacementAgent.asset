@@ -1,0 +1,186 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02d1a3baa20004b4c9af3160993765a5, type: 3}
+  m_Name: HeavyPlacementAgent
+  m_EditorClassIdentifier: Core::Core.Orchestration.AgentDefinitionData
+  agentId: chainrush.buildings.agent.heavyconstructionagent
+  basePriority: 100
+  updateInterval: 1
+  applicabilityConditions: []
+  matchConditions:
+  - rid: 1538158728978890961
+  executorSelectionCriteria:
+  - requirementType: 0
+    criterion:
+      rid: 1538158728978890962
+  - requirementType: 0
+    criterion:
+      rid: 1538158728978890963
+  executorTargetRankingType: 0
+  targetSelectionCriteria:
+  - requirementType: 0
+    criterion:
+      rid: 1538158728978890964
+  - requirementType: 0
+    criterion:
+      rid: 1538158728978890965
+  targetRankingType: 0
+  aiBrainTargetKey: {fileID: 0}
+  controlType: 2
+  agent:
+    rid: 1538158728978890966
+  stopPolicyType: 0
+  timeLimit: 0
+  tokenReservationPolicyType: 0
+  targetAssignmentPolicyType: 0
+  movementPolicyType: 0
+  executorLossPolicyType: 0
+  executorBusyPolicyType: 1
+  executorReservationPolicyType: 1
+  negativeImpactPolicyType: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 1538158728978890961
+      type: {class: ObjectiveConditionMaterializedEntity, ns: Core.Objectives, asm: Core}
+      data:
+        _targetValue: 1
+        targetProgression:
+          sourceType: 0
+          metric: {fileID: 0}
+          measure: 0
+          resource: {fileID: 0}
+          owner:
+            bindingType: 0
+            owner:
+              source: {fileID: 0}
+            entryPath: []
+            ownerLevel: 0
+          walletTags: []
+          scaleType: 0
+          relativeBase: 0
+          progression:
+            rid: -2
+        economyAsset: {fileID: 11400000, guid: 0023b7fcd186a4e91b404ad6c5d41ef9, type: 2}
+        economyFormType: 1
+        requiredAssetTags: []
+        requiredCapabilityTypes: 
+        compareOperation: 3
+    - rid: 1538158728978890962
+      type: {class: CapabilityHostCriterionData, ns: Core.Orchestration, asm: Core}
+      data:
+        definition: {fileID: 11400000, guid: 5e1ac8a207483462ca756737bc32e363, type: 2}
+        requiredAssetTags: []
+        requiredCapabilityTypes: 
+    - rid: 1538158728978890963
+      type: {class: OwnerCriterionData, ns: Core.Orchestration, asm: Core}
+      data:
+        ownerSelectionType: 0
+    - rid: 1538158728978890964
+      type: {class: CapabilityHostCriterionData, ns: Core.Orchestration, asm: Core}
+      data:
+        definition: {fileID: 11400000, guid: 5e1ac8a207483462ca756737bc32e363, type: 2}
+        requiredAssetTags: []
+        requiredCapabilityTypes: 
+    - rid: 1538158728978890965
+      type: {class: OwnerCriterionData, ns: Core.Orchestration, asm: Core}
+      data:
+        ownerSelectionType: 0
+    - rid: 1538158728978890966
+      type: {class: PopulationAgentData, ns: Core.Orchestration, asm: Core}
+      data:
+        progress:
+          resource: {fileID: 0}
+          owner:
+            bindingType: 0
+            owner:
+              source: {fileID: 0}
+            entryPath: []
+            ownerLevel: 0
+          walletTags: []
+          scaleType: 0
+          relativeBase: 0
+        volume:
+          rid: 1538158728978890967
+        completionPolicy: 0
+        singleAssetPerShape: 0
+        releases:
+        - interval:
+            minimum: 0
+            maximum: 0
+            hasMaximum: 0
+          space:
+            scopeType: 1
+            requiredTags:
+            - {fileID: 11400000, guid: 323be4cf220334388a14b7e2ffc74325, type: 2}
+            excludedTags: []
+            requiredCellTags: []
+            excludedCellTags: []
+          shapes:
+          - shape: {fileID: 11400000, guid: 1ffd8c4e50eea4ebd84c03248bcbb087, type: 2}
+            usages:
+            - fillType: 0
+              position: {x: 0, y: 0, z: 0}
+              size: {x: 1, y: 1, z: 1}
+              rotation: {x: 0, y: 0, z: 0}
+              cellSize: {x: 1000, y: 1, z: 1000}
+              spacing: {x: 0, y: 0, z: 0}
+            share: 1
+            desiredCount:
+              min: 0
+              max: 1
+          content:
+          - source:
+              rid: 1538158728978890968
+            share: 1
+            requireParticipantContent: 1
+            participantContentSource: 0
+            participantEntries:
+              walletTags:
+              - {fileID: 11400000, guid: a72e9084f46b548afbd2d59769a70126, type: 2}
+              formTypes: 00000000
+              exactAsset: {fileID: 11400000, guid: 0023b7fcd186a4e91b404ad6c5d41ef9,
+                type: 2}
+              requiredAssetTags: []
+              excludedAssetTags: []
+              requiredRuntimeTags:
+              - {fileID: 11400000, guid: 9bd6d0d9a1c9248d9836792500f67fd1, type: 2}
+              - {fileID: 11400000, guid: 8d743fde6a7e8458fa69d1bb1acc750d, type: 2}
+              excludedRuntimeTags: []
+            entryWalletContent:
+              walletTags: []
+              formTypes: 
+              exactAsset: {fileID: 0}
+              requiredAssetTags: []
+              excludedAssetTags: []
+              requiredRuntimeTags: []
+              excludedRuntimeTags: []
+        distribution:
+          rid: 1538158728978890969
+        workBudget: 256
+        shapeWalletTags:
+        - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
+    - rid: 1538158728978890967
+      type: {class: LongFlatProgressionData, ns: Core, asm: Core}
+      data:
+        value: 1
+    - rid: 1538158728978890968
+      type: {class: PopulationAssetContentSourceData, ns: Core.Orchestration, asm: Core}
+      data:
+        asset: {fileID: 11400000, guid: 0023b7fcd186a4e91b404ad6c5d41ef9, type: 2}
+    - rid: 1538158728978890969
+      type: {class: SpatialPopulationDistributionAlgorithmData, ns: Core.Orchestration,
+        asm: Core}
+      data:
+        searchStep: {x: 1000, y: 1000, z: 1000}

@@ -161,6 +161,33 @@ MonoBehaviour:
     - template: {fileID: 11400000, guid: aa4faa56367f34b3186e3cb2aad8e5d6, type: 2}
       successScoreDelta: 0
       failScoreDelta: 0
+    - template: {fileID: 11400000, guid: 3dd8e6cd82117441eb61fbc3b9a7bdfd, type: 2}
+      successScoreDelta: 0
+      failScoreDelta: 0
+    - template: {fileID: 11400000, guid: d72b50b68243845cf87c93ca7069fbd5, type: 2}
+      successScoreDelta: 0
+      failScoreDelta: 0
+    - template: {fileID: 11400000, guid: da376a28575074c53af218fe09c4ff4d, type: 2}
+      successScoreDelta: 0
+      failScoreDelta: 0
+    - template: {fileID: 11400000, guid: 02c1aa6d4a4884f7e99fe1171c398520, type: 2}
+      successScoreDelta: 0
+      failScoreDelta: 0
+    - template: {fileID: 11400000, guid: 9c14cd56cb69c42db9d2aa4b6eb8fe56, type: 2}
+      successScoreDelta: 0
+      failScoreDelta: 0
+    - template: {fileID: 11400000, guid: e7c5362e62cb24e4ea43431216a3916a, type: 2}
+      successScoreDelta: 0
+      failScoreDelta: 0
+    - template: {fileID: 11400000, guid: ac8b550a24ebf406794ffd8f08439ca2, type: 2}
+      successScoreDelta: 0
+      failScoreDelta: 0
+    - template: {fileID: 11400000, guid: 22edd57ad3ab4451ba737636cbcaca50, type: 2}
+      successScoreDelta: 0
+      failScoreDelta: 0
+    - template: {fileID: 11400000, guid: 3884c366a44a74b348ad927f969ee12c, type: 2}
+      successScoreDelta: 0
+      failScoreDelta: 0
     wallets:
     - wallet: {fileID: 11400000, guid: 16da9107fd104467980bd94f53e0f9e1, type: 2}
       seed:
@@ -237,6 +264,17 @@ MonoBehaviour:
         materializationType: 0
         materializationMarkerTags: []
         projectionTargetTags: []
+      - seed:
+          entry:
+            asset: {fileID: 11400000, guid: de029c908f9db400eb027aa8e1609732, type: 2}
+            formType: 0
+            amount: 1
+          runtimeTags: []
+        materializationType: 0
+        materializationMarkerTags: []
+        projectionTargetTags: []
+    - wallet: {fileID: 11400000, guid: 95906ad5696ff4e9083a48c4516bb301, type: 2}
+      seed: []
     features:
     - {fileID: 11400000, guid: 6590fc0ac883748e49f4acec94978d0f, type: 2}
     - {fileID: 11400000, guid: 92b84c786c41b47cb9e1ff1c4b1ca70a, type: 2}

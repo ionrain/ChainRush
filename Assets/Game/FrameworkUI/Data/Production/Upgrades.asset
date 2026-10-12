@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07d96d3a8a82b460f99ce3205f5f6949, type: 3}
   m_Name: Upgrades
   m_EditorClassIdentifier: Core::Core.Production.Authoring.ProductionCatalogData
-  domainTypePreview: 0
+  domainTypePreview: 9
   id: chainrush.meta.upgrades
   title:
     m_TableReference:
@@ -55,6 +55,22 @@ MonoBehaviour:
     workDuration: 1
     recoveryDuration: 0
     reservationPolicy: 0
+  - recipe: {fileID: 11400000, guid: 591b721c5ebd049aaa449b0564d6db7d, type: 2}
+    workDuration: 1
+    recoveryDuration: 0
+    reservationPolicy: 0
+  - recipe: {fileID: 11400000, guid: ba5a4a525b0e348048ac68eeb5bc2695, type: 2}
+    workDuration: 1
+    recoveryDuration: 0
+    reservationPolicy: 0
+  - recipe: {fileID: 11400000, guid: 554be395db3f24cb8803dbf4644644de, type: 2}
+    workDuration: 1
+    recoveryDuration: 0
+    reservationPolicy: 0
+  - recipe: {fileID: 11400000, guid: d3aa114bc855a4a859b3fb7ebc94af30, type: 2}
+    workDuration: 1
+    recoveryDuration: 0
+    reservationPolicy: 0
   cooldownEnabled: 0
   readyAtStart: 0
   initialElapsed: 0
@@ -67,6 +83,7 @@ MonoBehaviour:
     owner:
       source: {fileID: 0}
     entryPath: []
+    ownerLevel: 0
   cooldownProgressWalletTags: []
   cooldownProgressScale: 0
   cooldownProgressRelativeBase: 0

@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6571eb4e0b25f4da49444afa59358266, type: 3}
+  m_Name: RangedRunUpgradeAction
+  m_EditorClassIdentifier: Core::Core.UI.Production.ProductionUIActionData
+  recipe: {fileID: 11400000, guid: d0f1beac6b176414baee2c502c1a9e89, type: 2}
+  purchaseFlow: {fileID: 11400000, guid: aa2c325137e1046899efde7ab715f4f7, type: 2}
+  recipientType: 0
+  producerTags:
+  - {fileID: 11400000, guid: 21dd0e09a873844fb9f21d3ce7d47a2a, type: 2}
+  recipientSelection:
+    walletTags:
+    - {fileID: 11400000, guid: a72e9084f46b548afbd2d59769a70126, type: 2}
+    formTypes: 00000000
+    exactAsset: {fileID: 11400000, guid: c3610288ffd724020bd4a042f003ca89, type: 2}
+    requiredAssetTags: []
+    excludedAssetTags: []
+    requiredRuntimeTags: []
+    excludedRuntimeTags: []

@@ -1,0 +1,147 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9969bb010093e43c6993c07d9c072f75, type: 3}
+  m_Name: HeavyVeteran
+  m_EditorClassIdentifier: Core::Core.CapabilityHosts.CapabilityHostData
+  domainTypePreview: 3
+  id: chainrush.buildings.soldier.heavyveteran
+  title:
+    m_TableReference:
+      m_TableCollectionName: GUID:3780f36a553b640fbbe57d99ea3ba447
+    m_TableEntryReference:
+      m_KeyId: 230794311605673987
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  description:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  icon: {fileID: 21300000, guid: a348d5329de3045408652a9f7ef6ce67, type: 3}
+  precision: 0
+  allowedOperations: 31
+  tags:
+  - {fileID: 11400000, guid: 1c4da6ecd53374492a7c2eddc0cf92b2, type: 2}
+  - {fileID: 11400000, guid: 2231ac3b695cc4d49895685ed991ab34, type: 2}
+  - {fileID: 11400000, guid: dcfabdb6edfc6474497f945d0a6a025c, type: 2}
+  - {fileID: 11400000, guid: 35dd5fcbdbbc2499991c0dfcbff2a397, type: 2}
+  - {fileID: 11400000, guid: 1c6fb44fa762c46d1a24efe2d8a844f8, type: 2}
+  - {fileID: 11400000, guid: 3423640a44bd44beca824bbd08f0811b, type: 2}
+  - {fileID: 11400000, guid: f98b8278bb6a64a21b0344c75d47e333, type: 2}
+  slotFootprint: 1
+  stackCapacity: 0
+  footprintSize: {x: 500, y: 0, z: 500}
+  prototypePropagationType: 1
+  capabilities:
+  - capabilityType: 0
+    selectorTags: []
+  - capabilityType: 1
+    selectorTags:
+    - {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+  - capabilityType: 3
+    selectorTags: []
+  walletEntries:
+  - wallet: {fileID: 11400000, guid: 4c4c7036db4f4469d8b19cbe1d6932f2, type: 2}
+    seed:
+    - entry:
+        asset: {fileID: 11400000, guid: b92048bd2f85042ee97f6a25f6a4f99b, type: 2}
+        formType: 0
+        amount: 10000
+      runtimeTags:
+      - {fileID: 11400000, guid: d078fa8c1956f4a1b825a2d83c7f5cf0, type: 2}
+    - entry:
+        asset: {fileID: 11400000, guid: 9c6a46d64e754495294c47772e712bd5, type: 2}
+        formType: 0
+        amount: 5000
+      runtimeTags:
+      - {fileID: 11400000, guid: d078fa8c1956f4a1b825a2d83c7f5cf0, type: 2}
+    - entry:
+        asset: {fileID: 11400000, guid: 8c0f2453a88154d458b494f57e5b4722, type: 2}
+        formType: 0
+        amount: 100000
+      runtimeTags: []
+    - entry:
+        asset: {fileID: 11400000, guid: 2d9f6059fa0ff4f01af05e6d0a60008f, type: 2}
+        formType: 0
+        amount: 3000
+      runtimeTags: []
+    - entry:
+        asset: {fileID: 11400000, guid: b42c9f1f607844b55a9f9e9df0020f73, type: 2}
+        formType: 0
+        amount: 1000
+      runtimeTags: []
+  - wallet: {fileID: 11400000, guid: b85977be3024f49c889d7fd3baa24634, type: 2}
+    seed:
+    - entry:
+        asset: {fileID: 11400000, guid: 50fb8043af14147d7963cb2c2fd1bf8e, type: 2}
+        formType: 0
+        amount: 1
+      runtimeTags:
+      - {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    - entry:
+        asset: {fileID: 11400000, guid: 342c4660d68a44ee8b9bb8ede48b92ba, type: 2}
+        formType: 0
+        amount: 1
+      runtimeTags: []
+    - entry:
+        asset: {fileID: 11400000, guid: 6b62459fa2d6c4521bd917e18a6ffa20, type: 2}
+        formType: 0
+        amount: 1
+      runtimeTags: []
+    - entry:
+        asset: {fileID: 11400000, guid: 554513f1a33c94324b62a7ffc3b6595b, type: 2}
+        formType: 0
+        amount: 1
+      runtimeTags: []
+    - entry:
+        asset: {fileID: 11400000, guid: 1c32817581a314b259d1063a5333280e, type: 2}
+        formType: 0
+        amount: 1
+      runtimeTags: []
+    - entry:
+        asset: {fileID: 11400000, guid: d77b7208349ae48f0add20938b744698, type: 2}
+        formType: 0
+        amount: 1
+      runtimeTags: []
+  - wallet: {fileID: 11400000, guid: c87c78cd26156452c8e556f10e50d7bd, type: 2}
+    seed: []
+  - wallet: {fileID: 11400000, guid: e277a6118ed4242719051673700f3e04, type: 2}
+    seed:
+    - entry:
+        asset: {fileID: 11400000, guid: 18efa7a01b037401b98a874f176fb6d4, type: 2}
+        formType: 0
+        amount: 3000
+      runtimeTags: []
+  usagePolicy:
+    accessType: 0
+    diplomacyCompareOperation: 3
+    diplomacyScoreThreshold: -100
+  projectionPrefabReference:
+    m_AssetGUID: 1165ca0a659734f48862cfd639317e73
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  projectionPool:
+    demandModeType: 0
+    demandValue: 0
+    expandable: 1
+    maxCapacity: 0
+  references:
+    version: 2
+    RefIds: []

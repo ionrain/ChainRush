@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Core::Core.UI.Production.ProductionUIActionData
   recipe: {fileID: 11400000, guid: 0761e9cae95bf4e90b4f138a63fdc141, type: 2}
   purchaseFlow: {fileID: 11400000, guid: aa2c325137e1046899efde7ab715f4f7, type: 2}
+  recipientType: 0
   producerTags:
   - {fileID: 11400000, guid: 80dca1e032fe34bf99c7485c39684ae0, type: 2}
   recipientSelection:

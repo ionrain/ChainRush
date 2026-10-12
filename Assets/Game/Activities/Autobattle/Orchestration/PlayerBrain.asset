@@ -19,7 +19,6 @@ MonoBehaviour:
   - rid: 2807516363299750031
   - rid: 2807516363299750032
   - rid: 2807516363299750033
-  - rid: 2807516701411770466
   - rid: 2807516363299750035
   - rid: 2807516363299750036
   - rid: 2807516543296733292
@@ -37,6 +36,13 @@ MonoBehaviour:
   - rid: 742060
   - rid: 6092004206412824667
   - rid: 860001
+  - rid: 1000
+  - rid: 1001
+  - rid: 1004
+  - rid: 1005
+  - rid: 1008
+  - rid: 1009
+  - rid: 1012
   decisionGraph:
     nodes:
     - rid: 6092004206412824668
@@ -49,7 +55,6 @@ MonoBehaviour:
     - rid: 2807516543296733294
     - rid: 2807516363299750039
     - rid: 2807516363299750040
-    - rid: 2807516363299750041
     - rid: 2807516363299750042
     - rid: 2807516363299750043
     - rid: 9102
@@ -65,6 +70,14 @@ MonoBehaviour:
     - rid: 742051
     - rid: 742061
     - rid: 860002
+    - rid: 1013
+    - rid: 1014
+    - rid: 1017
+    - rid: 1018
+    - rid: 1021
+    - rid: 1022
+    - rid: 1025
+    - rid: 1538158728978891051
   budget:
     maxDependencyDepth: 4
     maxGeneratedNodes: 64
@@ -79,6 +92,182 @@ MonoBehaviour:
     RefIds:
     - rid: -2
       type: {class: , ns: , asm: }
+    - rid: 1000
+      type: {class: AgentDecompOpData, ns: Core.Orchestration, asm: Core}
+      data:
+        operatorId: {fileID: 11400000, guid: 7df8ea9384b644947b403fa356df4ddb, type: 2}
+        agentDefinition: {fileID: 11400000, guid: 0a232eacf5c1e4e1db8969f950813577,
+          type: 2}
+    - rid: 1001
+      type: {class: AgentDecompOpData, ns: Core.Orchestration, asm: Core}
+      data:
+        operatorId: {fileID: 11400000, guid: e9e1dd773e3be43ddab1406c22fda192, type: 2}
+        agentDefinition: {fileID: 11400000, guid: 52d52fe62346f4177ab478ea0171428d,
+          type: 2}
+    - rid: 1004
+      type: {class: AgentDecompOpData, ns: Core.Orchestration, asm: Core}
+      data:
+        operatorId: {fileID: 11400000, guid: b385739251793465d905571f16bd020c, type: 2}
+        agentDefinition: {fileID: 11400000, guid: 550f0a2c375d5459ea3209605d5c1a3f,
+          type: 2}
+    - rid: 1005
+      type: {class: AgentDecompOpData, ns: Core.Orchestration, asm: Core}
+      data:
+        operatorId: {fileID: 11400000, guid: 8c843be96025c46c59d3b228a0fe1ff5, type: 2}
+        agentDefinition: {fileID: 11400000, guid: 7d8804682148c4b2b867dd7c47a429ff,
+          type: 2}
+    - rid: 1008
+      type: {class: AgentDecompOpData, ns: Core.Orchestration, asm: Core}
+      data:
+        operatorId: {fileID: 11400000, guid: f32e6388407714671af2e74ee3af3405, type: 2}
+        agentDefinition: {fileID: 11400000, guid: 976e979ec6f25426395b3d3a39afd05e,
+          type: 2}
+    - rid: 1009
+      type: {class: AgentDecompOpData, ns: Core.Orchestration, asm: Core}
+      data:
+        operatorId: {fileID: 11400000, guid: 7e2fa28d4182d49898854495afb5dfcd, type: 2}
+        agentDefinition: {fileID: 11400000, guid: c7eaf0412305849139fc6b4938ca7a86,
+          type: 2}
+    - rid: 1012
+      type: {class: ProductionReleaseDecompOpData, ns: Core.Orchestration, asm: Core}
+      data:
+        operatorId: {fileID: 11400000, guid: e2a70f89a44f842629159e63ba605c89, type: 2}
+    - rid: 1013
+      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
+      data:
+        decisionId: buildings-infantryconstruction
+        conditions:
+        - rid: 1026
+        - rid: 1027
+        - rid: 1028
+        operatorId: {fileID: 11400000, guid: 7df8ea9384b644947b403fa356df4ddb, type: 2}
+    - rid: 1014
+      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
+      data:
+        decisionId: buildings-infantryupgrade
+        conditions:
+        - rid: 1029
+        - rid: 1030
+        - rid: 1031
+        operatorId: {fileID: 11400000, guid: e9e1dd773e3be43ddab1406c22fda192, type: 2}
+    - rid: 1017
+      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
+      data:
+        decisionId: buildings-rangedconstruction
+        conditions:
+        - rid: 1038
+        - rid: 1039
+        - rid: 1040
+        operatorId: {fileID: 11400000, guid: b385739251793465d905571f16bd020c, type: 2}
+    - rid: 1018
+      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
+      data:
+        decisionId: buildings-rangedupgrade
+        conditions:
+        - rid: 1041
+        - rid: 1042
+        - rid: 1043
+        operatorId: {fileID: 11400000, guid: 8c843be96025c46c59d3b228a0fe1ff5, type: 2}
+    - rid: 1021
+      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
+      data:
+        decisionId: buildings-heavyconstruction
+        conditions:
+        - rid: 1050
+        - rid: 1051
+        - rid: 1052
+        operatorId: {fileID: 11400000, guid: f32e6388407714671af2e74ee3af3405, type: 2}
+    - rid: 1022
+      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
+      data:
+        decisionId: buildings-heavyupgrade
+        conditions:
+        - rid: 1053
+        - rid: 1054
+        - rid: 1055
+        operatorId: {fileID: 11400000, guid: 7e2fa28d4182d49898854495afb5dfcd, type: 2}
+    - rid: 1025
+      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
+      data:
+        decisionId: buildings-productionrelease
+        conditions:
+        - rid: 1062
+        - rid: 1063
+        operatorId: {fileID: 11400000, guid: e2a70f89a44f842629159e63ba605c89, type: 2}
+    - rid: 1026
+      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        factType: 4
+    - rid: 1027
+      type: {class: ScopeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        scopeType: 0
+    - rid: 1028
+      type: {class: AgentMatchDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data: 
+    - rid: 1029
+      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        factType: 21
+    - rid: 1030
+      type: {class: ScopeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        scopeType: 0
+    - rid: 1031
+      type: {class: AgentMatchDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data: 
+    - rid: 1038
+      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        factType: 4
+    - rid: 1039
+      type: {class: ScopeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        scopeType: 0
+    - rid: 1040
+      type: {class: AgentMatchDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data: 
+    - rid: 1041
+      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        factType: 21
+    - rid: 1042
+      type: {class: ScopeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        scopeType: 0
+    - rid: 1043
+      type: {class: AgentMatchDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data: 
+    - rid: 1050
+      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        factType: 4
+    - rid: 1051
+      type: {class: ScopeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        scopeType: 0
+    - rid: 1052
+      type: {class: AgentMatchDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data: 
+    - rid: 1053
+      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        factType: 21
+    - rid: 1054
+      type: {class: ScopeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        scopeType: 0
+    - rid: 1055
+      type: {class: AgentMatchDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data: 
+    - rid: 1062
+      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        factType: 21
+    - rid: 1063
+      type: {class: ScopeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        scopeType: 1
     - rid: 9101
       type: {class: AgentResourceRequestDecompOpData, ns: Core.Orchestration, asm: Core}
       data:
@@ -124,6 +313,7 @@ MonoBehaviour:
           owner:
             source: {fileID: 0}
           entryPath: []
+          ownerLevel: 0
         targetProgression:
           sourceType: 0
           metric: {fileID: 0}
@@ -134,6 +324,7 @@ MonoBehaviour:
             owner:
               source: {fileID: 0}
             entryPath: []
+            ownerLevel: 0
           walletTags: []
           scaleType: 0
           relativeBase: 0
@@ -171,6 +362,43 @@ MonoBehaviour:
         conditions:
         - rid: 741013
         operatorId: {fileID: 11400000, guid: 381177c4910c942f2813ed12892d8f13, type: 2}
+    - rid: 741012
+      type: {class: ObjectiveConditionEconomyMetric, ns: Core.Objectives, asm: Core}
+      data:
+        _targetValue: 0
+        observedOwner:
+          bindingType: 0
+          owner:
+            source: {fileID: 0}
+          entryPath: []
+          ownerLevel: 0
+        targetProgression:
+          sourceType: 0
+          metric: {fileID: 0}
+          measure: 0
+          resource: {fileID: 0}
+          owner:
+            bindingType: 0
+            owner:
+              source: {fileID: 0}
+            entryPath: []
+            ownerLevel: 0
+          walletTags: []
+          scaleType: 0
+          relativeBase: 0
+          progression:
+            rid: -2
+        _walletTags:
+        - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
+        _asset: {fileID: 11400000, guid: 839c1d8a662844abaa8388a2950bf11a, type: 2}
+        _requiredAssetTags: []
+        _requiredRuntimeTags: []
+        _formType: 0
+        _compareOperation: 0
+    - rid: 741013
+      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        factType: 1
     - rid: 741020
       type: {class: AIBrainDecompOpData, ns: Core.Orchestration, asm: Core}
       data:
@@ -192,6 +420,43 @@ MonoBehaviour:
         conditions:
         - rid: 741023
         operatorId: {fileID: 11400000, guid: ea7c58850bb084dd79384417bc6fd3c7, type: 2}
+    - rid: 741022
+      type: {class: ObjectiveConditionEconomyMetric, ns: Core.Objectives, asm: Core}
+      data:
+        _targetValue: 0
+        observedOwner:
+          bindingType: 0
+          owner:
+            source: {fileID: 0}
+          entryPath: []
+          ownerLevel: 0
+        targetProgression:
+          sourceType: 0
+          metric: {fileID: 0}
+          measure: 0
+          resource: {fileID: 0}
+          owner:
+            bindingType: 0
+            owner:
+              source: {fileID: 0}
+            entryPath: []
+            ownerLevel: 0
+          walletTags: []
+          scaleType: 0
+          relativeBase: 0
+          progression:
+            rid: -2
+        _walletTags:
+        - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
+        _asset: {fileID: 11400000, guid: 8a64003fa14f44e83aed0b1b4fe8be60, type: 2}
+        _requiredAssetTags: []
+        _requiredRuntimeTags: []
+        _formType: 0
+        _compareOperation: 0
+    - rid: 741023
+      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        factType: 1
     - rid: 741030
       type: {class: AIBrainDecompOpData, ns: Core.Orchestration, asm: Core}
       data:
@@ -213,6 +478,43 @@ MonoBehaviour:
         conditions:
         - rid: 741033
         operatorId: {fileID: 11400000, guid: 8d949e3d5713e4f1faaad92e8cd2910a, type: 2}
+    - rid: 741032
+      type: {class: ObjectiveConditionEconomyMetric, ns: Core.Objectives, asm: Core}
+      data:
+        _targetValue: 0
+        observedOwner:
+          bindingType: 0
+          owner:
+            source: {fileID: 0}
+          entryPath: []
+          ownerLevel: 0
+        targetProgression:
+          sourceType: 0
+          metric: {fileID: 0}
+          measure: 0
+          resource: {fileID: 0}
+          owner:
+            bindingType: 0
+            owner:
+              source: {fileID: 0}
+            entryPath: []
+            ownerLevel: 0
+          walletTags: []
+          scaleType: 0
+          relativeBase: 0
+          progression:
+            rid: -2
+        _walletTags:
+        - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
+        _asset: {fileID: 11400000, guid: 47e08c5049e1c46c08a1843ccc821653, type: 2}
+        _requiredAssetTags: []
+        _requiredRuntimeTags: []
+        _formType: 0
+        _compareOperation: 0
+    - rid: 741033
+      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        factType: 1
     - rid: 741040
       type: {class: AIBrainDecompOpData, ns: Core.Orchestration, asm: Core}
       data:
@@ -234,6 +536,43 @@ MonoBehaviour:
         conditions:
         - rid: 741043
         operatorId: {fileID: 11400000, guid: 460135ecf7cb2413f9b7d0649e3db20e, type: 2}
+    - rid: 741042
+      type: {class: ObjectiveConditionEconomyMetric, ns: Core.Objectives, asm: Core}
+      data:
+        _targetValue: 0
+        observedOwner:
+          bindingType: 0
+          owner:
+            source: {fileID: 0}
+          entryPath: []
+          ownerLevel: 0
+        targetProgression:
+          sourceType: 0
+          metric: {fileID: 0}
+          measure: 0
+          resource: {fileID: 0}
+          owner:
+            bindingType: 0
+            owner:
+              source: {fileID: 0}
+            entryPath: []
+            ownerLevel: 0
+          walletTags: []
+          scaleType: 0
+          relativeBase: 0
+          progression:
+            rid: -2
+        _walletTags:
+        - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
+        _asset: {fileID: 11400000, guid: e8a82c2ef62684484a1dc4a73dbb0b19, type: 2}
+        _requiredAssetTags: []
+        _requiredRuntimeTags: []
+        _formType: 0
+        _compareOperation: 0
+    - rid: 741043
+      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        factType: 1
     - rid: 741050
       type: {class: AIBrainDecompOpData, ns: Core.Orchestration, asm: Core}
       data:
@@ -255,6 +594,43 @@ MonoBehaviour:
         conditions:
         - rid: 741053
         operatorId: {fileID: 11400000, guid: 2f4048547c94b4d7b9661c747ebc41bf, type: 2}
+    - rid: 741052
+      type: {class: ObjectiveConditionEconomyMetric, ns: Core.Objectives, asm: Core}
+      data:
+        _targetValue: 0
+        observedOwner:
+          bindingType: 0
+          owner:
+            source: {fileID: 0}
+          entryPath: []
+          ownerLevel: 0
+        targetProgression:
+          sourceType: 0
+          metric: {fileID: 0}
+          measure: 0
+          resource: {fileID: 0}
+          owner:
+            bindingType: 0
+            owner:
+              source: {fileID: 0}
+            entryPath: []
+            ownerLevel: 0
+          walletTags: []
+          scaleType: 0
+          relativeBase: 0
+          progression:
+            rid: -2
+        _walletTags:
+        - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
+        _asset: {fileID: 11400000, guid: ae834fb74361a41d5a823185572def60, type: 2}
+        _requiredAssetTags: []
+        _requiredRuntimeTags: []
+        _formType: 0
+        _compareOperation: 0
+    - rid: 741053
+      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        factType: 1
     - rid: 742010
       type: {class: AIBrainDecompOpData, ns: Core.Orchestration, asm: Core}
       data:
@@ -285,6 +661,7 @@ MonoBehaviour:
           owner:
             source: {fileID: 0}
           entryPath: []
+          ownerLevel: 0
         targetProgression:
           sourceType: 0
           metric: {fileID: 0}
@@ -295,6 +672,7 @@ MonoBehaviour:
             owner:
               source: {fileID: 0}
             entryPath: []
+            ownerLevel: 0
           walletTags: []
           scaleType: 0
           relativeBase: 0
@@ -341,6 +719,7 @@ MonoBehaviour:
           owner:
             source: {fileID: 0}
           entryPath: []
+          ownerLevel: 0
         targetProgression:
           sourceType: 0
           metric: {fileID: 0}
@@ -351,6 +730,7 @@ MonoBehaviour:
             owner:
               source: {fileID: 0}
             entryPath: []
+            ownerLevel: 0
           walletTags: []
           scaleType: 0
           relativeBase: 0
@@ -397,6 +777,7 @@ MonoBehaviour:
           owner:
             source: {fileID: 0}
           entryPath: []
+          ownerLevel: 0
         targetProgression:
           sourceType: 0
           metric: {fileID: 0}
@@ -407,6 +788,7 @@ MonoBehaviour:
             owner:
               source: {fileID: 0}
             entryPath: []
+            ownerLevel: 0
           walletTags: []
           scaleType: 0
           relativeBase: 0
@@ -453,6 +835,7 @@ MonoBehaviour:
           owner:
             source: {fileID: 0}
           entryPath: []
+          ownerLevel: 0
         targetProgression:
           sourceType: 0
           metric: {fileID: 0}
@@ -463,6 +846,7 @@ MonoBehaviour:
             owner:
               source: {fileID: 0}
             entryPath: []
+            ownerLevel: 0
           walletTags: []
           scaleType: 0
           relativeBase: 0
@@ -509,6 +893,7 @@ MonoBehaviour:
           owner:
             source: {fileID: 0}
           entryPath: []
+          ownerLevel: 0
         targetProgression:
           sourceType: 0
           metric: {fileID: 0}
@@ -519,6 +904,7 @@ MonoBehaviour:
             owner:
               source: {fileID: 0}
             entryPath: []
+            ownerLevel: 0
           walletTags: []
           scaleType: 0
           relativeBase: 0
@@ -565,6 +951,7 @@ MonoBehaviour:
           owner:
             source: {fileID: 0}
           entryPath: []
+          ownerLevel: 0
         targetProgression:
           sourceType: 0
           metric: {fileID: 0}
@@ -575,6 +962,7 @@ MonoBehaviour:
             owner:
               source: {fileID: 0}
             entryPath: []
+            ownerLevel: 0
           walletTags: []
           scaleType: 0
           relativeBase: 0
@@ -591,6 +979,21 @@ MonoBehaviour:
       type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
       data:
         factType: 1
+    - rid: 860001
+      type: {class: PrototypePreparationDecompOpData, ns: Core.Orchestration, asm: Core}
+      data:
+        operatorId: {fileID: 11400000, guid: d010ed67ef025495b974fd3a985d25ed, type: 2}
+    - rid: 860002
+      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
+      data:
+        decisionId: 
+        conditions:
+        - rid: 860003
+        operatorId: {fileID: 11400000, guid: d010ed67ef025495b974fd3a985d25ed, type: 2}
+    - rid: 860003
+      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        factType: 23
     - rid: 930000
       type: {class: EconomyOperationDecompOpData, ns: Core.Orchestration, asm: Core}
       data:
@@ -643,6 +1046,17 @@ MonoBehaviour:
       type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
       data:
         factType: 1
+    - rid: 1538158728978891051
+      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
+      data:
+        decisionId: 
+        conditions:
+        - rid: 1538158728978891052
+        operatorId: {fileID: 11400000, guid: a5a834597863349cc91ef85102128ba8, type: 2}
+    - rid: 1538158728978891052
+      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
+      data:
+        factType: 15
     - rid: 2807516363299750031
       type: {class: AgentDecompOpData, ns: Core.Orchestration, asm: Core}
       data:
@@ -724,21 +1138,12 @@ MonoBehaviour:
         - rid: 2807516363299750054
         - rid: 2807516363299750055
         operatorId: {fileID: 11400000, guid: 81c68355248194ec8909c09aa9c7480f, type: 2}
-    - rid: 2807516363299750041
-      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
-      data:
-        decisionId: production-materialized
-        conditions:
-        - rid: 2807516363299750056
-        - rid: 2807516363299750057
-        operatorId: {fileID: 11400000, guid: 75feb13c5e1254519a15de921f8b2f4c, type: 2}
     - rid: 2807516363299750042
       type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
       data:
         decisionId: production-yield
         conditions:
         - rid: 2807516363299750058
-        - rid: 2807516363299750059
         operatorId: {fileID: 11400000, guid: a0d1d7b1365b9430d8120d83833a7cad, type: 2}
     - rid: 2807516363299750043
       type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
@@ -772,7 +1177,7 @@ MonoBehaviour:
         scopeType: 0
     - rid: 2807516363299750049
       type: {class: AgentMatchDecisionConditionData, ns: Core.Orchestration, asm: Core}
-      data:
+      data: 
     - rid: 2807516363299750050
       type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
       data:
@@ -801,22 +1206,10 @@ MonoBehaviour:
       data:
         compareOperations: 0200000003000000
         requireZeroTargetForEqual: 0
-    - rid: 2807516363299750056
-      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
-      data:
-        factType: 4
-    - rid: 2807516363299750057
-      type: {class: ScopeDecisionConditionData, ns: Core.Orchestration, asm: Core}
-      data:
-        scopeType: 0
     - rid: 2807516363299750058
       type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
       data:
         factType: 16
-    - rid: 2807516363299750059
-      type: {class: ScopeDecisionConditionData, ns: Core.Orchestration, asm: Core}
-      data:
-        scopeType: 1
     - rid: 2807516363299750060
       type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
       data:
@@ -829,7 +1222,7 @@ MonoBehaviour:
       type: {class: AwaitFactDecompOpData, ns: Core.Orchestration, asm: Core}
       data:
         operatorId: {fileID: 11400000, guid: a5a834597863349cc91ef85102128ba8, type: 2}
-        inputFactTypes: 01000000
+        inputFactTypes: 0100000035000000
     - rid: 2807516543296733293
       type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
       data:
@@ -873,16 +1266,11 @@ MonoBehaviour:
     - rid: 2807516543296733300
       type: {class: PlanIntentDecisionConditionData, ns: Core.Orchestration, asm: Core}
       data:
-        targetTypes:
-        targetRelations:
+        targetTypes: 
+        targetRelations: 
         actionTypes: 01000000
-        conditionTypes:
+        conditionTypes: 
         requirePlanningEnabled: 1
-    - rid: 2807516701411770466
-      type: {class: MaterializedEntityProductionDecompOpData, ns: Core.Orchestration,
-        asm: Core}
-      data:
-        operatorId: {fileID: 11400000, guid: 75feb13c5e1254519a15de921f8b2f4c, type: 2}
     - rid: 6092004206412824667
       type: {class: AgentDecompOpData, ns: Core.Orchestration, asm: Core}
       data:
@@ -908,194 +1296,4 @@ MonoBehaviour:
         scopeType: 0
     - rid: 6092004206412824671
       type: {class: AgentMatchDecisionConditionData, ns: Core.Orchestration, asm: Core}
-      data:
-    - rid: 860001
-      type: {class: PrototypePreparationDecompOpData, ns: Core.Orchestration, asm: Core}
-      data:
-        operatorId: {fileID: 11400000, guid: d010ed67ef025495b974fd3a985d25ed, type: 2}
-    - rid: 741012
-      type: {class: ObjectiveConditionEconomyMetric, ns: Core.Objectives, asm: Core}
-      data:
-        _targetValue: 0
-        observedOwner:
-          bindingType: 0
-          owner:
-            source: {fileID: 0}
-          entryPath: []
-        targetProgression:
-          sourceType: 0
-          metric: {fileID: 0}
-          measure: 0
-          resource: {fileID: 0}
-          owner:
-            bindingType: 0
-            owner:
-              source: {fileID: 0}
-            entryPath: []
-          walletTags: []
-          scaleType: 0
-          relativeBase: 0
-          progression:
-            rid: -2
-        _walletTags:
-        - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
-        _asset: {fileID: 11400000, guid: 839c1d8a662844abaa8388a2950bf11a, type: 2}
-        _requiredAssetTags: []
-        _requiredRuntimeTags: []
-        _formType: 0
-        _compareOperation: 0
-    - rid: 741013
-      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
-      data:
-        factType: 1
-    - rid: 741022
-      type: {class: ObjectiveConditionEconomyMetric, ns: Core.Objectives, asm: Core}
-      data:
-        _targetValue: 0
-        observedOwner:
-          bindingType: 0
-          owner:
-            source: {fileID: 0}
-          entryPath: []
-        targetProgression:
-          sourceType: 0
-          metric: {fileID: 0}
-          measure: 0
-          resource: {fileID: 0}
-          owner:
-            bindingType: 0
-            owner:
-              source: {fileID: 0}
-            entryPath: []
-          walletTags: []
-          scaleType: 0
-          relativeBase: 0
-          progression:
-            rid: -2
-        _walletTags:
-        - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
-        _asset: {fileID: 11400000, guid: 8a64003fa14f44e83aed0b1b4fe8be60, type: 2}
-        _requiredAssetTags: []
-        _requiredRuntimeTags: []
-        _formType: 0
-        _compareOperation: 0
-    - rid: 741023
-      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
-      data:
-        factType: 1
-    - rid: 741032
-      type: {class: ObjectiveConditionEconomyMetric, ns: Core.Objectives, asm: Core}
-      data:
-        _targetValue: 0
-        observedOwner:
-          bindingType: 0
-          owner:
-            source: {fileID: 0}
-          entryPath: []
-        targetProgression:
-          sourceType: 0
-          metric: {fileID: 0}
-          measure: 0
-          resource: {fileID: 0}
-          owner:
-            bindingType: 0
-            owner:
-              source: {fileID: 0}
-            entryPath: []
-          walletTags: []
-          scaleType: 0
-          relativeBase: 0
-          progression:
-            rid: -2
-        _walletTags:
-        - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
-        _asset: {fileID: 11400000, guid: 47e08c5049e1c46c08a1843ccc821653, type: 2}
-        _requiredAssetTags: []
-        _requiredRuntimeTags: []
-        _formType: 0
-        _compareOperation: 0
-    - rid: 741033
-      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
-      data:
-        factType: 1
-    - rid: 741042
-      type: {class: ObjectiveConditionEconomyMetric, ns: Core.Objectives, asm: Core}
-      data:
-        _targetValue: 0
-        observedOwner:
-          bindingType: 0
-          owner:
-            source: {fileID: 0}
-          entryPath: []
-        targetProgression:
-          sourceType: 0
-          metric: {fileID: 0}
-          measure: 0
-          resource: {fileID: 0}
-          owner:
-            bindingType: 0
-            owner:
-              source: {fileID: 0}
-            entryPath: []
-          walletTags: []
-          scaleType: 0
-          relativeBase: 0
-          progression:
-            rid: -2
-        _walletTags:
-        - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
-        _asset: {fileID: 11400000, guid: e8a82c2ef62684484a1dc4a73dbb0b19, type: 2}
-        _requiredAssetTags: []
-        _requiredRuntimeTags: []
-        _formType: 0
-        _compareOperation: 0
-    - rid: 741043
-      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
-      data:
-        factType: 1
-    - rid: 741052
-      type: {class: ObjectiveConditionEconomyMetric, ns: Core.Objectives, asm: Core}
-      data:
-        _targetValue: 0
-        observedOwner:
-          bindingType: 0
-          owner:
-            source: {fileID: 0}
-          entryPath: []
-        targetProgression:
-          sourceType: 0
-          metric: {fileID: 0}
-          measure: 0
-          resource: {fileID: 0}
-          owner:
-            bindingType: 0
-            owner:
-              source: {fileID: 0}
-            entryPath: []
-          walletTags: []
-          scaleType: 0
-          relativeBase: 0
-          progression:
-            rid: -2
-        _walletTags:
-        - {fileID: 11400000, guid: 6857c37d115f044e6b89ab347fc76137, type: 2}
-        _asset: {fileID: 11400000, guid: ae834fb74361a41d5a823185572def60, type: 2}
-        _requiredAssetTags: []
-        _requiredRuntimeTags: []
-        _formType: 0
-        _compareOperation: 0
-    - rid: 741053
-      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
-      data:
-        factType: 1
-    - rid: 860002
-      type: {class: OrchestrationDecisionData, ns: Core.Orchestration, asm: Core}
-      data:
-        decisionId:
-        conditions:
-        - rid: 860003
-        operatorId: {fileID: 11400000, guid: d010ed67ef025495b974fd3a985d25ed, type: 2}
-    - rid: 860003
-      type: {class: FactTypeDecisionConditionData, ns: Core.Orchestration, asm: Core}
-      data:
-        factType: 23
+      data: 

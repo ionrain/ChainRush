@@ -238,6 +238,77 @@ MonoBehaviour:
     m_Localized: Melee unit with medium damage, denfense and HP
     m_Metadata:
       m_Items: []
+  - m_Id: 230794311412736000
+    m_Localized: Infantry Camp
+    m_Metadata:
+      m_Items: []
+  - m_Id: 230794311597285376
+    m_Localized: Produces independent soldiers. Unlocks veteran soldiers at permanent
+      level 3.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 230794311597285377
+    m_Localized: Infantry Soldier
+    m_Metadata:
+      m_Items: []
+  - m_Id: 230794311597285378
+    m_Localized: Veteran Infantry Soldier
+    m_Metadata:
+      m_Items: []
+  - m_Id: 230794311597285379
+    m_Localized: Infantry Camp Card
+    m_Metadata:
+      m_Items: []
+  - m_Id: 230794311597285380
+    m_Localized: Building Level
+    m_Metadata:
+      m_Items: []
+  - m_Id: 230794311597285381
+    m_Localized: Ranged Camp
+    m_Metadata:
+      m_Items: []
+  - m_Id: 230794311597285382
+    m_Localized: Produces independent soldiers. Unlocks veteran soldiers at permanent
+      level 3.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 230794311601479680
+    m_Localized: Ranged Soldier
+    m_Metadata:
+      m_Items: []
+  - m_Id: 230794311601479681
+    m_Localized: Veteran Ranged Soldier
+    m_Metadata:
+      m_Items: []
+  - m_Id: 230794311601479682
+    m_Localized: Ranged Camp Card
+    m_Metadata:
+      m_Items: []
+  - m_Id: 230794311605673984
+    m_Localized: Heavy Camp
+    m_Metadata:
+      m_Items: []
+  - m_Id: 230794311605673985
+    m_Localized: Produces independent soldiers. Unlocks veteran soldiers at permanent
+      level 3.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 230794311605673986
+    m_Localized: Heavy Soldier
+    m_Metadata:
+      m_Items: []
+  - m_Id: 230794311605673987
+    m_Localized: Veteran Heavy Soldier
+    m_Metadata:
+      m_Items: []
+  - m_Id: 230794311605673988
+    m_Localized: Heavy Camp Card
+    m_Metadata:
+      m_Items: []
+  - m_Id: 230794311609868288
+    m_Localized: Permanent Level
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

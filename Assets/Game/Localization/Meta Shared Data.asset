@@ -223,6 +223,74 @@ MonoBehaviour:
     m_Key: water.merge0
     m_Metadata:
       m_Items: []
+  - m_Id: 230794311412736000
+    m_Key: building.infantry.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 230794311597285376
+    m_Key: building.infantry.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 230794311597285377
+    m_Key: building.infantrysoldier.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 230794311597285378
+    m_Key: building.infantryveteran.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 230794311597285379
+    m_Key: building.infantry.card
+    m_Metadata:
+      m_Items: []
+  - m_Id: 230794311597285380
+    m_Key: building.run.level
+    m_Metadata:
+      m_Items: []
+  - m_Id: 230794311597285381
+    m_Key: building.ranged.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 230794311597285382
+    m_Key: building.ranged.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 230794311601479680
+    m_Key: building.rangedsoldier.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 230794311601479681
+    m_Key: building.rangedveteran.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 230794311601479682
+    m_Key: building.ranged.card
+    m_Metadata:
+      m_Items: []
+  - m_Id: 230794311605673984
+    m_Key: building.heavy.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 230794311605673985
+    m_Key: building.heavy.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 230794311605673986
+    m_Key: building.heavysoldier.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 230794311605673987
+    m_Key: building.heavyveteran.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 230794311605673988
+    m_Key: building.heavy.card
+    m_Metadata:
+      m_Items: []
+  - m_Id: 230794311609868288
+    m_Key: building.permanent.level
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

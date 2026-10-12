@@ -2843,6 +2843,7 @@ namespace ChainRush.Editor
                         },
                         requireZeroTargetForEqual: true),
                     CreateAwaitFactDecision(content.AwaitFactOperator),
+                    CreateExecutorAvailableDecision(content.AwaitFactOperator),
                     CreateEconomyDecision(
                         "production-input",
                         content.ProductionInputOperator,
@@ -2903,6 +2904,9 @@ namespace ChainRush.Editor
 
         static void ConfigureEnemyOrchestrationBrain(Content content)
         {
+            var awaitFact = CreateOperation<AwaitFactDecompOpData>(content.AwaitFactOperator);
+            SetField(awaitFact, "inputFactTypes", new List<OrchestrationPlanningFactType>
+                { OrchestrationPlanningFactType.ExecutorAvailable });
             AgentDecompOpData waveAgent = CreateAgentOperation(
                 content.EnemyWaveAgentOperator,
                 content.EnemyWaveAgent);
@@ -2945,6 +2949,7 @@ namespace ChainRush.Editor
                         content.ProductionAvailableOperator,
                         OrchestrationDecompositionScopeType.AgentLocal,
                         matchAgent: false),
+                    CreateExecutorAvailableDecision(content.AwaitFactOperator),
                 });
 
             SetField(
@@ -2956,6 +2961,7 @@ namespace ChainRush.Editor
                     materialized,
                     yield,
                     available,
+                    awaitFact,
                 });
             SetField(content.EnemyBrain, "decisionGraph", graph);
             EditorUtility.SetDirty(content.EnemyBrain);
@@ -2988,6 +2994,7 @@ namespace ChainRush.Editor
                 new List<OrchestrationPlanningFactType>
                 {
                     OrchestrationPlanningFactType.EconomyAmount,
+                    OrchestrationPlanningFactType.ExecutorAvailable,
                 });
             return operation;
         }
@@ -3033,6 +3040,16 @@ namespace ChainRush.Editor
             SetField(comparison, "compareOperations", compareOperations);
             SetField(comparison, "requireZeroTargetForEqual", requireZeroTargetForEqual);
             conditions.Add(comparison);
+            return decision;
+        }
+
+        static OrchestrationDecisionData CreateExecutorAvailableDecision(TaxonomyTermData operatorId)
+        {
+            var condition = new FactTypeDecisionConditionData();
+            SetField(condition, "factType", OrchestrationFactType.ExecutorAvailable);
+            var decision = new OrchestrationDecisionData();
+            SetField(decision, "operatorId", operatorId);
+            SetField(decision, "conditions", new List<OrchestrationDecisionConditionData> { condition });
             return decision;
         }
 

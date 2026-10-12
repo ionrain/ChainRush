@@ -351,6 +351,30 @@ MonoBehaviour:
     m_Key: resource.hero.card
     m_Metadata:
       m_Items: []
+  - m_Id: 231203798703398912
+    m_Key: buildings.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 231203798707593216
+    m_Key: building.heavy.open
+    m_Metadata:
+      m_Items: []
+  - m_Id: 231203798707593217
+    m_Key: building.unlocked
+    m_Metadata:
+      m_Items: []
+  - m_Id: 231203798707593218
+    m_Key: building.not.built
+    m_Metadata:
+      m_Items: []
+  - m_Id: 231203798707593219
+    m_Key: production.consume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 231203798707593220
+    m_Key: production.require
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

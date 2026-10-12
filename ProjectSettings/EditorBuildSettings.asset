@@ -29,6 +29,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Game/FrameworkUI/Scenes/Integration/FrameworkGameplay.unity
     guid: 31c54bcade047401ca4acb4d2816189b
+  - enabled: 1
+    path: Assets/Game/FrameworkUI/Scenes/Integration/FrameworkSurviveGameplay.unity
+    guid: e2028c78ee1d74f53b6e359b6c8fc32b
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: 0e9d5fee86d1f4f568076d277ec6c3a9,
       type: 2}

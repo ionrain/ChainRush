@@ -15,6 +15,11 @@ MonoBehaviour:
   m_GroupName: ChainRush-Activity-Board
   m_GUID: 80d3bbb64a3094b6db045491dcd4e9c6
   m_SerializeEntries:
+  - m_GUID: 3c973989602814804ab408455170c765
+    m_Address: Assets/Game/Activities/Buildings/Projection/HeavyBoardCard.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 5dd86dcc6f602475ba9211b2366803c1
     m_Address: Assets/Game/Activities/Board/Projection/ColaBoardBase.prefab
     m_ReadOnly: 0
@@ -22,6 +27,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 62238c1ff22704a0884511796cd14f3c
     m_Address: Assets/Game/Activities/Board/Projection/SpeedBoardBase.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 80692384e3d4849dd811bd849d36951c
+    m_Address: Assets/Game/Activities/Buildings/Projection/RangedBoardCard.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -37,6 +47,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 975b5009d17ee45ddaf26f1364a4ee50
     m_Address: Assets/Game/Activities/Board/Projection/WaterBoardBase.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b19d5a970799d45b9a3d4307b0d6edaf
+    m_Address: Assets/Game/Activities/Buildings/Projection/InfantryBoardCard.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

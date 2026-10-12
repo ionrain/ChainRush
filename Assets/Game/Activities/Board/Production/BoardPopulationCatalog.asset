@@ -47,6 +47,18 @@ MonoBehaviour:
     workDuration: 1
     recoveryDuration: 0
     reservationPolicy: 0
+  - recipe: {fileID: 11400000, guid: bd5b1b61120a343ee8516f01d3e165ef, type: 2}
+    workDuration: 1
+    recoveryDuration: 0
+    reservationPolicy: 0
+  - recipe: {fileID: 11400000, guid: 7d053a38386b04e58a9444e245ef429e, type: 2}
+    workDuration: 1
+    recoveryDuration: 0
+    reservationPolicy: 0
+  - recipe: {fileID: 11400000, guid: 45985b8b55a2841b7a97b749a9571037, type: 2}
+    workDuration: 1
+    recoveryDuration: 0
+    reservationPolicy: 0
   cooldownEnabled: 1
   readyAtStart: 0
   initialElapsed: 240

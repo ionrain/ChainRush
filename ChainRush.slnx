@@ -1,4 +1,5 @@
 ﻿<Solution>
+  <Project Path="Core.csproj" />
   <Project Path="Assembly-CSharp.csproj" />
   <Project Path="MoreMountains.Tools.csproj" />
   <Project Path="MoreMountains.Tools.Editor.csproj" />
@@ -6,7 +7,9 @@
   <Project Path="Sirenix.OdinInspector.Modules.UnityLocalization.Editor.csproj" />
   <Project Path="MoreMountains.InventoryEngine.csproj" />
   <Project Path="MoreMountains.Interface.csproj" />
+  <Project Path="Core.EditorTools.csproj" />
   <Project Path="Lofelt.NiceVibrations.Demo.csproj" />
+  <Project Path="Core.Determinism.Testing.csproj" />
   <Project Path="Assembly-CSharp-firstpass.csproj" />
   <Project Path="Lofelt.NiceVibrations.csproj" />
   <Project Path="MoreMountains.InventoryEngine.Editor.csproj" />

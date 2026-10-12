@@ -43,6 +43,48 @@ MonoBehaviour:
     workDuration: 1
     recoveryDuration: 0
     reservationPolicy: 0
+  - recipe: {fileID: 11400000, guid: 34d28705c455c4c70be514595ecc0234, type: 2}
+    workDuration: 1
+    recoveryDuration: 0
+    reservationPolicy: 0
+  - recipe: {fileID: 11400000, guid: be8311d35cae84e058454099947d10a3, type: 2}
+    workDuration: 1
+    recoveryDuration: 0
+    reservationPolicy: 0
+  - recipe: {fileID: 11400000, guid: 64e504ba944f84c54a7e6d0a98a192a4, type: 2}
+    workDuration: 1
+    recoveryDuration: 0
+    reservationPolicy: 0
+  - recipe: {fileID: 11400000, guid: d0f1beac6b176414baee2c502c1a9e89, type: 2}
+    workDuration: 1
+    recoveryDuration: 0
+    reservationPolicy: 0
+  - recipe: {fileID: 11400000, guid: d408c3febef5c48f3b5242e5319d60ce, type: 2}
+    workDuration: 1
+    recoveryDuration: 0
+    reservationPolicy: 0
+  - recipe: {fileID: 11400000, guid: ccb96d60c1a5141f9b42aec10116971e, type: 2}
+    workDuration: 1
+    recoveryDuration: 0
+    reservationPolicy: 0
+  cooldownEnabled: 0
+  readyAtStart: 0
+  initialElapsed: 0
+  cooldown: 0
+  cooldownProgression:
+    rid: -2
+  cooldownProgressResource: {fileID: 0}
+  cooldownProgressOwner:
+    bindingType: 0
+    owner:
+      source: {fileID: 0}
+    entryPath: []
+    ownerLevel: 0
+  cooldownProgressWalletTags: []
+  cooldownProgressScale: 0
+  cooldownProgressRelativeBase: 0
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }

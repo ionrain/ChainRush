@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0de7c27447f764d15a95c544378b86c8, type: 3}
   m_Name: PlayerProduction
   m_EditorClassIdentifier: Core::Core.Production.Authoring.ProductionData
-  domainTypePreview: 0
+  domainTypePreview: 9
   id: chainrush.production.autobattle.player
   title:
     m_TableReference:
@@ -35,7 +35,8 @@ MonoBehaviour:
   icon: {fileID: 0}
   precision: 0
   allowedOperations: 31
-  tags: []
+  tags:
+  - {fileID: 11400000, guid: 21dd0e09a873844fb9f21d3ce7d47a2a, type: 2}
   slotFootprint: 1
   stackCapacity: 0
   supportedCatalogs:
@@ -44,8 +45,9 @@ MonoBehaviour:
   maxParallelPipelines: 1
   limitReachedPolicy: 1
   startPolicy: 0
-  materializationMarkerProviderType: 0
-  materializationMarkerProvider: {fileID: 0}
+  materializationMarkerProviderType: 1
+  materializationMarkerProvider: {fileID: 11400000, guid: 323be4cf220334388a14b7e2ffc74325,
+    type: 2}
   references:
     version: 2
     RefIds: []

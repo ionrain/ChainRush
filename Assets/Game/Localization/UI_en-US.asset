@@ -358,6 +358,30 @@ MonoBehaviour:
     m_Localized: Hero Card
     m_Metadata:
       m_Items: []
+  - m_Id: 231203798703398912
+    m_Localized: Buildings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 231203798707593216
+    m_Localized: Unlock Heavy Camp
+    m_Metadata:
+      m_Items: []
+  - m_Id: 231203798707593217
+    m_Localized: Unlocked
+    m_Metadata:
+      m_Items: []
+  - m_Id: 231203798707593218
+    m_Localized: Not built
+    m_Metadata:
+      m_Items: []
+  - m_Id: 231203798707593219
+    m_Localized: Consumed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 231203798707593220
+    m_Localized: Required
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

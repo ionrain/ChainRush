@@ -75,6 +75,36 @@ MonoBehaviour:
     workDuration: 1
     recoveryDuration: 0
     reservationPolicy: 0
+  - recipe: {fileID: 11400000, guid: 7e7690adc73744833af575825fb718b2, type: 2}
+    workDuration: 1
+    recoveryDuration: 0
+    reservationPolicy: 0
+  - recipe: {fileID: 11400000, guid: 798d033ba63d24524afb8ead4c1b51d4, type: 2}
+    workDuration: 1
+    recoveryDuration: 0
+    reservationPolicy: 0
+  - recipe: {fileID: 11400000, guid: e484776f5d0e74ac7868d08e4495445c, type: 2}
+    workDuration: 1
+    recoveryDuration: 0
+    reservationPolicy: 0
+  cooldownEnabled: 0
+  readyAtStart: 0
+  initialElapsed: 0
+  cooldown: 0
+  cooldownProgression:
+    rid: -2
+  cooldownProgressResource: {fileID: 0}
+  cooldownProgressOwner:
+    bindingType: 0
+    owner:
+      source: {fileID: 0}
+    entryPath: []
+    ownerLevel: 0
+  cooldownProgressWalletTags: []
+  cooldownProgressScale: 0
+  cooldownProgressRelativeBase: 0
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }

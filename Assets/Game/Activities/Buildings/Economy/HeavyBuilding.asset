@@ -1,0 +1,83 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9969bb010093e43c6993c07d9c072f75, type: 3}
+  m_Name: HeavyBuilding
+  m_EditorClassIdentifier: Core::Core.CapabilityHosts.CapabilityHostData
+  domainTypePreview: 3
+  id: chainrush.building.heavy
+  title:
+    m_TableReference:
+      m_TableCollectionName: GUID:3780f36a553b640fbbe57d99ea3ba447
+    m_TableEntryReference:
+      m_KeyId: 230794311605673984
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  description:
+    m_TableReference:
+      m_TableCollectionName: GUID:3780f36a553b640fbbe57d99ea3ba447
+    m_TableEntryReference:
+      m_KeyId: 230794311605673985
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  icon: {fileID: 21300000, guid: 2922cdc9defe246198afc0b2dc12dc0f, type: 3}
+  precision: 0
+  allowedOperations: 31
+  tags:
+  - {fileID: 11400000, guid: 151cdecff184f4392813ea09c25b961a, type: 2}
+  - {fileID: 11400000, guid: 5b67650228b3c48f18bbb54d2684f017, type: 2}
+  - {fileID: 11400000, guid: 16c5f9df2fe1845909ebb58747ac47c9, type: 2}
+  slotFootprint: 1
+  stackCapacity: 0
+  footprintSize: {x: 1000, y: 0, z: 1000}
+  prototypePropagationType: 1
+  capabilities:
+  - capabilityType: 2
+    selectorTags: []
+  walletEntries:
+  - wallet: {fileID: 11400000, guid: 5633d3c4b75684c8ead116d50698cc09, type: 2}
+    seed: []
+  - wallet: {fileID: 11400000, guid: b85977be3024f49c889d7fd3baa24634, type: 2}
+    seed:
+    - entry:
+        asset: {fileID: 11400000, guid: bb0e8b125edfd4257a0955fe16c1235a, type: 2}
+        formType: 0
+        amount: 1
+      runtimeTags: []
+  - wallet: {fileID: 11400000, guid: ce674286ffdc64ed792d6eaf9d45ab58, type: 2}
+    seed:
+    - entry:
+        asset: {fileID: 11400000, guid: 3b7e84fe05c8944ae9754800a34d6bfe, type: 2}
+        formType: 0
+        amount: 1
+      runtimeTags: []
+  usagePolicy:
+    accessType: 0
+    diplomacyCompareOperation: 3
+    diplomacyScoreThreshold: -100
+  projectionPrefabReference:
+    m_AssetGUID: 6dcc4f6f183f24eedb89edf5b6071a95
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  projectionPool:
+    demandModeType: 0
+    demandValue: 0
+    expandable: 1
+    maxCapacity: 32
+  references:
+    version: 2
+    RefIds: []

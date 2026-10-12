@@ -91,4 +91,20 @@ MonoBehaviour:
         amount: 1
       runtimeTags:
       - {fileID: 11400000, guid: 8d743fde6a7e8458fa69d1bb1acc750d, type: 2}
+  - wallet: {fileID: 11400000, guid: b8bab7ce6a3214ea79b1ae96bfdab2b8, type: 2}
+    seed:
+    - entry:
+        asset: {fileID: 11400000, guid: 8526aee7a81c747678a175f55192fa68, type: 2}
+        formType: 0
+        amount: 1
+      runtimeTags:
+      - {fileID: 11400000, guid: 8d743fde6a7e8458fa69d1bb1acc750d, type: 2}
+      - {fileID: 11400000, guid: 84fd69cac776646f584b9091787254c8, type: 2}
+    - entry:
+        asset: {fileID: 11400000, guid: c3610288ffd724020bd4a042f003ca89, type: 2}
+        formType: 0
+        amount: 1
+      runtimeTags:
+      - {fileID: 11400000, guid: 8d743fde6a7e8458fa69d1bb1acc750d, type: 2}
+      - {fileID: 11400000, guid: 84fd69cac776646f584b9091787254c8, type: 2}
   orchestrationProfile: {fileID: 0}

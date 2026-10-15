@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a068a65e44054e6a9cafb11589bc128, type: 3}
+  m_Name: BenchRuntimeProfile
+  m_EditorClassIdentifier: Core::Core.GameRuntime.GameRuntimeProfileData
+  installers:
+  - {fileID: 11400000, guid: c72736d20df6d4620a703d4514f0ca49, type: 2}
+  - {fileID: 11400000, guid: aa208c759b06d4628b7df8afcc9e941c, type: 2}
+  - {fileID: 11400000, guid: 5efc7a7b31fb64e17851e522b7fcdb7e, type: 2}
+  - {fileID: 11400000, guid: b076b0cecbc5d4cd2acea37ed830a42e, type: 2}
+  - {fileID: 11400000, guid: f5a237547bfe243ce82cc5b6aa6afc75, type: 2}
+  - {fileID: 11400000, guid: 29e7260b10fe64f24a0c760ac0537596, type: 2}
+  - {fileID: 11400000, guid: a053cd14f76d44b88b714fe109458493, type: 2}
+  - {fileID: 11400000, guid: d58786fc0ff99404f925d170596ce96c, type: 2}
+  - {fileID: 11400000, guid: 17b7944468dda4cf0a8701377f2f6280, type: 2}
+  - {fileID: 11400000, guid: 97fc633ae28b34f0893220165eafbdaf, type: 2}
+  - {fileID: 11400000, guid: d1f869302c7d2430da88bdd146f6c3de, type: 2}
+  - {fileID: 11400000, guid: 091c94fcd97774499a752c28bfe0b59b, type: 2}
+  - {fileID: 11400000, guid: 07808ead0fcbf4a3cac71ba846577507, type: 2}
+  - {fileID: 11400000, guid: e5ef29bd2461e4ce683d4334b24fd2ca, type: 2}
+  diagnostics:
+    determinismStart: 0
+    aiBrain: 0
+    drop: 0
+    skill: 0
+    movement: 0
+    groupRuntime: 0
+    groupFormation: 0
+    groupPriority: 0
+    fog: 0
+    fogMemory: 0
+    economySpendTrace: 0
+    economyTransactionTrace: 0
+    orchestrationFailures: 0
+    orchestrationTrace: 0
+    orchestrationFacts: 0
+    orchestrationOperators: 0
+    orchestrationMaxRows: 0

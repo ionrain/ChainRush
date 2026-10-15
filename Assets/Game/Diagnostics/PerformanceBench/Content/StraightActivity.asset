@@ -1,0 +1,94 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 266d0f8e0e1234f37b4c6ebbe34dd917, type: 3}
+  m_Name: StraightActivity
+  m_EditorClassIdentifier: Core::Core.Activities.ActivityData
+  domainTypePreview: 11
+  id: chainrush.diagnostics.performance-bench.straightactivity
+  title:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  description:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  icon: {fileID: 0}
+  precision: 0
+  allowedOperations: 31
+  tags: []
+  slotFootprint: 1
+  stackCapacity: 0
+  activityType: {fileID: 11400000, guid: cf8ca0552267b47088289853db8427dd, type: 2}
+  schedule:
+    scheduleType: 0
+    tickDelta: 0.033333335
+    checkInterval: 0
+    trackDay: 0
+    trackWeek: 0
+    trackMonth: 0
+    catchUpPolicyType: 1
+    maxStepsPerFrame: 4
+  simulation:
+    bindingType: 1
+    scope: 2
+  topology: {fileID: 11400000, guid: e6a5f1f2157fc494087adb68d7aaa48f, type: 2}
+  space:
+    rid: 1538158806516367363
+  teams:
+  - slotCount: 1
+    entryRules: []
+    objectives: []
+    wallets: []
+    features:
+    - {fileID: 11400000, guid: 6590fc0ac883748e49f4acec94978d0f, type: 2}
+  activityContextTag: {fileID: 0}
+  worldWallets:
+  - wallet: {fileID: 11400000, guid: 4b604e818977e4d33b471a15f4807a28, type: 2}
+    seed:
+    - entry:
+        asset: {fileID: 11400000, guid: f0f133b904705464a9da7ffa48f12fb2, type: 2}
+        formType: 0
+        amount: 100000
+      runtimeTags: []
+  allowBots: 0
+  result:
+    endMode: 1
+    successThreshold: 1
+    failThreshold: -1
+    autoEndAfterSeconds: 0
+  completionReward: {fileID: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: 1538158806516367363
+      type: {class: ActivityPrefabSpaceData, ns: Core.Activities, asm: Core}
+      data:
+        markerProviders: []
+        prefabReference:
+          m_AssetGUID: de54d702a1f554fdeb722c75c8ef0ffd
+          m_SubObjectName: 
+          m_SubObjectType: 
+          m_SubObjectGUID: 
+          m_EditorAssetChanged: 0
+        origin: {x: 0, y: 0, z: 0}
+        rotationDegrees: {x: 0, y: 0, z: 0}

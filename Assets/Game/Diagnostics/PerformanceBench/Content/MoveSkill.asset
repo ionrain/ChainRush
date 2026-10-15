@@ -1,0 +1,85 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b65a5bf3374d4d3597b95a983d584f0b, type: 3}
+  m_Name: MoveSkill
+  m_EditorClassIdentifier: Core::Core.Skills.SkillData
+  domainTypePreview: 10
+  id: chainrush.diagnostics.performance-bench.move-skill
+  title:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  description:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  icon: {fileID: 0}
+  precision: 0
+  allowedOperations: 31
+  tags: []
+  slotFootprint: 1
+  stackCapacity: 0
+  targetType: 2
+  targetCount:
+    min: 1
+    max: 1
+  executeWithoutTarget: 0
+  analyticSupposedTarget: 0
+  targetTags: []
+  targetSlot: {fileID: 0}
+  executionSlot: {fileID: 0}
+  actionProtectionTag: {fileID: 0}
+  actionProtectionDuration: 0
+  startDelay: 0
+  endDelay: 0
+  actionInterval: 0
+  actionCount: 1
+  reloadTime: 0
+  requirements: []
+  effects:
+  - rid: 1538158806516367360
+  references:
+    version: 2
+    RefIds:
+    - rid: 1538158806516367360
+      type: {class: SkillMoveToTargetEffectData, ns: Core.Skills, asm: Core}
+      data:
+        recipient: 0
+        repeatType: 0
+        requiredTags: []
+        formula:
+          root:
+            rid: 1538158806516367361
+        targetTrackingMode: 0
+        repathDistanceThreshold: 0
+        accelerationDuration: 2
+        decelerationDuration: 2
+        targetGeometryType: 1
+        approachInteractionTags: []
+    - rid: 1538158806516367361
+      type: {class: SkillEffectHostValueNodeData, ns: Core.Skills, asm: Core}
+      data:
+        property: 0
+        parameterTarget: 0
+        hostValue: {fileID: 11400000, guid: ca61e6f3949d04fd8b63995482cbae96, type: 2}
+        ownerLevel: 2
+        qualifiers: []

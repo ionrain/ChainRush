@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: PerformanceBench
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: PerformanceBench
+  m_GUID: b31a43fdafe5149779f5e7a9a2bf3245
+  m_SerializeEntries:
+  - m_GUID: 031a0324854d24ecb8accd0e3b1d33d1
+    m_Address: Assets/Game/Diagnostics/PerformanceBench/Content/BenchObject.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: de54d702a1f554fdeb722c75c8ef0ffd
+    m_Address: Assets/Game/Diagnostics/PerformanceBench/Content/BenchSpace.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 263693b897da14307a031f1497d2d347, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: db3e0adcc96784bb2b3428f1cfa0627e, type: 2}
+    - {fileID: 11400000, guid: cec19c0aa3eab4a6686e4233b752b1e5, type: 2}

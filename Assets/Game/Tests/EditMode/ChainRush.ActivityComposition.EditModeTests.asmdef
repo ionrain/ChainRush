@@ -4,7 +4,8 @@
     "references": [
         "Core",
         "Unity.Addressables",
-        "Unity.Addressables.Editor"
+        "Unity.Addressables.Editor",
+        "Core.EditorTools"
     ],
     "includePlatforms": [
         "Editor"

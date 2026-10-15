@@ -1,0 +1,15 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: beda8f093daaa48ac8a67196497ebc66, type: 3}
+  m_Name: BenchInstaller
+  m_EditorClassIdentifier: Assembly-CSharp::ChainRush.Diagnostics.PerformanceBenchRuntimeInstallerData
+  assets: {fileID: 11400000, guid: dec6170996c98445ab1c94fa2f38ac6d, type: 2}

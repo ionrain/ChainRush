@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 363147b03aefe44948e1f8c5c64d5d62, type: 3}
+  m_Name: BenchAssets
+  m_EditorClassIdentifier: Assembly-CSharp::ChainRush.Diagnostics.PerformanceBenchAssets
+  straightActivity: {fileID: 11400000, guid: 19ea9b353b54f4d3fb6e937301b34e18, type: 2}
+  navigationActivity: {fileID: 11400000, guid: bd5487ede36eb49e28f3c7efeb9d616b, type: 2}
+  staticObject: {fileID: 11400000, guid: 09291cbb6fe73405b91562a30eec4053, type: 2}
+  movingObject: {fileID: 11400000, guid: 1ab8bf0a583714053aab29ec87931279, type: 2}
+  obstacleObject: {fileID: 11400000, guid: 1e5314d37c78d452ea5e930df5ddf5a4, type: 2}
+  worldWallet: {fileID: 11400000, guid: 4b604e818977e4d33b471a15f4807a28, type: 2}
+  speedValue: {fileID: 11400000, guid: ca61e6f3949d04fd8b63995482cbae96, type: 2}
+  controlNode: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+  moveState: {fileID: 11400000, guid: e357fa830bfc04273bb8b6d3739c4e0b, type: 2}
+  mobileOccupancy: {fileID: 11400000, guid: 35dd5fcbdbbc2499991c0dfcbff2a397, type: 2}
+  nonOccupying: {fileID: 11400000, guid: 6fbd221e1449243cdb5158b822822c2b, type: 2}
+  trafficProfile:
+    blockedRetryPolicy:
+      waitInterval: 600
+      partialRouteRetryLimit: 3
+      partialRouteRetryInterval: 15
+      fullRouteRetryLimit: 3
+      fullRouteRetryInterval: 60
+    swarmProfile:
+      neighborSearchRadius: 6000
+      maxNeighborsPerAgent: 8
+      minimumNeighborsToBlend: 2
+      separationWeight: 1
+      alignmentWeight: 0.35
+      cohesionWeight: 0.25
+      routeWeight: 1
+      targetWeight: 0.25
+      maxSwarmInfluence: 0.45
+      blendInDuration: 12
+      blendOutDuration: 18
+    maxSolvedAgentsPerStep: 64
+    maxCandidatesPerAgent: 16
+    candidateRadius: 6000
+    candidateRingCount: 2
+    routeCorridorRadius: 9000
+    allowBackwardBypass: 0
+    yieldDuration: 6
+    deadlockDuration: 15
+  navigationBudget:
+    nodeExpansionBudget: 64
+    pathReconstructionBudget: 128
+    smoothingCheckBudget: 24
+  projectionPrefab: {fileID: 261754496758054510, guid: 031a0324854d24ecb8accd0e3b1d33d1,
+    type: 3}
+  tickDelta: 0.033333335

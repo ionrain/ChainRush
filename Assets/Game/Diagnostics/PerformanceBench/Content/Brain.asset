@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f65b30414b67d46ad9045e3ce0b71bad, type: 3}
+  m_Name: Brain
+  m_EditorClassIdentifier: Core::Core.AI.AIBrainData
+  domainTypePreview: 14
+  id: chainrush.diagnostics.performance-bench.brain
+  title:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  description:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  icon: {fileID: 0}
+  precision: 0
+  allowedOperations: 31
+  tags: []
+  slotFootprint: 1
+  stackCapacity: 0
+  thinkInterval: 1
+  defaultControlNodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b,
+    type: 2}
+  nodes:
+  - nodeId: {fileID: 11400000, guid: 3489d2f0ed9aa47e69578ee30c95614b, type: 2}
+    entryState: {fileID: 11400000, guid: a868f7f68aeb74b9e87b368248314b76, type: 2}
+    states:
+    - tag: {fileID: 11400000, guid: a868f7f68aeb74b9e87b368248314b76, type: 2}
+      onEnterActions: []
+      onTickActions: []
+      onExitActions: []
+    - tag: {fileID: 11400000, guid: e357fa830bfc04273bb8b6d3739c4e0b, type: 2}
+      onEnterActions: []
+      onTickActions:
+      - rid: 1538158806516367362
+      onExitActions: []
+  transitions: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1538158806516367362
+      type: {class: UseSkillAIBrainActionData, ns: Core.AI.Actions, asm: Core}
+      data:
+        skill: {fileID: 11400000, guid: 7ba4c503ddf1d45db9b17f1f562591ad, type: 2}
+        targetKey: {fileID: 0}
+        completionPolicy: 1

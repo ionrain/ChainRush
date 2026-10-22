@@ -7,6 +7,14 @@ namespace ChainRush.Diagnostics
         int _slowFrames;
         internal void Reset() => _slowFrames = 0;
         internal bool PreparationExpired(double elapsed) => elapsed >= 180;
+        internal PerformanceBenchStopReasonType ObservePhase(PerformanceBenchSettings settings, PerformanceBenchPhaseType phase, double elapsed)
+        {
+            if (settings.intervalType != PerformanceBenchIntervalType.SimulationSteps || elapsed < 180)
+                return PerformanceBenchStopReasonType.None;
+            if (phase == PerformanceBenchPhaseType.Warmup) return PerformanceBenchStopReasonType.WarmupDeadline;
+            if (phase == PerformanceBenchPhaseType.Measuring) return PerformanceBenchStopReasonType.MeasurementDeadline;
+            return PerformanceBenchStopReasonType.None;
+        }
         internal bool ObserveFrame(PerformanceBenchFrame frame)
         {
             if (frame.phase != (int)PerformanceBenchPhaseType.Measuring || frame.phaseBoundary)

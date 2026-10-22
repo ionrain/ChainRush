@@ -1,4 +1,5 @@
 #if UNITY_EDITOR
+using Core.GameRuntime;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -244,6 +245,8 @@ namespace ChainRush.Diagnostics
         {
             actor.Entity = entity; actor.Operation.entity = entity.Value; actor.Operation.entityAt = ClockNow;
             _byEntity.Add(entity.Value, actor); _population++;
+            if (GameRuntimeDiagnostics.MovementPopulationConfigured)
+                GameRuntimeDiagnostics.AddMovementEvidencePopulationMember(entity.Value, _activity.Value);
         }
         public void OnEvent(CapabilityHostRegisteredEvent e)
         {
@@ -303,6 +306,7 @@ namespace ChainRush.Diagnostics
             using var observation = ObserverMarker.Auto();
             if (!_byEntity.TryGetValue(entity.Value, out var actor)) return;
             actor.EntityRemoved = true; actor.Operation.removedAt = ClockNow; _population--;
+            GameRuntimeDiagnostics.RemoveMovementEvidencePopulationMember(entity.Value);
             if (!actor.Binding.IsValid) actor.ViewReleased = true;
             if (actor.Deleting && !actor.Pending.IsValid) FinishDeletion(actor);
         }
@@ -336,7 +340,7 @@ namespace ChainRush.Diagnostics
             using var observation = ObserverMarker.Auto();
             if (_byEntity.TryGetValue(e.OwnerEntityId.Value, out var actor) && e.State == _assets.moveState
                 && e.ResultType == AIBrainStateResultType.Success)
-            { actor.Right = !actor.Right; QueuePatrol(actor); }
+            { WorkFor(Time.frameCount).PatrolSucceeded++; actor.Right = !actor.Right; QueuePatrol(actor); }
         }
     }
 }

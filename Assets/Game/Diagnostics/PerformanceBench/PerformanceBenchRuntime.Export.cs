@@ -32,7 +32,8 @@ namespace ChainRush.Diagnostics
         [Serializable] sealed class EnvironmentInfo
         {
             public string projectPath, unityVersion, capturedAtUtc, operatingSystem, processor, graphics;
-            public string frameAccounting = "wallMs includes Editor; phaseBoundary frames are exported but excluded from measurement summaries because they can contain work outside the measured phase. Recorder durations are inclusive and must not be summed. Self-time breakdown requires the profiler dump.";
+            public string stepAccounting = "steps.jsonl spans complete synchronous tick dispatch including public step consumers; step observations and profiler-context preparation are outside its stopwatch. Fixed interval is warmupSteps+1 through warmupSteps+measurementSteps. Only complete render frames within the phase enter frame summaries; boundary frames are separate. Counts describe performed work, not equal trajectories.";
+            public string frameAccounting = "wallMs includes Editor; phaseBoundary frames are exported but excluded from measurement summaries because they can contain work outside the measured phase. Recorder durations are inclusive and must not be summed. SkillsSummary exports bounded main-thread stage self times separately; worker CPU is unavailable without CPU recording.";
             public string operationAccounting = "Observed CPU/allocation cover admission, budgeted journal work and synchronous materialization. Deferred projection CPU/allocation and shared scheduling/queue costs are unavailable per object; use the profiler hierarchy. Placement marker preparation/release is reported separately as helper work. Request summaries include accepted measurement requests completed during draining; frame throughput uses only measurement completions. Inclusive counters must not be summed.";
             public string observationAccounting = "Occupancy checks and visible-count scans run at 2 Hz under PerformanceBench.Observe/Work; occupancy violations mean the native CanOccupyPosition check rejects the current occupant pose. Helpers are route targets, obstacles and transient placement markers, separate from the load population.";
             public int processorCount, screenWidth, screenHeight, targetFrameRate, vSyncCount, managedFrameCapacity = 240000, operationCapacity = 500000;
@@ -136,6 +137,12 @@ namespace ChainRush.Diagnostics
                 phase.lastUnityFrame = Time.frameCount; phase.finishedAt = Time.realtimeSinceStartupAsDouble;
             }
             _measurements.Write(result.outputDirectory, _exportBudget);
+            // Diagnostic availability is revision-specific; both compared
+            // packages use the same bench without inventing baseline balances.
+            var resourceReader = typeof(GameRuntimeDiagnostics).GetMethod("ReadResources", new[] { typeof(GameRuntimeContext) });
+            _exportBudget.WriteText(Path.Combine(result.outputDirectory, "resources-after-cleanup.json"), resourceReader == null
+                ? "{\"available\":false,\"reason\":\"This package revision does not expose runtime resource balances.\"}"
+                : JsonUtility.ToJson(resourceReader.Invoke(null, new object[] { _context }), true));
             _exportBudget.WriteText(Path.Combine(result.outputDirectory, "summary.json"), JsonUtility.ToJson(result, true));
             _exportBudget.WriteText(Path.Combine(result.outputDirectory, "environment.json"), JsonUtility.ToJson(_environment, true));
             _exportBudget.WriteText(Path.Combine(result.outputDirectory, "phases.json"), JsonUtility.ToJson(new PhaseReport { phases = _phaseIntervals }, true));

@@ -14,10 +14,24 @@ namespace ChainRush.Diagnostics
         public int frame, phase, steps, entities, bound, visible, pending;
         public int moved, waiting, traffic, routesBuilt, routesFailed, created, deleted, rented, expanded;
         public int helpers, occupancyChecks, occupancyViolations, blocked;
+        public int movementCompleted, poseReachedTarget, patrolSucceeded;
         public long allocatedBytes, nativeCapacityBytes;
         public int screenWidth, screenHeight, firstStepAfterReady, lastStepAfterReady;
         public int jobPipelines, jobIntents, jobCandidates, jobDistanceChecks, jobPreparedPoints, jobNeighbors, appliedMovementResults;
         public double jobPrepareMs, jobScheduleMs, jobCompleteMs, jobReadResultsMs, jobDistanceCpuMs, jobUnionCpuMs, jobNeighborsCpuMs;
+        public int aiBatches, aiPrograms, skillBatches, skillExecutions, navigationAdvances, aStarSearches;
+        public long aiTicks, aiActions, aiManagedCommands, aiInvalidations, skillActions, navigationExpanded, navigationGeometryChecks, navigationOccupancyChecks, bypassCandidates, bypassSnapshotClear;
+        public double navigationPrepareMs, navigationScheduleMs, navigationCompleteMs, navigationApplyMs, kinematicsMs, kinematicsCompleteMs, movementApplyMs, swarmCpuMs, bypassPrepareMs, candidateScoresCpuMs;
+        public double structuralCreateMs, structuralRemoveMs;
+        public long computationRecordsCreated, computationRecordsRemoved, spatialNativeCapacityBytes, trafficRegistrationCapacityBytes, skillEffectCapacityBytes;
+        public long aiNativeCapacityBytes, skillNativeCapacityBytes, navigationNativeCapacityBytes, kinematicsNativeCapacityBytes;
+        public long coordinateGroupingBoundaries;
+        public long numericSkillResults, externalSkillResults;
+        public long structuralVersionChecks, accessScopesOpened, accessScopesClosed, pipelineScheduled, completionsForRead, completionsForExternal, completionsForCapacity, completionsForRetirement, preparedEffectRanges, coordinateBatchRequests, coordinateBatchRegistrations, coordinateMaterializations;
+        public long componentReads, componentWrites, componentAccessRefreshes, validationQueries, revalidations, recordReconstructions;
+        public long knowledgeWork, fogWork, visibilityWork, projectionWork, regionWork, objectiveWork, orchestrationWork, selectionWork, materializationWork, dropsWork, navigationConsumerWork;
+        public long analyticsWork, forecastWork, spatialAreaWork;
+        public long queuedDeferredWork, executedDeferredWork, maximumDeferredPending, deferredPending, knowledgePendingHints;
         public bool phaseBoundary;
         public double wallMs, mainThreadMs, schedulingMs, aiMs, movementMs, skillsMs, benchMs, observationMs;
     }
@@ -46,6 +60,9 @@ namespace ChainRush.Diagnostics
         public string profilerExportMessage;
         public PerformanceBenchStopReasonType stopReason;
         public string stopMessage;
+        public int measuredStepCount, simulationFrames, noSimulationFrames;
+        public double meanCompleteStepMs = -1;
+        public bool stepIntervalComplete, stepIntervalRequired;
         public int requiredMeasuredFrames = 1000;
         public string failure, outputDirectory;
         public PerformanceBenchSettings settings;
@@ -64,7 +81,7 @@ namespace ChainRush.Diagnostics
     }
 
     // minimum seam: bounded diagnostic storage. No writes, sorting or growing lists during measurement.
-    internal sealed class PerformanceBenchMeasurements : IDisposable
+    internal sealed partial class PerformanceBenchMeasurements : IDisposable
     {
         const int FrameCapacity = 240000;
         const int OperationCapacity = 500000;
@@ -75,8 +92,10 @@ namespace ChainRush.Diagnostics
         int _batchCount;
         readonly List<ProfilerRecorder> _recorders = new List<ProfilerRecorder>();
         readonly List<string> _availability = new List<string>();
+        ProfilerRecorder _computationCreated, _computationRemoved, _spatialCapacity, _trafficCapacity, _effectCapacity, _structuralCreate, _structuralRemove;
         ProfilerRecorder _main, _allocation, _scheduling, _ai, _movement, _skills, _bench, _observation;
         ProfilerRecorder _jobPrepare, _jobSchedule, _jobComplete, _jobRead, _jobDistance, _jobUnion, _jobNeighbors;
+        ProfilerRecorder _navigationPrepare, _navigationSchedule, _navigationComplete, _navigationApply, _kinematics, _kinematicsComplete, _movementApply, _swarm, _bypassPrepare, _candidateScores;
         public int FrameCount { get; private set; }
         public int OperationCount { get; private set; }
         public bool Overflow { get; private set; }
@@ -88,6 +107,14 @@ namespace ChainRush.Diagnostics
             // These buffers have already allocated on this thread. A zero lifetime counter
             // means this backend does not supply thread allocation data, not zero work.
             ThreadAllocationAvailable = GC.GetAllocatedBytesForCurrentThread() > 0;
+            _computationCreated = Open(ProfilerCategory.Scripts, "Runtime.Computation.RecordsCreated");
+            _computationRemoved = Open(ProfilerCategory.Scripts, "Runtime.Computation.RecordsRemoved");
+            _spatialCapacity = Open(ProfilerCategory.Scripts, "SpatialService.NumericCapacity");
+            _trafficCapacity = Open(ProfilerCategory.Scripts, "MovementTraffic.RegistrationCapacity");
+            _effectCapacity = Open(ProfilerCategory.Scripts, "Skills.EffectCapacity");
+            _structuralCreate = Open(ProfilerCategory.Scripts, "Runtime.Computation.CreateRecord");
+            _structuralRemove = Open(ProfilerCategory.Scripts, "Runtime.Computation.DestroyRecord");
+            OpenChainRecorders();
             _main = Open(ProfilerCategory.Internal, "Main Thread");
             _allocation = Open(ProfilerCategory.Memory, "GC Allocated In Frame");
             _scheduling = Open(ProfilerCategory.Scripts, "GameRuntimeHost.PumpRuntime.SchedulingUpdate");
@@ -100,9 +127,22 @@ namespace ChainRush.Diagnostics
             _jobSchedule = Open(ProfilerCategory.Scripts, "MovementTraffic.Jobs.Schedule");
             _jobComplete = Open(ProfilerCategory.Scripts, "MovementTraffic.Jobs.Complete");
             _jobRead = Open(ProfilerCategory.Scripts, "MovementTraffic.Jobs.ReadResults");
-            _jobDistance = Open(ProfilerCategory.Scripts, "MovementTraffic.Jobs.Distance");
+            _jobDistance = Open(ProfilerCategory.Scripts, "SpatialService.Jobs.RadiusQuery");
             _jobUnion = Open(ProfilerCategory.Scripts, "MovementTraffic.Jobs.Union");
             _jobNeighbors = Open(ProfilerCategory.Scripts, "MovementTraffic.Jobs.Neighbors");
+            _navigationPrepare = Open(ProfilerCategory.Scripts, "NavigationService.Programs.Prepare");
+            _navigationSchedule = Open(ProfilerCategory.Scripts, "NavigationService.Programs.Schedule");
+            _navigationComplete = Open(ProfilerCategory.Scripts, "NavigationService.Programs.Complete");
+            _navigationApply = Open(ProfilerCategory.Scripts, "NavigationService.Programs.Apply");
+            _kinematics = Open(ProfilerCategory.Scripts, "MovementService.Programs.Kinematics");
+            _kinematicsComplete = Open(ProfilerCategory.Scripts, "MovementService.Programs.Complete");
+            _movementApply = Open(ProfilerCategory.Scripts, "MovementService.Programs.Apply");
+            _swarm = Open(ProfilerCategory.Scripts, "MovementTraffic.Jobs.Swarm");
+            _bypassPrepare = Open(ProfilerCategory.Scripts, "NavigationService.Programs.PrepareTraffic");
+            _candidateScores = Open(ProfilerCategory.Scripts, "MovementTraffic.Jobs.CandidateScores");
+            _availability.Add("Phase times are inclusive; summed worker CPU overlaps the main thread and other jobs. Do not add these columns as frame shares.");
+            _availability.Add("Computation records count internal execution/search records, not gameplay Entity. New counters may be unavailable in baseline. Spatial/traffic/effect capacities are last observed owner capacities; traffic registration is included in total traffic capacity, and must not be added twice.");
+            _availability.Add("Native capacities are sampled execution, route, kinematic and traffic storage capacities; allocator headers, other idle preparation buffers and Unity Profiler native capture memory are excluded. -1 means no capacity sample for that phase/frame.");
         }
         ProfilerRecorder Open(ProfilerCategory category, string name)
         {
@@ -112,15 +152,30 @@ namespace ChainRush.Diagnostics
             _availability.Add(name + (recorder.Valid ? ": recorded" : ": unavailable"));
             return recorder;
         }
+        static long Count(ProfilerRecorder recorder) => recorder.Valid && recorder.Count > 0 ? recorder.LastValue : -1;
         static double Ms(ProfilerRecorder recorder) => recorder.Valid && recorder.Count > 0 ? recorder.LastValue / 1000000d : -1;
         public void Frame(PerformanceBenchFrame row)
         {
             if (FrameCount == FrameCapacity) { Overflow = true; return; }
+            ReadChainRecorders(ref row);
+            row.computationRecordsCreated = Count(_computationCreated); row.computationRecordsRemoved = Count(_computationRemoved);
+            row.spatialNativeCapacityBytes = Count(_spatialCapacity); row.trafficRegistrationCapacityBytes = Count(_trafficCapacity);
+            row.skillEffectCapacityBytes = Count(_effectCapacity); row.structuralCreateMs = Ms(_structuralCreate); row.structuralRemoveMs = Ms(_structuralRemove);
             row.mainThreadMs = Ms(_main); row.schedulingMs = Ms(_scheduling); row.aiMs = Ms(_ai); row.benchMs = Ms(_bench);
             row.observationMs = Ms(_observation);
             row.movementMs = Ms(_movement); row.skillsMs = Ms(_skills);
             row.jobPrepareMs = Ms(_jobPrepare); row.jobScheduleMs = Ms(_jobSchedule); row.jobCompleteMs = Ms(_jobComplete); row.jobReadResultsMs = Ms(_jobRead);
             row.jobDistanceCpuMs = Ms(_jobDistance); row.jobUnionCpuMs = Ms(_jobUnion); row.jobNeighborsCpuMs = Ms(_jobNeighbors);
+            row.navigationPrepareMs = Ms(_navigationPrepare);
+            row.navigationScheduleMs = Ms(_navigationSchedule);
+            row.navigationCompleteMs = Ms(_navigationComplete);
+            row.navigationApplyMs = Ms(_navigationApply);
+            row.kinematicsMs = Ms(_kinematics);
+            row.kinematicsCompleteMs = Ms(_kinematicsComplete);
+            row.movementApplyMs = Ms(_movementApply);
+            row.swarmCpuMs = Ms(_swarm);
+            row.bypassPrepareMs = Ms(_bypassPrepare);
+            row.candidateScoresCpuMs = Ms(_candidateScores);
             if (row.mainThreadMs <= 0) row.mainThreadMs = -1;
             row.allocatedBytes = _allocation.Valid && _allocation.Count > 0 ? _allocation.LastValue : -1;
             _frames[FrameCount++] = row;
@@ -139,6 +194,7 @@ namespace ChainRush.Diagnostics
         {
             var result = new PerformanceBenchResult { run = run, settings = settings.Copy(), frameCount = FrameCount,
                 interrupted = interrupted, incomplete = Overflow, failure = failure };
+            SummarizeSteps(result);
             var timings = new List<double>(FrameCount);
             double stepFrames = 0, noStepFrames = 0, elapsedMs = 0;
             int stepCount = 0, noStepCount = 0, above8 = 0, above16 = 0, above33 = 0;
@@ -199,6 +255,7 @@ namespace ChainRush.Diagnostics
             result.medianMs = Quantile(timings, .5);
             if (result.statisticsSufficient) { result.p95Ms = Quantile(timings, .95); result.p99Ms = Quantile(timings, .99); }
             result.maxMs = timings[timings.Count - 1];
+            result.simulationFrames = stepCount; result.noSimulationFrames = noStepCount;
             result.meanStepFrameMs = stepCount == 0 ? -1 : stepFrames / stepCount;
             result.meanNoStepFrameMs = noStepCount == 0 ? -1 : noStepFrames / noStepCount;
             result.above8Percent = above8 * 100d / timings.Count; result.above16Percent = above16 * 100d / timings.Count;
@@ -227,7 +284,7 @@ namespace ChainRush.Diagnostics
             Directory.CreateDirectory(directory);
             using (var writer = budget.OpenWriter(Path.Combine(directory, "frames.csv")))
             {
-                writer.WriteLine("frame,phase,steps,entities,bound,visible,pending,wallMs,mainThreadInclusiveMs,schedulingInclusiveMs,aiInclusiveMs,benchInclusiveMs,observationInclusiveMs,allocatedBytes,moved,waiting,traffic,routesBuilt,routesFailed,created,deleted,rented,expanded,helpers,occupancyChecks,occupancyViolations,blocked,phaseBoundary,movementMs,skillsMs,screenWidth,screenHeight,firstStepAfterReady,lastStepAfterReady,jobPipelines,jobIntents,jobCandidates,jobDistanceChecks,jobPreparedPoints,jobNeighbors,appliedMovementResults,nativeCapacityBytes,jobPrepareMs,jobScheduleMs,jobCompleteMs,jobReadResultsMs,jobDistanceCpuMs,jobUnionCpuMs,jobNeighborsCpuMs");
+                writer.WriteLine("frame,phase,steps,entities,bound,visible,pending,wallMs,mainThreadInclusiveMs,schedulingInclusiveMs,aiInclusiveMs,benchInclusiveMs,observationInclusiveMs,allocatedBytes,moved,waiting,traffic,routesBuilt,routesFailed,created,deleted,rented,expanded,helpers,occupancyChecks,occupancyViolations,blocked,phaseBoundary,movementMs,skillsMs,screenWidth,screenHeight,firstStepAfterReady,lastStepAfterReady,jobPipelines,jobIntents,jobCandidates,jobDistanceChecks,jobPreparedPoints,jobNeighbors,appliedMovementResults,nativeCapacityBytes,jobPrepareMs,jobScheduleMs,jobCompleteMs,jobReadResultsMs,jobDistanceCpuMs,jobUnionCpuMs,jobNeighborsCpuMs,aiBatches,aiPrograms,skillBatches,skillExecutions,navigationAdvances,aStarSearches,aiTicks,aiActions,aiManagedCommands,aiInvalidations,skillActions,navigationExpanded,navigationGeometryChecks,navigationOccupancyChecks,bypassCandidates,bypassSnapshotClear,navigationPrepareMs,navigationScheduleMs,navigationCompleteMs,navigationApplyMs,kinematicsMs,kinematicsCompleteMs,movementApplyMs,swarmCpuMs,bypassPrepareMs,candidateScoresCpuMs,aiNativeCapacityBytes,skillNativeCapacityBytes,navigationNativeCapacityBytes,kinematicsNativeCapacityBytes,computationRecordsCreated,computationRecordsRemoved,spatialNativeCapacityBytes,trafficRegistrationCapacityBytes,skillEffectCapacityBytes,structuralCreateMs,structuralRemoveMs,movementCompleted,poseReachedTarget,patrolSucceeded");
                 for (int i = 0; i < FrameCount; i++)
                 {
                     var f = _frames[i];
@@ -239,7 +296,9 @@ namespace ChainRush.Diagnostics
                         f.screenWidth, f.screenHeight, f.firstStepAfterReady, f.lastStepAfterReady, f.jobPipelines, f.jobIntents, f.jobCandidates,
                         f.jobDistanceChecks, f.jobPreparedPoints, f.jobNeighbors, f.appliedMovementResults, f.nativeCapacityBytes,
                         f.jobPrepareMs.ToString("R", Culture), f.jobScheduleMs.ToString("R", Culture), f.jobCompleteMs.ToString("R", Culture),
-                        f.jobReadResultsMs.ToString("R", Culture), f.jobDistanceCpuMs.ToString("R", Culture), f.jobUnionCpuMs.ToString("R", Culture), f.jobNeighborsCpuMs.ToString("R", Culture)));
+                        f.jobReadResultsMs.ToString("R", Culture), f.jobDistanceCpuMs.ToString("R", Culture), f.jobUnionCpuMs.ToString("R", Culture), f.jobNeighborsCpuMs.ToString("R", Culture),
+                        f.aiBatches, f.aiPrograms, f.skillBatches, f.skillExecutions, f.navigationAdvances, f.aStarSearches, f.aiTicks, f.aiActions, f.aiManagedCommands, f.aiInvalidations, f.skillActions, f.navigationExpanded, f.navigationGeometryChecks, f.navigationOccupancyChecks, f.bypassCandidates, f.bypassSnapshotClear,
+                        f.navigationPrepareMs.ToString("R", Culture), f.navigationScheduleMs.ToString("R", Culture), f.navigationCompleteMs.ToString("R", Culture), f.navigationApplyMs.ToString("R", Culture), f.kinematicsMs.ToString("R", Culture), f.kinematicsCompleteMs.ToString("R", Culture), f.movementApplyMs.ToString("R", Culture), f.swarmCpuMs.ToString("R", Culture), f.bypassPrepareMs.ToString("R", Culture), f.candidateScoresCpuMs.ToString("R", Culture), f.aiNativeCapacityBytes, f.skillNativeCapacityBytes, f.navigationNativeCapacityBytes, f.kinematicsNativeCapacityBytes, f.computationRecordsCreated, f.computationRecordsRemoved, f.spatialNativeCapacityBytes, f.trafficRegistrationCapacityBytes, f.skillEffectCapacityBytes, f.structuralCreateMs.ToString("R", Culture), f.structuralRemoveMs.ToString("R", Culture), f.movementCompleted, f.poseReachedTarget, f.patrolSucceeded));
                 }
             }
             using (var writer = budget.OpenWriter(Path.Combine(directory, "operations.csv")))
@@ -261,10 +320,12 @@ namespace ChainRush.Diagnostics
                 for (int i = 0; i < OperationCount; i++)
                     if (_operations[i].action == 1) writer.WriteLine(JsonUtility.ToJson(_operations[i]));
             WriteBatches(directory, budget);
-            var availability = new List<string>(_availability.Count);
-            for (int i = 0; i < _availability.Count; i++)
-                availability.Add(_recorders[i].Valid && _recorders[i].Count == 0
-                    ? _availability[i].Replace(": recorded", ": unavailable (no samples collected)") : _availability[i]);
+            WriteSteps(directory, budget);
+            WriteChainFrames(directory, budget);
+            var availability = new List<string>(_availability);
+            for (int i = 0; i < _recorders.Count; i++)
+                if (_recorders[i].Valid && _recorders[i].Count == 0)
+                    availability[i] = _availability[i].Replace(": recorded", ": unavailable (no samples collected)");
             availability.Add("Per-operation thread allocation bytes: " + (ThreadAllocationAvailable ? "recorded"
                 : "unavailable (backend lifetime counter returned zero after measurement buffers were allocated); use frame GC counter and profiler allocation samples"));
             budget.WriteText(Path.Combine(directory, "counter-availability.txt"), string.Join("\n", availability));

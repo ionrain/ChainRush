@@ -4,12 +4,13 @@ using System.Collections.Generic;
 
 namespace ChainRush.Diagnostics
 {
+    public enum PerformanceBenchIntervalType { WallTime, SimulationSteps }
     public enum PerformanceBenchCaptureType { Normal, CPUWindow, TraceWindow, SkillsSummary }
     public enum PerformanceBenchScenarioType { Lifecycle, AI, Navigation, Render, Churn }
     public enum PerformanceBenchPoolType { Warm, Expansion }
     public enum PerformanceBenchMovementBudgetType { Current64, Population }
     public enum PerformanceBenchPhaseType { Idle, Preparing, Warmup, Measuring, Draining, Cleanup, Complete, Failed }
-    public enum PerformanceBenchStopReasonType { None, User, PreparationDeadline, SlowFrames, BufferOverflow, LifecycleFailure }
+    public enum PerformanceBenchStopReasonType { None, User, PreparationDeadline, SlowFrames, BufferOverflow, LifecycleFailure, WarmupDeadline, MeasurementDeadline }
     public enum PerformanceBenchCommandType { Start, Stop, CreateBatch, DeleteBatch, Clear, RunSeries, Export }
 
     // working model: an explicit, frozen configuration for one diagnostic workload.
@@ -27,6 +28,9 @@ namespace ChainRush.Diagnostics
         public float speed = 2;
         public float density = 1;
         public float replacementPercent = 1;
+        public PerformanceBenchIntervalType intervalType;
+        public int warmupSteps = 128;
+        public int measurementSteps = 256;
         public float warmup = 30;
         public float duration = 180;
         public int repetitions = 3;
@@ -40,10 +44,13 @@ namespace ChainRush.Diagnostics
         public bool TryValidate(out string failure)
         {
             failure = null;
-            if (!Enum.IsDefined(typeof(PerformanceBenchScenarioType), scenario)
+            if (!Enum.IsDefined(typeof(PerformanceBenchIntervalType), intervalType)
+                || !Enum.IsDefined(typeof(PerformanceBenchScenarioType), scenario)
                 || !Enum.IsDefined(typeof(PerformanceBenchPoolType), pool)
                 || !Enum.IsDefined(typeof(PerformanceBenchMovementBudgetType), movementBudget))
                 failure = "Неизвестный режим стенда.";
+            else if (warmupSteps < 1 || measurementSteps < 1 || warmupSteps > 16384 || measurementSteps > 16384)
+                failure = "Число шагов этапа должно быть от 1 до 16384.";
             else if (population < 1 || population > 10000 || visiblePopulation < 1
                 || visiblePopulation > Math.Min(300, population))
                 failure = "Объекты: 1–10000; видимые: 1–300 и не больше всей популяции.";
@@ -95,7 +102,7 @@ namespace ChainRush.Diagnostics
         public static double EstimateSeconds(IEnumerable<PerformanceBenchSettings> runs)
         {
             double seconds = 0;
-            foreach (var run in runs) seconds += run.warmup + run.duration;
+            foreach (var run in runs) seconds += run.intervalType == PerformanceBenchIntervalType.SimulationSteps ? 360 : run.warmup + run.duration;
             return seconds;
         }
     }

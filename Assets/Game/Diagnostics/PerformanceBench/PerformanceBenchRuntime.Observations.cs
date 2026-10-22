@@ -41,8 +41,27 @@ namespace ChainRush.Diagnostics
             if (_phaseFrames[previous % 4] != previous) return;
             ref var work = ref WorkFor(previous);
             var jobs = GameRuntimeDiagnostics.ReadMovementWork(previous);
+            var agents = GameRuntimeDiagnostics.ReadAgentPipelineWork(previous);
             var row = new PerformanceBenchFrame
             {
+                aiNativeCapacityBytes = agents.AINativeCapacityBytes, skillNativeCapacityBytes = agents.SkillNativeCapacityBytes,
+                navigationNativeCapacityBytes = agents.NavigationNativeCapacityBytes, kinematicsNativeCapacityBytes = agents.KinematicsNativeCapacityBytes,
+                aiBatches = agents.AIBatches,
+                aiPrograms = agents.AIPrograms,
+                skillBatches = agents.SkillBatches,
+                skillExecutions = agents.SkillExecutions,
+                navigationAdvances = agents.NavigationAdvances,
+                aStarSearches = agents.AStarSearches,
+                aiTicks = agents.AITicks,
+                aiActions = agents.AIActions,
+                aiManagedCommands = agents.AIManagedCommands,
+                aiInvalidations = agents.AIInvalidations,
+                skillActions = agents.SkillActions,
+                navigationExpanded = agents.NavigationExpanded,
+                navigationGeometryChecks = agents.NavigationGeometryChecks,
+                navigationOccupancyChecks = agents.NavigationOccupancyChecks,
+                bypassCandidates = agents.BypassCandidates,
+                bypassSnapshotClear = agents.BypassSnapshotClear,
                 frame = previous, phase = (int)_framePhases[previous % 4], steps = work.Steps,
                 screenWidth = work.ScreenWidth, screenHeight = work.ScreenHeight,
                 firstStepAfterReady = work.FirstStepAfterReady, lastStepAfterReady = work.LastStepAfterReady,
@@ -51,6 +70,7 @@ namespace ChainRush.Diagnostics
                 phaseBoundary = _frameBoundaries[previous % 4] || _framePhases[previous % 4] != _phase,
                 entities = work.Entities, bound = work.Bound, visible = work.Visible, pending = work.Pending, helpers = work.Helpers,
                 wallMs = Time.unscaledDeltaTime * 1000d, moved = work.Moved, waiting = work.Waiting,
+                movementCompleted = work.MovementCompleted, poseReachedTarget = work.PoseReachedTarget, patrolSucceeded = work.PatrolSucceeded,
                 traffic = work.Traffic, routesBuilt = work.Built, routesFailed = work.Failed,
                 created = work.Created, deleted = work.Deleted, rented = work.Rented, expanded = work.Expanded,
                 occupancyChecks = work.OccupancyChecks, occupancyViolations = work.OccupancyViolations, blocked = work.Blocked,
@@ -85,10 +105,17 @@ namespace ChainRush.Diagnostics
             if (e.ActivityId != _activity || !_byEntity.TryGetValue(e.EntityId.Value, out var actor)) return;
             int frame = Time.frameCount;
             ref var work = ref WorkFor(Time.frameCount);
+            if (e.ResultType == MovementStepResultType.Completed) work.MovementCompleted++;
             if (e.ResultType == MovementStepResultType.Advanced && actor.LastMovedFrame != frame)
             { work.Moved++; actor.LastMovedFrame = frame; }
             else if (e.ResultType == MovementStepResultType.Waiting && actor.LastWaitingFrame != frame)
             { work.Waiting++; actor.LastWaitingFrame = frame; }
+        }
+        public void OnEvent(MovementAgentPoseChangedEvent e)
+        {
+            using var observation = ObserverMarker.Auto();
+            if (e.ActivityId != _activity || !_byEntity.ContainsKey(e.EntityId.Value) || !e.ReachedTarget) return;
+            WorkFor(Time.frameCount).PoseReachedTarget++;
         }
         public void OnEvent(MovementTrafficResolvedEvent e)
         {

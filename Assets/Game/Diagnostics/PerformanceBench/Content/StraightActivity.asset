@@ -47,7 +47,7 @@ MonoBehaviour:
     trackWeek: 0
     trackMonth: 0
     catchUpPolicyType: 1
-    maxStepsPerFrame: 4
+    maxStepsPerFrame: 1
   simulation:
     bindingType: 1
     scope: 2

@@ -30,8 +30,9 @@ namespace ChainRush.Diagnostics
     internal sealed partial class PerformanceBenchRuntime : IDisposable,
         IEventListener<PerformanceBenchCommandEvent>, IEventListener<PerformanceBenchPulseEvent>,
         IEventListener<PerformanceBenchCaptureCompletedEvent>, IEventListener<PerformanceBenchWindowCapturedEvent>,
+        IEventListener<ScheduleStepStartedEvent>, IEventListener<ScheduleStepFinishedEvent>,
         IEventListener<ScheduleStepDispatchedEvent>, IEventListener<ProjectionLifecycleEvent>,
-        IEventListener<AIBrainStateCompletedEvent>, IEventListener<MovementAgentStepEvent>,
+        IEventListener<AIBrainStateCompletedEvent>, IEventListener<MovementAgentStepEvent>, IEventListener<MovementAgentPoseChangedEvent>,
         IEventListener<MovementTrafficResolvedEvent>, IEventListener<NavigationRouteBuiltEvent>,
         IEventListener<NavigationRouteFailedEvent>, IEventListener<ActivityPreparationFailedEvent>,
         IEventListener<CapabilityHostRegisteredEvent>, IEventListener<PerformanceBenchViewEvent>
@@ -47,6 +48,7 @@ namespace ChainRush.Diagnostics
         Core.EditorTools.ProfilerDumpStorageBudget _exportBudget;
         string _exportDirectory;
         bool _awaitingProfilerExport;
+        bool _diagnosticsRestorePending;
         readonly Queue<PerformanceBenchSettings> _series = new();
         readonly List<PerformanceBenchResult> _results = new();
         readonly List<SpatialTransientMarkerHandle> _markers = new();
@@ -119,6 +121,7 @@ namespace ChainRush.Diagnostics
             public int ScreenWidth, ScreenHeight, FirstStepAfterReady, LastStepAfterReady;
             public int Frame, Steps, Moved, Waiting, Traffic, Built, Failed, Created, Deleted, Rented, Expanded;
             public int Entities, Bound, Visible, Pending, Helpers, OccupancyChecks, OccupancyViolations, Blocked;
+            public int MovementCompleted, PoseReachedTarget, PatrolSucceeded;
         }
 
         public PerformanceBenchRuntime(GameRuntimeContext context, PerformanceBenchAssets assets)
@@ -130,8 +133,9 @@ namespace ChainRush.Diagnostics
             EventBus.Register<PerformanceBenchCaptureCompletedEvent>(this);
             EventBus.Register<PerformanceBenchWindowCapturedEvent>(this);
             EventBus.Register<PerformanceBenchCommandEvent>(this); EventBus.Register<PerformanceBenchPulseEvent>(this);
+            EventBus.Register<ScheduleStepStartedEvent>(this); EventBus.Register<ScheduleStepFinishedEvent>(this);
             EventBus.Register<ScheduleStepDispatchedEvent>(this); EventBus.Register<ProjectionLifecycleEvent>(this);
-            EventBus.Register<AIBrainStateCompletedEvent>(this); EventBus.Register<MovementAgentStepEvent>(this);
+            EventBus.Register<AIBrainStateCompletedEvent>(this); EventBus.Register<MovementAgentStepEvent>(this); EventBus.Register<MovementAgentPoseChangedEvent>(this);
             EventBus.Register<MovementTrafficResolvedEvent>(this); EventBus.Register<NavigationRouteBuiltEvent>(this);
             EventBus.Register<NavigationRouteFailedEvent>(this); EventBus.Register<ActivityPreparationFailedEvent>(this);
             EventBus.Register<CapabilityHostRegisteredEvent>(this);
@@ -205,7 +209,7 @@ namespace ChainRush.Diagnostics
         void BeginNextRun()
         {
             _settings = _series.Dequeue(); _run++; _nextOperation = 0; _nextBatch = 0;
-            _populationReady = false; _stepsAfterReady = 0;
+            _populationReady = false; _stepsAfterReady = 0; _stepStarts.Clear();
             _limits.Reset(); _stopReason = PerformanceBenchStopReasonType.None;
             _failure = null; _message = null; _stop = false; _interrupted = false; _prepared = false; _hasFailed = false;
             _environment = null;
@@ -285,12 +289,17 @@ namespace ChainRush.Diagnostics
             using (FrameMarker.Auto(_run, (long)_phase, e.Frame))
             {
                 RecordPreviousFrame(e.Frame);
-                _phaseFrames[e.Frame % 4] = e.Frame; _framePhases[e.Frame % 4] = _phase;
-                _frameBoundaries[e.Frame % 4] = false;
+                EnsureFramePhase(e.Frame);
                 try
                 {
                     if (_phase == PerformanceBenchPhaseType.Preparing && _limits.PreparationExpired(_now - _phaseStarted))
                         StopForLimit(PerformanceBenchStopReasonType.PreparationDeadline, "Подготовка превысила 180 секунд. Принятая работа завершается, затем штатная очистка.");
+                    if (_settings != null)
+                    {
+                        var deadline = _limits.ObservePhase(_settings, _phase, _now - _phaseStarted);
+                        if (deadline != PerformanceBenchStopReasonType.None)
+                            StopForLimit(deadline, "Этап фиксированного интервала превысил 180 секунд; результат неполный. Завершение принятой работы и штатная очистка.");
+                    }
                     CompletePending(); CompleteReadyCreations(); DrainPatrolOrders();
                     if (_stop && IsActive && _phase < PerformanceBenchPhaseType.Draining) SetPhase(PerformanceBenchPhaseType.Draining);
                     if (IsActive && ProjectionService.TryGetDiagnosticScopeSnapshot(_activity, out var projection) && projection.HasFailed)
@@ -317,12 +326,12 @@ namespace ChainRush.Diagnostics
                             }
                             break;
                         case PerformanceBenchPhaseType.Warmup:
-                            if (_now - _phaseStarted >= _settings.warmup)
+                            if (_settings.intervalType == PerformanceBenchIntervalType.WallTime && _now - _phaseStarted >= _settings.warmup)
                             { SetPhase(PerformanceBenchPhaseType.Measuring); _nextCycle = _now; }
                             break;
                         case PerformanceBenchPhaseType.Measuring:
                             if (_measurements.Overflow) { Fail("Буфер измерений заполнен; данные неполные."); break; }
-                            if (_now - _phaseStarted >= _settings.duration) { SetPhase(PerformanceBenchPhaseType.Draining); break; }
+                            if (_settings.intervalType == PerformanceBenchIntervalType.WallTime && _now - _phaseStarted >= _settings.duration) { SetPhase(PerformanceBenchPhaseType.Draining); break; }
                             AdvanceScenario(); break;
                         case PerformanceBenchPhaseType.Draining:
                             if (_pending.Count == 0 && _hasFailed) AbandonUnreadyCreations();
@@ -338,7 +347,7 @@ namespace ChainRush.Diagnostics
                 if (_now >= _nextUI) { _nextUI = _now + .5; CheckReadinessDeadline(); UpdateVisible(); CheckOccupancy(); PublishState(); }
                 // Wall duration includes work after this pulse. Phase transitions can contain
                 // capture/export/cleanup work outside the measured interval.
-                _frameBoundaries[e.Frame % 4] = _framePhases[e.Frame % 4] != _phase;
+                _frameBoundaries[e.Frame % 4] |= _framePhases[e.Frame % 4] != _phase;
                 ref var frameWork = ref WorkFor(e.Frame);
                 frameWork.ScreenWidth = Screen.width; frameWork.ScreenHeight = Screen.height;
                 if (_phase == PerformanceBenchPhaseType.Measuring && (Screen.width != 923 || Screen.height != 1870))
@@ -383,6 +392,12 @@ namespace ChainRush.Diagnostics
         }
         void SetPhase(PerformanceBenchPhaseType phase)
         {
+            if (_captureType == PerformanceBenchCaptureType.SkillsSummary && _phase == PerformanceBenchPhaseType.Measuring
+                && phase != PerformanceBenchPhaseType.Measuring) GameRuntimeDiagnostics.CloseMovementEvidenceMeasurement();
+            EnsureFramePhase(Time.frameCount);
+            _frameBoundaries[Time.frameCount % 4] = true;
+            _measurements?.PhaseDebt((int)phase, Time.frameCount, _stepsAfterReady,
+                PerformanceBenchProfilerAdapter.ReadScheduleDebt(_tickSource));
             _phase = phase; _phaseStarted = _now;
             UpdateWorkloadContext();
             EventBus.Trigger(new PerformanceBenchRunPhaseEvent(_context, _run, phase, _captureType,
@@ -399,6 +414,7 @@ namespace ChainRush.Diagnostics
         public void OnEvent(PerformanceBenchCaptureCompletedEvent e)
         {
             if (!ReferenceEquals(e.Owner, _context) || e.Run != _run) return;
+            RestoreDiagnostics();
             _awaitingProfilerExport = false;
             if (_results.Count == 0 || _results[_results.Count - 1].run != _run) return;
             var result = _results[_results.Count - 1];
@@ -436,7 +452,12 @@ namespace ChainRush.Diagnostics
         {
             var result = _measurements.Summarize(_run, _settings, _interrupted, _failure);
             result.stopReason = _stopReason;
+            result.incomplete |= _stopReason == PerformanceBenchStopReasonType.WarmupDeadline
+                || _stopReason == PerformanceBenchStopReasonType.MeasurementDeadline;
             result.captureType = _captureType;
+            result.stepIntervalRequired = _settings.intervalType == PerformanceBenchIntervalType.SimulationSteps
+                && (_captureType == PerformanceBenchCaptureType.Normal || _captureType == PerformanceBenchCaptureType.SkillsSummary);
+            result.incomplete |= result.stepIntervalRequired && !result.stepIntervalComplete;
             result.stopMessage = _message;
             result.lifecycleSucceeded = !_hasFailed && _pending.Count == 0 && CountWorking() == 0 && _bound == 0;
             try { WriteResult(result); }
@@ -455,7 +476,9 @@ namespace ChainRush.Diagnostics
             _population = 0; _bound = 0; _visible = 0;
             _creatingCount = 0; _deletingCount = 0;
             MovementService.Install(_originalTraffic);
-            GameRuntimeDiagnostics.StartSession(_context.SessionSeed ?? _settings.seed, _originalDiagnostics);
+            // minimum seam: Summary owns its bounded evidence until the adapter has
+            // included the final display frame and acknowledged export or cancellation.
+            if (_captureType != PerformanceBenchCaptureType.SkillsSummary) RestoreDiagnostics();
             GameRuntimeProfilerWorkloadContext.Clear();
             _awaitingProfilerExport = true;
             SetPhase(_hasFailed ? PerformanceBenchPhaseType.Failed : PerformanceBenchPhaseType.Complete);
@@ -487,7 +510,14 @@ namespace ChainRush.Diagnostics
             SetField(profile, "economyTransactionTrace", _settings.trace);
             SetField(profile, "orchestrationMaxRows", 128);
             EconomyTransactionTraceService.SetViewerCaptureEnabled(false);
+            _diagnosticsRestorePending = true;
             GameRuntimeDiagnostics.StartSession(_settings.seed, (RuntimeDiagnosticsProfile)profile);
+        }
+        void RestoreDiagnostics()
+        {
+            if (!_diagnosticsRestorePending) return;
+            _diagnosticsRestorePending = false;
+            GameRuntimeDiagnostics.StartSession(_context.SessionSeed ?? _settings.seed, _originalDiagnostics);
         }
         public Task RetireAsync()
         {
@@ -518,8 +548,9 @@ namespace ChainRush.Diagnostics
             if (_disposed) return; _disposed = true;
             EventBus.Unregister<PerformanceBenchWindowCapturedEvent>(this);
             EventBus.Unregister<PerformanceBenchCommandEvent>(this); EventBus.Unregister<PerformanceBenchPulseEvent>(this);
+            EventBus.Unregister<ScheduleStepStartedEvent>(this); EventBus.Unregister<ScheduleStepFinishedEvent>(this);
             EventBus.Unregister<ScheduleStepDispatchedEvent>(this); EventBus.Unregister<ProjectionLifecycleEvent>(this);
-            EventBus.Unregister<AIBrainStateCompletedEvent>(this); EventBus.Unregister<MovementAgentStepEvent>(this);
+            EventBus.Unregister<AIBrainStateCompletedEvent>(this); EventBus.Unregister<MovementAgentStepEvent>(this); EventBus.Unregister<MovementAgentPoseChangedEvent>(this);
             EventBus.Unregister<MovementTrafficResolvedEvent>(this); EventBus.Unregister<NavigationRouteBuiltEvent>(this);
             EventBus.Unregister<NavigationRouteFailedEvent>(this); EventBus.Unregister<ActivityPreparationFailedEvent>(this);
             EventBus.Unregister<CapabilityHostRegisteredEvent>(this);
@@ -540,11 +571,18 @@ namespace ChainRush.Diagnostics
                 catch (Exception exception) { Debug.LogWarning("[PerformanceBench] Экспорт при закрытии недоступен: " + exception.Message); }
                 finally { _measurements.Dispose(); _measurements = null; }
             }
-            _profilerAdapter?.Dispose();
-            EventBus.Unregister<PerformanceBenchCaptureCompletedEvent>(this);
-            _pool?.Dispose(); GameRuntimeProfilerWorkloadContext.Clear();
-            foreach (var owned in _owned) Object.Destroy(owned);
-            _owned.Clear();
+            try { _profilerAdapter?.Dispose(); }
+            finally
+            {
+                try { RestoreDiagnostics(); }
+                finally
+                {
+                    EventBus.Unregister<PerformanceBenchCaptureCompletedEvent>(this);
+                    _pool?.Dispose(); GameRuntimeProfilerWorkloadContext.Clear();
+                    foreach (var owned in _owned) Object.Destroy(owned);
+                    _owned.Clear();
+                }
+            }
         }
     }
 }

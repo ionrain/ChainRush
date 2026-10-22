@@ -14,7 +14,7 @@ namespace ChainRush.Tests.EditMode
     public sealed partial class PerformanceBenchProfilerEditModeTests
     {
         [Test]
-        public void SkillsSummary_FreezesBeforeSessionResetAndExportsWithoutRecordingCpuOrNativeFiles()
+        public void SkillsSummary_MissingMovementStillExportsEvidenceAndRestoresSettings()
         {
             var profileField = typeof(GameRuntimeDiagnostics).GetField("_profile", BindingFlags.Static | BindingFlags.NonPublic);
             var previous = (RuntimeDiagnosticsProfile)profileField.GetValue(null);
@@ -41,7 +41,13 @@ namespace ChainRush.Tests.EditMode
                 string frozen = (string)type.GetField("_frameEvidence", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(adapter);
                 Assert.IsNotNull(frozen);
                 GameRuntimeDiagnostics.StartSession(0, previous);
+                // A cancelled/frozen adapter still writes its evidence, while the
+                // validator must reject the missing Movement payload.
+                type.GetField("_movementSummaryFrozen", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(adapter, true);
+                type.GetField("_expectedSummarySteps", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(adapter, 256);
+                type.GetField("_expectedSummaryPopulation", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(adapter, 1000);
                 Phase("Complete");
+                Assert.IsFalse((bool)type.GetField("_saved", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(adapter));
                 Assert.AreEqual(frozen, File.ReadAllText(Path.Combine(directory, "runtime-frame-evidence.json")));
                 Assert.AreEqual(0, Directory.GetFiles(directory, "*.raw", SearchOption.AllDirectories).Length);
                 Assert.AreEqual(0, Directory.GetFiles(directory, "*.data", SearchOption.AllDirectories).Length);
@@ -52,6 +58,45 @@ namespace ChainRush.Tests.EditMode
                 adapter.Dispose(); GameRuntimeDiagnostics.StartSession(0, previous);
                 if (Directory.Exists(directory)) Directory.Delete(directory, true);
             }
+        }
+
+        static string CompleteMovementSummaryFixture()
+        {
+            var text = new System.Text.StringBuilder("{\"movementEvidence\":{\"observedSteps\":256,\"completedObservedSteps\":256,\"selectionSteps\":32,\"completedDetailSteps\":224,\"intervalComplete\":true,\"finalDisplayFrameComplete\":true,\"truncated\":false,\"cpuRecording\":false,\"types\":[\"StepFinished\"],\"counts\":[256],\"stages\":[[\"Inputs\",1,10,10]],\"preparationWork\":{},\"population\":{\"configured\":true,\"entities\":2,\"entityColumns\":[\"entity\",\"observedSteps\"],\"agents\":[[1,256],[2,256]],\"steps\":[");
+            for (int step = 1; step <= 256; step++) for (int group = 0; group < 4; group++)
+            {
+                if (step != 1 || group != 0) text.Append(',');
+                text.Append('[').Append(step).Append(',').Append(group).Append(',').Append(group == 0 ? 2 : 0).Append(']');
+            }
+            return text.Append("]}}}").ToString();
+        }
+
+        [Test]
+        public void SkillsSummary_ValidatorAcceptsCompletePopulationAndStepCoverage()
+        {
+            var validate = BenchType("PerformanceBenchProfilerAdapter").GetMethod("ValidateSummary", BindingFlags.Static | BindingFlags.NonPublic);
+            Assert.DoesNotThrow(() => validate.Invoke(null, new object[] { CompleteMovementSummaryFixture(), 256, 2 }));
+        }
+
+        [TestCase("missing")] [TestCase("steps")] [TestCase("truncated")] [TestCase("display")]
+        [TestCase("coverage")] [TestCase("duplicate")] [TestCase("groups")] [TestCase("detail")]
+        public void SkillsSummary_ValidatorRejectsIncompleteOrInconsistentEvidence(string scenario)
+        {
+            string json = CompleteMovementSummaryFixture();
+            switch (scenario)
+            {
+                case "missing": json = "{\"movementEvidence\":null}"; break;
+                case "steps": json = json.Replace("\"completedObservedSteps\":256", "\"completedObservedSteps\":255"); break;
+                case "truncated": json = json.Replace("\"truncated\":false", "\"truncated\":true"); break;
+                case "display": json = json.Replace("\"finalDisplayFrameComplete\":true", "\"finalDisplayFrameComplete\":false"); break;
+                case "coverage": json = json.Replace("[2,256]", "[2,255]"); break;
+                case "duplicate": json = json.Replace("[2,256]", "[1,256]"); break;
+                case "groups": json = json.Replace("[1,0,2]", "[1,0,1]"); break;
+                case "detail": json = json.Replace("\"completedDetailSteps\":224", "\"completedDetailSteps\":223"); break;
+            }
+            var validate = BenchType("PerformanceBenchProfilerAdapter").GetMethod("ValidateSummary", BindingFlags.Static | BindingFlags.NonPublic);
+            var error = Assert.Throws<TargetInvocationException>(() => validate.Invoke(null, new object[] { json, 256, 2 }));
+            Assert.IsInstanceOf<InvalidOperationException>(error.InnerException);
         }
 
         [Test]

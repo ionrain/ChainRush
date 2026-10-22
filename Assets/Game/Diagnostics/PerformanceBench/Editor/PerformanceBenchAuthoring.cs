@@ -176,7 +176,8 @@ namespace ChainRush.Editor
             Set(activity, "topology", topology);
             Set(activity, "result", new ActivityResultSettingsData(ActivityEndMode.Manual, 1, -1));
             object schedule = default(ActivitySchedulePolicyData); Set(schedule, "scheduleType", ScheduleType.Realtime);
-            Set(schedule, "tickDelta", 1f / 30); Set(schedule, "catchUpPolicyType", RealtimeCatchUpPolicyType.Budgeted); Set(schedule, "maxStepsPerFrame", 4);
+            // working model: at most one complete benchmark step per rendered frame.
+            Set(schedule, "tickDelta", 1f / 30); Set(schedule, "catchUpPolicyType", RealtimeCatchUpPolicyType.Budgeted); Set(schedule, "maxStepsPerFrame", 1);
             Set(activity, "schedule", schedule);
             object simulation = default(ActivitySimulationPolicyData); Set(simulation, "bindingType", ActivitySimulationBindingType.OwnContext);
             Set(simulation, "scope", SimulationScope.Activity); Set(activity, "simulation", simulation);

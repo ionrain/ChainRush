@@ -13,6 +13,25 @@ namespace ChainRush.Tests.EditMode
 {
     public sealed partial class PerformanceBenchProfilerEditModeTests
     {
+        [Test]
+        public void NormalMeasurements_ExportIncludesCounterAvailabilityAndNotes()
+        {
+            string directory = Path.Combine(Path.GetTempPath(), "bench-counters-" + Guid.NewGuid().ToString("N"));
+            var type = BenchType("PerformanceBenchMeasurements");
+            using var measurements = (IDisposable)Activator.CreateInstance(type, true);
+            try
+            {
+                type.GetMethod("Write").Invoke(measurements, new object[] { directory, new ProfilerDumpStorageBudget(directory) });
+                string availability = File.ReadAllText(Path.Combine(directory, "counter-availability.txt"));
+                StringAssert.Contains("Phase times are inclusive", availability);
+                StringAssert.Contains("Native capacities", availability);
+                StringAssert.Contains("Main Thread:", availability);
+                Assert.IsTrue(File.Exists(Path.Combine(directory, "frames.csv")));
+                Assert.IsTrue(File.Exists(Path.Combine(directory, "operations.csv")));
+            }
+            finally { if (Directory.Exists(directory)) Directory.Delete(directory, true); }
+        }
+
         static Type BenchType(string name)
         {
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())

@@ -130,6 +130,7 @@ namespace ChainRush.Tests.PlayMode
             ProjectionService.ResetRuntime();
             _restoreBoardContent?.Invoke();
             _restoreBoardContent = null;
+            RestoreBuildingComparison();
         }
 
         [UnityTest]
@@ -559,8 +560,12 @@ namespace ChainRush.Tests.PlayMode
                         for (int form = 1; form <= 4; form++)
                         {
                             int expectedCount = form == 4 ? size / 4 : size % 4 == form ? 1 : 0;
-                            Assert.AreEqual(expectedCount, capture.Count(forms[form - 1]) - before[form - 1],
-                                content + " selection=" + size + " form=" + form + "\n" + BuildOrchestrationDiagnostic(battle.DomainId));
+                            int actualCount = capture.Count(forms[form - 1]) - before[form - 1];
+                            Assert.AreEqual(expectedCount, actualCount,
+                                content + " selection=" + size + " form=" + form + "\n"
+                                + (actualCount == expectedCount ? string.Empty
+                                    : BuildDeploymentDiagnostic(battle, player.ParticipantEconomyOwner, wallet, forms))
+                                + BuildOrchestrationDiagnostic(battle.DomainId));
                             Assert.AreEqual(0, QueryAmount(player.ParticipantEconomyOwner, wallet, EconomyFormType.Stack, forms[form - 1]),
                                 "Deployment left a unit Stack instead of a materialized Token.");
                             if (expectedCount > 0)
@@ -799,13 +804,19 @@ namespace ChainRush.Tests.PlayMode
             var selected = AssetDatabase.LoadAssetAtPath<CapabilityHostData>(
                 "Assets/Game/Activities/Board/Economy/" + content + "BoardBase.asset");
             Assert.NotNull(selected);
-            var release = population.Releases.Single();
+            var releases = population.Releases.ToList();
+            Assert.IsNotEmpty(releases, "The Board population fixture requires at least one configured release.");
             var field = typeof(PopulationReleaseData).GetField("content", BindingFlags.Instance | BindingFlags.NonPublic);
-            var original = field.GetValue(release);
+            var originals = releases.Select(release => field.GetValue(release)).ToList();
+            _restoreBoardContent = () =>
+            {
+                for (int index = 0; index < releases.Count; index++)
+                    field.SetValue(releases[index], originals[index]);
+            };
             // The fixture selects content; grouped producers and actual orders remain unchanged.
-            field.SetValue(release, new List<PopulationContentRuleData>
-            { new PopulationContentRuleData(new PopulationAssetContentSourceData(selected), 1f) });
-            _restoreBoardContent = () => field.SetValue(release, original);
+            foreach (var release in releases)
+                field.SetValue(release, new List<PopulationContentRuleData>
+                { new PopulationContentRuleData(new PopulationAssetContentSourceData(selected), 1f) });
         }
 
         [UnityTest]
@@ -893,21 +904,32 @@ namespace ChainRush.Tests.PlayMode
             Assert.IsTrue(EconomyService.TryCloseOperation(handle));
         }
 
-        static IEnumerator LaunchPlayableActivities(string level = "Survive", string hero = "Perfume")
+        static IEnumerator LaunchPlayableActivities(string level = "Survive", string hero = "Perfume",
+            System.Action<GameRuntimeHost> beforeLevelStart = null, System.Action<GameRuntimeHost> configureHost = null)
         {
             var selected = AssetDatabase.LoadAssetAtPath<GameStartupPlanData>(
                 "Assets/Game/FrameworkUI/Data/GameFlow/MetaStartupPlan.asset");
             Assert.NotNull(selected);
+            var precedingHosts = new HashSet<GameRuntimeHost>(Object.FindObjectsByType<GameRuntimeHost>(
+                FindObjectsInactive.Include, FindObjectsSortMode.None));
+            GameRuntimeHost launchedHost = null;
             UnityEngine.Events.UnityAction<Scene, LoadSceneMode> configureStartup = (loaded, mode) =>
             {
                 if (loaded.path != IntegrationScenePath) return;
-                foreach (var root in loaded.GetRootGameObjects())
-                    foreach (var runtimeHost in root.GetComponentsInChildren<GameRuntimeHost>(true))
-                    {
-                        var runtimeData = new SerializedObject(runtimeHost);
-                        runtimeData.FindProperty("startupPlan").objectReferenceValue = selected;
-                        runtimeData.ApplyModifiedPropertiesWithoutUndo();
-                    }
+                // Awake has already moved the new host into DontDestroyOnLoad before sceneLoaded.
+                // Select the newly loaded host explicitly, rather than searching the now-empty scene roots.
+                foreach (var runtimeHost in Object.FindObjectsByType<GameRuntimeHost>(
+                    FindObjectsInactive.Include, FindObjectsSortMode.None))
+                {
+                    if (precedingHosts.Contains(runtimeHost)) continue;
+                    Assert.IsNull(launchedHost, "The integration scene must create exactly one new runtime host.");
+                    launchedHost = runtimeHost;
+                    configureHost?.Invoke(runtimeHost);
+                    var runtimeData = new SerializedObject(runtimeHost);
+                    runtimeData.FindProperty("startupPlan").objectReferenceValue = selected;
+                    runtimeData.ApplyModifiedPropertiesWithoutUndo();
+                }
+                Assert.NotNull(launchedHost, "The integration scene did not create its runtime host.");
             };
             SceneManager.sceneLoaded += configureStartup;
             try
@@ -916,7 +938,7 @@ namespace ChainRush.Tests.PlayMode
                 float deadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
                 while (Time.realtimeSinceStartup < deadline && !scene.isLoaded) yield return null;
                 yield return null;
-                var host = Object.FindFirstObjectByType<GameRuntimeHost>(FindObjectsInactive.Include);
+                var host = launchedHost;
                 Assert.NotNull(host);
                 deadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
                 while (Time.realtimeSinceStartup < deadline
@@ -925,6 +947,7 @@ namespace ChainRush.Tests.PlayMode
                 Assert.IsNotNull(host.RuntimeContext);
                 Assert.IsTrue(host.RuntimeContext.IsInitialized);
                 ConfigurePlayableSelection(host.RuntimeContext.PrimaryOwner, level, hero);
+                beforeLevelStart?.Invoke(host);
                 EventBus.Trigger(new GameFlowEvent(new List<TaxonomyTermData> {
                     AssetDatabase.LoadAssetAtPath<TaxonomyTermData>("Assets/Game/FrameworkUI/Data/Taxonomy/StartLevel.asset") }));
                 deadline = Time.realtimeSinceStartup + StartupTimeoutSeconds;
@@ -933,7 +956,14 @@ namespace ChainRush.Tests.PlayMode
                     yield return null;
                 Assert.IsTrue(TryFindRunningActivities(out var battle, out var board), "Activities did not start.");
                 Assert.AreEqual(battle.Id, board.ParentActivityId);
-                Assert.AreEqual(12, board.ObjectiveRuntimeIds.Count);
+                var boardDefinition = AssetDatabase.LoadAssetAtPath<ActivityData>(BoardActivityPath);
+                var expectedObjectives = board.Participants
+                    .SelectMany(participant => boardDefinition.Teams[participant.TeamIndex].Objectives)
+                    .Select(objective => objective.Template.Root.Id).ToList();
+                Assert.AreEqual(expectedObjectives.Count, board.ObjectiveRuntimeIds.Count,
+                    "Every configured Board objective must have one runtime.");
+                CollectionAssert.AreEquivalent(expectedObjectives,
+                    board.Objectives.Select(objective => objective.RootNodeId).ToList());
                 Assert.AreEqual(16, CountBoardUICells());
                 AssertBoardUIVisible(host);
                 Assert.AreEqual(2, battle.Participants.Count);
@@ -1090,7 +1120,21 @@ namespace ChainRush.Tests.PlayMode
                 ObjectiveRuntimeSnapshot snapshot = ObjectiveService.GetSnapshot(board.DomainId, objective.RuntimeId);
                 if (CountMaterializedBoardAssets(board, markerTag, item) == 16
                     && snapshot.Nodes.Any(node => node.NodeId == objective.RootNodeId && node.State == ObjectiveState.Completed))
+                {
+                    foreach (var host in CapabilityHostService.GetAll().Where(value => value.ActivityId == board.Id
+                        && value.Definition.Tags.Contains(markerTag)
+                        && (item == null || value.Definition.Matches(item))))
+                    {
+                        CollectionAssert.AreEqual(
+                            host.Definition.WalletEntries.Select(entry => entry.Wallet.Id).ToList(),
+                            host.LocalWalletBinding.Wallets.Select(wallet => wallet.Id).ToList(),
+                            "An ordinary Board resource must materialize only its own wallets.");
+                        Assert.IsTrue(host.ImplementationOwner is CapabilityHostBaseData implementation
+                            && implementation.Matches(host.Definition),
+                            "The resource must not use its containing owner's prototype.");
+                    }
                     yield break;
+                }
                 yield return null;
             }
             Assert.Fail("Board did not finish its paid population cycle.\n" + BuildOrchestrationDiagnostic(board.DomainId));
@@ -1108,6 +1152,7 @@ namespace ChainRush.Tests.PlayMode
             {
                 if (e.State != EconomyOperationStateType.Committed || e.Owner != _owner
                     || !EconomyService.TryGetOperation(e.Handle, out EconomyOperationSnapshot operation)
+                    || operation.Request == null
                     || operation.Request.Asset != _asset || operation.Request.Operation != EconomyOperation.Consume)
                     return;
                 if (operation.Request.Amount != 1L || Handles.Contains(e.Handle))
@@ -1361,7 +1406,8 @@ namespace ChainRush.Tests.PlayMode
             ActivityRuntimeSnapshot board,
             TaxonomyTermData markerTag,
             CapabilityHostData expectedAsset,
-            int count)
+            int count,
+            int maximumSegmentDistance = 0)
         {
             List<SpatialMarkerSnapshot> markers = SpatialMarkerService.GetMarkers(
                 board.Id,
@@ -1413,7 +1459,8 @@ namespace ChainRush.Tests.PlayMode
                         count,
                         adjacencyDistance,
                         markerPath,
-                        usedMarkers))
+                        usedMarkers,
+                        maximumSegmentDistance))
                 {
                     continue;
                 }
@@ -1434,7 +1481,8 @@ namespace ChainRush.Tests.PlayMode
             int count,
             int adjacencyDistance,
             List<int> markerPath,
-            HashSet<int> usedMarkers)
+            HashSet<int> usedMarkers,
+            int maximumSegmentDistance = 0)
         {
             if (markerPath.Count == count)
                 return true;
@@ -1448,7 +1496,8 @@ namespace ChainRush.Tests.PlayMode
                         previous.WorldPosition,
                         markers[markerIndex].WorldPosition,
                         out int distance)
-                    || distance != adjacencyDistance)
+                    || distance < adjacencyDistance
+                    || distance > (maximumSegmentDistance > 0 ? maximumSegmentDistance : adjacencyDistance))
                 {
                     continue;
                 }
@@ -1461,7 +1510,8 @@ namespace ChainRush.Tests.PlayMode
                         count,
                         adjacencyDistance,
                         markerPath,
-                        usedMarkers))
+                        usedMarkers,
+                        maximumSegmentDistance))
                 {
                     return true;
                 }
@@ -1837,6 +1887,76 @@ namespace ChainRush.Tests.PlayMode
                     .Append(process.Message ?? "<null>")
                     .AppendLine();
             }
+        }
+
+        static string BuildDeploymentDiagnostic(ActivityRuntimeSnapshot battle, IEconomyAssetOwner owner,
+            TaxonomyTermData wallet, IReadOnlyList<CapabilityHostData> forms)
+        {
+            var message = new StringBuilder("Deployment source diagnostics\n");
+            message.AppendLine("Seed materialization inputs");
+            foreach (var team in battle.Definition.Teams)
+                foreach (var teamWallet in team.Wallets)
+                    foreach (var seed in teamWallet.Seed.Where(seed => seed.HasMaterialization))
+                        message.Append("Seed asset=").Append(seed.Seed?.Asset == null ? "<null>" : seed.Seed.Asset.Id)
+                            .Append(" amount=").Append(seed.Seed == null ? 0 : seed.Seed.Amount)
+                            .Append(" materialization=").Append(seed.MaterializationType).AppendLine();
+            bool Resolve(IEconomyAssetOwner sourceOwner, EconomyEntrySelectionData selection,
+                out List<EconomySelectionQueryItem> items, out string error)
+            {
+                var resolver = typeof(EconomyService).Assembly.GetType("Core.Economy.EconomyEntrySelectionResolver");
+                var method = resolver.GetMethod("TryResolve", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+                object[] arguments = { sourceOwner, selection, null, null };
+                bool result = (bool)method.Invoke(null, arguments);
+                items = (List<EconomySelectionQueryItem>)arguments[2];
+                error = (string)arguments[3];
+                return result;
+            }
+            foreach (var form in forms)
+            {
+                var query = EconomyService.Query(new EconomySelectionQuery(owner,
+                    new List<TaxonomyTermData> { wallet }, EconomyFormType.Stack, form, EconomyAggregationType.Detailed));
+                message.Append("Output ").Append(form.Id).Append(" stack=")
+                    .Append(query.Items.Sum(item => item.Amount)).AppendLine();
+            }
+            var brain = AssetDatabase.LoadAssetAtPath<OrchestratorAIBrainData>(
+                "Assets/Game/Activities/Autobattle/Orchestration/PlayerBrain.asset");
+            foreach (var op in brain.Operators.OfType<ProductionInputConsumptionDecompOpData>())
+            {
+                var flags = BindingFlags.Instance | BindingFlags.NonPublic;
+                var owners = (EconomyEntrySelectionData)typeof(ProductionInputConsumptionDecompOpData)
+                    .GetField("sourceOwners", flags).GetValue(op);
+                var entries = (EconomyEntrySelectionData)typeof(ProductionInputConsumptionDecompOpData)
+                    .GetField("sourceEntries", flags).GetValue(op);
+                bool resolved = Resolve(owner, owners, out var selected, out string failure);
+                message.Append("Source owners resolved=").Append(resolved).Append(" count=")
+                    .Append(selected.Count).Append(" failure=").Append(failure).AppendLine();
+                var sources = new Dictionary<EconomyAssetRef, string>();
+                foreach (var source in selected)
+                {
+                    message.Append("  Source ").Append(source.Asset.Id).Append(" amount=").Append(source.Amount)
+                        .Append(" exact=").Append(source.Handle.IsValid).AppendLine();
+                    if (!(source.Asset is IEconomyAssetOwner origin)) continue;
+                    bool formsResolved = Resolve(origin, entries, out var selectedForms, out failure);
+                    message.Append("    Forms resolved=").Append(formsResolved).Append(" count=")
+                        .Append(selectedForms.Count).Append(" failure=").Append(failure).AppendLine();
+                    foreach (var selectedForm in selectedForms)
+                    {
+                        var key = selectedForm.Asset.RequireAssetRef("Deployment diagnostic");
+                        bool added = sources.TryAdd(key, origin.StableSimulationKey);
+                        message.Append("    Form ").Append(selectedForm.Asset.Id).Append(" amount=").Append(selectedForm.Amount)
+                            .Append(" exact=").Append(selectedForm.Handle.IsValid)
+                            .Append(" unique=").Append(added).AppendLine();
+                    }
+                }
+            }
+            foreach (var production in ProductionService.GetSnapshots(battle.DomainId))
+                message.Append("Producer ").Append(production.EntityId.Value).Append(" ").Append(production.Definition.Id)
+                    .Append(" enabled=").Append(production.Enabled).Append(" accepts=").Append(production.AcceptsOrders)
+                    .Append(" queue=").Append(production.QueueCount).Append(" active=").Append(production.ActivePipelineCount).AppendLine();
+            foreach (var host in CapabilityHostService.GetAll().Where(host => host.ActivityId == battle.Id))
+                message.Append("Host ").Append(host.EntityId.Value).Append(" ").Append(host.Definition.Id)
+                    .Append(" owner=").Append(host.Owner.StableSimulationKey).AppendLine();
+            return message.ToString();
         }
 
         static string BuildOrchestrationDiagnostic(RuntimeDomainId domainId)

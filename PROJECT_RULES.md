@@ -147,3 +147,9 @@ These rules are strict for project-owned code and naming.
    Never select an Editor by foreground focus, discovery order, last launch, or a previously remembered port alone. Unrelated projects may be open concurrently; do not inspect or operate on them as part of this repository's work.
    If the requested Editor or dedicated log is unavailable, or the reported project does not match, report the missing evidence and stop the affected diagnostic operation. Do not switch to another Editor or the shared log.
    The dedicated log path must be supplied through `-logFile` when launching the corresponding Editor. These instructions do not redirect an already running Editor and do not authorize restarting it, entering Play Mode, or running tests.
+
+29. Performance optimization must target the largest user-approved unresolved costs in execution time and allocations across the complete affected cycle.
+   Before changing runtime code, identify the measured target block, the proven cause, and the concrete production execution path that the implementation will change.
+   If the cause is not established, investigate that block; do not substitute smaller or more convenient improvements without an explicit user decision.
+   Before requesting permission to run tests or scenarios, compare the completed implementation against that target scope. Compilation and replacement of individual helpers do not prove that the requested performance work is complete. Explicitly identify major target paths that remain unchanged; do not declare the implementation complete while required work on those paths remains unimplemented.
+   After execution, evaluate the target block and the complete cycle against the baseline, reporting execution time and allocations. A modest overall improvement does not establish that the main problem has been addressed, and must not be presented as satisfying that objective when the dominant agreed cost remains unresolved.

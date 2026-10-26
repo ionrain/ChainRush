@@ -236,7 +236,7 @@ namespace ChainRush.Diagnostics
             var movement = (JObject)JObject.Parse(json)["movementEvidence"];
             void Require(bool condition, string reason)
             { if (!condition) throw new InvalidOperationException("Incomplete step cost accounting: " + reason); }
-            Require(movement["costAccountingVersion"]?.Value<int>() == 6, "instrumentation version");
+            Require(movement["costAccountingVersion"]?.Value<int>() == 7, "instrumentation version");
             var preparation = movement["preparationWork"] as JObject;
             Require(preparation != null, "preparation work");
             foreach (string field in new[] { "EntityPureReads", "EntityExistsReads", "EntityReadInvalidations", "EntityAccessReopens", "EntityStampCaptures", "EntityStampChecks", "PreparedBypassIntents", "UsedPreparedBypasses", "UnusedPreparedBypasses", "LateBypasses" })
@@ -274,7 +274,7 @@ namespace ChainRush.Diagnostics
                 long inclusive = row[2].Value<long>(), own = row[3].Value<long>(), inStep = row[4].Value<long>();
                 Require(inclusive >= own && own >= inStep && inStep >= 0, "nested stage duration"); self += inStep;
             }
-            foreach (string name in new[] { "HostStep", "AI", "SkillsPrepare", "MovementPump", "SkillsComplete", "SkillsClocks", "SkillsMerge", "SkillsResults", "ResolveAdmission", "ResolveCandidates", "ResolveCurrent", "ResolveResponse", "SpatialPrepare", "SpatialReservation", "SpatialCommit", "SpatialRelease", "SpatialKernel", "MovementPendingRange", "MovementAdmission", "MovementApplyResult", "MovementResponseWrite", "MovementCleanup", "NavigationInputs", "DeferredBypass" })
+            foreach (string name in new[] { "HostStep", "AI", "SkillsPrepare", "MovementPump", "SkillsComplete", "SkillsClocks", "SkillsMerge", "SkillsResults", "ResolveAdmission", "ResolveCandidates", "ResolveCurrent", "ResolveResponse", "SpatialPrepare", "SpatialReservation", "SpatialCommit", "SpatialRelease", "SpatialKernel", "MovementPendingRange", "MovementAdmission", "MovementApplyResult", "MovementResponseWrite", "MovementCleanup", "NavigationInputs", "DeferredBypass", "RuntimeResourceWait", "RuntimeExternalBarrier", "RuntimeStructuralBarrier", "RuntimeRetirementBarrier", "RuntimeScheduling", "SkillHostValueInputs", "SkillNumericPreparation", "SkillManagedPreparation", "SpatialViewPreparation", "SpatialOwnerValidation", "SpatialLeaseValidation", "SpatialIndexMutation", "SpatialRecordWrite" })
                 Require(names.ContainsKey(name), "missing " + name);
             foreach (string name in new[] { "HostStep", "AI", "SkillsPrepare", "MovementPump", "SkillsComplete", "SkillsClocks", "SkillsMerge", "SkillsResults" })
                 Require(names[name][1].Value<long>() > 0, "inactive " + name);

@@ -151,7 +151,7 @@ MonoBehaviour:
         targetKey: {fileID: 11400000, guid: 426a12ca82ef04682bd0fc90f1af969f, type: 2}
         additionalTargetKeys: []
         diplomacyChannel: 0
-        requiredDisposition: 0
+        requiredDisposition: 1
         requiredTargetTags:
         - {fileID: 11400000, guid: 1c4da6ecd53374492a7c2eddc0cf92b2, type: 2}
         blockedTargetTags: []

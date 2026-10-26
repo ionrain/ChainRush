@@ -29,6 +29,21 @@ namespace ChainRush.Tests.EditMode
             "Water", "Cola", "LightningBolt", "Power", "Defense", "Health", "Speed", "SkillSpeed", "Gold", "Heal"
         };
 
+        [TestCase("Infantry")]
+        [TestCase("Ranged")]
+        [TestCase("Heavy")]
+        public void BuildingProduction_SeedsProductionDefinitionWithMatchingCatalog(string building)
+        {
+            var host = Load<CapabilityHostData>("Buildings/Economy/" + building + "Building.asset");
+            var production = Load<ProductionData>("Buildings/Production/" + building + "Production.asset");
+            var catalog = Load<ProductionCatalogData>("Buildings/Production/" + building + "Catalog.asset");
+            var seeds = host.WalletEntries.SelectMany(wallet => wallet.Seed).ToList();
+            Assert.AreEqual(1, seeds.Count(seed => seed.Entry.Asset == production));
+            Assert.IsFalse(seeds.Any(seed => seed.Entry.Asset is ProductionCatalogData),
+                "The Production projection accepts ProductionData, not a catalog token.");
+            Assert.AreSame(catalog, production.FirstSupportedCatalog);
+        }
+
         [TestCase("Water")]
         [TestCase("Cola")]
         public void AlliedDefeat_DoesNotAcquireDropFailurePolicy(string unit)

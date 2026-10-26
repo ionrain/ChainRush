@@ -52,7 +52,7 @@ MonoBehaviour:
   - wallet: {fileID: 11400000, guid: b85977be3024f49c889d7fd3baa24634, type: 2}
     seed:
     - entry:
-        asset: {fileID: 11400000, guid: 620d9b5b1699e4a0ea83b2dab687d2b5, type: 2}
+        asset: {fileID: 11400000, guid: 58da85081435c4d649dfc273c642e71b, type: 2}
         formType: 0
         amount: 1
       runtimeTags: []

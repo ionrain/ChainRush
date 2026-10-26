@@ -104,6 +104,7 @@ namespace ChainRush.Tests.PlayMode
             // A chain of three cells issues ten percentage points.
             long expected = checked(before + before * 10L / 100L);
             var capture = new SelectionEffectReplayCapture(board.Id, null);
+            string beforeSelection = BuildBuffDiagnostic(battle, owner, wallet, first, content);
             EventBus.Register<SelectionResultEvent>(capture);
             try
             {
@@ -119,7 +120,9 @@ namespace ChainRush.Tests.PlayMode
                     if (actual == expected) break;
                     yield return null;
                 }
-                Assert.AreEqual(expected, actual);
+                Assert.AreEqual(expected, actual, actual == expected ? string.Empty
+                    : "Before selection:\n" + beforeSelection + "After selection:\n"
+                        + BuildBuffDiagnostic(battle, owner, wallet, first, content));
                 Assert.AreEqual(1, capture.Replayed);
                 Assert.IsTrue(CapabilityHostService.TryGet(first, out var firstHost));
                 EventBus.Trigger(new CapabilityHostRegisteredEvent(firstHost));
@@ -151,6 +154,56 @@ namespace ChainRush.Tests.PlayMode
             }
             finally { EventBus.Unregister<SelectionResultEvent>(capture); }
             Assert.IsTrue(ActivityService.Close(battle.Id, ActivityCloseCauseType.Manual));
+        }
+
+        static string BuildBuffDiagnostic(ActivityRuntimeSnapshot battle, IEconomyAssetOwner owner,
+            TaxonomyTermData wallet, EntityId entity, string content)
+        {
+            var message = new System.Text.StringBuilder("Buff delivery diagnostics\n");
+            var buff = AssetDatabase.LoadAssetAtPath<EconomyAssetData>(
+                "Assets/Game/Activities/Autobattle/Skills/" + content + "Buff.asset");
+            message.Append("Remaining buff=").Append(QueryAmount(owner, wallet, EconomyFormType.Stack, buff)).AppendLine();
+            CapabilityHostService.TryGet(entity, out var unit);
+            message.Append("Unit=").Append(entity).Append(" prototype=").Append(unit.PrototypeEntityId)
+                .Append(" implementation=").Append(unit.ImplementationOwner?.StableSimulationKey).AppendLine();
+            var executorDefinition = AssetDatabase.LoadAssetAtPath<CapabilityHostData>(
+                "Assets/Game/Activities/Autobattle/Economy/SkillExecutor.asset");
+            var executor = CapabilityHostService.GetAll().Single(host => host.ActivityId == battle.Id
+                && host.Definition.Matches(executorDefinition));
+            var brain = AssetDatabase.LoadAssetAtPath<Core.AI.AIBrainData>(
+                "Assets/Game/Activities/Autobattle/AI/SkillExecutorBrain.asset");
+            foreach (var selection in brain.Nodes.SelectMany(node => node.States)
+                .SelectMany(state => state.OnEnterActions).OfType<SelectActivityTargetAIBrainActionData>())
+            {
+                var flags = BindingFlags.Instance | BindingFlags.NonPublic;
+                var compatible = (EconomyAssetData)typeof(SelectActivityTargetAIBrainActionData)
+                    .GetField("compatibleSkill", flags).GetValue(selection);
+                if (!compatible.Matches(buff)) continue;
+                object policy = typeof(SelectActivityTargetAIBrainActionData)
+                    .GetMethod("CreateEligibilityPolicy", flags).Invoke(selection, null);
+                var utility = typeof(Core.AI.AIBrainService).Assembly.GetType("Core.AI.AIBrainTargetEligibilityUtility");
+                object[] arguments = { battle.Id, executor.EntityId, entity, policy, null };
+                bool eligible = (bool)utility.GetMethod("TryEvaluateTarget",
+                    BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic).Invoke(null, arguments);
+                message.Append("Target admission eligible=").Append(eligible).Append(" reason=")
+                    .Append((string)arguments[4]).AppendLine();
+            }
+            var prototypes = new List<CapabilityHostSnapshot>();
+            EventBus.Trigger(new CapabilityHostSnapshotReadRequest(battle.Id, owner,
+                EconomyOwnerLevelType.Prototype, null, values => prototypes.AddRange(values)));
+            var modifiers = AssetDatabase.LoadAssetAtPath<TaxonomyTermData>(
+                "Assets/Game/Activities/Autobattle/Economy/HostValueModifiersWalletTag.asset");
+            foreach (var prototype in prototypes)
+            {
+                message.Append("Prototype=").Append(prototype.EntityId).Append(" definition=")
+                    .Append(prototype.Definition.Id).AppendLine();
+                var query = EconomyService.Query(new EconomySelectionQuery(prototype.SelfEconomyOwner,
+                    new List<TaxonomyTermData> { modifiers }, EconomyFormType.Stack,
+                    aggregationType: EconomyAggregationType.Detailed));
+                foreach (var item in query.Items)
+                    message.Append("  Modifier=").Append(item.Asset.Id).Append(" amount=").Append(item.Amount).AppendLine();
+            }
+            return message.Append(BuildOrchestrationDiagnostic(battle.DomainId)).ToString();
         }
 
         static long ReadBuffValue(EntityId entity, HostValueKey key, string content)
